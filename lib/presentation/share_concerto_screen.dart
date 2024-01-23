@@ -151,7 +151,7 @@ class InputAreaState extends State<InputArea> {
                         padding: const EdgeInsets.all(0),
                         iconSize: 20,
                         onPressed: () {},
-                        icon: SvgPicture.asset('images/ic_image.svg')),
+                        icon: SvgPicture.asset('assets/images/ic_image.svg')),
                   ),
                   SizedBox(
                     width: 36,
@@ -160,7 +160,7 @@ class InputAreaState extends State<InputArea> {
                         padding: const EdgeInsets.all(0),
                         iconSize: 20,
                         onPressed: () {},
-                        icon: SvgPicture.asset('images/ic_video.svg')),
+                        icon: SvgPicture.asset('assets/images/ic_video.svg')),
                   ),
                   SizedBox(
                     width: 36,
@@ -169,7 +169,7 @@ class InputAreaState extends State<InputArea> {
                       padding: const EdgeInsets.all(0),
                       iconSize: 20,
                       onPressed: () {},
-                      icon: SvgPicture.asset('images/ic_app.svg'),
+                      icon: SvgPicture.asset('assets/images/ic_app.svg'),
                     ),
                   ),
                   SizedBox(
@@ -179,7 +179,7 @@ class InputAreaState extends State<InputArea> {
                       padding: const EdgeInsets.all(0),
                       iconSize: 20,
                       onPressed: () {},
-                      icon: SvgPicture.asset('images/ic_file.svg'),
+                      icon: SvgPicture.asset('assets/images/ic_file.svg'),
                     ),
                   ),
                 ],

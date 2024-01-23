@@ -93,30 +93,28 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return Scaffold(
       backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
-      body: SafeArea(
-        child: DeviceScreen(
-          key: GlobalKey(),
-        ),
+      body: DeviceScreen(
+        key: GlobalKey(),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
               icon: SvgPicture.asset(
-                'images/ic_share.svg',
+                'assets/images/ic_share.svg',
                 colorFilter: ColorFilter.mode(
                     getColor(0, selectedIndex), BlendMode.srcIn),
               ),
               label: '互传'),
           BottomNavigationBarItem(
               icon: SvgPicture.asset(
-                'images/ic_config.svg',
+                'assets/images/ic_config.svg',
                 colorFilter: ColorFilter.mode(
                     getColor(1, selectedIndex), BlendMode.srcIn),
               ),
               label: '配置'),
           BottomNavigationBarItem(
               icon: SvgPicture.asset(
-                'images/ic_help.svg',
+                'assets/images/ic_help.svg',
                 colorFilter: ColorFilter.mode(
                     getColor(2, selectedIndex), BlendMode.srcIn),
               ),
