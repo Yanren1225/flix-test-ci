@@ -1,5 +1,5 @@
 import 'package:androp/model/shareable.dart';
-import 'package:androp/presentation/share_concerto_screen.dart';
+import 'package:androp/presentation/screens/share_concerto_screen.dart';
 
 class BubbleEntity {
   String from;

@@ -1,5 +1,5 @@
 import 'package:androp/domain/androp_context.dart';
-import 'package:androp/presentation/devices_screen.dart';
+import 'package:androp/presentation/screens/devices_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';

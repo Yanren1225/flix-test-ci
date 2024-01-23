@@ -3,10 +3,14 @@ import 'dart:ui';
 
 import 'package:androp/model/bubble_entity.dart';
 import 'package:androp/model/device_info.dart';
+import 'package:androp/model/pickable.dart';
 import 'package:androp/model/shareable.dart';
-import 'package:androp/presentation/share_bubble.dart';
+import 'package:androp/presentation/widgets/pick_actions.dart';
+import 'package:androp/presentation/widgets/share_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
 
 class ShareConcertScreen extends StatelessWidget {
   final DeviceInfo deviceInfo;
@@ -51,7 +55,7 @@ class ShareConcertMainView extends StatefulWidget {
 class ShareConcertMainViewState extends State<ShareConcertMainView> {
   List<BubbleEntity> shareList = [];
 
-  void submit(String content) {
+  void submit(Shareable shareable) {
     const device0 = 'Xiaomi 13';
     const device1 = 'Macbook';
     final random = Random();
@@ -59,10 +63,7 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
     final from = fromMe ? device0 : device1;
     final to = fromMe ? device1 : device0;
     setState(() {
-      shareList.add(BubbleEntity(
-          from: from,
-          to: to,
-          shareable: SharedText(id: '0', content: content)));
+      shareList.add(BubbleEntity(from: from, to: to, shareable: shareable));
     });
   }
 
@@ -100,7 +101,7 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
 }
 
 class InputArea extends StatefulWidget {
-  final Function(String) onSubmit;
+  final OnSubmit onSubmit;
 
   const InputArea({super.key, required this.onSubmit});
 
@@ -111,7 +112,8 @@ class InputArea extends StatefulWidget {
 }
 
 class InputAreaState extends State<InputArea> {
-  final Function(String) onSubmit;
+  final Uuid uuid = const Uuid();
+  final OnSubmit onSubmit;
   String inputContent = '';
 
   InputAreaState({required this.onSubmit});
@@ -122,8 +124,30 @@ class InputAreaState extends State<InputArea> {
     });
   }
 
-  void submit(String content) {
-    onSubmit(content);
+  void submitText(String content) {
+    onSubmit(SharedText(id: uuid.v1(), content: content));
+  }
+
+  void submitImage(String path) {
+    onSubmit(SharedImage(id: uuid.v1(), content: path));
+  }
+
+  void submitVideo(String path) {
+    onSubmit(SharedVideo(id: uuid.v1(), content: path));
+  }
+
+  void onFilesPicked(List<Pickable> pickables) {
+    for (var element in pickables) {
+      switch (element.type) {
+        case PickedFileType.Image:
+          submitImage(element.file.path);
+          break;
+        case PickedFileType.Video:
+          submitVideo(element.file.path);
+          break;
+        default:
+      }
+    }
   }
 
   @override
@@ -140,51 +164,9 @@ class InputAreaState extends State<InputArea> {
               ))),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             Padding(
-              padding:
-                  const EdgeInsets.only(left: 8, top: 2, right: 8, bottom: 2),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 36,
-                    height: 36,
-                    child: IconButton(
-                        padding: const EdgeInsets.all(0),
-                        iconSize: 20,
-                        onPressed: () {},
-                        icon: SvgPicture.asset('assets/images/ic_image.svg')),
-                  ),
-                  SizedBox(
-                    width: 36,
-                    height: 36,
-                    child: IconButton(
-                        padding: const EdgeInsets.all(0),
-                        iconSize: 20,
-                        onPressed: () {},
-                        icon: SvgPicture.asset('assets/images/ic_video.svg')),
-                  ),
-                  SizedBox(
-                    width: 36,
-                    height: 36,
-                    child: IconButton(
-                      padding: const EdgeInsets.all(0),
-                      iconSize: 20,
-                      onPressed: () {},
-                      icon: SvgPicture.asset('assets/images/ic_app.svg'),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 36,
-                    height: 36,
-                    child: IconButton(
-                      padding: const EdgeInsets.all(0),
-                      iconSize: 20,
-                      onPressed: () {},
-                      icon: SvgPicture.asset('assets/images/ic_file.svg'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                padding:
+                    const EdgeInsets.only(left: 8, top: 2, right: 8, bottom: 2),
+                child: PickActionsArea(onFilesPicked: onFilesPicked)),
             ConstrainedBox(
                 constraints:
                     const BoxConstraints(minHeight: 18, maxHeight: 200),
@@ -201,7 +183,7 @@ class InputAreaState extends State<InputArea> {
                       input(value);
                     },
                     onSubmitted: (value) {
-                      submit(value);
+                      submitText(value);
                     },
                   ),
                 )),
@@ -215,7 +197,7 @@ class InputAreaState extends State<InputArea> {
                   child: GestureDetector(
                     onTap: () {
                       FocusScope.of(context).unfocus();
-                      submit(inputContent);
+                      submitText(inputContent);
                     },
                     child: Container(
                       decoration: const BoxDecoration(
@@ -241,3 +223,5 @@ class InputAreaState extends State<InputArea> {
     );
   }
 }
+
+typedef OnSubmit = void Function(Shareable);

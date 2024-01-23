@@ -23,3 +23,14 @@ class SharedImage extends Shareable<String> {
 
   SharedImage({required this.id, required this.content});
 }
+
+class SharedVideo extends Shareable<String> {
+  /// video uri
+  @override
+  final String content;
+
+  @override
+  final String id;
+
+  SharedVideo({required this.id, required this.content});
+}
