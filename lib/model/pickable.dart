@@ -1,3 +1,4 @@
+import 'package:device_apps/device_apps.dart';
 import 'package:image_picker/image_picker.dart';
 
 enum PickedFileType {
@@ -7,14 +8,35 @@ enum PickedFileType {
   Other;
 }
 
-class Pickable {
-  final PickedFileType type;
-  final XFile file;
+abstract class Pickable<Content> {
+  PickedFileType get type;
+  Content get content;
+}
 
-  Pickable({required this.type, required this.file});
+class PickableFile extends Pickable<XFile> {
+  @override
+  PickedFileType type;
+  @override
+  XFile content;
+
+  PickableFile({required this.type, required this.content});
 
   @override
   String toString() {
-    return 'Pickable{type: $type, file: ${file.path}}';
+    return 'PickableFile{type: $type, file: ${content.path}}';
+  }
+}
+
+class PickableApp extends Pickable<Application> {
+  @override
+  PickedFileType get type => PickedFileType.App;
+  @override
+  Application content;
+
+  PickableApp({required this.content});
+
+  @override
+  String toString() {
+    return 'PickableFile{type: $type, app: $content}';
   }
 }

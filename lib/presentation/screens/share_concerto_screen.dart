@@ -7,6 +7,7 @@ import 'package:androp/model/pickable.dart';
 import 'package:androp/model/shareable.dart';
 import 'package:androp/presentation/widgets/pick_actions.dart';
 import 'package:androp/presentation/widgets/share_bubble.dart';
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -136,14 +137,21 @@ class InputAreaState extends State<InputArea> {
     onSubmit(SharedVideo(id: uuid.v1(), content: path));
   }
 
-  void onFilesPicked(List<Pickable> pickables) {
+  void submitApp(Application app) {
+    onSubmit(SharedApp(id: uuid.v1(), content: app));
+  }
+
+  void onPicked(List<Pickable> pickables) {
     for (var element in pickables) {
       switch (element.type) {
         case PickedFileType.Image:
-          submitImage(element.file.path);
+          submitImage((element as PickableFile).content.path);
           break;
         case PickedFileType.Video:
-          submitVideo(element.file.path);
+          submitVideo((element as PickableFile).content.path);
+          break;
+        case PickedFileType.App:
+          submitApp((element as PickableApp).content);
           break;
         default:
       }
@@ -166,7 +174,7 @@ class InputAreaState extends State<InputArea> {
             Padding(
                 padding:
                     const EdgeInsets.only(left: 8, top: 2, right: 8, bottom: 2),
-                child: PickActionsArea(onFilesPicked: onFilesPicked)),
+                child: PickActionsArea(onPicked: onPicked)),
             ConstrainedBox(
                 constraints:
                     const BoxConstraints(minHeight: 18, maxHeight: 200),
