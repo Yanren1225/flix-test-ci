@@ -125,9 +125,17 @@ class ShareImageBubble extends StatelessWidget {
   }
 }
 
-class ShareVideoBubble extends StatelessWidget {
+class ShareVideoBubble extends StatefulWidget {
   final BubbleEntity entity;
   const ShareVideoBubble({super.key, required this.entity});
+
+  @override
+  State<StatefulWidget> createState() => ShareVideoBubbleState();
+}
+
+class ShareVideoBubbleState extends State<ShareVideoBubble> {
+  BubbleEntity get entity => widget.entity;
+  VideoPlayerController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -169,14 +177,25 @@ class ShareVideoBubble extends StatelessWidget {
   }
 
   Widget _buildInlineVideoPlayer(String videoUri) {
-    final VideoPlayerController controller =
-        VideoPlayerController.file(File(videoUri));
     // const double volume = kIsWeb ? 0.0 : 1.0;
     // controller.setVolume(volume);
-    controller.initialize();
-    controller.setLooping(true);
-    controller.play();
+    if (controller == null) {
+      controller = VideoPlayerController.network(videoUri);
+    } else {
+      controller?.dispose();
+      controller = VideoPlayerController.network(videoUri);
+    }
+
+    controller?.initialize();
+    controller?.setLooping(true);
+    controller?.play();
     return Center(child: AspectRatioVideo(controller));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller?.dispose();
   }
 }
 

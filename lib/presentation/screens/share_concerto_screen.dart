@@ -5,6 +5,7 @@ import 'package:androp/model/bubble_entity.dart';
 import 'package:androp/model/device_info.dart';
 import 'package:androp/model/pickable.dart';
 import 'package:androp/model/shareable.dart';
+import 'package:androp/presentation/widgets/blur_appbar.dart';
 import 'package:androp/presentation/widgets/pick_actions.dart';
 import 'package:androp/presentation/widgets/share_bubble.dart';
 import 'package:device_apps/device_apps.dart';
@@ -21,25 +22,26 @@ class ShareConcertScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-            size: 20,
+      backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+      extendBodyBehindAppBar: true,
+      appBar: BlurAppBar(
+        appBar: AppBar(
+          leading: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+              size: 20,
+            ),
           ),
+          title: Text(deviceInfo.name),
+          titleTextStyle: const TextStyle(
+              color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
+          backgroundColor: const Color.fromRGBO(247, 247, 247, 0.8),
+          surfaceTintColor: const Color.fromRGBO(247, 247, 247, 0.8),
         ),
-        title: Text(deviceInfo.name),
-        titleTextStyle: const TextStyle(
-            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
-        backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
-        surfaceTintColor: const Color.fromRGBO(247, 247, 247, 1),
       ),
-      body: Container(
-          decoration:
-              const BoxDecoration(color: Color.fromRGBO(247, 247, 247, 1)),
-          child: const ShareConcertMainView()),
+      body: const ShareConcertMainView(),
     );
   }
 }
@@ -73,22 +75,19 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        ListView(
-          children: [
-            ...shareList
-                .map((e) => Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16.0, right: 16.0, top: 12, bottom: 12),
-                      child: ShareBubble(
-                        entity: e,
-                      ),
-                    ))
-                .toList(),
-            const SizedBox(
-              height: 260,
-            )
-          ],
-        ),
+        ListView.builder(
+            padding: const EdgeInsets.only(bottom: 260),
+            itemCount: shareList.length,
+            itemBuilder: (context, index) {
+              final item = shareList[index];
+              return Padding(
+                padding: const EdgeInsets.only(
+                    left: 16.0, right: 16.0, top: 12, bottom: 12),
+                child: ShareBubble(
+                  entity: item,
+                ),
+              );
+            }),
         Align(
           alignment: Alignment.bottomLeft,
           child: InputArea(

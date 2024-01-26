@@ -127,11 +127,11 @@ class PickActionAreaState extends State<PickActionsArea> {
   }
 
   Future<void> _onAppButtonPressed() async {
-    List<Application> apps = await Navigator.push(
+    List<Application>? apps = await Navigator.push(
         context, MaterialPageRoute(builder: (context) => const AppsScreen()));
-    onPicked(apps.map((app) => PickableApp(content: app)).toList());
-    // Navigator.push(
-    //     context, MaterialPageRoute(builder: (context) => const AppsScreen()));
+    if (apps != null) {
+      onPicked(apps.map((app) => PickableApp(content: app)).toList());
+    }
   }
 }
 

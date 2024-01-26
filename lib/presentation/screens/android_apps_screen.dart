@@ -1,41 +1,16 @@
 import 'dart:developer';
+import 'dart:ffi';
 
 import 'package:androp/presentation/widgets/app_icon.dart';
 import 'package:androp/presentation/widgets/check_state_box.dart';
-import 'package:androp/presentation/widgets/search_box.dart';
 import 'package:androp/utils/apk_utils.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
+import '../widgets/blur_appbar.dart';
 
 class AppsScreen extends StatefulWidget {
   const AppsScreen({super.key});
-
-  // @override
-  // Widget build(BuildContext context) {
-
-  // return Scaffold(
-  //   appBar: AppBar(
-  //     leading: GestureDetector(
-  //       onTap: () => Navigator.pop(context),
-  //       child: const Icon(
-  //         Icons.arrow_back_ios,
-  //         color: Colors.black,
-  //         size: 20,
-  //       ),
-  //     ),
-  //     title: const Text('选择App'),
-  //     titleTextStyle: const TextStyle(
-  //         color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
-  //     backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
-  //     surfaceTintColor: const Color.fromRGBO(247, 247, 247, 1),
-  //   ),
-  //   body: Container(
-  //       decoration:
-  //           const BoxDecoration(color: Color.fromRGBO(247, 247, 247, 1)),
-  //       child: const ShareConcertMainView()),
-  // );
-  // }
 
   @override
   State<StatefulWidget> createState() => AppsScreenState();
@@ -44,24 +19,50 @@ class AppsScreen extends StatefulWidget {
 class AppsScreenState extends State<AppsScreen> {
   List<Application> apps = List.empty();
 
-  Set<Application> selectedApp = {};
+  ValueNotifier<Set<Application>> selectedApps = ValueNotifier({});
+
+  void _back() {
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
-        log('didPop: ${didPop}');
         if (!didPop) {
           Future.delayed(Duration.zero, () {
-            Navigator.pop(context, selectedApp.toList());
+            _back();
           });
         }
         // Navigator.pop(context);
       },
-      child: Material(
-        color: const Color.fromRGBO(247, 247, 247, 1),
-        child: ListView.builder(
+      child: Scaffold(
+        backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+        appBar: BlurAppBar(
+          appBar: AppBar(
+            leading: GestureDetector(
+              onTap: _back,
+              child: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+                size: 20,
+              ),
+            ),
+            title: const Text('选择本机应用'),
+            titleTextStyle: const TextStyle(
+                color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
+            actions: [
+              ValueListenableBuilder(
+                  valueListenable: selectedApps,
+                  builder: (_, selectedApps, __) =>
+                      confirmButton(selectedApps.length))
+            ],
+            backgroundColor: const Color.fromRGBO(247, 247, 247, 0.8),
+            surfaceTintColor: const Color.fromRGBO(247, 247, 247, 0.8),
+          ),
+        ),
+        body: ListView.builder(
             itemCount: apps.length,
             itemBuilder: (context, index) {
               final Application app = apps[index];
@@ -69,17 +70,24 @@ class AppsScreenState extends State<AppsScreen> {
                   application: app,
                   onChecked: (checked) {
                     if (checked) {
-                      setState(() {
-                        selectedApp.add(app);
-                      });
+                      selectedApps.value.add(app);
+                      selectedApps.notifyListeners();
                     } else {
-                      setState(() {
-                        selectedApp.remove(app);
-                      });
+                      selectedApps.value.remove(app);
+                      selectedApps.notifyListeners();
                     }
                   });
             }),
       ),
+    );
+  }
+
+  Widget confirmButton(int count) {
+    return TextButton(
+      onPressed: () {
+        Navigator.pop(context, selectedApps.value.toList());
+      },
+      child: Text('发送 ($count)'),
     );
   }
 
@@ -112,13 +120,11 @@ class AppItemState extends State<AppItem> {
   Application get application => widget.application;
   OnChecked get onChecked => widget.onChecked;
 
-  bool _checked = false;
+  final ValueNotifier<bool> _checked = ValueNotifier<bool>(false);
 
   void _setChecked(bool? checked) {
     if (checked == null) return;
-    setState(() {
-      _checked = checked;
-    });
+    _checked.value = checked;
     onChecked(checked);
   }
 
@@ -126,7 +132,7 @@ class AppItemState extends State<AppItem> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        _setChecked(!_checked);
+        _setChecked(!_checked.value);
       },
       child: Padding(
         padding: const EdgeInsets.only(left: 16, top: 9, right: 16, bottom: 9),
@@ -164,7 +170,11 @@ class AppItemState extends State<AppItem> {
                   ],
                 ),
               ),
-              CheckStateBox(checked: _checked)
+              ValueListenableBuilder(
+                valueListenable: _checked,
+                builder: (context, checked, child) =>
+                    CheckStateBox(checked: checked),
+              )
             ]),
       ),
     );
