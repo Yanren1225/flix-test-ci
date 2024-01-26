@@ -21,33 +21,42 @@ class ShareConcertScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appBar = AppBar(
+      leading: GestureDetector(
+        onTap: () => Navigator.pop(context),
+        child: const Icon(
+          Icons.arrow_back_ios,
+          color: Colors.black,
+          size: 20,
+        ),
+      ),
+      title: Text(deviceInfo.name),
+      titleTextStyle: const TextStyle(
+          color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
+      backgroundColor: const Color.fromRGBO(247, 247, 247, 0.8),
+      surfaceTintColor: const Color.fromRGBO(247, 247, 247, 0.8),
+    );
+    final appBarHeight =
+        appBar.preferredSize.height + MediaQuery.of(context).padding.top;
     return Scaffold(
       backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
       extendBodyBehindAppBar: true,
       appBar: BlurAppBar(
-        appBar: AppBar(
-          leading: GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: const Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black,
-              size: 20,
-            ),
-          ),
-          title: Text(deviceInfo.name),
-          titleTextStyle: const TextStyle(
-              color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
-          backgroundColor: const Color.fromRGBO(247, 247, 247, 0.8),
-          surfaceTintColor: const Color.fromRGBO(247, 247, 247, 0.8),
-        ),
+        appBar: appBar,
       ),
-      body: const ShareConcertMainView(),
+      body:
+          // const ShareConcertMainView()
+          ShareConcertMainView(
+        padding: EdgeInsets.only(top: appBarHeight),
+      ),
     );
   }
 }
 
 class ShareConcertMainView extends StatefulWidget {
-  const ShareConcertMainView({super.key});
+  final EdgeInsets padding;
+
+  const ShareConcertMainView({super.key, required this.padding});
 
   @override
   State<StatefulWidget> createState() {
@@ -56,6 +65,8 @@ class ShareConcertMainView extends StatefulWidget {
 }
 
 class ShareConcertMainViewState extends State<ShareConcertMainView> {
+  EdgeInsets get padding => widget.padding;
+
   List<BubbleEntity> shareList = [];
 
   void submit(Shareable shareable) {
@@ -76,7 +87,7 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
       fit: StackFit.expand,
       children: [
         ListView.builder(
-            padding: const EdgeInsets.only(bottom: 260),
+            padding: EdgeInsets.only(top: padding.top, bottom: 260),
             itemCount: shareList.length,
             itemBuilder: (context, index) {
               final item = shareList[index];

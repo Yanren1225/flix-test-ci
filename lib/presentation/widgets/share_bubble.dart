@@ -180,10 +180,10 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
     // const double volume = kIsWeb ? 0.0 : 1.0;
     // controller.setVolume(volume);
     if (controller == null) {
-      controller = VideoPlayerController.network(videoUri);
+      controller = VideoPlayerController.file(File(videoUri));
     } else {
       controller?.dispose();
-      controller = VideoPlayerController.network(videoUri);
+      controller = VideoPlayerController.file(File(videoUri));
     }
 
     controller?.initialize();
@@ -193,9 +193,21 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
   }
 
   @override
+  void activate() {
+    super.activate();
+    controller?.play();
+  }
+
+  @override
+  void deactivate() {
+    controller?.pause();
+    super.deactivate();
+  }
+
+  @override
   void dispose() {
-    super.dispose();
     controller?.dispose();
+    super.dispose();
   }
 }
 

@@ -27,6 +27,31 @@ class AppsScreenState extends State<AppsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appBar = AppBar(
+      leading: GestureDetector(
+        onTap: _back,
+        child: const Icon(
+          Icons.arrow_back_ios,
+          color: Colors.black,
+          size: 20,
+        ),
+      ),
+      title: const Text('选择本机应用'),
+      titleTextStyle: const TextStyle(
+          color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
+      actions: [
+        ValueListenableBuilder(
+            valueListenable: selectedApps,
+            builder: (_, selectedApps, __) =>
+                confirmButton(selectedApps.length))
+      ],
+      backgroundColor: const Color.fromRGBO(247, 247, 247, 0.8),
+      surfaceTintColor: const Color.fromRGBO(247, 247, 247, 0.8),
+    );
+
+    final appBarHeight =
+        appBar.preferredSize.height + MediaQuery.paddingOf(context).top;
+
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
@@ -38,6 +63,7 @@ class AppsScreenState extends State<AppsScreen> {
         // Navigator.pop(context);
       },
       child: Scaffold(
+        extendBodyBehindAppBar: true,
         backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
         appBar: BlurAppBar(
           appBar: AppBar(
@@ -63,6 +89,7 @@ class AppsScreenState extends State<AppsScreen> {
           ),
         ),
         body: ListView.builder(
+            padding: EdgeInsets.only(top: appBarHeight),
             itemCount: apps.length,
             itemBuilder: (context, index) {
               final Application app = apps[index];
