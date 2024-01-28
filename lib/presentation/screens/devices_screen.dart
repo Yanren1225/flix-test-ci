@@ -1,4 +1,5 @@
 import 'package:androp/model/device_info.dart';
+import 'package:androp/network/multicast_client_provider.dart';
 import 'package:androp/presentation/screens/share_concerto_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -44,15 +45,19 @@ class _DeviceScreenState extends State<DeviceScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding:
-                      EdgeInsets.only(top: 60, left: 20, right: 20, bottom: 10),
-                  child: Text('附近设备',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 36.0,
-                          fontWeight: FontWeight.normal)),
-                ),
+                 Padding(
+                    padding: const EdgeInsets.only(
+                        top: 60, left: 20, right: 20, bottom: 10),
+                    child: InkWell(
+                      onTap: () async {
+                        await MultiCastClientProvider.of(context).startScan();
+                      },
+                      child: const Text('附近设备',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 36.0,
+                              fontWeight: FontWeight.normal)),
+                    )),
                 Expanded(
                     child: ListView(
                   children: [

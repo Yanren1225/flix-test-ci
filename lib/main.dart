@@ -1,4 +1,5 @@
 import 'package:androp/domain/androp_context.dart';
+import 'package:androp/network/multicast_client_provider.dart';
 import 'package:androp/presentation/screens/devices_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +13,19 @@ void main() {
         statusBarBrightness: Brightness.dark, // 在状态栏上的图标和文字颜色为深色
         statusBarIconBrightness: Brightness.dark),
   );
-  runApp(const MyApp());
+
+
+
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider<MultiCastClientProvider>(
+          create: (_) => MultiCastClientProvider()),
+    ],
+    child: const MyApp(),
+  ));
+
+
+
 }
 
 class MyApp extends StatelessWidget {
