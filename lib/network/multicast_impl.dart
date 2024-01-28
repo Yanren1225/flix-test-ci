@@ -6,17 +6,19 @@ import 'package:androp/network/multicast_util.dart';
 import 'package:androp/network/protocol/device_modal.dart';
 import 'package:androp/utils/logger.dart';
 
+typedef DeviceScanCallback = void Function(DeviceModal deviceModal);
+
 class MultiCastImpl extends MultiCastApi {
   var _listening = false;
 
   @override
-  Stream<DeviceModal> startScan(String multiGroup, [int? port]) async* {
+  void startScan(String multiGroup, int port,
+      DeviceScanCallback deviceScanCallback) async {
     if (_listening) {
       Logger.log('Already listening to multicast');
       return;
     }
     _listening = true;
-    final streamController = StreamController<DeviceModal>();
     final sockets = await MultiCastUtil.getSockets(multiGroup, port);
     for (final socket in sockets) {
       socket.socket.listen((_) {
@@ -29,10 +31,9 @@ class MultiCastImpl extends MultiCastApi {
         final deviceModal = DeviceModal.fromJson(data);
         final ip = datagram.address.address;
         deviceModal.ip = ip;
-        streamController.add(deviceModal);
+        deviceScanCallback(deviceModal);
       });
     }
-    yield* streamController.stream;
   }
 
   @override

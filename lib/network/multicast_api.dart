@@ -1,5 +1,8 @@
+import 'package:androp/network/multicast_impl.dart';
+import 'package:androp/network/protocol/device_modal.dart';
+
 abstract class MultiCastApi {
-  void startScan(String multiGroup, [int? port]);
+  void startScan(String multiGroup, int port,DeviceScanCallback deviceScanCallback);
 
   void disconnect();
 

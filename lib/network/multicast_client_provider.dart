@@ -20,14 +20,34 @@ class MultiCastClientProvider extends ChangeNotifier {
   Future<void> startScan() async {
     multiCastApi.sendAnnouncement();
     state = MultiState.idle;
-    await multiCastApi
-        .startScan(
-            MultiCastUtil.defaultMulticastGroup, MultiCastUtil.defaultPort)
-        .listen((event) {
-      Logger.log(event.toString());
-    }, onDone: () {
-      Logger.log("done");
+    multiCastApi.startScan(
+        MultiCastUtil.defaultMulticastGroup, MultiCastUtil.defaultPort,
+        (event) {
+      var isConnect = false;
+      for (var element in deviceList) {
+        if (element.fingerprint == event.fingerprint) {
+          isConnect = true;
+        }
+      }
+      if (!isConnect) {
+        deviceList.add(event);
+      }
+      Logger.log("event data:$event  deviceList = $deviceList");
     });
     notifyListeners();
+    // multiCastApi.startScan(MultiCastUtil.defaultMulticastGroup, MultiCastUtil.defaultPort).listen((event) {
+    //   var isConnect = false;
+    //   for (var element in deviceList) {
+    //     if (element.ip == event.ip) {
+    //       isConnect = true;
+    //     }
+    //   }
+    //   if (!isConnect) {
+    //     deviceList.add(event);
+    //   }
+    //   Logger.log("event data:$event");
+    // }, onDone: () {
+    //   Logger.log("done");
+    // });
   }
 }

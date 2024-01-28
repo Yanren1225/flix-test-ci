@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:androp/network/protocol/device_modal.dart';
+import 'package:androp/setting/setting_provider.dart';
+import 'package:androp/utils/device_info_helper.dart';
 import 'package:androp/utils/logger.dart';
 import 'package:androp/utils/sleep.dart';
 
@@ -38,12 +39,14 @@ class MultiCastUtil {
   /// Sends an announcement which triggers a response on every LocalSend member of the network.
   static Future<void> sendAnnouncement() async {
     final sockets = await getSockets(defaultMulticastGroup);
+    final deviceId = await SettingProvider.getDeviceId();
+    var deviceInfo = await getDeviceInfo();
     var deviceModal = DeviceModal(
         alias: '',
-        deviceType: DeviceType.mobile,
-        fingerprint: '111',
+        deviceType: deviceInfo.deviceType,
+        fingerprint: deviceId!,
         port: defaultPort,
-        deviceModel: 'macos');
+        deviceModel: deviceInfo.deviceModel);
     for (final wait in [100, 500, 2000]) {
       await sleepAsync(wait);
       for (final socket in sockets) {
