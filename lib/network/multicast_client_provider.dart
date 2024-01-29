@@ -33,6 +33,11 @@ class MultiCastClientProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearDevices() {
+    deviceList.clear();
+    notifyListeners();
+  }
+
   bool isDeviceConnected(DeviceModal event) {
       var isConnect = false;
     for (var element in deviceList) {

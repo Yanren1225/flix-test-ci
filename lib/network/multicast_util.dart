@@ -9,7 +9,7 @@ import 'package:androp/utils/sleep.dart';
 class MultiCastUtil {
   /// The default http server port and
   /// and multicast port.
-  static const defaultPort = 53317;
+  static const defaultPort = 8890;
 
   /// The default multicast group should be 224.0.0.0/24
   /// because on some Android devices this is the only IP range
@@ -25,6 +25,8 @@ class MultiCastUtil {
         final socket =
             await RawDatagramSocket.bind(InternetAddress.anyIPv4, port ?? 0);
         socket.joinMulticast(InternetAddress(multicastGroup), interface);
+        // 不允许接收自己发送的消息
+        socket.multicastLoopback = false;
         sockets.add(_SocketResult(interface, socket));
       } catch (e) {
         Logger.logException(

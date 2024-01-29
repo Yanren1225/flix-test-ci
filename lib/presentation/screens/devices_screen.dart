@@ -1,6 +1,7 @@
 import 'package:androp/model/device_info.dart';
 import 'package:androp/network/multicast_client_provider.dart';
 import 'package:androp/presentation/screens/share_concerto_screen.dart';
+import 'package:androp/utils/device/device_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
@@ -10,27 +11,32 @@ class DeviceScreen extends StatefulWidget {
 
   @override
   // ignore: no_logic_in_create_state
-  State<StatefulWidget> createState() => _DeviceScreenState([
-        DeviceInfo("0", 0, 'Xiaomi 14', 'phone.webp'),
-        DeviceInfo("1", 1, 'RedmiBook Pro 15 锐龙版', 'pc.webp'),
-        DeviceInfo("2", 2, 'Xiaomi Pad 14 Max', 'pad.webp'),
-        DeviceInfo("3", 3, 'Xiaomi Watch S3', 'watch.webp')
-      ], [
-        DeviceInfo("0", 0, 'Xiaomi 14', 'phone.webp'),
-        DeviceInfo("1", 1, 'RedmiBook Pro 15 锐龙版', 'pc.webp'),
-        DeviceInfo("2", 2, 'Xiaomi Pad 14 Max', 'pad.webp'),
-        DeviceInfo("3", 3, 'Xiaomi Watch S3', 'watch.webp')
-      ]);
+  State<StatefulWidget> createState() => _DeviceScreenState(
+      // [
+      //   DeviceInfo("0", 0, 'Xiaomi 14', 'phone.webp'),
+      //   DeviceInfo("1", 1, 'RedmiBook Pro 15 锐龙版', 'pc.webp'),
+      //   DeviceInfo("2", 2, 'Xiaomi Pad 14 Max', 'pad.webp'),
+      //   DeviceInfo("3", 3, 'Xiaomi Watch S3', 'watch.webp')
+      // ], [
+      //   DeviceInfo("0", 0, 'Xiaomi 14', 'phone.webp'),
+      //   DeviceInfo("1", 1, 'RedmiBook Pro 15 锐龙版', 'pc.webp'),
+      //   DeviceInfo("2", 2, 'Xiaomi Pad 14 Max', 'pad.webp'),
+      //   DeviceInfo("3", 3, 'Xiaomi Watch S3', 'watch.webp')
+      // ]
+  );
 }
 
 class _DeviceScreenState extends State<DeviceScreen> {
-  var devices = <DeviceInfo>[];
-  var history = <DeviceInfo>[];
+  // var devices = <DeviceInfo>[];
+  // var history = <DeviceInfo>[];
 
-  _DeviceScreenState(this.devices, this.history);
+  // _DeviceScreenState(this.devices, this.history);
 
   @override
   Widget build(BuildContext context) {
+    final deviceProvider = MultiCastClientProvider.of(context, listen: true);
+    final devices = deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
+    final history = <DeviceInfo>[];
     return Container(
       decoration:
           const BoxDecoration(color: Color.fromARGB(255, 247, 247, 247)),
@@ -50,6 +56,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
                         top: 60, left: 20, right: 20, bottom: 10),
                     child: InkWell(
                       onTap: () async {
+                        // MultiCastClientProvider.of(context).clearDevices();
                         await MultiCastClientProvider.of(context).startScan();
                       },
                       child: const Text('附近设备',
