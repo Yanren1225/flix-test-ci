@@ -5,8 +5,10 @@ import 'package:androp/model/bubble_entity.dart';
 import 'package:androp/model/shareable.dart';
 import 'package:androp/presentation/widgets/app_icon.dart';
 import 'package:androp/presentation/widgets/aspect_ratio_video.dart';
+import 'package:androp/utils/file/size_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+// import 'package:thumbnailer/thumbnailer.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../domain/androp_context.dart';
@@ -26,6 +28,8 @@ class ShareBubble extends StatelessWidget {
       return ShareVideoBubble(entity: entity);
     } else if (entity.shareable is SharedApp) {
       return ShareAppBubble(entity: entity);
+    } else if (entity.shareable is SharedFile) {
+      return ShareFileBubble(entity: entity);
     } else {
       return const Placeholder();
     }
@@ -289,6 +293,153 @@ class ShareAppBubble extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             )
+                          ],
+                        ),
+                      ),
+                    ]),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class ShareFileBubble extends StatefulWidget {
+  final BubbleEntity entity;
+
+  const ShareFileBubble({super.key, required this.entity});
+
+  @override
+  State<StatefulWidget> createState() => ShareFileBubbleState();
+}
+
+class ShareFileBubbleState extends State<ShareFileBubble> {
+  BubbleEntity get entity => widget.entity;
+  var fileSize = -1;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Thumbnailer.addCustomMimeTypesToIconDataMappings(<String, IconData>{
+    //   'image/jpeg': Icons.image,
+    // });
+
+    final SharedFile sharedFile = entity.shareable as SharedFile;
+    sharedFile.content.length().then((value) {
+      setState(() {
+        fileSize = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    AndropContext andropContext = context.watch();
+    final SharedFile sharedFile = entity.shareable as SharedFile;
+    final Color backgroundColor;
+    if (entity.from == andropContext.deviceId) {
+      backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
+    } else {
+      backgroundColor = Colors.white;
+    }
+
+    final Color contentColor;
+    if (entity.from == andropContext.deviceId) {
+      contentColor = Colors.white;
+    } else {
+      contentColor = Colors.black;
+    }
+
+    final Color thumbnailBackgroundColor;
+    if (entity.from == andropContext.deviceId) {
+      thumbnailBackgroundColor = Colors.white;
+    } else {
+      thumbnailBackgroundColor = const Color.fromRGBO(0, 122, 255, 1);
+    }
+
+    final Color thumbnailColor;
+    if (entity.from == andropContext.deviceId) {
+      thumbnailColor = const Color.fromRGBO(0, 122, 255, 1);
+    } else {
+      thumbnailColor = Colors.white;
+    }
+
+    final Alignment alignment;
+    if (entity.from == andropContext.deviceId) {
+      alignment = Alignment.centerRight;
+    } else {
+      alignment = Alignment.centerLeft;
+    }
+    return Align(
+      alignment: alignment,
+      child: Container(
+        decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: const BorderRadius.all(Radius.circular(10))),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: constraints.maxWidth - 60),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 16, top: 12, right: 16, bottom: 12),
+                child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Thumbnail(
+                      //     errorBuilder: (uildContext, Exception error) {
+                      //       return Container(
+                      //         height: 200,
+                      //         color: Colors.blue,
+                      //         child: const Center(
+                      //           child: Text('Cannot load file contents'),
+                      //         ),
+                      //       );
+                      //     },
+                      //     dataResolver: () async {
+                      //       throw Error();
+                      //     },
+                      //     mimeType: sharedFile.content.mimeType ?? "unknown",
+                      //     // mimeType: 'text/html',
+                      //     widgetSize: 50,
+                      //     onlyIcon: true,
+                      //     decoration: WidgetDecoration(
+                      //       backgroundColor: thumbnailBackgroundColor,
+                      //       iconColor: thumbnailColor,
+                      //     )),
+                      // const SizedBox(
+                      //   width: 16,
+                      // ),
+                      Flexible(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              sharedFile.content.name,
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  color: contentColor),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Visibility(
+                                visible: fileSize > 0,
+                                child: Text(
+                                  fileSize.formateBinarySize(),
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: contentColor.withOpacity(0.5)),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ))
                           ],
                         ),
                       ),

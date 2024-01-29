@@ -3,7 +3,7 @@ import 'dart:ffi';
 
 import 'package:androp/presentation/widgets/app_icon.dart';
 import 'package:androp/presentation/widgets/check_state_box.dart';
-import 'package:androp/utils/apk_utils.dart';
+import 'package:androp/utils/app/apk_utils.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 

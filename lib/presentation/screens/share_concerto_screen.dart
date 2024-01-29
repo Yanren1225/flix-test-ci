@@ -151,6 +151,10 @@ class InputAreaState extends State<InputArea> {
     onSubmit(SharedApp(id: uuid.v1(), content: app));
   }
 
+  void submitFile(XFile file) {
+    onSubmit(SharedFile(id: uuid.v1(), content: file));
+  }
+
   void onPicked(List<Pickable> pickables) {
     for (var element in pickables) {
       switch (element.type) {
@@ -162,6 +166,9 @@ class InputAreaState extends State<InputArea> {
           break;
         case PickedFileType.App:
           submitApp((element as PickableApp).content);
+          break;
+        case PickedFileType.Other:
+          submitFile((element as PickableFile).content);
           break;
         default:
       }

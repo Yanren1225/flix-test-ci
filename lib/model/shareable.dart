@@ -1,4 +1,5 @@
 import 'package:device_apps/device_apps.dart';
+import 'package:file_selector/file_selector.dart';
 
 abstract class Shareable<C> {
   String get id;
@@ -46,4 +47,14 @@ class SharedApp extends Shareable<Application> {
   final String id;
 
   SharedApp({required this.id, required this.content});
+}
+
+class SharedFile extends Shareable<XFile> {
+  @override
+  final XFile content;
+
+  @override
+  final String id;
+
+  SharedFile({required this.id, required this.content});
 }

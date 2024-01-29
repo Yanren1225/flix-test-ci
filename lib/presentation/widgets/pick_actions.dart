@@ -5,6 +5,7 @@ import 'dart:math' hide log;
 import 'package:androp/model/pickable.dart';
 import 'package:androp/presentation/screens/android_apps_screen.dart';
 import 'package:device_apps/device_apps.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -76,7 +77,9 @@ class PickActionAreaState extends State<PickActionsArea> {
             child: IconButton(
               padding: const EdgeInsets.all(0),
               iconSize: 20,
-              onPressed: () {},
+              onPressed: () {
+                _onFileButtonPressed();
+              },
               icon: SvgPicture.asset('assets/images/ic_file.svg'),
             ),
           ),
@@ -131,6 +134,18 @@ class PickActionAreaState extends State<PickActionsArea> {
         context, MaterialPageRoute(builder: (context) => const AppsScreen()));
     if (apps != null) {
       onPicked(apps.map((app) => PickableApp(content: app)).toList());
+    }
+  }
+
+  Future<void> _onFileButtonPressed() async {
+    final typeGroup = const XTypeGroup(label: 'all');
+    final files = await openFiles(acceptedTypeGroups: [typeGroup]);
+
+    if (files.isNotEmpty) {
+      onPicked(files
+          .map(
+              (file) => PickableFile(type: PickedFileType.Other, content: file))
+          .toList());
     }
   }
 }
