@@ -23,31 +23,23 @@ class MultiCastClientProvider extends ChangeNotifier {
     multiCastApi.startScan(
         MultiCastUtil.defaultMulticastGroup, MultiCastUtil.defaultPort,
         (event) {
-      var isConnect = false;
-      for (var element in deviceList) {
-        if (element.fingerprint == event.fingerprint) {
-          isConnect = true;
-        }
-      }
+      bool isConnect = isDeviceConnected(event);
       if (!isConnect) {
         deviceList.add(event);
       }
       Logger.log("event data:$event  deviceList = $deviceList");
+      notifyListeners();
     });
     notifyListeners();
-    // multiCastApi.startScan(MultiCastUtil.defaultMulticastGroup, MultiCastUtil.defaultPort).listen((event) {
-    //   var isConnect = false;
-    //   for (var element in deviceList) {
-    //     if (element.ip == event.ip) {
-    //       isConnect = true;
-    //     }
-    //   }
-    //   if (!isConnect) {
-    //     deviceList.add(event);
-    //   }
-    //   Logger.log("event data:$event");
-    // }, onDone: () {
-    //   Logger.log("done");
-    // });
+  }
+
+  bool isDeviceConnected(DeviceModal event) {
+      var isConnect = false;
+    for (var element in deviceList) {
+      if (element.fingerprint == event.fingerprint) {
+        isConnect = true;
+      }
+    }
+    return isConnect;
   }
 }
