@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:androp/domain/concert/concert_provider.dart';
+import 'package:androp/domain/device/device_manager.dart';
 import 'package:androp/domain/ship_server/bubble_provider.dart';
 import 'package:androp/model/bubble/shared_file.dart';
 import 'package:androp/model/bubble_entity.dart';
@@ -45,16 +47,21 @@ class ShareConcertScreen extends StatelessWidget {
     );
     final appBarHeight =
         appBar.preferredSize.height + MediaQuery.of(context).padding.top;
-    return Scaffold(
-      backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
-      extendBodyBehindAppBar: true,
-      appBar: BlurAppBar(
-        appBar: appBar,
-      ),
-      body:
-          // const ShareConcertMainView()
-          ShareConcertMainView(
-        padding: EdgeInsets.only(top: appBarHeight),
+    return ChangeNotifierProvider<ConcertProvider>(
+      create: (BuildContext context) {
+        return ConcertProvider(deviceInfo: deviceInfo);
+      },
+      child: Scaffold(
+        backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+        extendBodyBehindAppBar: true,
+        appBar: BlurAppBar(
+          appBar: appBar,
+        ),
+        body:
+            // const ShareConcertMainView()
+            ShareConcertMainView(
+          padding: EdgeInsets.only(top: appBarHeight),
+        ),
       ),
     );
   }
@@ -77,17 +84,10 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
   // List<BubbleEntity> shareList = [];
 
   void submit(BubbleProvider bubbleProvider, Shareable shareable) async {
-    const device0 = 'Xiaomi 13';
-    const device1 = 'Macbook';
-    final random = Random();
-    final fromMe = random.nextBool();
-    final from = fromMe ? device0 : device1;
-    final to = fromMe ? device1 : device0;
-    // setState(() {
-    //   shareList.add(BubbleEntity(from: from, to: to, shareable: shareable));
-    // });
-    await bubbleProvider
-        .send(BubbleEntity(from: from, to: to, shareable: shareable));
+    await bubbleProvider.send(BubbleEntity(
+        from: DeviceManager.instance.did,
+        to: Provider.of<ConcertProvider>(context, listen: false).deviceInfo.id,
+        shareable: shareable));
   }
 
   @override

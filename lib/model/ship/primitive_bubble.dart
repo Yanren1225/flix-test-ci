@@ -1,8 +1,11 @@
 import 'package:androp/model/bubble/shared_file.dart';
 import 'package:androp/presentation/widgets/share_bubble.dart';
+import 'package:http/http.dart';
 
 abstract class PrimitiveBubble<Content> {
   String get id;
+  String get from;
+  String get to;
   BubbleType get type;
   Content get content;
 
@@ -30,6 +33,12 @@ class PrimitiveTextBubble extends PrimitiveBubble<String> {
   late String id;
 
   @override
+  late String from;
+
+  @override
+  late String to;
+
+  @override
   late BubbleType type;
 
   @override
@@ -37,6 +46,8 @@ class PrimitiveTextBubble extends PrimitiveBubble<String> {
 
   PrimitiveTextBubble.fromJson(Map<String, dynamic> json) {
     id = json['id'] as String;
+    from = json['from'] as String;
+    to = json['to'] as String;
     final typeOrdinal = json['type'] as int;
     final type = BubbleType.values[typeOrdinal];
     this.type = type;
@@ -45,11 +56,19 @@ class PrimitiveTextBubble extends PrimitiveBubble<String> {
 
   @override
   Map<String, dynamic> toJson() {
-    return {'id': id, 'type': type.index, 'content': content};
+    return {
+      'id': id,
+      'from': from,
+      'to': to,
+      'type': type.index,
+      'content': content
+    };
   }
 
   PrimitiveTextBubble({
     required this.id,
+    required this.from,
+    required this.to,
     required this.type,
     required this.content,
   });
@@ -60,6 +79,12 @@ class PrimitiveFileBubble extends PrimitiveBubble<FileTransfer> {
   late String id;
 
   @override
+  late String from;
+
+  @override
+  late String to;
+
+  @override
   late BubbleType type;
 
   @override
@@ -67,6 +92,8 @@ class PrimitiveFileBubble extends PrimitiveBubble<FileTransfer> {
 
   PrimitiveFileBubble.fromJson(Map<String, dynamic> json) {
     id = json['id'] as String;
+    from = json['from'] as String;
+    to = json['to'] as String;
     final typeOrdinal = json['type'] as int;
     final type = BubbleType.values[typeOrdinal];
     this.type = type;
@@ -75,19 +102,33 @@ class PrimitiveFileBubble extends PrimitiveBubble<FileTransfer> {
 
   @override
   Map<String, dynamic> toJson() {
-    return {'id': id, 'type': type.index, 'content': content.toJson()};
+    return {
+      'id': id,
+      'from': from,
+      'to': to,
+      'type': type.index,
+      'content': content.toJson()
+    };
   }
 
   PrimitiveFileBubble copy(
-      {String? id, BubbleType? type, FileTransfer? content}) {
+      {String? id,
+      String? from,
+      String? to,
+      BubbleType? type,
+      FileTransfer? content}) {
     return PrimitiveFileBubble(
         id: id ?? this.id,
+        from: from ?? this.from,
+        to: to ?? this.to,
         type: type ?? this.type,
         content: content ?? this.content);
   }
 
   PrimitiveFileBubble({
     required this.id,
+    required this.from,
+    required this.to,
     required this.type,
     required this.content,
   });

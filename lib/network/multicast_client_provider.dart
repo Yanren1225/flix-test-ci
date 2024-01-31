@@ -1,3 +1,4 @@
+import 'package:androp/domain/device/device_manager.dart';
 import 'package:androp/network/multicast_impl.dart';
 import 'package:androp/network/multicast_util.dart';
 import 'package:androp/network/protocol/device_modal.dart';
@@ -8,43 +9,36 @@ import 'package:provider/provider.dart';
 enum MultiState { idle, scanning, connect, failure }
 
 class MultiCastClientProvider extends ChangeNotifier {
-  var deviceList = <DeviceModal>{};
-  var multiCastApi = MultiCastImpl();
-  var state = MultiState.idle;
+  Set<DeviceModal> get deviceList => DeviceManager.instance.deviceList;
 
   static MultiCastClientProvider of(BuildContext context,
       {bool listen = false}) {
     return Provider.of<MultiCastClientProvider>(context, listen: listen);
   }
 
-  Future<void> startScan() async {
-    multiCastApi.sendAnnouncement();
-    state = MultiState.idle;
-    multiCastApi.startScan(
-        MultiCastUtil.defaultMulticastGroup, MultiCastUtil.defaultPort,
-        (event) {
-      bool isConnect = isDeviceConnected(event);
-      if (!isConnect) {
-        deviceList.add(event);
-      }
-      Logger.log("event data:$event  deviceList = $deviceList");
-      notifyListeners();
-    });
+  MultiCastClientProvider() {
+    DeviceManager.instance.addDeviceListChangeListener(_onDeviceListChanged);
+  }
+
+  void _onDeviceListChanged(Set<DeviceModal> deviceList) {
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    DeviceManager.instance.removeDeviceListChangeListener(_onDeviceListChanged);
+    super.dispose();
+  }
+
+  Future<void> startScan() async {
+    DeviceManager.instance.startScan();
   }
 
   void clearDevices() {
-    deviceList.clear();
-    notifyListeners();
+    DeviceManager.instance.clearDevices();
   }
 
   bool isDeviceConnected(DeviceModal event) {
-      var isConnect = false;
-    for (var element in deviceList) {
-      if (element.fingerprint == event.fingerprint) {
-        isConnect = true;
-      }
-    }
-    return isConnect;
+    return DeviceManager.instance.isDeviceConnected(event);
   }
 }

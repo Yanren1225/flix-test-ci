@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:androp/model/bubble_entity.dart';
 import 'package:androp/model/ship/primitive_bubble.dart';
+import 'package:androp/network/multicast_util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
@@ -19,9 +20,9 @@ Future<HttpServer> startShipServer() async {
   app.post('/bubble', _receiveBubble);
   app.post('/file', _reciveFile);
 
-  var server = await io.serve(app, '0.0.0.0', 8099);
+  var server = await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort);
 
-  log('Servering at http://0.0.0.0:8099');
+  log('Servering at http://0.0.0.0:${MultiCastUtil.defaultPort}');
   return server;
 }
 
@@ -74,7 +75,8 @@ Future<Response> _reciveFile(Request request) async {
           break;
         case 'file':
           final Directory? downloadsDir = await getDownloadsDirectory();
-          final outFile = File('${downloadsDir!.path!}/${formData.filename}.json');
+          final outFile =
+              File('${downloadsDir!.path!}/${formData.filename}.json');
           log('writing file to ${outFile.path}');
           if (!(await outFile.exists())) {
             await outFile.create();

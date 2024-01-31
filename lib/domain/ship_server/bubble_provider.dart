@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:androp/domain/device/device_manager.dart';
 import 'package:androp/domain/ship_server/ship_server.dart';
 import 'package:androp/model/bubble/shared_file.dart';
 import 'package:androp/model/bubble_entity.dart';
@@ -38,7 +39,8 @@ class BubbleProvider extends ChangeNotifier {
   }
 
   Future<void> _send(PrimitiveBubble primitiveBubble) async {
-    var uri = Uri.parse('http://192.168.31.149:8099/bubble');
+    var uri = Uri.parse(
+        'http://${DeviceManager.instance.getNetAdressByDeviceId(primitiveBubble.to)}/bubble');
 
     var response = await http.post(
       uri,
@@ -77,7 +79,9 @@ class BubbleProvider extends ChangeNotifier {
       final shardFile = (bubbleEntity.shareable as SharedFile).content!!;
 
       var request = http.MultipartRequest(
-          'POST', Uri.parse('http://192.168.31.149:8099/file'));
+          'POST',
+          Uri.parse(
+              'http://${DeviceManager.instance.getNetAdressByDeviceId(bubbleEntity.to)}/file'));
 
       request.fields['share_id'] = bubbleEntity.shareable.id;
       request.fields['file_name'] = shardFile.name;
@@ -120,12 +124,16 @@ class BubbleProvider extends ChangeNotifier {
       final sharedText = bubbleEntity.shareable as SharedText;
       return PrimitiveTextBubble(
           id: sharedText.id,
+          from: bubbleEntity.from,
+          to: bubbleEntity.to,
           type: BubbleType.Text,
           content: sharedText.content);
     } else if (bubbleEntity.shareable is SharedFile) {
       final sharedFile = bubbleEntity.shareable as SharedFile;
       return PrimitiveFileBubble(
           id: sharedFile.id,
+          from: bubbleEntity.from,
+          to: bubbleEntity.to,
           type: BubbleType.File,
           content: FileTransfer(
               meta: sharedFile.meta, state: sharedFile.shareState));
@@ -135,17 +143,11 @@ class BubbleProvider extends ChangeNotifier {
   }
 
   BubbleEntity toBubbleEntity(PrimitiveBubble bubble) {
-    const device0 = 'Xiaomi 13';
-    const device1 = 'Macbook';
-    final random = Random();
-    final fromMe = random.nextBool();
-    final from = fromMe ? device0 : device1;
-    final to = fromMe ? device1 : device0;
     switch (bubble.type) {
       case BubbleType.Text:
         return BubbleEntity(
-            from: from,
-            to: to,
+            from: bubble.from,
+            to: bubble.to,
             shareable: SharedText(
                 id: bubble.id,
                 content: (bubble as PrimitiveTextBubble).content));
@@ -156,8 +158,8 @@ class BubbleProvider extends ChangeNotifier {
       case BubbleType.File:
         final primitive = (bubble as PrimitiveFileBubble);
         return BubbleEntity(
-            from: from,
-            to: to,
+            from: bubble.from,
+            to: bubble.to,
             shareable: SharedFile(
                 id: bubble.id,
                 shareState: primitive.content.state,

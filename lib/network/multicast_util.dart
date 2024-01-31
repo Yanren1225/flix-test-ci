@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:androp/domain/device/device_manager.dart';
 import 'package:androp/network/protocol/device_modal.dart';
 import 'package:androp/setting/setting_provider.dart';
 import 'package:androp/utils/device_info_helper.dart';
@@ -9,12 +10,12 @@ import 'package:androp/utils/sleep.dart';
 class MultiCastUtil {
   /// The default http server port and
   /// and multicast port.
-  static const defaultPort = 8890;
+  static const defaultPort = 8891;
 
   /// The default multicast group should be 224.0.0.0/24
   /// because on some Android devices this is the only IP range
   /// that can receive UDP multicast messages.
-  static const defaultMulticastGroup = '224.0.0.167';
+  static const defaultMulticastGroup = '224.0.0.168';
 
   static Future<List<_SocketResult>> getSockets(String multicastGroup,
       [int? port]) async {
@@ -41,7 +42,7 @@ class MultiCastUtil {
   /// Sends an announcement which triggers a response on every LocalSend member of the network.
   static Future<void> sendAnnouncement() async {
     final sockets = await getSockets(defaultMulticastGroup);
-    final deviceId = await SettingProvider.getDeviceId();
+    final deviceId = DeviceManager.instance.did;
     var deviceInfo = await getDeviceInfo();
     var deviceModal = DeviceModal(
         alias: '',
