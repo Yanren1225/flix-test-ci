@@ -48,13 +48,3 @@ class SharedApp extends Shareable<Application> {
 
   SharedApp({required this.id, required this.content});
 }
-
-class SharedFile extends Shareable<XFile> {
-  @override
-  final XFile content;
-
-  @override
-  final String id;
-
-  SharedFile({required this.id, required this.content});
-}

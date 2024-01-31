@@ -1,4 +1,5 @@
 import 'package:androp/domain/androp_context.dart';
+import 'package:androp/domain/ship_server/bubble_provider.dart';
 import 'package:androp/network/multicast_client_provider.dart';
 import 'package:androp/presentation/screens/devices_screen.dart';
 import 'package:flutter/material.dart';
@@ -14,18 +15,14 @@ void main() {
         statusBarIconBrightness: Brightness.dark),
   );
 
-
-
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider<MultiCastClientProvider>(
           create: (_) => MultiCastClientProvider()),
+      ChangeNotifierProvider(create: (_) => BubbleProvider())
     ],
     child: const MyApp(),
   ));
-
-
-
 }
 
 class MyApp extends StatelessWidget {

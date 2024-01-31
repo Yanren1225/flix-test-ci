@@ -49,6 +49,12 @@ dependencies:
   shared_preferences: 2.2.2
   shared_preferences_platform_interface: any
   file_selector: ^1.0.2
+  shelf: ^1.4.1
+  shelf_router: ^1.1.4
+  http: ^1.2.0
+  shelf_multipart: ^1.0.0
+  path_provider: ^2.1.2
+  http_parser: ^4.0.2
   # thumbnailer: ^2.2.0
 
   # pdfx: ^2.5.0

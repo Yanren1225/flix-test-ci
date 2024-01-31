@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:androp/domain/ship_server/bubble_provider.dart';
+import 'package:androp/model/bubble/shared_file.dart';
 import 'package:androp/model/bubble_entity.dart';
 import 'package:androp/model/device_info.dart';
 import 'package:androp/model/pickable.dart';
@@ -12,7 +14,12 @@ import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../domain/ship_server/bubble_provider.dart';
+import '../../domain/ship_server/bubble_provider.dart';
+import '../../domain/ship_server/bubble_provider.dart';
 
 class ShareConcertScreen extends StatelessWidget {
   final DeviceInfo deviceInfo;
@@ -67,22 +74,26 @@ class ShareConcertMainView extends StatefulWidget {
 class ShareConcertMainViewState extends State<ShareConcertMainView> {
   EdgeInsets get padding => widget.padding;
 
-  List<BubbleEntity> shareList = [];
+  // List<BubbleEntity> shareList = [];
 
-  void submit(Shareable shareable) {
+  void submit(BubbleProvider bubbleProvider, Shareable shareable) async {
     const device0 = 'Xiaomi 13';
     const device1 = 'Macbook';
     final random = Random();
     final fromMe = random.nextBool();
     final from = fromMe ? device0 : device1;
     final to = fromMe ? device1 : device0;
-    setState(() {
-      shareList.add(BubbleEntity(from: from, to: to, shareable: shareable));
-    });
+    // setState(() {
+    //   shareList.add(BubbleEntity(from: from, to: to, shareable: shareable));
+    // });
+    await bubbleProvider
+        .send(BubbleEntity(from: from, to: to, shareable: shareable));
   }
 
   @override
   Widget build(BuildContext context) {
+    final bubbleProvider = Provider.of<BubbleProvider>(context, listen: true);
+    final shareList = bubbleProvider.bubbles;
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -103,7 +114,9 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
           alignment: Alignment.bottomLeft,
           child: InputArea(
             // onSubmit: (content) => submit(content),
-            onSubmit: submit,
+            onSubmit: (shareable) {
+              submit(bubbleProvider, shareable);
+            },
           ),
         ),
       ],
@@ -151,8 +164,16 @@ class InputAreaState extends State<InputArea> {
     onSubmit(SharedApp(id: uuid.v1(), content: app));
   }
 
-  void submitFile(XFile file) {
-    onSubmit(SharedFile(id: uuid.v1(), content: file));
+  void submitFile(XFile file) async {
+    onSubmit(SharedFile(
+        id: uuid.v1(),
+        shareState: FileShareState.inTransit,
+        meta: FileMeta(
+            name: file.name,
+            mimeType: file.mimeType ?? "text/plain",
+            nameWithSuffix: '${file.name}.json',
+            size: await file.length()),
+        content: file));
   }
 
   void onPicked(List<Pickable> pickables) {

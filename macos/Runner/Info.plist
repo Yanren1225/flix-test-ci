@@ -28,5 +28,7 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>我们需要访问您的下载文件夹来储存和读取文件。</string>
 </dict>
 </plist>

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:androp/model/bubble/shared_file.dart';
 import 'package:androp/model/bubble_entity.dart';
 import 'package:androp/model/shareable.dart';
 import 'package:androp/presentation/widgets/app_icon.dart';
@@ -317,7 +318,6 @@ class ShareFileBubble extends StatefulWidget {
 
 class ShareFileBubbleState extends State<ShareFileBubble> {
   BubbleEntity get entity => widget.entity;
-  var fileSize = -1;
 
   @override
   void initState() {
@@ -326,13 +326,6 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
     // Thumbnailer.addCustomMimeTypesToIconDataMappings(<String, IconData>{
     //   'image/jpeg': Icons.image,
     // });
-
-    final SharedFile sharedFile = entity.shareable as SharedFile;
-    sharedFile.content.length().then((value) {
-      setState(() {
-        fileSize = value;
-      });
-    });
   }
 
   @override
@@ -421,7 +414,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              sharedFile.content.name,
+                              sharedFile.meta.name,
                               style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
@@ -430,9 +423,9 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Visibility(
-                                visible: fileSize > 0,
+                                visible: sharedFile.meta.size > 0,
                                 child: Text(
-                                  fileSize.formateBinarySize(),
+                                  sharedFile.meta.size.formateBinarySize(),
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,
