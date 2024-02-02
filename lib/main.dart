@@ -1,5 +1,5 @@
 import 'package:androp/domain/androp_context.dart';
-import 'package:androp/domain/ship_server/bubble_provider.dart';
+import 'package:androp/domain/ship_server/ship_service.dart';
 import 'package:androp/network/multicast_client_provider.dart';
 import 'package:androp/presentation/screens/devices_screen.dart';
 import 'package:androp/setting/setting_provider.dart';
@@ -9,6 +9,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  ShipService.instance.startShipServer();
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent, // 设置为透明
@@ -20,8 +22,7 @@ void main() {
     providers: [
       ChangeNotifierProvider(create: (_) => SettingProvider()),
       ChangeNotifierProvider<MultiCastClientProvider>(
-          create: (_) => MultiCastClientProvider()),
-      ChangeNotifierProvider(create: (_) => BubbleProvider())
+          create: (_) => MultiCastClientProvider())
     ],
     child: const MyApp(),
   ));

@@ -1,10 +1,7 @@
-import 'dart:io';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:androp/domain/concert/concert_provider.dart';
 import 'package:androp/domain/device/device_manager.dart';
-import 'package:androp/domain/ship_server/bubble_provider.dart';
 import 'package:androp/model/bubble/shared_file.dart';
 import 'package:androp/model/bubble_entity.dart';
 import 'package:androp/model/device_info.dart';
@@ -14,23 +11,14 @@ import 'package:androp/presentation/widgets/blur_appbar.dart';
 import 'package:androp/presentation/widgets/pick_actions.dart';
 import 'package:androp/presentation/widgets/share_bubble.dart';
 import 'package:device_apps/device_apps.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../domain/ship_server/bubble_provider.dart';
-import '../../domain/ship_server/bubble_provider.dart';
-import '../../domain/ship_server/bubble_provider.dart';
-
-class ShareConcertScreen extends StatelessWidget {
+class ConcertScreen extends StatelessWidget {
   final DeviceInfo deviceInfo;
 
-  const ShareConcertScreen({super.key, required this.deviceInfo});
+  const ConcertScreen({super.key, required this.deviceInfo});
 
   @override
   Widget build(BuildContext context) {
@@ -87,8 +75,8 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
 
   // List<BubbleEntity> shareList = [];
 
-  void submit(BubbleProvider bubbleProvider, Shareable shareable) async {
-    await bubbleProvider.send(BubbleEntity(
+  void submit(ConcertProvider concertProvider, Shareable shareable) async {
+    await concertProvider.send(BubbleEntity(
         from: DeviceManager.instance.did,
         to: Provider.of<ConcertProvider>(context, listen: false).deviceInfo.id,
         shareable: shareable));
@@ -96,8 +84,8 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
 
   @override
   Widget build(BuildContext context) {
-    final bubbleProvider = Provider.of<BubbleProvider>(context, listen: true);
-    final shareList = bubbleProvider.bubbles;
+    final concertProvider = Provider.of<ConcertProvider>(context, listen: true);
+    final shareList = concertProvider.bubbles;
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -119,7 +107,7 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
           child: InputArea(
             // onSubmit: (content) => submit(content),
             onSubmit: (shareable) {
-              submit(bubbleProvider, shareable);
+              submit(concertProvider, shareable);
             },
           ),
         ),
@@ -140,7 +128,6 @@ class InputArea extends StatefulWidget {
 }
 
 class InputAreaState extends State<InputArea> {
-  final Uuid uuid = const Uuid();
   final OnSubmit onSubmit;
   String inputContent = '';
 
@@ -153,11 +140,11 @@ class InputAreaState extends State<InputArea> {
   }
 
   void submitText(String content) {
-    onSubmit(SharedText(id: uuid.v1(), content: content));
+    onSubmit(SharedText(id: Uuid().v4(), content: content));
   }
 
   void submitImage(FileMeta meta) {
-    onSubmit(SharedImage(id: uuid.v1(), content: meta));
+    onSubmit(SharedImage(id: Uuid().v4(), content: meta));
   }
 
   void submitVideo(FileMeta meta) {
@@ -165,12 +152,12 @@ class InputAreaState extends State<InputArea> {
   }
 
   void submitApp(Application app) {
-    onSubmit(SharedApp(id: uuid.v1(), content: app));
+    onSubmit(SharedApp(id: Uuid().v4(), content: app));
   }
 
   void submitFile(FileMeta meta) async {
     onSubmit(SharedFile(
-        id: uuid.v1(), shareState: FileShareState.inTransit, meta: meta));
+        id: Uuid().v4(), shareState: FileShareState.inTransit, meta: meta));
   }
 
   void onPicked(List<Pickable> pickables) {

@@ -1,31 +1,60 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:androp/model/bubble/shared_file.dart';
 import 'package:androp/model/ship/primitive_bubble.dart';
 
-/// 每个会话一个BubblePool, 用户承担bubble的传递、查找和缓存
-/// TODO 传递deviceId.
+/// 承担bubble的传递、查找和缓存
+/// TODO 传递deviceId. 实现持久化
 class BubblePool {
+
+  BubblePool._privateConstruct();
+
+  static final BubblePool _instance = BubblePool._privateConstruct();
+  static BubblePool get instance => _instance;
+
+
   PrimitiveBubble? _buffer;
   List<PrimitiveBubble> _cache = [];
   final _broadcast = StreamController<PrimitiveBubble>.broadcast();
 
   void _updateOrAddBubbleToCache(PrimitiveBubble bubble) {
-    var i = 0;
-    for (i; i < _cache.length; i++) {
-      final bubble = _cache[i];
-      if (bubble.id == bubble.id) {
-        break;
+    if (bubble is UpdateFileStateBubble) {
+      final _updateStateBubble = bubble as UpdateFileStateBubble;
+      final _bubble = findLastById(bubble.id);
+      if (_bubble == null) {
+        throw StateError('Can\'t find bubble by id: ${bubble.id}');
+      }
+
+      if (!(_bubble is PrimitiveFileBubble)) {
+        throw StateError('The Bubble with id: ${bubble.id} is not a file bubble');
+      }
+
+      final _fileBubble = _bubble! as PrimitiveFileBubble;
+      if (_fileBubble.content.state != FileShareState.receiveCompleted) {
+        final updatedBubble = _fileBubble.copy(content: _fileBubble.content.copy(state: _updateStateBubble.content));
+        _updateOrAddBubbleToCache(updatedBubble);
+      }
+    } else {
+      var i = 0;
+      for (i; i < _cache.length; i++) {
+        final item = _cache[i];
+        if (item.id == bubble.id) {
+          break;
+        }
+      }
+      if (i == _cache.length) {
+        _cache.add(bubble);
+      } else {
+        _cache[i] = bubble;
       }
     }
-    if (i == _cache.length) {
-      _cache.add(bubble);
-    } else {
-      _cache[i] = bubble;
-    }
+
 
   }
 
   void add(PrimitiveBubble bubble) {
+    log('add bubble ${bubble.id}');
     _buffer = bubble;
     _updateOrAddBubbleToCache(bubble);
     _broadcast.add(bubble);

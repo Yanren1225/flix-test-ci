@@ -1,10 +1,11 @@
 import 'package:androp/model/device_info.dart';
 import 'package:androp/network/multicast_client_provider.dart';
-import 'package:androp/presentation/screens/share_concerto_screen.dart';
 import 'package:androp/utils/device/device_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
+
+import 'concert_screen.dart';
 
 class DeviceScreen extends StatefulWidget {
   const DeviceScreen({super.key});
@@ -75,7 +76,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ShareConcertScreen(
+                                  builder: (context) => ConcertScreen(
                                       deviceInfo: deviceInfo)));
                         },
                         child: Padding(

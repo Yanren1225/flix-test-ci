@@ -52,6 +52,7 @@ class PrimitiveTextBubble extends PrimitiveBubble<String> {
     final type = BubbleType.values[typeOrdinal];
     this.type = type;
     content = json['content'] as String;
+
   }
 
   @override
@@ -61,7 +62,7 @@ class PrimitiveTextBubble extends PrimitiveBubble<String> {
       'from': from,
       'to': to,
       'type': type.index,
-      'content': content
+      'content': content,
     };
   }
 
@@ -155,3 +156,52 @@ class FileTransfer {
 }
 
 enum BubbleType { Text, Image, Video, File }
+
+abstract class InVisibleBubble<Content> extends PrimitiveBubble<Content> {}
+
+class UpdateFileStateBubble extends InVisibleBubble<FileShareState> {
+  @override
+  late String id;
+
+  @override
+  late String from;
+
+  @override
+  late String to;
+
+  @override
+  late BubbleType type;
+
+  @override
+  late FileShareState content;
+
+  UpdateFileStateBubble.fromJson(Map<String, dynamic> json) {
+    id = json['id'] as String;
+    from = json['from'] as String;
+    to = json['to'] as String;
+    final typeOrdinal = json['type'] as int;
+    final type = BubbleType.values[typeOrdinal];
+    this.type = type;
+    content = FileShareState.values[json['content'] as int];
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'from': from,
+      'to': to,
+      'type': type.index,
+      'content': content.index,
+    };
+  }
+
+  UpdateFileStateBubble({
+    required this.id,
+    required this.from,
+    required this.to,
+    required this.type,
+    required this.content,
+  });
+
+}
