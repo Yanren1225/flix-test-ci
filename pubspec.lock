@@ -289,6 +289,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.0"
+  file_picker:
+    dependency: "direct main"
+    description:
+      name: file_picker
+      sha256: "4e42aacde3b993c5947467ab640882c56947d9d27342a5b6f2895b23956954a6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.1.1"
   file_selector:
     dependency: "direct main"
     description:
@@ -609,7 +617,7 @@ packages:
     source: hosted
     version: "1.10.0"
   mime:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: mime
       sha256: "2e123074287cc9fd6c09de8336dae606d1ddb88d9ac47358826db698c176a1f2"
@@ -816,6 +824,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  shared_storage:
+    dependency: "direct main"
+    description:
+      name: shared_storage
+      sha256: "7c65a9d64f0f5521256be974cfd74010af12196657cec9f9fb7b03b2f11bcaf6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.0"
   shelf:
     dependency: "direct main"
     description:

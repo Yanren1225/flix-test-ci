@@ -20,11 +20,11 @@ class SharedFile extends Shareable<XFile?> {
 }
 
 class FileMeta {
-  String name;
-  String mimeType;
-  String nameWithSuffix;
-  int size;
-  String? path;
+  final String name;
+  final String mimeType;
+  final String nameWithSuffix;
+  final int size;
+  final String? path;
 
   FileMeta(
       {required this.name,
@@ -37,7 +37,8 @@ class FileMeta {
       : name = json['name'],
         mimeType = json['mimeType'],
         nameWithSuffix = json['nameWithSuffix'],
-        size = json['size'];
+        size = json['size'],
+        path = null;
 
   Map<String, dynamic> toJson() {
     return {
@@ -46,6 +47,20 @@ class FileMeta {
       'nameWithSuffix': nameWithSuffix,
       'size': size,
     };
+  }
+
+  FileMeta copy(
+      {String? name,
+      String? mimeType,
+      String? nameWithSuffix,
+      int? size,
+      String? path}) {
+    return FileMeta(
+        name: name ?? this.name,
+        mimeType: mimeType ?? this.mimeType,
+        nameWithSuffix: nameWithSuffix ?? this.nameWithSuffix,
+        size: size ?? this.size,
+        path: path ?? this.path);
   }
 }
 

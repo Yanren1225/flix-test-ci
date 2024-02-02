@@ -4,7 +4,9 @@ import 'dart:math' hide log;
 
 import 'package:androp/model/pickable.dart';
 import 'package:androp/presentation/screens/android_apps_screen.dart';
+import 'package:androp/utils/file/file_helper.dart';
 import 'package:device_apps/device_apps.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -95,9 +97,11 @@ class PickActionAreaState extends State<PickActionsArea> {
       try {
         final List<XFile> pickedFileList =
             await _picker.pickMultiImage(requestFullMetadata: true);
-        onPicked(pickedFileList
-            .map((f) => PickableFile(type: PickedFileType.Image, content: f))
-            .toList());
+        onPicked([
+          for (final f in pickedFileList)
+            PickableFile(
+                type: PickedFileType.Image, content: await f.toFileMeta())
+        ]);
       } catch (e) {
         log("pick images failed", error: e);
         setState(() {
@@ -115,8 +119,11 @@ class PickActionAreaState extends State<PickActionsArea> {
         final XFile? pickedFile =
             await _picker.pickVideo(source: ImageSource.gallery);
         if (pickedFile != null) {
-          onPicked(
-              [PickableFile(type: PickedFileType.Video, content: pickedFile)]);
+          onPicked([
+            PickableFile(
+                type: PickedFileType.Video,
+                content: await pickedFile.toFileMeta())
+          ]);
         } else {
           log("pick video failed, return null");
         }
@@ -142,14 +149,26 @@ class PickActionAreaState extends State<PickActionsArea> {
     // 目前的实现是读取文件的所有内容加载到内存中，对于大文件来说会导致OOM，
     // see: https://github.com/flutter/flutter/issues/141002
     // 且通过XFile在Android平台拿不到真实的文件名称
-    final typeGroup = const XTypeGroup(label: 'all');
-    final files = await openFiles(acceptedTypeGroups: [typeGroup]);
+    if (Platform.isAndroid) {
+      final result = await FilePicker.platform.pickFiles(allowMultiple: true);
+      if (result != null) {
+        onPicked([
+          for (final file in result.files)
+            PickableFile(
+                type: PickedFileType.File, content: await file.toFileMeta())
+        ]);
+      }
+    } else {
+      final typeGroup = const XTypeGroup(label: 'all');
+      final files = await openFiles(acceptedTypeGroups: [typeGroup]);
 
-    if (files.isNotEmpty) {
-      onPicked(files
-          .map(
-              (file) => PickableFile(type: PickedFileType.Other, content: file))
-          .toList());
+      if (files.isNotEmpty) {
+        onPicked([
+          for (final file in files)
+            PickableFile(
+                type: PickedFileType.File, content: await file.toFileMeta())
+        ]);
+      }
     }
   }
 }

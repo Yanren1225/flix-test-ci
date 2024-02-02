@@ -109,6 +109,16 @@ class ShareImageBubble extends StatelessWidget {
     } else {
       alignment = Alignment.centerLeft;
     }
+
+    final Widget content;
+    if (sharedImage.content.path == null) {
+      content = const Text("接收中");
+    } else {
+      content = ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          child: Image.file(File(sharedImage.content.path!!),
+              fit: BoxFit.contain));
+    }
     return Align(
       alignment: alignment,
       child: Container(
@@ -120,10 +130,7 @@ class ShareImageBubble extends StatelessWidget {
           return ConstrainedBox(
               constraints: BoxConstraints(
                   maxWidth: max(150, constraints.maxWidth - 60), minWidth: 150),
-              child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  child: Image.file(File(sharedImage.content),
-                      fit: BoxFit.contain)));
+              child: content);
         }),
       ),
     );

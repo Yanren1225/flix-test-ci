@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
+import 'package:androp/domain/concert/concert_service.dart';
 import 'package:androp/domain/device/device_manager.dart';
 import 'package:androp/domain/ship_server/ship_server.dart';
 import 'package:androp/model/bubble/shared_file.dart';
@@ -14,6 +16,7 @@ import 'dart:developer' as dev;
 import 'package:http_parser/http_parser.dart';
 
 class BubbleProvider extends ChangeNotifier {
+  // final _concertService = ConcertService();
   List<BubbleEntity> bubbles = [];
 
   BubbleProvider() {
@@ -61,56 +64,52 @@ class BubbleProvider extends ChangeNotifier {
       await _send(primitiveBubble);
       bubblePipeline.add(primitiveBubble);
     } else if (bubbleEntity.shareable is SharedFile) {
-      await sendFile(bubbleEntity);
+      await sendFile(fromBubbleEntity(bubbleEntity) as PrimitiveFileBubble);
+    } else if (bubbleEntity.shareable is SharedImage) {
+      await sendFile(fromBubbleEntity(bubbleEntity) as PrimitiveFileBubble);
     } else {
       throw UnimplementedError();
     }
   }
 
-  Future<void> sendFile(BubbleEntity bubbleEntity) async {
-    if (bubbleEntity.shareable is SharedFile) {
-      final fileBubble = fromBubbleEntity(bubbleEntity) as PrimitiveFileBubble;
+  Future<void> sendFile(PrimitiveFileBubble fileBubble) async {
+    var _fileBubble = fileBubble.copy(
+        content: fileBubble.content.copy(state: FileShareState.inTransit));
+    await _send(_fileBubble);
+    bubblePipeline.add(_fileBubble);
 
-      var _fileBubble = fileBubble.copy(
-          content: fileBubble.content.copy(state: FileShareState.inTransit));
-      await _send(_fileBubble);
+    final shardFile = fileBubble.content.meta;
+
+    var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(
+            'http://${DeviceManager.instance.getNetAdressByDeviceId(fileBubble.to)}/file'));
+
+    request.fields['share_id'] = fileBubble.id;
+    request.fields['file_name'] = shardFile.name;
+
+    var multipartFile = http.MultipartFile(
+        'file', File(shardFile.path!).openRead(), shardFile.size,
+        filename: shardFile.name,
+        contentType: MediaType.parse(shardFile.mimeType ?? 'text/plain'));
+
+    request.files.add(multipartFile);
+    final response = await request.send();
+    if (response.statusCode == 200) {
+      dev.log('发送成功 ${await response.stream.bytesToString()}');
+      _fileBubble = fileBubble.copy(
+          content:
+              fileBubble.content.copy(state: FileShareState.sendCompleted));
+      // _send(_fileBubble);
       bubblePipeline.add(_fileBubble);
-
-      final shardFile = (bubbleEntity.shareable as SharedFile).content!!;
-
-      var request = http.MultipartRequest(
-          'POST',
-          Uri.parse(
-              'http://${DeviceManager.instance.getNetAdressByDeviceId(bubbleEntity.to)}/file'));
-
-      request.fields['share_id'] = bubbleEntity.shareable.id;
-      request.fields['file_name'] = shardFile.name;
-
-      var multipartFile = http.MultipartFile(
-          'file', shardFile.openRead(), await shardFile.length(),
-          filename: shardFile.name,
-          contentType: MediaType.parse(shardFile.mimeType ?? 'text/plain'));
-
-      request.files.add(multipartFile);
-      final response = await request.send();
-      if (response.statusCode == 200) {
-        dev.log('发送成功 ${await response.stream.bytesToString()}');
-        _fileBubble = fileBubble.copy(
-            content:
-                fileBubble.content.copy(state: FileShareState.sendCompleted));
-        _send(_fileBubble);
-        bubblePipeline.add(_fileBubble);
-      } else {
-        dev.log(
-            '发送失败: status code: ${response.statusCode}, ${await response.stream.bytesToString()}');
-        // TODO 区分发送失败还是接收失败
-        _fileBubble = fileBubble.copy(
-            content: fileBubble.content.copy(state: FileShareState.sendFailed));
-        _send(_fileBubble);
-        bubblePipeline.add(_fileBubble);
-      }
     } else {
-      throw UnimplementedError();
+      dev.log(
+          '发送失败: status code: ${response.statusCode}, ${await response.stream.bytesToString()}');
+      // TODO 区分发送失败还是接收失败
+      _fileBubble = fileBubble.copy(
+          content: fileBubble.content.copy(state: FileShareState.sendFailed));
+      // _send(_fileBubble);
+      bubblePipeline.add(_fileBubble);
     }
   }
 
@@ -137,6 +136,15 @@ class BubbleProvider extends ChangeNotifier {
           type: BubbleType.File,
           content: FileTransfer(
               meta: sharedFile.meta, state: sharedFile.shareState));
+    } else if (bubbleEntity.shareable is SharedImage) {
+      final sharedFile = bubbleEntity.shareable as SharedImage;
+      return PrimitiveFileBubble(
+          id: sharedFile.id,
+          from: bubbleEntity.from,
+          to: bubbleEntity.to,
+          type: BubbleType.Image,
+          content: FileTransfer(
+              meta: sharedFile.content, state: FileShareState.inTransit));
     } else {
       throw UnimplementedError();
     }
@@ -152,7 +160,12 @@ class BubbleProvider extends ChangeNotifier {
                 id: bubble.id,
                 content: (bubble as PrimitiveTextBubble).content));
       case BubbleType.Image:
-        throw UnimplementedError();
+        final primitive = (bubble as PrimitiveFileBubble);
+        return BubbleEntity(
+            from: bubble.from,
+            to: bubble.to,
+            shareable:
+                SharedImage(id: bubble.id, content: primitive.content.meta));
       case BubbleType.Video:
         throw UnimplementedError();
       case BubbleType.File:

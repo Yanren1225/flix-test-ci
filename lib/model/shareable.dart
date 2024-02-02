@@ -1,3 +1,4 @@
+import 'package:androp/model/bubble/shared_file.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:file_selector/file_selector.dart';
 
@@ -16,10 +17,10 @@ class SharedText extends Shareable<String> {
   SharedText({required this.id, required this.content});
 }
 
-class SharedImage extends Shareable<String> {
+class SharedImage extends Shareable<FileMeta> {
   /// image uri
   @override
-  final String content;
+  final FileMeta content;
 
   @override
   final String id;

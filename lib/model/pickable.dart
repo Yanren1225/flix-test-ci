@@ -1,3 +1,4 @@
+import 'package:androp/model/bubble/shared_file.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -5,7 +6,7 @@ enum PickedFileType {
   Image,
   Video,
   App,
-  Other;
+  File;
 }
 
 abstract class Pickable<Content> {
@@ -13,17 +14,17 @@ abstract class Pickable<Content> {
   Content get content;
 }
 
-class PickableFile extends Pickable<XFile> {
+class PickableFile extends Pickable<FileMeta> {
   @override
   PickedFileType type;
   @override
-  XFile content;
+  FileMeta content;
 
   PickableFile({required this.type, required this.content});
 
   @override
   String toString() {
-    return 'PickableFile{type: $type, file: ${content.path}}';
+    return 'PickableFile{type: $type, file: $content}';
   }
 }
 

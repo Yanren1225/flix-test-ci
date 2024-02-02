@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
@@ -13,9 +14,12 @@ import 'package:androp/presentation/widgets/blur_appbar.dart';
 import 'package:androp/presentation/widgets/pick_actions.dart';
 import 'package:androp/presentation/widgets/share_bubble.dart';
 import 'package:device_apps/device_apps.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -152,43 +156,36 @@ class InputAreaState extends State<InputArea> {
     onSubmit(SharedText(id: uuid.v1(), content: content));
   }
 
-  void submitImage(String path) {
-    onSubmit(SharedImage(id: uuid.v1(), content: path));
+  void submitImage(FileMeta meta) {
+    onSubmit(SharedImage(id: uuid.v1(), content: meta));
   }
 
-  void submitVideo(String path) {
-    onSubmit(SharedVideo(id: uuid.v1(), content: path));
+  void submitVideo(FileMeta meta) {
+    // onSubmit(SharedVideo(id: uuid.v1(), content: path));
   }
 
   void submitApp(Application app) {
     onSubmit(SharedApp(id: uuid.v1(), content: app));
   }
 
-  void submitFile(XFile file) async {
+  void submitFile(FileMeta meta) async {
     onSubmit(SharedFile(
-        id: uuid.v1(),
-        shareState: FileShareState.inTransit,
-        meta: FileMeta(
-            name: file.name,
-            mimeType: file.mimeType ?? "text/plain",
-            nameWithSuffix: '${file.name}.json',
-            size: await file.length()),
-        content: file));
+        id: uuid.v1(), shareState: FileShareState.inTransit, meta: meta));
   }
 
   void onPicked(List<Pickable> pickables) {
     for (var element in pickables) {
       switch (element.type) {
         case PickedFileType.Image:
-          submitImage((element as PickableFile).content.path);
+          submitImage((element as PickableFile).content);
           break;
         case PickedFileType.Video:
-          submitVideo((element as PickableFile).content.path);
+          submitVideo((element as PickableFile).content);
           break;
         case PickedFileType.App:
           submitApp((element as PickableApp).content);
           break;
-        case PickedFileType.Other:
+        case PickedFileType.File:
           submitFile((element as PickableFile).content);
           break;
         default:
