@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:androp/model/bubble/shared_file.dart';
+import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:androp/model/ship/primitive_bubble.dart';
 
 /// 承担bubble的传递、查找和缓存

@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:androp/domain/concert/concert_provider.dart';
 import 'package:androp/domain/device/device_manager.dart';
-import 'package:androp/model/bubble/shared_file.dart';
-import 'package:androp/model/bubble_entity.dart';
+import 'package:androp/model/ui_bubble/shared_file.dart';
+import 'package:androp/model/ui_bubble/ui_bubble.dart';
 import 'package:androp/model/device_info.dart';
 import 'package:androp/model/pickable.dart';
 import 'package:androp/model/shareable.dart';
@@ -76,7 +76,7 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
   // List<BubbleEntity> shareList = [];
 
   void submit(ConcertProvider concertProvider, Shareable shareable) async {
-    await concertProvider.send(BubbleEntity(
+    await concertProvider.send(UIBubble(
         from: DeviceManager.instance.did,
         to: Provider.of<ConcertProvider>(context, listen: false).deviceInfo.id,
         shareable: shareable));

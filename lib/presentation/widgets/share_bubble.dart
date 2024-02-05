@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:androp/model/bubble/shared_file.dart';
-import 'package:androp/model/bubble_entity.dart';
+import 'package:androp/model/ui_bubble/shared_file.dart';
+import 'package:androp/model/ui_bubble/ui_bubble.dart';
 import 'package:androp/model/shareable.dart';
 import 'package:androp/presentation/widgets/app_icon.dart';
 import 'package:androp/presentation/widgets/aspect_ratio_video.dart';
@@ -15,7 +15,7 @@ import 'package:video_player/video_player.dart';
 import '../../domain/androp_context.dart';
 
 class ShareBubble extends StatelessWidget {
-  final BubbleEntity entity;
+  final UIBubble entity;
 
   const ShareBubble({super.key, required this.entity});
 
@@ -38,7 +38,7 @@ class ShareBubble extends StatelessWidget {
 }
 
 class ShareTextBubble extends StatelessWidget {
-  final BubbleEntity entity;
+  final UIBubble entity;
 
   const ShareTextBubble({super.key, required this.entity});
 
@@ -86,7 +86,7 @@ class ShareTextBubble extends StatelessWidget {
 }
 
 class ShareImageBubble extends StatelessWidget {
-  final BubbleEntity entity;
+  final UIBubble entity;
   const ShareImageBubble({super.key, required this.entity});
 
   @override
@@ -138,7 +138,7 @@ class ShareImageBubble extends StatelessWidget {
 }
 
 class ShareVideoBubble extends StatefulWidget {
-  final BubbleEntity entity;
+  final UIBubble entity;
   const ShareVideoBubble({super.key, required this.entity});
 
   @override
@@ -146,7 +146,7 @@ class ShareVideoBubble extends StatefulWidget {
 }
 
 class ShareVideoBubbleState extends State<ShareVideoBubble> {
-  BubbleEntity get entity => widget.entity;
+  UIBubble get entity => widget.entity;
   VideoPlayerController? controller;
 
   @override
@@ -224,7 +224,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
 }
 
 class ShareAppBubble extends StatelessWidget {
-  final BubbleEntity entity;
+  final UIBubble entity;
 
   const ShareAppBubble({super.key, required this.entity});
 
@@ -315,7 +315,7 @@ class ShareAppBubble extends StatelessWidget {
 }
 
 class ShareFileBubble extends StatefulWidget {
-  final BubbleEntity entity;
+  final UIBubble entity;
 
   const ShareFileBubble({super.key, required this.entity});
 
@@ -324,7 +324,7 @@ class ShareFileBubble extends StatefulWidget {
 }
 
 class ShareFileBubbleState extends State<ShareFileBubble> {
-  BubbleEntity get entity => widget.entity;
+  UIBubble get entity => widget.entity;
 
   @override
   void initState() {

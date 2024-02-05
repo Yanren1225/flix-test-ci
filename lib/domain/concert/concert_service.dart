@@ -2,20 +2,19 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:androp/domain/bubble_pool.dart';
-import 'package:androp/domain/ship_server/ship_service.dart';
+import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
-import '../../model/bubble/shared_file.dart';
-import '../../model/bubble_entity.dart';
+import '../../model/ui_bubble/ui_bubble.dart';
 import '../../model/shareable.dart';
 import '../../model/ship/primitive_bubble.dart';
+import '../../model/ui_bubble/shared_file.dart';
 import '../../utils/bubble_convert.dart';
 import '../device/device_manager.dart';
-import 'package:http/http.dart' as http;
-import 'dart:developer' as dev;
 
 /// Concert：表示设备间文件互传的会话
 /// 负责：
@@ -58,7 +57,7 @@ class ConcertService {
     }
   }
 
-  Future<void> send(BubbleEntity bubbleEntity) async {
+  Future<void> send(UIBubble bubbleEntity) async {
     if (bubbleEntity.shareable is SharedText) {
       final primitiveBubble = fromBubbleEntity(bubbleEntity);
       await _send(primitiveBubble);

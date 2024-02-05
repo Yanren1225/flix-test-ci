@@ -1,14 +1,14 @@
 import 'package:androp/model/device_info.dart';
 import 'package:flutter/material.dart';
 
-import '../../model/bubble_entity.dart';
+import '../../model/ui_bubble/ui_bubble.dart';
 import '../../utils/bubble_convert.dart';
 import 'concert_service.dart';
 
 class ConcertProvider extends ChangeNotifier {
   final DeviceInfo deviceInfo;
   late ConcertService _concertService;
-  List<BubbleEntity> bubbles = [];
+  List<UIBubble> bubbles = [];
 
   ConcertProvider({required this.deviceInfo}) {
     _concertService = ConcertService(collaboratorId: deviceInfo.id);
@@ -18,7 +18,7 @@ class ConcertProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> send(BubbleEntity bubbleEntity) async {
+  Future<void> send(UIBubble bubbleEntity) async {
     return await _concertService.send(bubbleEntity);
   }
 

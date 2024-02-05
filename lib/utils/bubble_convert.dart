@@ -1,9 +1,9 @@
-import '../model/bubble/shared_file.dart';
-import '../model/bubble_entity.dart';
+import '../model/ui_bubble/shared_file.dart';
+import '../model/ui_bubble/ui_bubble.dart';
 import '../model/shareable.dart';
 import '../model/ship/primitive_bubble.dart';
 
-PrimitiveBubble fromBubbleEntity(BubbleEntity bubbleEntity) {
+PrimitiveBubble fromBubbleEntity(UIBubble bubbleEntity) {
   if (bubbleEntity.shareable is SharedText) {
     final sharedText = bubbleEntity.shareable as SharedText;
     return PrimitiveTextBubble(
@@ -35,10 +35,10 @@ PrimitiveBubble fromBubbleEntity(BubbleEntity bubbleEntity) {
   }
 }
 
-BubbleEntity toBubbleEntity(PrimitiveBubble bubble) {
+UIBubble toBubbleEntity(PrimitiveBubble bubble) {
   switch (bubble.type) {
     case BubbleType.Text:
-      return BubbleEntity(
+      return UIBubble(
           from: bubble.from,
           to: bubble.to,
           shareable: SharedText(
@@ -46,7 +46,7 @@ BubbleEntity toBubbleEntity(PrimitiveBubble bubble) {
               content: (bubble as PrimitiveTextBubble).content));
     case BubbleType.Image:
       final primitive = (bubble as PrimitiveFileBubble);
-      return BubbleEntity(
+      return UIBubble(
           from: bubble.from,
           to: bubble.to,
           shareable:
@@ -55,7 +55,7 @@ BubbleEntity toBubbleEntity(PrimitiveBubble bubble) {
       throw UnimplementedError();
     case BubbleType.File:
       final primitive = (bubble as PrimitiveFileBubble);
-      return BubbleEntity(
+      return UIBubble(
           from: bubble.from,
           to: bubble.to,
           shareable: SharedFile(

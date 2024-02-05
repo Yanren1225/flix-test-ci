@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:androp/domain/bubble_pool.dart';
-import 'package:androp/model/bubble/shared_file.dart';
+import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:androp/model/ship/primitive_bubble.dart';
 import 'package:androp/network/multicast_util.dart';
 import 'package:shelf/shelf.dart';

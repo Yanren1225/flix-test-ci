@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:androp/model/bubble/shared_file.dart';
+import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
