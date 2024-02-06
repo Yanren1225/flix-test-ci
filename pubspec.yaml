@@ -58,6 +58,9 @@ dependencies:
   shared_storage: ^0.8.0
   file_picker: ^6.1.1
   mime: ^1.0.5
+  drift: ^2.15.0
+  sqlite3_flutter_libs: ^0.5.20
+  path: ^1.8.3
   # thumbnailer: ^2.2.0
 
   # pdfx: ^2.5.0
@@ -68,7 +71,7 @@ dependencies:
       # path: packages/pdfx
 
 dev_dependencies:
-  build_runner: 2.4.7
+  build_runner: ^2.4.8
   dart_mappable_builder: 4.0.1
   flutter_test:
     sdk: flutter
@@ -79,6 +82,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  drift_dev: ^2.15.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

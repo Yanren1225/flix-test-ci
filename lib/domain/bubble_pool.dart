@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:androp/domain/database/database.dart';
+import 'package:androp/model/database/bubble_entity.dart';
+import 'package:androp/model/database/text_content.dart';
 import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:androp/model/ship/primitive_bubble.dart';
 
@@ -13,10 +16,11 @@ class BubblePool {
   static final BubblePool _instance = BubblePool._privateConstruct();
   static BubblePool get instance => _instance;
 
-
   PrimitiveBubble? _buffer;
   List<PrimitiveBubble> _cache = [];
   final _broadcast = StreamController<PrimitiveBubble>.broadcast();
+
+
 
   void _updateOrAddBubbleToCache(PrimitiveBubble bubble) {
     if (bubble is UpdateFileStateBubble) {
@@ -55,9 +59,15 @@ class BubblePool {
 
   void add(PrimitiveBubble bubble) {
     log('add bubble ${bubble.id}');
-    _buffer = bubble;
-    _updateOrAddBubbleToCache(bubble);
-    _broadcast.add(bubble);
+
+    if (bubble.type == BubbleType.Text) {
+      appDatabase.bubblesDao.insert(bubble);
+    } else {
+      _buffer = bubble;
+      _updateOrAddBubbleToCache(bubble);
+      _broadcast.add(bubble);
+    }
+
   }
 
   StreamSubscription<PrimitiveBubble> listen(void onData(PrimitiveBubble bubble, List<PrimitiveBubble> buffer)?,
@@ -78,4 +88,6 @@ class BubblePool {
 
     return result;
   }
+
+
 }

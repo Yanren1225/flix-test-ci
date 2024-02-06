@@ -6,6 +6,7 @@ import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:androp/domain/bubble_pool.dart';
+import 'package:androp/domain/database/database.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
@@ -15,6 +16,8 @@ import '../../model/ship/primitive_bubble.dart';
 import '../../model/ui_bubble/shared_file.dart';
 import '../../utils/bubble_convert.dart';
 import '../device/device_manager.dart';
+import 'package:async/async.dart' show StreamGroup;
+
 
 /// Concert：表示设备间文件互传的会话
 /// 负责：
@@ -30,8 +33,9 @@ class ConcertService {
   ConcertService({required this.collaboratorId});
 
   void listenBubbles(void Function(List<PrimitiveBubble> bubbles) onData) {
-    _bubblePool.listen((bubble, buffer) {
-      onData(buffer.where((element) => element.from == collaboratorId || element.to == collaboratorId).toList());
+
+    appDatabase.bubblesDao.watchBubblesByCid(collaboratorId).listen((event) {
+      onData(event);
     });
   }
 
