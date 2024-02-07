@@ -57,16 +57,16 @@ class BubblePool {
 
   }
 
-  void add(PrimitiveBubble bubble) {
+  Future<void> add(PrimitiveBubble bubble) async {
     log('add bubble ${bubble.id}');
 
-    if (bubble.type == BubbleType.Text) {
-      appDatabase.bubblesDao.insert(bubble);
-    } else {
-      _buffer = bubble;
-      _updateOrAddBubbleToCache(bubble);
-      _broadcast.add(bubble);
-    }
+    // if (bubble.type == BubbleType.Text || bubble.type == BubbleType.File || bubble.type == BubbleType.) {
+    await appDatabase.bubblesDao.insert(bubble);
+    // } else {
+    //   _buffer = bubble;
+    //   _updateOrAddBubbleToCache(bubble);
+    //   _broadcast.add(bubble);
+    // }
 
   }
 
@@ -78,15 +78,8 @@ class BubblePool {
     return _broadcast.stream.listen((bubble) => onData?.call(bubble, _cache), onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
-  PrimitiveBubble? findLastById(String id) {
-    PrimitiveBubble? result = null;
-    for (final bubble in _cache) {
-      if (bubble.id == id) {
-        result = bubble;
-      }
-    }
-
-    return result;
+  Future<PrimitiveBubble?> findLastById(String id) async {
+    return await appDatabase.bubblesDao.getPrimitiveBubbleById(id);
   }
 
 

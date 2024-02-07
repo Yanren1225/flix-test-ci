@@ -2,10 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:androp/domain/database/dao/bubbles_dao.dart';
-import 'package:androp/domain/database/dao/text_content_dao.dart';
 import 'package:androp/model/database/bubble_entity.dart';
+import 'package:androp/model/database/file_content.dart';
 import 'package:androp/model/database/text_content.dart';
-import 'package:androp/model/ship/primitive_bubble.dart';
 import 'package:drift/drift.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -19,17 +18,8 @@ import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 part 'database.g.dart'; // the generated code will be there
 
 
-@DriftDatabase(tables: [BubbleEntities, TextContents], daos: [BubblesDao])
+@DriftDatabase(tables: [BubbleEntities, TextContents, FileContents], daos: [BubblesDao])
 class AppDatabase extends _$AppDatabase {
-  // BubbleEntityDao get bubbleEntityDao;
-  //
-  // TextContentDao get textContent;
-
-  // BubblesDao? _bubbleDao;
-  // BubblesDao get bubbleDao {
-  //   _bubbleDao ??= BubblesDao(this);
-  //   return _bubbleDao!;
-  // }
 
   AppDatabase(): super(_openConnection());
 

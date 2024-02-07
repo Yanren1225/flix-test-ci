@@ -13,7 +13,7 @@ class ConcertProvider extends ChangeNotifier {
   ConcertProvider({required this.deviceInfo}) {
     _concertService = ConcertService(collaboratorId: deviceInfo.id);
     _concertService.listenBubbles((bubbles) {
-      this.bubbles = bubbles.map((bubble) => toBubbleEntity(bubble)).toList();
+      this.bubbles = bubbles;
       notifyListeners();
     });
   }
@@ -24,7 +24,7 @@ class ConcertProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-
+    _concertService.clear();
     super.dispose();
   }
 

@@ -1,11 +1,14 @@
+import 'package:drift/drift.dart';
 
-class FileContent {
-  final String id;
-  final String name;
-  final String mimeType;
-  final String nameWithSuffix;
-  final int size;
-  final String? path;
+class FileContents extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get mimeType => text()();
+  TextColumn get nameWithSuffix => text()();
+  IntColumn get size => integer()();
+  TextColumn get path => text().nullable()();
+  IntColumn get state => integer()();
 
-  FileContent({required this.id, required this.name, required this.mimeType, required this.nameWithSuffix, required this.size, required this.path});
+  @override
+  Set<Column> get primaryKey => {id};
 }

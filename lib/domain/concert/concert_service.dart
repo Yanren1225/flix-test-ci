@@ -28,15 +28,12 @@ class ConcertService {
   final String collaboratorId;
   final _bubblePool = BubblePool.instance;
 
-  StreamSubscription<PrimitiveBubble>? streamSubscription;
+  StreamSubscription<List<UIBubble>>? streamSubscription;
 
   ConcertService({required this.collaboratorId});
 
-  void listenBubbles(void Function(List<PrimitiveBubble> bubbles) onData) {
-
-    appDatabase.bubblesDao.watchBubblesByCid(collaboratorId).listen((event) {
-      onData(event);
-    });
+  void listenBubbles(void Function(List<UIBubble> bubbles) onData) {
+    streamSubscription = appDatabase.bubblesDao.watchBubblesByCid(collaboratorId).map((bubbles) => bubbles.map((e) => toUIBubble(e)).toList()).listen(onData);
   }
 
   void clear() {
@@ -61,15 +58,17 @@ class ConcertService {
     }
   }
 
-  Future<void> send(UIBubble bubbleEntity) async {
-    if (bubbleEntity.shareable is SharedText) {
-      final primitiveBubble = fromBubbleEntity(bubbleEntity);
+  Future<void> send(UIBubble uiBubble) async {
+    if (uiBubble.shareable is SharedText) {
+      final primitiveBubble = fromUIBubble(uiBubble);
+      await _bubblePool.add(primitiveBubble);
       await _send(primitiveBubble);
-      _bubblePool.add(primitiveBubble);
-    } else if (bubbleEntity.shareable is SharedFile) {
-      await _sendFile(fromBubbleEntity(bubbleEntity) as PrimitiveFileBubble);
-    } else if (bubbleEntity.shareable is SharedImage) {
-      await _sendFile(fromBubbleEntity(bubbleEntity) as PrimitiveFileBubble);
+    } else if (uiBubble.shareable is SharedFile) {
+      await _sendFile(fromUIBubble(uiBubble) as PrimitiveFileBubble);
+    } else if (uiBubble.shareable is SharedImage) {
+      await _sendFile(fromUIBubble(uiBubble) as PrimitiveFileBubble);
+    } else if (uiBubble.shareable is SharedVideo) {
+      await _sendFile(fromUIBubble(uiBubble) as PrimitiveFileBubble);
     } else {
       throw UnimplementedError();
     }
@@ -78,8 +77,8 @@ class ConcertService {
   Future<void> _sendFile(PrimitiveFileBubble fileBubble) async {
     var _fileBubble = fileBubble.copy(
         content: fileBubble.content.copy(state: FileShareState.inTransit));
+    await _bubblePool.add(_fileBubble);
     await _send(_fileBubble);
-    _bubblePool.add(_fileBubble);
 
     final shardFile = fileBubble.content.meta;
 
@@ -108,8 +107,8 @@ class ConcertService {
     }
   }
 
-  void _updateFileShareState(String bubbleId, FileShareState state) {
-    final _bubble = _bubblePool.findLastById(bubbleId);
+  Future<void> _updateFileShareState(String bubbleId, FileShareState state) async {
+    final _bubble = await _bubblePool.findLastById(bubbleId);
     if (_bubble == null) {
       throw StateError('Can\'t find bubble by id: $bubbleId');
     }
@@ -119,11 +118,12 @@ class ConcertService {
     }
 
     final _fileBubble = _bubble! as PrimitiveFileBubble;
-    final updateBubble = UpdateFileStateBubble(id: bubbleId, from: _fileBubble.from, to: _fileBubble.to, type: _fileBubble.type, content: state);
+    // final updateBubble = UpdateFileStateBubble(id: bubbleId, from: _fileBubble.from, to: _fileBubble.to, type: _fileBubble.type, content: state);
 
-    _send(updateBubble);
 
-    _bubblePool.add(updateBubble);
+    // _send(updateBubble);
+
+    // _bubblePool.add(updateBubble);
 
   }
 

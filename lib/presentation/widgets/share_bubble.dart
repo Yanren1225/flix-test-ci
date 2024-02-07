@@ -169,6 +169,12 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
     } else {
       alignment = Alignment.centerLeft;
     }
+    final Widget videoWidget;
+    if (sharedVideo.content.path == null) {
+      videoWidget = Text("接收中视频中");
+    } else {
+      videoWidget = _buildInlineVideoPlayer(sharedVideo.content.path!);
+    }
     return Align(
       alignment: alignment,
       child: Container(
@@ -182,7 +188,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
                   maxWidth: max(150, constraints.maxWidth - 60), minWidth: 150),
               child: ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  child: _buildInlineVideoPlayer(sharedVideo.content)));
+                  child: videoWidget));
         }),
       ),
     );

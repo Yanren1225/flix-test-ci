@@ -18,7 +18,6 @@ class SharedText extends Shareable<String> {
 }
 
 class SharedImage extends Shareable<FileMeta> {
-  /// image uri
   @override
   final FileMeta content;
 
@@ -28,10 +27,9 @@ class SharedImage extends Shareable<FileMeta> {
   SharedImage({required this.id, required this.content});
 }
 
-class SharedVideo extends Shareable<String> {
-  /// video uri
+class SharedVideo extends Shareable<FileMeta> {
   @override
-  final String content;
+  final FileMeta content;
 
   @override
   final String id;

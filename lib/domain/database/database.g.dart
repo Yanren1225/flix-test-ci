@@ -446,15 +446,385 @@ class TextContentsCompanion extends UpdateCompanion<TextContent> {
   }
 }
 
+class $FileContentsTable extends FileContents
+    with TableInfo<$FileContentsTable, FileContent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FileContentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _mimeTypeMeta =
+      const VerificationMeta('mimeType');
+  @override
+  late final GeneratedColumn<String> mimeType = GeneratedColumn<String>(
+      'mime_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameWithSuffixMeta =
+      const VerificationMeta('nameWithSuffix');
+  @override
+  late final GeneratedColumn<String> nameWithSuffix = GeneratedColumn<String>(
+      'name_with_suffix', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _sizeMeta = const VerificationMeta('size');
+  @override
+  late final GeneratedColumn<int> size = GeneratedColumn<int>(
+      'size', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _pathMeta = const VerificationMeta('path');
+  @override
+  late final GeneratedColumn<String> path = GeneratedColumn<String>(
+      'path', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<int> state = GeneratedColumn<int>(
+      'state', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, mimeType, nameWithSuffix, size, path, state];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'file_contents';
+  @override
+  VerificationContext validateIntegrity(Insertable<FileContent> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('mime_type')) {
+      context.handle(_mimeTypeMeta,
+          mimeType.isAcceptableOrUnknown(data['mime_type']!, _mimeTypeMeta));
+    } else if (isInserting) {
+      context.missing(_mimeTypeMeta);
+    }
+    if (data.containsKey('name_with_suffix')) {
+      context.handle(
+          _nameWithSuffixMeta,
+          nameWithSuffix.isAcceptableOrUnknown(
+              data['name_with_suffix']!, _nameWithSuffixMeta));
+    } else if (isInserting) {
+      context.missing(_nameWithSuffixMeta);
+    }
+    if (data.containsKey('size')) {
+      context.handle(
+          _sizeMeta, size.isAcceptableOrUnknown(data['size']!, _sizeMeta));
+    } else if (isInserting) {
+      context.missing(_sizeMeta);
+    }
+    if (data.containsKey('path')) {
+      context.handle(
+          _pathMeta, path.isAcceptableOrUnknown(data['path']!, _pathMeta));
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+          _stateMeta, state.isAcceptableOrUnknown(data['state']!, _stateMeta));
+    } else if (isInserting) {
+      context.missing(_stateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FileContent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FileContent(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      mimeType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}mime_type'])!,
+      nameWithSuffix: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}name_with_suffix'])!,
+      size: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}size'])!,
+      path: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}path']),
+      state: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}state'])!,
+    );
+  }
+
+  @override
+  $FileContentsTable createAlias(String alias) {
+    return $FileContentsTable(attachedDatabase, alias);
+  }
+}
+
+class FileContent extends DataClass implements Insertable<FileContent> {
+  final String id;
+  final String name;
+  final String mimeType;
+  final String nameWithSuffix;
+  final int size;
+  final String? path;
+  final int state;
+  const FileContent(
+      {required this.id,
+      required this.name,
+      required this.mimeType,
+      required this.nameWithSuffix,
+      required this.size,
+      this.path,
+      required this.state});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['mime_type'] = Variable<String>(mimeType);
+    map['name_with_suffix'] = Variable<String>(nameWithSuffix);
+    map['size'] = Variable<int>(size);
+    if (!nullToAbsent || path != null) {
+      map['path'] = Variable<String>(path);
+    }
+    map['state'] = Variable<int>(state);
+    return map;
+  }
+
+  FileContentsCompanion toCompanion(bool nullToAbsent) {
+    return FileContentsCompanion(
+      id: Value(id),
+      name: Value(name),
+      mimeType: Value(mimeType),
+      nameWithSuffix: Value(nameWithSuffix),
+      size: Value(size),
+      path: path == null && nullToAbsent ? const Value.absent() : Value(path),
+      state: Value(state),
+    );
+  }
+
+  factory FileContent.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FileContent(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      mimeType: serializer.fromJson<String>(json['mimeType']),
+      nameWithSuffix: serializer.fromJson<String>(json['nameWithSuffix']),
+      size: serializer.fromJson<int>(json['size']),
+      path: serializer.fromJson<String?>(json['path']),
+      state: serializer.fromJson<int>(json['state']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'mimeType': serializer.toJson<String>(mimeType),
+      'nameWithSuffix': serializer.toJson<String>(nameWithSuffix),
+      'size': serializer.toJson<int>(size),
+      'path': serializer.toJson<String?>(path),
+      'state': serializer.toJson<int>(state),
+    };
+  }
+
+  FileContent copyWith(
+          {String? id,
+          String? name,
+          String? mimeType,
+          String? nameWithSuffix,
+          int? size,
+          Value<String?> path = const Value.absent(),
+          int? state}) =>
+      FileContent(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        mimeType: mimeType ?? this.mimeType,
+        nameWithSuffix: nameWithSuffix ?? this.nameWithSuffix,
+        size: size ?? this.size,
+        path: path.present ? path.value : this.path,
+        state: state ?? this.state,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('FileContent(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('mimeType: $mimeType, ')
+          ..write('nameWithSuffix: $nameWithSuffix, ')
+          ..write('size: $size, ')
+          ..write('path: $path, ')
+          ..write('state: $state')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, mimeType, nameWithSuffix, size, path, state);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FileContent &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.mimeType == this.mimeType &&
+          other.nameWithSuffix == this.nameWithSuffix &&
+          other.size == this.size &&
+          other.path == this.path &&
+          other.state == this.state);
+}
+
+class FileContentsCompanion extends UpdateCompanion<FileContent> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> mimeType;
+  final Value<String> nameWithSuffix;
+  final Value<int> size;
+  final Value<String?> path;
+  final Value<int> state;
+  final Value<int> rowid;
+  const FileContentsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.mimeType = const Value.absent(),
+    this.nameWithSuffix = const Value.absent(),
+    this.size = const Value.absent(),
+    this.path = const Value.absent(),
+    this.state = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FileContentsCompanion.insert({
+    required String id,
+    required String name,
+    required String mimeType,
+    required String nameWithSuffix,
+    required int size,
+    this.path = const Value.absent(),
+    required int state,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        name = Value(name),
+        mimeType = Value(mimeType),
+        nameWithSuffix = Value(nameWithSuffix),
+        size = Value(size),
+        state = Value(state);
+  static Insertable<FileContent> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? mimeType,
+    Expression<String>? nameWithSuffix,
+    Expression<int>? size,
+    Expression<String>? path,
+    Expression<int>? state,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (mimeType != null) 'mime_type': mimeType,
+      if (nameWithSuffix != null) 'name_with_suffix': nameWithSuffix,
+      if (size != null) 'size': size,
+      if (path != null) 'path': path,
+      if (state != null) 'state': state,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FileContentsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? name,
+      Value<String>? mimeType,
+      Value<String>? nameWithSuffix,
+      Value<int>? size,
+      Value<String?>? path,
+      Value<int>? state,
+      Value<int>? rowid}) {
+    return FileContentsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      mimeType: mimeType ?? this.mimeType,
+      nameWithSuffix: nameWithSuffix ?? this.nameWithSuffix,
+      size: size ?? this.size,
+      path: path ?? this.path,
+      state: state ?? this.state,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (mimeType.present) {
+      map['mime_type'] = Variable<String>(mimeType.value);
+    }
+    if (nameWithSuffix.present) {
+      map['name_with_suffix'] = Variable<String>(nameWithSuffix.value);
+    }
+    if (size.present) {
+      map['size'] = Variable<int>(size.value);
+    }
+    if (path.present) {
+      map['path'] = Variable<String>(path.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<int>(state.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FileContentsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('mimeType: $mimeType, ')
+          ..write('nameWithSuffix: $nameWithSuffix, ')
+          ..write('size: $size, ')
+          ..write('path: $path, ')
+          ..write('state: $state, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   late final $BubbleEntitiesTable bubbleEntities = $BubbleEntitiesTable(this);
   late final $TextContentsTable textContents = $TextContentsTable(this);
+  late final $FileContentsTable fileContents = $FileContentsTable(this);
   late final BubblesDao bubblesDao = BubblesDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [bubbleEntities, textContents];
+      [bubbleEntities, textContents, fileContents];
 }

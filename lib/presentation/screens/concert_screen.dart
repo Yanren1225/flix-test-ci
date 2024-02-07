@@ -148,7 +148,7 @@ class InputAreaState extends State<InputArea> {
   }
 
   void submitVideo(FileMeta meta) {
-    // onSubmit(SharedVideo(id: uuid.v1(), content: path));
+    onSubmit(SharedVideo(id: Uuid().v4(), content: meta));
   }
 
   void submitApp(Application app) {

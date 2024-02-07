@@ -3,7 +3,7 @@ import '../model/ui_bubble/ui_bubble.dart';
 import '../model/shareable.dart';
 import '../model/ship/primitive_bubble.dart';
 
-PrimitiveBubble fromBubbleEntity(UIBubble bubbleEntity) {
+PrimitiveBubble fromUIBubble(UIBubble bubbleEntity) {
   if (bubbleEntity.shareable is SharedText) {
     final sharedText = bubbleEntity.shareable as SharedText;
     return PrimitiveTextBubble(
@@ -12,6 +12,7 @@ PrimitiveBubble fromBubbleEntity(UIBubble bubbleEntity) {
         to: bubbleEntity.to,
         type: BubbleType.Text,
         content: sharedText.content);
+
   } else if (bubbleEntity.shareable is SharedFile) {
     final sharedFile = bubbleEntity.shareable as SharedFile;
     return PrimitiveFileBubble(
@@ -30,12 +31,21 @@ PrimitiveBubble fromBubbleEntity(UIBubble bubbleEntity) {
         type: BubbleType.Image,
         content: FileTransfer(
             meta: sharedFile.content, state: FileShareState.inTransit));
+  } else if (bubbleEntity.shareable is SharedVideo) {
+    final sharedFile = bubbleEntity.shareable as SharedVideo;
+    return PrimitiveFileBubble(
+        id: sharedFile.id,
+        from: bubbleEntity.from,
+        to: bubbleEntity.to,
+        type: BubbleType.Video,
+        content: FileTransfer(
+            meta: sharedFile.content, state: FileShareState.inTransit));
   } else {
     throw UnimplementedError();
   }
 }
 
-UIBubble toBubbleEntity(PrimitiveBubble bubble) {
+UIBubble toUIBubble(PrimitiveBubble bubble) {
   switch (bubble.type) {
     case BubbleType.Text:
       return UIBubble(
@@ -52,7 +62,12 @@ UIBubble toBubbleEntity(PrimitiveBubble bubble) {
           shareable:
           SharedImage(id: bubble.id, content: primitive.content.meta));
     case BubbleType.Video:
-      throw UnimplementedError();
+      final primitive = (bubble as PrimitiveFileBubble);
+      return UIBubble(
+          from: bubble.from,
+          to: bubble.to,
+          shareable:
+          SharedVideo(id: bubble.id, content: primitive.content.meta));
     case BubbleType.File:
       final primitive = (bubble as PrimitiveFileBubble);
       return UIBubble(

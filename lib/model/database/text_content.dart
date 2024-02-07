@@ -7,10 +7,3 @@ class TextContents extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
-
-class TextContent {
-  final String id;
-  final String content;
-
-  TextContent({required this.id, required this.content});
-}

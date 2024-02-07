@@ -40,7 +40,7 @@ class ShipService {
     var body = await request.readAsString();
     var data = jsonDecode(body) as Map<String, dynamic>;
     var bubble = PrimitiveBubble.fromJson(data);
-    _bubblePool.add(bubble);
+    await _bubblePool.add(bubble);
     return Response.ok('receviced bubble');
   }
 
@@ -66,7 +66,7 @@ class ShipService {
             }
             final out = outFile.openWrite(mode: FileMode.append);
             await formData.part.pipe(out);
-            final bubble = _bubblePool.findLastById(shareId);
+            final bubble = await _bubblePool.findLastById(shareId);
             if (bubble == null) {
               throw StateError(
                   'Primitive Bubble with id: $shareId should not null.');
@@ -83,7 +83,7 @@ class ShipService {
                     state: FileShareState.receiveCompleted,
                     meta: fileBubble.content.meta.copy(path: filePath)));
             // removeBubbleById(updatedBubble.id);
-            _bubblePool.add(updatedBubble);
+            await _bubblePool.add(updatedBubble);
             break;
         }
       }
