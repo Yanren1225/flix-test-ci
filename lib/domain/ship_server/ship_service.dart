@@ -7,6 +7,7 @@ import 'package:androp/domain/bubble_pool.dart';
 import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:androp/model/ship/primitive_bubble.dart';
 import 'package:androp/network/multicast_util.dart';
+import 'package:androp/utils/stream_progress.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_multipart/form_data.dart';
@@ -49,21 +50,22 @@ class ShipService {
     } else if (request.isMultipartForm) {
       final description = StringBuffer('Parsed form multipart request\n');
 
-      PrimitiveBubble? bubble;
+      PrimitiveFileBubble? bubble;
       await for (final formData in request.multipartFormData) {
         switch (formData.name) {
           case 'share_id':
             final shareId = await formData.part.readString();
-            bubble = await _bubblePool.findLastById(shareId);
-            if (bubble == null) {
+            final _bubble = await _bubblePool.findLastById(shareId);
+            if (_bubble == null) {
               throw StateError(
                   'Primitive Bubble with id: $shareId should not null.');
             }
 
-            if (!(bubble is PrimitiveFileBubble)) {
+            if (_bubble is! PrimitiveFileBubble) {
               throw StateError(
                   'Primitive Bubble should be PrimitiveFileBubble');
             }
+            bubble = _bubble as PrimitiveFileBubble;
             break;
           case 'file':
             final String desDir = await getDefaultDestinationDirectory();
@@ -74,13 +76,21 @@ class ShipService {
               await outFile.create();
             }
             final out = outFile.openWrite(mode: FileMode.append);
-            await formData.part.pipe(out);
+            if (bubble == null) {
+              throw StateError('Bubble should not null');
+            }
 
-            final fileBubble = bubble as PrimitiveFileBubble;
-            final updatedBubble = fileBubble.copy(
-                content: fileBubble.content.copy(
+            await formData.part.progress(bubble).pipe(out);
+
+
+
+            await Future.delayed(Duration(seconds: 5));
+
+            final updatedBubble = bubble.copy(
+                content: bubble.content.copy(
                     state: FileState.receiveCompleted,
-                    meta: fileBubble.content.meta.copy(path: filePath)));
+                    progress: 1.0,
+                    meta: bubble.content.meta.copy(path: filePath)));
             // removeBubbleById(updatedBubble.id);
             await _bubblePool.add(updatedBubble);
             break;

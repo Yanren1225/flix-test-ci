@@ -32,6 +32,7 @@ String fromTextContent(TextContent textContent) {
 FileTransfer fromFileContent(FileContent fileContent) {
   return FileTransfer(
       state: FileState.values[fileContent.state],
+      progress: fileContent.progress,
       meta: FileMeta(
           name: fileContent.name,
           mimeType: fileContent.mimeType,

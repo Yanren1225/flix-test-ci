@@ -30,6 +30,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
         case BubbleType.Image:
         case BubbleType.Video:
         case BubbleType.File:
+
           final fileBubble = bubble as PrimitiveFileBubble;
           return await into(fileContents).insertOnConflictUpdate(FileContentsCompanion.insert(
             id: fileBubble.id,
@@ -39,6 +40,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
             size: fileBubble.content.meta.size,
             path: Value(fileBubble.content.meta.path),
             state: fileBubble.content.state.index,
+            progress: fileBubble.content.progress
           ));
         default:
           throw UnimplementedError();

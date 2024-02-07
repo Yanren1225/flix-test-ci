@@ -8,4 +8,8 @@ class UIBubble {
   Shareable shareable;
 
   UIBubble({required this.from, required this.to, required this.type, required this.shareable});
+
+  bool isFromMe(String deviceId) {
+    return from == deviceId;
+  }
 }

@@ -21,9 +21,9 @@ PrimitiveBubble fromUIBubble(UIBubble bubbleEntity) {
         id: sharedFile.id,
         from: bubbleEntity.from,
         to: bubbleEntity.to,
-        type: BubbleType.File,
+        type: bubbleEntity.type,
         content: FileTransfer(
-            meta: sharedFile.content, state: sharedFile.state));
+            meta: sharedFile.content, progress: sharedFile.progress, state: sharedFile.state));
     case BubbleType.App:
       throw UnimplementedError();
   }
@@ -43,6 +43,7 @@ UIBubble toUIBubble(PrimitiveBubble bubble) {
     case BubbleType.Video:
     case BubbleType.File:
       final primitive = (bubble as PrimitiveFileBubble);
+
       return UIBubble(
           from: bubble.from,
           to: bubble.to,
@@ -50,6 +51,7 @@ UIBubble toUIBubble(PrimitiveBubble bubble) {
           shareable: SharedFile(
               id: bubble.id,
               state: primitive.content.state,
+              progress: primitive.content.progress,
               content: primitive.content.meta));
     case BubbleType.App:
       throw UnimplementedError();

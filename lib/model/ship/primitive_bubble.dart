@@ -136,22 +136,24 @@ class PrimitiveFileBubble extends PrimitiveBubble<FileTransfer> {
 }
 
 class FileTransfer {
+  late double progress;
   late FileState state;
   late FileMeta meta;
 
-  FileTransfer({this.state = FileState.unknown, required this.meta});
+  FileTransfer({this.state = FileState.unknown, this.progress = 0.0, required this.meta });
 
   FileTransfer.fromJson(Map<String, dynamic> json) {
     state = FileState.values[json['state'] as int];
+    progress = json['progress'] as double;
     meta = FileMeta.fromJson(json['meta'] as Map<String, dynamic>);
   }
 
   Map<String, dynamic> toJson() {
-    return {'state': state.index, 'meta': meta.toJson()};
+    return {'state': state.index, 'progress': progress, 'meta': meta.toJson()};
   }
 
-  FileTransfer copy({FileState? state, FileMeta? meta}) {
-    return FileTransfer(state: state ?? this.state, meta: meta ?? this.meta);
+  FileTransfer copy({FileState? state, double? progress, FileMeta? meta}) {
+    return FileTransfer(state: state ?? this.state, progress : progress ?? this.progress, meta: meta ?? this.meta);
   }
 }
 

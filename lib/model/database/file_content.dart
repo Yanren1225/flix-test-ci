@@ -8,6 +8,7 @@ class FileContents extends Table {
   IntColumn get size => integer()();
   TextColumn get path => text().nullable()();
   IntColumn get state => integer()();
+  RealColumn get progress => real()();
 
   @override
   Set<Column> get primaryKey => {id};

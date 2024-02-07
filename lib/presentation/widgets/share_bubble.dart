@@ -48,21 +48,21 @@ class ShareTextBubble extends StatelessWidget {
     AndropContext andropContext = context.watch();
     final SharedText sharedText = entity.shareable as SharedText;
     final Color backgroundColor;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
     } else {
       backgroundColor = Colors.white;
     }
 
     final Color contentColor;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       contentColor = Colors.white;
     } else {
       contentColor = Colors.black;
     }
 
     final Alignment alignment;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       alignment = Alignment.centerRight;
     } else {
       alignment = Alignment.centerLeft;
@@ -96,30 +96,59 @@ class ShareImageBubble extends StatelessWidget {
     AndropContext andropContext = context.watch();
     final sharedImage = entity.shareable as SharedFile;
     final Color backgroundColor;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
     } else {
       backgroundColor = Colors.white;
     }
 
-    if (entity.from == andropContext.deviceId) {
-    } else {}
-
     final Alignment alignment;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       alignment = Alignment.centerRight;
     } else {
       alignment = Alignment.centerLeft;
     }
 
     final Widget content;
-    if (sharedImage.content.path == null) {
-      content = const Text("接收中");
+    if (entity.isFromMe(andropContext.deviceId)) {
+      content = Image.file(File(sharedImage.content.path!!),
+              fit: BoxFit.contain);
     } else {
-      content = ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          child: Image.file(File(sharedImage.content.path!!),
-              fit: BoxFit.contain));
+
+      switch (sharedImage.state) {
+        case FileState.inTransit:
+          content = AspectRatio(
+            aspectRatio: 1.333333,
+            child: DecoratedBox(
+              decoration:
+                  const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text('${(sharedImage.progress * 100).round()}%',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal))
+                ],
+              ),
+            ),
+          );
+        case FileState.receiveCompleted:
+          content = Image.file(File(sharedImage.content.path!!),
+                  fit: BoxFit.contain);
+        case FileState.unknown:
+        case FileState.picked:
+        case FileState.waitToAccepted:
+        case FileState.cancelled:
+        case FileState.sendCompleted:
+        case FileState.completed:
+        case FileState.sendFailed:
+        case FileState.receiveFailed:
+        case FileState.failed:
+          throw UnimplementedError();
+      }
     }
     return Align(
       alignment: alignment,
@@ -131,8 +160,10 @@ class ShareImageBubble extends StatelessWidget {
             builder: (BuildContext context, BoxConstraints constraints) {
           return ConstrainedBox(
               constraints: BoxConstraints(
-                  maxWidth: max(150, constraints.maxWidth - 60), minWidth: 150),
-              child: content);
+                  maxWidth: min(300, constraints.maxWidth - 60), minWidth: 150),
+              child: ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  child: content));
         }),
       ),
     );
@@ -157,26 +188,58 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
     AndropContext andropContext = context.watch();
     final sharedVideo = entity.shareable as SharedFile;
     final Color backgroundColor;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
     } else {
       backgroundColor = Colors.white;
     }
 
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
     } else {}
 
     final Alignment alignment;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       alignment = Alignment.centerRight;
     } else {
       alignment = Alignment.centerLeft;
     }
-    final Widget videoWidget;
-    if (sharedVideo.content.path == null) {
-      videoWidget = Text("接收中视频中");
+    final Widget content;
+    if (entity.isFromMe(andropContext.deviceId)) {
+      content = _buildInlineVideoPlayer(sharedVideo.content.path!);
     } else {
-      videoWidget = _buildInlineVideoPlayer(sharedVideo.content.path!);
+      switch (sharedVideo.state) {
+        case FileState.inTransit:
+          content = AspectRatio(
+            aspectRatio: 1.333333,
+            child: DecoratedBox(
+              decoration:
+              const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text('${(sharedVideo.progress * 100).round()}%',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal))
+                ],
+              ),
+            ),
+          );
+        case FileState.receiveCompleted:
+          content = _buildInlineVideoPlayer(sharedVideo.content.path!);
+        case FileState.unknown:
+        case FileState.picked:
+        case FileState.waitToAccepted:
+        case FileState.cancelled:
+        case FileState.sendCompleted:
+        case FileState.completed:
+        case FileState.sendFailed:
+        case FileState.receiveFailed:
+        case FileState.failed:
+          throw UnimplementedError();
+      }
     }
     return Align(
       alignment: alignment,
@@ -188,10 +251,10 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
             builder: (BuildContext context, BoxConstraints constraints) {
           return ConstrainedBox(
               constraints: BoxConstraints(
-                  maxWidth: max(150, constraints.maxWidth - 60), minWidth: 150),
+                  maxWidth: min(300, constraints.maxWidth - 60), minWidth: 150),
               child: ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  child: videoWidget));
+                  child: content));
         }),
       ),
     );
@@ -242,21 +305,21 @@ class ShareAppBubble extends StatelessWidget {
     AndropContext andropContext = context.watch();
     final SharedApp sharedApp = entity.shareable as SharedApp;
     final Color backgroundColor;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
     } else {
       backgroundColor = Colors.white;
     }
 
     final Color contentColor;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       contentColor = Colors.white;
     } else {
       contentColor = Colors.black;
     }
 
     final Alignment alignment;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       alignment = Alignment.centerRight;
     } else {
       alignment = Alignment.centerLeft;
@@ -349,35 +412,35 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
     AndropContext andropContext = context.watch();
     final SharedFile sharedFile = entity.shareable as SharedFile;
     final Color backgroundColor;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
     } else {
       backgroundColor = Colors.white;
     }
 
     final Color contentColor;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       contentColor = Colors.white;
     } else {
       contentColor = Colors.black;
     }
 
     final Color thumbnailBackgroundColor;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       thumbnailBackgroundColor = Colors.white;
     } else {
       thumbnailBackgroundColor = const Color.fromRGBO(0, 122, 255, 1);
     }
 
     final Color thumbnailColor;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       thumbnailColor = const Color.fromRGBO(0, 122, 255, 1);
     } else {
       thumbnailColor = Colors.white;
     }
 
     final Alignment alignment;
-    if (entity.from == andropContext.deviceId) {
+    if (entity.isFromMe(andropContext.deviceId)) {
       alignment = Alignment.centerRight;
     } else {
       alignment = Alignment.centerLeft;

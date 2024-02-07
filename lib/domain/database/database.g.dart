@@ -489,9 +489,15 @@ class $FileContentsTable extends FileContents
   late final GeneratedColumn<int> state = GeneratedColumn<int>(
       'state', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _progressMeta =
+      const VerificationMeta('progress');
+  @override
+  late final GeneratedColumn<double> progress = GeneratedColumn<double>(
+      'progress', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, mimeType, nameWithSuffix, size, path, state];
+      [id, name, mimeType, nameWithSuffix, size, path, state, progress];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -543,6 +549,12 @@ class $FileContentsTable extends FileContents
     } else if (isInserting) {
       context.missing(_stateMeta);
     }
+    if (data.containsKey('progress')) {
+      context.handle(_progressMeta,
+          progress.isAcceptableOrUnknown(data['progress']!, _progressMeta));
+    } else if (isInserting) {
+      context.missing(_progressMeta);
+    }
     return context;
   }
 
@@ -566,6 +578,8 @@ class $FileContentsTable extends FileContents
           .read(DriftSqlType.string, data['${effectivePrefix}path']),
       state: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}state'])!,
+      progress: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}progress'])!,
     );
   }
 
@@ -583,6 +597,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
   final int size;
   final String? path;
   final int state;
+  final double progress;
   const FileContent(
       {required this.id,
       required this.name,
@@ -590,7 +605,8 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       required this.nameWithSuffix,
       required this.size,
       this.path,
-      required this.state});
+      required this.state,
+      required this.progress});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -603,6 +619,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       map['path'] = Variable<String>(path);
     }
     map['state'] = Variable<int>(state);
+    map['progress'] = Variable<double>(progress);
     return map;
   }
 
@@ -615,6 +632,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       size: Value(size),
       path: path == null && nullToAbsent ? const Value.absent() : Value(path),
       state: Value(state),
+      progress: Value(progress),
     );
   }
 
@@ -629,6 +647,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       size: serializer.fromJson<int>(json['size']),
       path: serializer.fromJson<String?>(json['path']),
       state: serializer.fromJson<int>(json['state']),
+      progress: serializer.fromJson<double>(json['progress']),
     );
   }
   @override
@@ -642,6 +661,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       'size': serializer.toJson<int>(size),
       'path': serializer.toJson<String?>(path),
       'state': serializer.toJson<int>(state),
+      'progress': serializer.toJson<double>(progress),
     };
   }
 
@@ -652,7 +672,8 @@ class FileContent extends DataClass implements Insertable<FileContent> {
           String? nameWithSuffix,
           int? size,
           Value<String?> path = const Value.absent(),
-          int? state}) =>
+          int? state,
+          double? progress}) =>
       FileContent(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -661,6 +682,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
         size: size ?? this.size,
         path: path.present ? path.value : this.path,
         state: state ?? this.state,
+        progress: progress ?? this.progress,
       );
   @override
   String toString() {
@@ -671,14 +693,15 @@ class FileContent extends DataClass implements Insertable<FileContent> {
           ..write('nameWithSuffix: $nameWithSuffix, ')
           ..write('size: $size, ')
           ..write('path: $path, ')
-          ..write('state: $state')
+          ..write('state: $state, ')
+          ..write('progress: $progress')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, mimeType, nameWithSuffix, size, path, state);
+  int get hashCode => Object.hash(
+      id, name, mimeType, nameWithSuffix, size, path, state, progress);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -689,7 +712,8 @@ class FileContent extends DataClass implements Insertable<FileContent> {
           other.nameWithSuffix == this.nameWithSuffix &&
           other.size == this.size &&
           other.path == this.path &&
-          other.state == this.state);
+          other.state == this.state &&
+          other.progress == this.progress);
 }
 
 class FileContentsCompanion extends UpdateCompanion<FileContent> {
@@ -700,6 +724,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
   final Value<int> size;
   final Value<String?> path;
   final Value<int> state;
+  final Value<double> progress;
   final Value<int> rowid;
   const FileContentsCompanion({
     this.id = const Value.absent(),
@@ -709,6 +734,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     this.size = const Value.absent(),
     this.path = const Value.absent(),
     this.state = const Value.absent(),
+    this.progress = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   FileContentsCompanion.insert({
@@ -719,13 +745,15 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     required int size,
     this.path = const Value.absent(),
     required int state,
+    required double progress,
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         name = Value(name),
         mimeType = Value(mimeType),
         nameWithSuffix = Value(nameWithSuffix),
         size = Value(size),
-        state = Value(state);
+        state = Value(state),
+        progress = Value(progress);
   static Insertable<FileContent> custom({
     Expression<String>? id,
     Expression<String>? name,
@@ -734,6 +762,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     Expression<int>? size,
     Expression<String>? path,
     Expression<int>? state,
+    Expression<double>? progress,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -744,6 +773,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
       if (size != null) 'size': size,
       if (path != null) 'path': path,
       if (state != null) 'state': state,
+      if (progress != null) 'progress': progress,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -756,6 +786,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
       Value<int>? size,
       Value<String?>? path,
       Value<int>? state,
+      Value<double>? progress,
       Value<int>? rowid}) {
     return FileContentsCompanion(
       id: id ?? this.id,
@@ -765,6 +796,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
       size: size ?? this.size,
       path: path ?? this.path,
       state: state ?? this.state,
+      progress: progress ?? this.progress,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -793,6 +825,9 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     if (state.present) {
       map['state'] = Variable<int>(state.value);
     }
+    if (progress.present) {
+      map['progress'] = Variable<double>(progress.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -809,6 +844,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
           ..write('size: $size, ')
           ..write('path: $path, ')
           ..write('state: $state, ')
+          ..write('progress: $progress, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
