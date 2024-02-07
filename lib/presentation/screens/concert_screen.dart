@@ -2,11 +2,12 @@ import 'dart:ui';
 
 import 'package:androp/domain/concert/concert_provider.dart';
 import 'package:androp/domain/device/device_manager.dart';
+import 'package:androp/model/ship/primitive_bubble.dart';
 import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:androp/model/ui_bubble/ui_bubble.dart';
 import 'package:androp/model/device_info.dart';
 import 'package:androp/model/pickable.dart';
-import 'package:androp/model/shareable.dart';
+import 'package:androp/model/ui_bubble/shareable.dart';
 import 'package:androp/presentation/widgets/blur_appbar.dart';
 import 'package:androp/presentation/widgets/pick_actions.dart';
 import 'package:androp/presentation/widgets/share_bubble.dart';
@@ -75,10 +76,11 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
 
   // List<BubbleEntity> shareList = [];
 
-  void submit(ConcertProvider concertProvider, Shareable shareable) async {
+  void submit(ConcertProvider concertProvider, Shareable shareable, BubbleType type) async {
     await concertProvider.send(UIBubble(
         from: DeviceManager.instance.did,
         to: Provider.of<ConcertProvider>(context, listen: false).deviceInfo.id,
+        type: type,
         shareable: shareable));
   }
 
@@ -98,7 +100,7 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
                 padding: const EdgeInsets.only(
                     left: 16.0, right: 16.0, top: 12, bottom: 12),
                 child: ShareBubble(
-                  entity: item,
+                  uiBubble: item,
                 ),
               );
             }),
@@ -106,8 +108,8 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
           alignment: Alignment.bottomLeft,
           child: InputArea(
             // onSubmit: (content) => submit(content),
-            onSubmit: (shareable) {
-              submit(concertProvider, shareable);
+            onSubmit: (shareable, type) {
+              submit(concertProvider, shareable, type);
             },
           ),
         ),
@@ -140,24 +142,24 @@ class InputAreaState extends State<InputArea> {
   }
 
   void submitText(String content) {
-    onSubmit(SharedText(id: Uuid().v4(), content: content));
+    onSubmit(SharedText(id: Uuid().v4(), content: content), BubbleType.Text);
   }
 
   void submitImage(FileMeta meta) {
-    onSubmit(SharedImage(id: Uuid().v4(), content: meta));
+    onSubmit(SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta), BubbleType.Image);
   }
 
   void submitVideo(FileMeta meta) {
-    onSubmit(SharedVideo(id: Uuid().v4(), content: meta));
+    onSubmit(SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta), BubbleType.Video);
   }
 
   void submitApp(Application app) {
-    onSubmit(SharedApp(id: Uuid().v4(), content: app));
+    onSubmit(SharedApp(id: Uuid().v4(), content: app), BubbleType.App);
   }
 
   void submitFile(FileMeta meta) async {
     onSubmit(SharedFile(
-        id: Uuid().v4(), shareState: FileShareState.inTransit, meta: meta));
+        id: Uuid().v4(), state: FileState.picked, content: meta), BubbleType.File);
   }
 
   void onPicked(List<Pickable> pickables) {
@@ -254,4 +256,4 @@ class InputAreaState extends State<InputArea> {
   }
 }
 
-typedef OnSubmit = void Function(Shareable);
+typedef OnSubmit = void Function(Shareable shareable, BubbleType type);

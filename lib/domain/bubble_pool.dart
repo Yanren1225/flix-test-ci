@@ -35,7 +35,7 @@ class BubblePool {
       }
 
       final _fileBubble = _bubble! as PrimitiveFileBubble;
-      if (_fileBubble.content.state != FileShareState.receiveCompleted) {
+      if (_fileBubble.content.state != FileState.receiveCompleted) {
         final updatedBubble = _fileBubble.copy(content: _fileBubble.content.copy(state: _updateStateBubble.content));
         _updateOrAddBubbleToCache(updatedBubble);
       }

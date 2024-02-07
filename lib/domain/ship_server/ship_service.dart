@@ -25,10 +25,9 @@ class ShipService {
   final _bubblePool = BubblePool.instance;
 
   Future<HttpServer> startShipServer() async {
-
     var app = Router();
     app.post('/bubble', _receiveBubble);
-    app.post('/file', _reciveFile);
+    app.post('/file', _receiveFile);
 
     var server = await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort);
 
@@ -41,20 +40,30 @@ class ShipService {
     var data = jsonDecode(body) as Map<String, dynamic>;
     var bubble = PrimitiveBubble.fromJson(data);
     await _bubblePool.add(bubble);
-    return Response.ok('receviced bubble');
+    return Response.ok('received bubble');
   }
 
-  Future<Response> _reciveFile(Request request) async {
+  Future<Response> _receiveFile(Request request) async {
     if (!request.isMultipart) {
       return Response.badRequest();
     } else if (request.isMultipartForm) {
       final description = StringBuffer('Parsed form multipart request\n');
 
-      var shareId = "";
+      PrimitiveBubble? bubble;
       await for (final formData in request.multipartFormData) {
         switch (formData.name) {
           case 'share_id':
-            shareId = await formData.part.readString();
+            final shareId = await formData.part.readString();
+            bubble = await _bubblePool.findLastById(shareId);
+            if (bubble == null) {
+              throw StateError(
+                  'Primitive Bubble with id: $shareId should not null.');
+            }
+
+            if (!(bubble is PrimitiveFileBubble)) {
+              throw StateError(
+                  'Primitive Bubble should be PrimitiveFileBubble');
+            }
             break;
           case 'file':
             final String desDir = await getDefaultDestinationDirectory();
@@ -66,21 +75,11 @@ class ShipService {
             }
             final out = outFile.openWrite(mode: FileMode.append);
             await formData.part.pipe(out);
-            final bubble = await _bubblePool.findLastById(shareId);
-            if (bubble == null) {
-              throw StateError(
-                  'Primitive Bubble with id: $shareId should not null.');
-            }
-
-            if (!(bubble is PrimitiveFileBubble)) {
-              throw StateError(
-                  'Primitive Bubble should be PrimitiveFileBubble');
-            }
 
             final fileBubble = bubble as PrimitiveFileBubble;
             final updatedBubble = fileBubble.copy(
                 content: fileBubble.content.copy(
-                    state: FileShareState.receiveCompleted,
+                    state: FileState.receiveCompleted,
                     meta: fileBubble.content.meta.copy(path: filePath)));
             // removeBubbleById(updatedBubble.id);
             await _bubblePool.add(updatedBubble);

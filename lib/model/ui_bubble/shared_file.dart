@@ -1,22 +1,23 @@
-import 'package:androp/model/shareable.dart';
+import 'package:androp/model/ui_bubble/shareable.dart';
 import 'package:file_selector/file_selector.dart';
 
-class SharedFile extends Shareable<XFile?> {
+class SharedFile extends Shareable<FileMeta> {
   @override
   final String id;
 
-  FileShareState shareState;
+  FileState state;
 
-  FileMeta meta;
+  // 发送或者接收的进度, 范围：0~1
+  double progress;
 
   @override
-  final XFile? content;
+  FileMeta content;
 
   SharedFile(
       {required this.id,
-      required this.meta,
-      this.content,
-      this.shareState = FileShareState.unknown});
+      required this.content,
+      this.state = FileState.unknown,
+      this.progress = 0});
 }
 
 class FileMeta {
@@ -64,9 +65,12 @@ class FileMeta {
   }
 }
 
-enum FileShareState {
+enum FileState {
   /// unknown state.
   unknown,
+
+  /// 文件被选择
+  picked,
 
   /// The file is wait to accepted.
   waitToAccepted,

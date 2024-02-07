@@ -18,8 +18,8 @@ class ConcertProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> send(UIBubble bubbleEntity) async {
-    return await _concertService.send(bubbleEntity);
+  Future<void> send(UIBubble uiBubble) async {
+    return await _concertService.send(uiBubble);
   }
 
   @override

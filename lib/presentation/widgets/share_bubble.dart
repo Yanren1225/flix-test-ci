@@ -1,38 +1,39 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:androp/model/ship/primitive_bubble.dart';
 import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:androp/model/ui_bubble/ui_bubble.dart';
-import 'package:androp/model/shareable.dart';
+import 'package:androp/model/ui_bubble/shareable.dart';
 import 'package:androp/presentation/widgets/app_icon.dart';
 import 'package:androp/presentation/widgets/aspect_ratio_video.dart';
 import 'package:androp/utils/file/size_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 // import 'package:thumbnailer/thumbnailer.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../domain/androp_context.dart';
 
 class ShareBubble extends StatelessWidget {
-  final UIBubble entity;
+  final UIBubble uiBubble;
 
-  const ShareBubble({super.key, required this.entity});
+  const ShareBubble({super.key, required this.uiBubble});
 
   @override
   Widget build(BuildContext context) {
-    if (entity.shareable is SharedText) {
-      return ShareTextBubble(entity: entity);
-    } else if (entity.shareable is SharedImage) {
-      return ShareImageBubble(entity: entity);
-    } else if (entity.shareable is SharedVideo) {
-      return ShareVideoBubble(entity: entity);
-    } else if (entity.shareable is SharedApp) {
-      return ShareAppBubble(entity: entity);
-    } else if (entity.shareable is SharedFile) {
-      return ShareFileBubble(entity: entity);
-    } else {
-      return const Placeholder();
+    switch (uiBubble.type) {
+      case BubbleType.Text:
+        return ShareTextBubble(entity: uiBubble);
+      case BubbleType.Image:
+        return ShareImageBubble(entity: uiBubble);
+      case BubbleType.Video:
+        return ShareVideoBubble(entity: uiBubble);
+      case BubbleType.File:
+        return ShareFileBubble(entity: uiBubble);
+      case BubbleType.App:
+        return ShareAppBubble(entity: uiBubble);
     }
   }
 }
@@ -87,12 +88,13 @@ class ShareTextBubble extends StatelessWidget {
 
 class ShareImageBubble extends StatelessWidget {
   final UIBubble entity;
+
   const ShareImageBubble({super.key, required this.entity});
 
   @override
   Widget build(BuildContext context) {
     AndropContext andropContext = context.watch();
-    final SharedImage sharedImage = entity.shareable as SharedImage;
+    final sharedImage = entity.shareable as SharedFile;
     final Color backgroundColor;
     if (entity.from == andropContext.deviceId) {
       backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
@@ -139,6 +141,7 @@ class ShareImageBubble extends StatelessWidget {
 
 class ShareVideoBubble extends StatefulWidget {
   final UIBubble entity;
+
   const ShareVideoBubble({super.key, required this.entity});
 
   @override
@@ -152,7 +155,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
   @override
   Widget build(BuildContext context) {
     AndropContext andropContext = context.watch();
-    final SharedVideo sharedVideo = entity.shareable as SharedVideo;
+    final sharedVideo = entity.shareable as SharedFile;
     final Color backgroundColor;
     if (entity.from == andropContext.deviceId) {
       backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
@@ -427,7 +430,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              sharedFile.meta.name,
+                              sharedFile.content.name,
                               style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
@@ -436,9 +439,9 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Visibility(
-                                visible: sharedFile.meta.size > 0,
+                                visible: sharedFile.content.size > 0,
                                 child: Text(
-                                  sharedFile.meta.size.formateBinarySize(),
+                                  sharedFile.content.size.formateBinarySize(),
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,

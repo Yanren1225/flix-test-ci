@@ -20,6 +20,8 @@ abstract class PrimitiveBubble<Content> {
       case BubbleType.Video:
       case BubbleType.File:
         return PrimitiveFileBubble.fromJson(json);
+      case BubbleType.App:
+        throw UnimplementedError();
     }
   }
 
@@ -134,13 +136,13 @@ class PrimitiveFileBubble extends PrimitiveBubble<FileTransfer> {
 }
 
 class FileTransfer {
-  late FileShareState state;
+  late FileState state;
   late FileMeta meta;
 
-  FileTransfer({this.state = FileShareState.unknown, required this.meta});
+  FileTransfer({this.state = FileState.unknown, required this.meta});
 
   FileTransfer.fromJson(Map<String, dynamic> json) {
-    state = FileShareState.values[json['state'] as int];
+    state = FileState.values[json['state'] as int];
     meta = FileMeta.fromJson(json['meta'] as Map<String, dynamic>);
   }
 
@@ -148,16 +150,16 @@ class FileTransfer {
     return {'state': state.index, 'meta': meta.toJson()};
   }
 
-  FileTransfer copy({FileShareState? state, FileMeta? meta}) {
+  FileTransfer copy({FileState? state, FileMeta? meta}) {
     return FileTransfer(state: state ?? this.state, meta: meta ?? this.meta);
   }
 }
 
-enum BubbleType { Text, Image, Video, File }
+enum BubbleType { Text, Image, Video, File, App }
 
 abstract class InVisibleBubble<Content> extends PrimitiveBubble<Content> {}
 
-class UpdateFileStateBubble extends InVisibleBubble<FileShareState> {
+class UpdateFileStateBubble extends InVisibleBubble<FileState> {
   @override
   late String id;
 
@@ -171,7 +173,7 @@ class UpdateFileStateBubble extends InVisibleBubble<FileShareState> {
   late BubbleType type;
 
   @override
-  late FileShareState content;
+  late FileState content;
 
   UpdateFileStateBubble.fromJson(Map<String, dynamic> json) {
     id = json['id'] as String;
@@ -180,7 +182,7 @@ class UpdateFileStateBubble extends InVisibleBubble<FileShareState> {
     final typeOrdinal = json['type'] as int;
     final type = BubbleType.values[typeOrdinal];
     this.type = type;
-    content = FileShareState.values[json['content'] as int];
+    content = FileState.values[json['content'] as int];
   }
 
   @override

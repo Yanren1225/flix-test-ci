@@ -17,25 +17,25 @@ class SharedText extends Shareable<String> {
   SharedText({required this.id, required this.content});
 }
 
-class SharedImage extends Shareable<FileMeta> {
-  @override
-  final FileMeta content;
-
-  @override
-  final String id;
-
-  SharedImage({required this.id, required this.content});
-}
-
-class SharedVideo extends Shareable<FileMeta> {
-  @override
-  final FileMeta content;
-
-  @override
-  final String id;
-
-  SharedVideo({required this.id, required this.content});
-}
+// class SharedImage extends Shareable<FileMeta> {
+//   @override
+//   final FileMeta content;
+//
+//   @override
+//   final String id;
+//
+//   SharedImage({required this.id, required this.content});
+// }
+//
+// class SharedVideo extends Shareable<FileMeta> {
+//   @override
+//   final FileMeta content;
+//
+//   @override
+//   final String id;
+//
+//   SharedVideo({required this.id, required this.content});
+// }
 
 class SharedApp extends Shareable<Application> {
   /// app
