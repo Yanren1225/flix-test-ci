@@ -236,17 +236,6 @@ class ShareImageBubble extends StatelessWidget {
             child: DecoratedBox(
               decoration:
                   const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text('${(sharedImage.progress * 100).round()}%',
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal))
-                ],
-              ),
             ),
           );
           stateIcon = SvgPicture.asset('assets/images/ic_trans_fail.svg');
@@ -323,12 +312,85 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
     } else {
       alignment = Alignment.centerLeft;
     }
+
+    Widget stateIcon = SizedBox();
     final Widget content;
     if (entity.isFromMe(andropContext.deviceId)) {
-      content = _buildInlineVideoPlayer(sharedVideo.content.path!);
-    } else {
+      // 发送
       switch (sharedVideo.state) {
+        case FileState.picked:
+        case FileState.waitToAccepted:
         case FileState.inTransit:
+          content = IntrinsicHeight(
+            child: Stack(
+              fit: StackFit.passthrough,
+              children: [
+                _buildInlineVideoPlayer(sharedVideo.content.path!, true),
+                Container(
+                  decoration:
+                      BoxDecoration(color: Colors.black.withOpacity(0.5)),
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            backgroundColor: Colors.transparent,
+                            color: Colors.white,
+                            strokeWidth: 2.0,
+                          )),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Text(
+                        '${(sharedVideo.progress * 100).round()}%',
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+          stateIcon = IconButton(
+              onPressed: () {
+                // TODO 取消发送
+              },
+              icon: SvgPicture.asset(
+                'assets/images/ic_cancel.svg',
+              ));
+          break;
+        case FileState.sendCompleted:
+        case FileState.receiveCompleted:
+        case FileState.completed:
+          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
+          break;
+        case FileState.cancelled:
+        case FileState.sendFailed:
+        case FileState.receiveFailed:
+        case FileState.failed:
+          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
+          stateIcon = SvgPicture.asset('assets/images/ic_trans_fail.svg');
+          break;
+        default:
+          throw StateError('Error send state: ${sharedVideo.state}');
+      }
+    } else {
+      // 接收
+      switch (sharedVideo.state) {
+        case FileState.waitToAccepted:
+        case FileState.inTransit:
+        case FileState.sendCompleted:
           content = AspectRatio(
             aspectRatio: 1.333333,
             child: DecoratedBox(
@@ -348,17 +410,23 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
             ),
           );
         case FileState.receiveCompleted:
-          content = _buildInlineVideoPlayer(sharedVideo.content.path!);
-        case FileState.unknown:
-        case FileState.picked:
-        case FileState.waitToAccepted:
-        case FileState.cancelled:
-        case FileState.sendCompleted:
         case FileState.completed:
+          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
+        case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
-          throw UnimplementedError();
+          content = const AspectRatio(
+            aspectRatio: 1.333333,
+            child: DecoratedBox(
+              decoration:
+              BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+            ),
+          );
+          stateIcon = SvgPicture.asset('assets/images/ic_trans_fail.svg');
+          break;
+        default:
+          throw StateError('Error receive state: ${sharedVideo.state}');
       }
     }
     return Align(
@@ -380,7 +448,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
     );
   }
 
-  Widget _buildInlineVideoPlayer(String videoUri) {
+  Widget _buildInlineVideoPlayer(String videoUri, bool preview) {
     // const double volume = kIsWeb ? 0.0 : 1.0;
     // controller.setVolume(volume);
     if (controller == null) {
@@ -391,9 +459,9 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
     }
 
     controller?.initialize();
-    controller?.setLooping(true);
-    controller?.play();
-    return Center(child: AspectRatioVideo(controller));
+    controller?.setLooping(false);
+    // controller?.play();
+    return Center(child: AspectRatioVideo(controller, preview));
   }
 
   @override

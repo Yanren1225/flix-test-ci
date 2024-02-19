@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:video_player/video_player.dart';
 
 class AspectRatioVideo extends StatefulWidget {
-  const AspectRatioVideo(this.controller, {super.key});
+  const AspectRatioVideo(this.controller, this.preview, {super.key});
 
   final VideoPlayerController? controller;
+  final bool preview;
 
   @override
   AspectRatioVideoState createState() => AspectRatioVideoState();
@@ -12,6 +14,9 @@ class AspectRatioVideo extends StatefulWidget {
 
 class AspectRatioVideoState extends State<AspectRatioVideo> {
   VideoPlayerController? get controller => widget.controller;
+
+  bool get preview => widget.preview;
+
   bool initialized = false;
 
   void _onVideoControllerUpdate() {
@@ -39,10 +44,28 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
   @override
   Widget build(BuildContext context) {
     if (initialized) {
-      return Center(
-        child: AspectRatio(
-          aspectRatio: controller!.value.aspectRatio,
-          child: VideoPlayer(controller!),
+      return IntrinsicHeight(
+        child: Stack(
+          fit: StackFit.passthrough,
+          children: [
+            Center(
+              child: AspectRatio(
+                aspectRatio: controller!.value.aspectRatio,
+                child: VideoPlayer(controller!),
+              ),
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: Visibility(
+                visible: !preview,
+                child: IconButton(
+                    onPressed: () {
+                      controller?.play();
+                    },
+                    icon: SvgPicture.asset('assets/images/ic_play.svg')),
+              ),
+            )
+          ],
         ),
       );
     } else {
