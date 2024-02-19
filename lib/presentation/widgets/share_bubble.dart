@@ -9,6 +9,7 @@ import 'package:androp/presentation/widgets/app_icon.dart';
 import 'package:androp/presentation/widgets/aspect_ratio_video.dart';
 import 'package:androp/utils/file/size_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 // import 'package:thumbnailer/thumbnailer.dart';
@@ -103,20 +104,133 @@ class ShareImageBubble extends StatelessWidget {
     }
 
     final Alignment alignment;
+    final MainAxisAlignment mainAxisAlignment;
     if (entity.isFromMe(andropContext.deviceId)) {
       alignment = Alignment.centerRight;
+      mainAxisAlignment = MainAxisAlignment.end;
     } else {
       alignment = Alignment.centerLeft;
+      mainAxisAlignment = MainAxisAlignment.start;
     }
 
+    Widget stateIcon = const SizedBox();
     final Widget content;
     if (entity.isFromMe(andropContext.deviceId)) {
-      content = Image.file(File(sharedImage.content.path!!),
-              fit: BoxFit.contain);
-    } else {
-
+      // 发送
       switch (sharedImage.state) {
+        case FileState.picked:
+        case FileState.waitToAccepted:
         case FileState.inTransit:
+          content = IntrinsicHeight(
+            child: Stack(
+              fit: StackFit.passthrough,
+              children: [
+                Image.file(File(sharedImage.content.path!!),
+                    fit: BoxFit.contain),
+                Container(
+                  decoration:
+                      const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: const SizedBox(),
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            backgroundColor: Colors.transparent,
+                            color: Colors.white,
+                            strokeWidth: 2.0,
+                          )),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Text(
+                        '${(sharedImage.progress * 100).round()}%',
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+          stateIcon = IconButton(
+              onPressed: () {
+                // TODO 取消发送
+              },
+              icon: SvgPicture.asset(
+                'assets/images/ic_cancel.svg',
+              ));
+          break;
+        case FileState.sendCompleted:
+        case FileState.receiveCompleted:
+        case FileState.completed:
+          content =
+              Image.file(File(sharedImage.content.path!!), fit: BoxFit.contain);
+          break;
+        case FileState.cancelled:
+        case FileState.sendFailed:
+        case FileState.receiveFailed:
+        case FileState.failed:
+          content =
+              Image.file(File(sharedImage.content.path!!), fit: BoxFit.contain);
+          stateIcon = SvgPicture.asset('assets/images/ic_trans_fail.svg');
+          break;
+        default:
+          throw StateError('Error send state: ${sharedImage.state}');
+      }
+    } else {
+      // 接收
+      switch (sharedImage.state) {
+        case FileState.waitToAccepted:
+        case FileState.inTransit:
+        case FileState.sendCompleted:
+          content = AspectRatio(
+            aspectRatio: 1.333333,
+            child: DecoratedBox(
+              decoration:
+                  const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.transparent,
+                        color: Colors.white,
+                        strokeWidth: 2.0,
+                      )),
+                  Text('${(sharedImage.progress * 100).round()}%',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal))
+                ],
+              ),
+            ),
+          );
+          break;
+        case FileState.receiveCompleted:
+        case FileState.completed:
+          content =
+              Image.file(File(sharedImage.content.path!!), fit: BoxFit.contain);
+          break;
+        case FileState.cancelled:
+        case FileState.sendFailed:
+        case FileState.receiveFailed:
+        case FileState.failed:
           content = AspectRatio(
             aspectRatio: 1.333333,
             child: DecoratedBox(
@@ -135,36 +249,42 @@ class ShareImageBubble extends StatelessWidget {
               ),
             ),
           );
-        case FileState.receiveCompleted:
-          content = Image.file(File(sharedImage.content.path!!),
-                  fit: BoxFit.contain);
-        case FileState.unknown:
-        case FileState.picked:
-        case FileState.waitToAccepted:
-        case FileState.cancelled:
-        case FileState.sendCompleted:
-        case FileState.completed:
-        case FileState.sendFailed:
-        case FileState.receiveFailed:
-        case FileState.failed:
-          throw UnimplementedError();
+          stateIcon = SvgPicture.asset('assets/images/ic_trans_fail.svg');
+          break;
+        default:
+          throw StateError('Error receive state: ${sharedImage.state}');
       }
     }
     return Align(
       alignment: alignment,
-      child: Container(
-        decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: const BorderRadius.all(Radius.circular(10))),
-        child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-          return ConstrainedBox(
-              constraints: BoxConstraints(
-                  maxWidth: min(300, constraints.maxWidth - 60), minWidth: 150),
-              child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  child: content));
-        }),
+      child: Row(
+        mainAxisAlignment: mainAxisAlignment,
+        children: [
+          Align(alignment: Alignment.bottomCenter, child: stateIcon),
+          const SizedBox(
+            width: 18,
+          ),
+          // Expanded强制占用剩余的空间
+          // Flexible默认允许子元素占用尽可能的剩余空间
+          Flexible(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: const BorderRadius.all(Radius.circular(10))),
+              child: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                return ConstrainedBox(
+                    constraints: BoxConstraints(
+                        maxWidth: min(300, constraints.maxWidth - 60),
+                        minWidth: 150),
+                    child: ClipRRect(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10)),
+                        child: content));
+              }),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -213,7 +333,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
             aspectRatio: 1.333333,
             child: DecoratedBox(
               decoration:
-              const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                  const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,

@@ -58,16 +58,8 @@ class BubblePool {
   }
 
   Future<void> add(PrimitiveBubble bubble) async {
-    log('add bubble ${bubble.id}');
-
-    // if (bubble.type == BubbleType.Text || bubble.type == BubbleType.File || bubble.type == BubbleType.) {
+    log('add bubble ${bubble.id}, $bubble');
     await appDatabase.bubblesDao.insert(bubble);
-    // } else {
-    //   _buffer = bubble;
-    //   _updateOrAddBubbleToCache(bubble);
-    //   _broadcast.add(bubble);
-    // }
-
   }
 
   StreamSubscription<PrimitiveBubble> listen(void onData(PrimitiveBubble bubble, List<PrimitiveBubble> buffer)?,

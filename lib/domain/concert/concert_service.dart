@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:androp/domain/bubble_pool.dart';
 import 'package:androp/domain/database/database.dart';
+import 'package:androp/utils/stream_progress.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
@@ -75,37 +76,45 @@ class ConcertService {
   }
 
   Future<void> _sendFile(PrimitiveFileBubble fileBubble) async {
-    var _fileBubble = fileBubble.copy(
-        content: fileBubble.content.copy(state: FileState.inTransit));
-    await _bubblePool.add(_fileBubble);
-    // send with no path
-    await _send(_fileBubble.copy(content: _fileBubble.content.copy(meta: _fileBubble.content.meta.copy(path: null))));
+    try {
+      var _fileBubble = fileBubble.copy(
+          content: fileBubble.content.copy(state: FileState.inTransit));
+      await _bubblePool.add(_fileBubble);
+      // send with no path
+      await _send(_fileBubble.copy(
+          content: _fileBubble.content
+              .copy(meta: _fileBubble.content.meta.copy(path: null))));
 
-    final shardFile = fileBubble.content.meta;
+      final shardFile = fileBubble.content.meta;
 
-    var request = http.MultipartRequest(
-        'POST',
-        Uri.parse(
-            'http://${DeviceManager.instance.getNetAdressByDeviceId(fileBubble.to)}/file'));
+      var request = http.MultipartRequest(
+          'POST',
+          Uri.parse(
+              'http://${DeviceManager.instance.getNetAdressByDeviceId(fileBubble.to)}/file'));
 
-    request.fields['share_id'] = fileBubble.id;
-    request.fields['file_name'] = shardFile.name;
+      request.fields['share_id'] = fileBubble.id;
+      request.fields['file_name'] = shardFile.name;
 
-    var multipartFile = http.MultipartFile(
-        'file', File(shardFile.path!).openRead(), shardFile.size,
-        filename: shardFile.name,
-        contentType: MediaType.parse(shardFile.mimeType));
+      var multipartFile = http.MultipartFile('file',
+          File(shardFile.path!).openRead().progress(fileBubble), shardFile.size,
+          filename: shardFile.name,
+          contentType: MediaType.parse(shardFile.mimeType));
 
-    request.files.add(multipartFile);
-    final response = await request.send();
-    if (response.statusCode == 200) {
-      dev.log('发送成功 ${await response.stream.bytesToString()}');
-      _updateFileShareState(fileBubble.id, FileState.sendCompleted);
-    } else {
-      dev.log(
-          '发送失败: status code: ${response.statusCode}, ${await response.stream.bytesToString()}');
+      request.files.add(multipartFile);
+      final response = await request.send();
+      if (response.statusCode == 200) {
+        dev.log('发送成功 ${await response.stream.bytesToString()}');
+        _updateFileShareState(fileBubble.id, FileState.sendCompleted);
+      } else {
+        dev.log(
+            '发送失败: status code: ${response.statusCode}, ${await response.stream.bytesToString()}');
+        _updateFileShareState(fileBubble.id, FileState.sendFailed);
+      }
+    } catch (e) {
+      dev.log('发送异常: $e');
       _updateFileShareState(fileBubble.id, FileState.sendFailed);
     }
+
   }
 
   Future<void> _updateFileShareState(String bubbleId, FileState state) async {
@@ -118,11 +127,7 @@ class ConcertService {
       throw StateError('The Bubble with id: $bubbleId is not a file bubble');
     }
 
-    final _fileBubble = _bubble! as PrimitiveFileBubble;
-    // final updateBubble = UpdateFileStateBubble(id: bubbleId, from: _fileBubble.from, to: _fileBubble.to, type: _fileBubble.type, content: state);
-
-    // _send(updateBubble);
-
-    // _bubblePool.add(updateBubble);
+    await _bubblePool
+        .add(_bubble.copy(content: _bubble.content.copy(state: state)));
   }
 }
