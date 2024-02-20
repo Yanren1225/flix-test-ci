@@ -140,7 +140,11 @@ class PickActionAreaState extends State<PickActionsArea> {
     List<Application>? apps = await Navigator.push(
         context, MaterialPageRoute(builder: (context) => const AppsScreen()));
     if (apps != null) {
-      onPicked(apps.map((app) => PickableApp(content: app)).toList());
+      onPicked([
+        for (final app in apps)
+          PickableFile(
+              type: PickedFileType.App, content: await app.toFileMeta())
+      ]);
     }
   }
 

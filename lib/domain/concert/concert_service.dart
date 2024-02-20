@@ -68,9 +68,10 @@ class ConcertService {
       case BubbleType.Image:
       case BubbleType.Video:
       case BubbleType.File:
+      case BubbleType.App:
         await _sendFile(fromUIBubble(uiBubble) as PrimitiveFileBubble);
         break;
-      case BubbleType.App:
+      default:
         throw UnimplementedError();
     }
   }

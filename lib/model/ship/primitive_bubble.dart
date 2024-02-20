@@ -18,9 +18,10 @@ abstract class PrimitiveBubble<Content> {
         return PrimitiveTextBubble.fromJson(json);
       case BubbleType.Image:
       case BubbleType.Video:
+      case BubbleType.App:
       case BubbleType.File:
         return PrimitiveFileBubble.fromJson(json);
-      case BubbleType.App:
+      default:
         throw UnimplementedError();
     }
   }

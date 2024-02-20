@@ -8,6 +8,7 @@ import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:androp/model/ship/primitive_bubble.dart';
 import 'package:androp/network/multicast_util.dart';
 import 'package:androp/utils/stream_progress.dart';
+import 'package:flutter/services.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_multipart/form_data.dart';
@@ -68,31 +69,39 @@ class ShipService {
             bubble = _bubble as PrimitiveFileBubble;
             break;
           case 'file':
-            final String desDir = await getDefaultDestinationDirectory();
-            final String filePath = '$desDir/${formData.filename}';
-            final outFile = File(filePath);
-            log('writing file to ${outFile.path}');
-            if (!(await outFile.exists())) {
-              await outFile.create();
-            }
-            final out = outFile.openWrite(mode: FileMode.append);
             if (bubble == null) {
               throw StateError('Bubble should not null');
             }
+            try {
+              final String desDir = await getDefaultDestinationDirectory();
+              final String filePath = '$desDir/${formData.filename}';
+              final outFile = File(filePath);
+              log('writing file to ${outFile.path}');
+              if (!(await outFile.exists())) {
+                await outFile.create();
+              }
+              final out = outFile.openWrite(mode: FileMode.append);
 
-            await formData.part.progress(bubble).pipe(out);
+              await formData.part.progress(bubble).pipe(out);
 
+              // await Future.delayed(Duration(seconds: 5));
 
-
-            await Future.delayed(Duration(seconds: 5));
-
-            final updatedBubble = bubble.copy(
-                content: bubble.content.copy(
-                    state: FileState.receiveCompleted,
-                    progress: 1.0,
-                    meta: bubble.content.meta.copy(path: filePath)));
-            // removeBubbleById(updatedBubble.id);
-            await _bubblePool.add(updatedBubble);
+              final updatedBubble = bubble.copy(
+                  content: bubble.content.copy(
+                      state: FileState.receiveCompleted,
+                      progress: 1.0,
+                      meta: bubble.content.meta.copy(path: filePath)));
+              // removeBubbleById(updatedBubble.id);
+              await _bubblePool.add(updatedBubble);
+            } on Error catch (e) {
+              log('receive file error: $e');
+              final updatedBubble = bubble.copy(
+                  content: bubble.content
+                      .copy(state: FileState.receiveFailed, progress: 1.0));
+              // removeBubbleById(updatedBubble.id);
+              await _bubblePool.add(updatedBubble);
+              return Response.internalServerError();
+            }
             break;
         }
       }

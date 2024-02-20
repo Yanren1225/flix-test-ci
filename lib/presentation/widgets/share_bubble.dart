@@ -24,6 +24,7 @@ class ShareBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     switch (uiBubble.type) {
       case BubbleType.Text:
         return ShareTextBubble(entity: uiBubble);
@@ -34,7 +35,8 @@ class ShareBubble extends StatelessWidget {
       case BubbleType.File:
         return ShareFileBubble(entity: uiBubble);
       case BubbleType.App:
-        return ShareAppBubble(entity: uiBubble);
+        // return ShareAppBubble(entity: uiBubble);
+        return ShareFileBubble(entity: uiBubble);
     }
   }
 }
@@ -103,14 +105,11 @@ class ShareImageBubble extends StatelessWidget {
       backgroundColor = Colors.white;
     }
 
-    final Alignment alignment;
-    final MainAxisAlignment mainAxisAlignment;
+    final MainAxisAlignment alignment;
     if (entity.isFromMe(andropContext.deviceId)) {
-      alignment = Alignment.centerRight;
-      mainAxisAlignment = MainAxisAlignment.end;
+      alignment = MainAxisAlignment.end;
     } else {
-      alignment = Alignment.centerLeft;
-      mainAxisAlignment = MainAxisAlignment.start;
+      alignment = MainAxisAlignment.start;
     }
 
     Widget stateIcon = const SizedBox();
@@ -244,37 +243,48 @@ class ShareImageBubble extends StatelessWidget {
           throw StateError('Error receive state: ${sharedImage.state}');
       }
     }
-    return Align(
-      alignment: alignment,
-      child: Row(
-        mainAxisAlignment: mainAxisAlignment,
-        children: [
-          Align(alignment: Alignment.bottomCenter, child: stateIcon),
-          const SizedBox(
-            width: 18,
+    return Row(
+      mainAxisAlignment: alignment,
+      children: [
+        Visibility(
+          visible: alignment == MainAxisAlignment.end && stateIcon != SizedBox,
+          child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 18.0),
+                child: stateIcon,
+              )),
+        ),
+        // Expanded强制占用剩余的空间
+        // Flexible默认允许子元素占用尽可能的剩余空间
+        Flexible(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: const BorderRadius.all(Radius.circular(10))),
+            child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+              return ConstrainedBox(
+                  constraints: BoxConstraints(
+                      maxWidth: min(300, constraints.maxWidth - 60),
+                      minWidth: 150),
+                  child: ClipRRect(
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      child: content));
+            }),
           ),
-          // Expanded强制占用剩余的空间
-          // Flexible默认允许子元素占用尽可能的剩余空间
-          Flexible(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                  color: backgroundColor,
-                  borderRadius: const BorderRadius.all(Radius.circular(10))),
-              child: LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                return ConstrainedBox(
-                    constraints: BoxConstraints(
-                        maxWidth: min(300, constraints.maxWidth - 60),
-                        minWidth: 150),
-                    child: ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10)),
-                        child: content));
-              }),
-            ),
-          ),
-        ],
-      ),
+        ),
+        Visibility(
+          visible:
+              alignment == MainAxisAlignment.start && stateIcon != SizedBox,
+          child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 18.0),
+                child: stateIcon,
+              )),
+        ),
+      ],
     );
   }
 }
@@ -306,11 +316,11 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
     if (entity.isFromMe(andropContext.deviceId)) {
     } else {}
 
-    final Alignment alignment;
+    final MainAxisAlignment alignment;
     if (entity.isFromMe(andropContext.deviceId)) {
-      alignment = Alignment.centerRight;
+      alignment = MainAxisAlignment.end;
     } else {
-      alignment = Alignment.centerLeft;
+      alignment = MainAxisAlignment.start;
     }
 
     Widget stateIcon = SizedBox();
@@ -419,8 +429,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
           content = const AspectRatio(
             aspectRatio: 1.333333,
             child: DecoratedBox(
-              decoration:
-              BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+              decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
             ),
           );
           stateIcon = SvgPicture.asset('assets/images/ic_trans_fail.svg');
@@ -429,22 +438,46 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
           throw StateError('Error receive state: ${sharedVideo.state}');
       }
     }
-    return Align(
-      alignment: alignment,
-      child: Container(
-        decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: const BorderRadius.all(Radius.circular(10))),
-        child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-          return ConstrainedBox(
-              constraints: BoxConstraints(
-                  maxWidth: min(300, constraints.maxWidth - 60), minWidth: 150),
-              child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  child: content));
-        }),
-      ),
+    return Row(
+      mainAxisAlignment: alignment,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Visibility(
+          visible: alignment == MainAxisAlignment.end && stateIcon != SizedBox,
+          child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 18.0),
+                child: stateIcon,
+              )),
+        ),
+        Flexible(
+          child: Container(
+            decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: const BorderRadius.all(Radius.circular(10))),
+            child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+              return ConstrainedBox(
+                  constraints: BoxConstraints(
+                      maxWidth: min(300, constraints.maxWidth - 60),
+                      minWidth: 150),
+                  child: ClipRRect(
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      child: content));
+            }),
+          ),
+        ),
+        Visibility(
+          visible: alignment == MainAxisAlignment.start && stateIcon != SizedBox,
+          child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 18.0),
+                child: stateIcon,
+              )),
+        ),
+      ],
     );
   }
 
@@ -599,116 +632,206 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
   Widget build(BuildContext context) {
     AndropContext andropContext = context.watch();
     final SharedFile sharedFile = entity.shareable as SharedFile;
-    final Color backgroundColor;
+
+    const Color backgroundColor = Colors.white;
+    const Color contentColor = Colors.black;
+
+    final MainAxisAlignment alignment;
     if (entity.isFromMe(andropContext.deviceId)) {
-      backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
+      alignment = MainAxisAlignment.end;
     } else {
-      backgroundColor = Colors.white;
+      alignment = MainAxisAlignment.start;
     }
 
-    final Color contentColor;
+    var showStateIcon = false;
+    Widget stateIcon = SizedBox();
+    final showProgressBar;
+    final progressBarColor;
+    final des;
     if (entity.isFromMe(andropContext.deviceId)) {
-      contentColor = Colors.white;
+      switch (sharedFile.state) {
+        case FileState.picked:
+        case FileState.waitToAccepted:
+        case FileState.inTransit:
+          showProgressBar = true;
+          progressBarColor = Color.fromRGBO(0, 122, 255, 1);
+          des = sharedFile.content.size.formateBinarySize();
+          showStateIcon = true;
+          stateIcon = IconButton(
+              onPressed: () {
+                // TODO 取消发送
+              },
+              icon: SvgPicture.asset(
+                'assets/images/ic_cancel.svg',
+              ));
+          break;
+        case FileState.sendCompleted:
+        case FileState.receiveCompleted:
+        case FileState.completed:
+          showProgressBar = false;
+          progressBarColor = Color.fromRGBO(0, 122, 255, 1);
+          des = '${sharedFile.content.size.formateBinarySize()} · 已发送';
+          break;
+        case FileState.sendFailed:
+        case FileState.receiveFailed:
+        case FileState.failed:
+          des = '${sharedFile.content.size.formateBinarySize()} · 发送失败';
+          showProgressBar = true;
+          progressBarColor = Color.fromRGBO(255, 59, 48, 1);
+          showStateIcon = true;
+          stateIcon = SvgPicture.asset(
+            'assets/images/ic_trans_fail.svg',
+          );
+          break;
+        case FileState.cancelled:
+          des = '${sharedFile.content.size.formateBinarySize()} · 已取消';
+          showProgressBar = true;
+          progressBarColor = Color.fromRGBO(255, 59, 48, 1);
+          break;
+        case FileState.unknown:
+          throw StateError('Unknown send state: ${sharedFile.state}');
+      }
     } else {
-      contentColor = Colors.black;
+      switch (sharedFile.state) {
+        case FileState.waitToAccepted:
+        case FileState.inTransit:
+        case FileState.sendCompleted:
+          showProgressBar = true;
+          progressBarColor = Color.fromRGBO(0, 122, 255, 1);
+          des = sharedFile.content.size.formateBinarySize();
+          break;
+        case FileState.receiveCompleted:
+        case FileState.completed:
+          showProgressBar = false;
+          progressBarColor = Color.fromRGBO(0, 122, 255, 1);
+          des = '${sharedFile.content.size.formateBinarySize()} · 已接收';
+          break;
+        case FileState.sendFailed:
+        case FileState.receiveFailed:
+        case FileState.failed:
+          des = '${sharedFile.content.size.formateBinarySize()} · 接收失败';
+          showProgressBar = true;
+          progressBarColor = Color.fromRGBO(255, 59, 48, 1);
+          stateIcon = SvgPicture.asset(
+            'assets/images/ic_trans_fail.svg',
+          );
+          break;
+        case FileState.cancelled:
+          des = '${sharedFile.content.size.formateBinarySize()} · 已取消';
+          showProgressBar = true;
+          progressBarColor = Color.fromRGBO(255, 59, 48, 1);
+          stateIcon = SvgPicture.asset(
+            'assets/images/ic_trans_fail.svg',
+          );
+          break;
+        case FileState.unknown:
+        default:
+          throw StateError('Unknown send state: ${sharedFile.state}');
+      }
     }
 
-    final Color thumbnailBackgroundColor;
-    if (entity.isFromMe(andropContext.deviceId)) {
-      thumbnailBackgroundColor = Colors.white;
-    } else {
-      thumbnailBackgroundColor = const Color.fromRGBO(0, 122, 255, 1);
-    }
-
-    final Color thumbnailColor;
-    if (entity.isFromMe(andropContext.deviceId)) {
-      thumbnailColor = const Color.fromRGBO(0, 122, 255, 1);
-    } else {
-      thumbnailColor = Colors.white;
-    }
-
-    final Alignment alignment;
-    if (entity.isFromMe(andropContext.deviceId)) {
-      alignment = Alignment.centerRight;
-    } else {
-      alignment = Alignment.centerLeft;
-    }
-    return Align(
-      alignment: alignment,
-      child: Container(
-        decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: const BorderRadius.all(Radius.circular(10))),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: constraints.maxWidth - 60),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 16, top: 12, right: 16, bottom: 12),
-                child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Thumbnail(
-                      //     errorBuilder: (uildContext, Exception error) {
-                      //       return Container(
-                      //         height: 200,
-                      //         color: Colors.blue,
-                      //         child: const Center(
-                      //           child: Text('Cannot load file contents'),
-                      //         ),
-                      //       );
-                      //     },
-                      //     dataResolver: () async {
-                      //       throw Error();
-                      //     },
-                      //     mimeType: sharedFile.content.mimeType ?? "unknown",
-                      //     // mimeType: 'text/html',
-                      //     widgetSize: 50,
-                      //     onlyIcon: true,
-                      //     decoration: WidgetDecoration(
-                      //       backgroundColor: thumbnailBackgroundColor,
-                      //       iconColor: thumbnailColor,
-                      //     )),
-                      // const SizedBox(
-                      //   width: 16,
-                      // ),
-                      Flexible(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              sharedFile.content.name,
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: contentColor),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Visibility(
-                                visible: sharedFile.content.size > 0,
+    return Row(
+      mainAxisAlignment: alignment,
+      children: [
+        Visibility(
+            visible: alignment == MainAxisAlignment.end && showStateIcon,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 18.0),
+              child: stateIcon,
+            )),
+        Flexible(
+          child: Container(
+            decoration: const BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.all(Radius.circular(10))),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return ConstrainedBox(
+                  constraints: BoxConstraints(
+                      maxWidth: max(constraints.maxWidth - 60, 200)),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 10, top: 10, right: 10, bottom: 10),
+                    child: IntrinsicWidth(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    sharedFile.content.name,
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: contentColor),
+                                    maxLines: 2,
+                                    // TODO: 省略中间
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+                                Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6),
+                                      color:
+                                          const Color.fromRGBO(0, 122, 255, 1)),
+                                  alignment: Alignment.center,
+                                  child: SvgPicture.asset(
+                                      'assets/images/ic_file1.svg'),
+                                )
+                              ]),
+                          Visibility(
+                              visible: sharedFile.content.size >= 0,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
                                 child: Text(
-                                  sharedFile.content.size.formateBinarySize(),
+                                  des,
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,
                                       color: contentColor.withOpacity(0.5)),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                ))
-                          ],
-                        ),
+                                ),
+                              )),
+                          Visibility(
+                            visible: showProgressBar,
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: LinearProgressIndicator(
+                                  value: sharedFile.progress,
+                                  minHeight: 6,
+                                  borderRadius: BorderRadius.circular(6),
+                                  backgroundColor:
+                                      const Color.fromRGBO(247, 247, 247, 1),
+                                  color: progressBarColor),
+                            ),
+                          )
+                        ],
                       ),
-                    ]),
-              ),
-            );
-          },
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         ),
-      ),
+        Visibility(
+            visible: alignment == MainAxisAlignment.start && showStateIcon,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 18.0),
+              child: stateIcon,
+            )),
+      ],
     );
   }
 }

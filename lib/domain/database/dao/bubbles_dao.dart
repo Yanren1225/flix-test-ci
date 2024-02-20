@@ -11,37 +11,38 @@ import 'package:drift/drift.dart';
 
 part 'bubbles_dao.g.dart';
 
-
 @DriftAccessor(tables: [BubbleEntities, TextContents, FileContents])
 class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
   BubblesDao(super.db);
 
   Future<int> insert(PrimitiveBubble bubble) async {
     return await transaction(() async {
-      await into(bubbleEntities).insertOnConflictUpdate(BubbleEntitiesCompanion.insert(
-          id: bubble.id,
-          fromDevice: bubble.from,
-          toDevice: bubble.to,
-          type: bubble.type.index));
+      await into(bubbleEntities).insertOnConflictUpdate(
+          BubbleEntitiesCompanion.insert(
+              id: bubble.id,
+              fromDevice: bubble.from,
+              toDevice: bubble.to,
+              type: bubble.type.index));
       switch (bubble.type) {
         case BubbleType.Text:
-          return await into(textContents).insertOnConflictUpdate(TextContentsCompanion.insert(
-              id: bubble.id, content: bubble.content));
+          return await into(textContents).insertOnConflictUpdate(
+              TextContentsCompanion.insert(
+                  id: bubble.id, content: bubble.content));
         case BubbleType.Image:
         case BubbleType.Video:
+        case BubbleType.App:
         case BubbleType.File:
-
           final fileBubble = bubble as PrimitiveFileBubble;
-          return await into(fileContents).insertOnConflictUpdate(FileContentsCompanion.insert(
-            id: fileBubble.id,
-            name: fileBubble.content.meta.name,
-            nameWithSuffix: fileBubble.content.meta.nameWithSuffix,
-            mimeType: fileBubble.content.meta.mimeType,
-            size: fileBubble.content.meta.size,
-            path: Value(fileBubble.content.meta.path),
-            state: fileBubble.content.state.index,
-            progress: fileBubble.content.progress
-          ));
+          return await into(fileContents).insertOnConflictUpdate(
+              FileContentsCompanion.insert(
+                  id: fileBubble.id,
+                  name: fileBubble.content.meta.name,
+                  nameWithSuffix: fileBubble.content.meta.nameWithSuffix,
+                  mimeType: fileBubble.content.meta.mimeType,
+                  size: fileBubble.content.meta.size,
+                  path: Value(fileBubble.content.meta.path),
+                  state: fileBubble.content.state.index,
+                  progress: fileBubble.content.progress));
         default:
           throw UnimplementedError();
       }
@@ -50,23 +51,27 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
 
   Stream<List<PrimitiveBubble>> watchBubblesByCid(String collebratorId) {
     return (select(bubbleEntities)
-      ..where((tbl) =>
-      (tbl.fromDevice.equals(collebratorId) | tbl.toDevice.equals(
-          collebratorId)))).watch().asyncMap((bubbleEntities) async {
-      final List<PrimitiveBubble?> primitiveBubbles = List.filled(
-          bubbleEntities.length, null);
-      final categoriedBubbleEntities = Map<int,
-          List<MapEntry<int, BubbleEntity>>>();
+          ..where((tbl) => (tbl.fromDevice.equals(collebratorId) |
+              tbl.toDevice.equals(collebratorId))))
+        .watch()
+        .asyncMap((bubbleEntities) async {
+      final List<PrimitiveBubble?> primitiveBubbles =
+          List.filled(bubbleEntities.length, null);
+      final categoriedBubbleEntities =
+          Map<int, List<MapEntry<int, BubbleEntity>>>();
       for (int i = 0; i < bubbleEntities.length; i++) {
         final bubbleEntity = bubbleEntities[i];
         final contentType;
-        // Image, Video, File都从FileContents表中读取
-        if (BubbleType.values[bubbleEntity.type] == BubbleType.File || BubbleType.values[bubbleEntity.type] == BubbleType.Video || BubbleType.values[bubbleEntity.type] == BubbleType.Image ) {
+        // Image, Video, App, File都从FileContents表中读取
+        if (BubbleType.values[bubbleEntity.type] == BubbleType.File ||
+            BubbleType.values[bubbleEntity.type] == BubbleType.Video ||
+            BubbleType.values[bubbleEntity.type] == BubbleType.Image ||
+            BubbleType.values[bubbleEntity.type] == BubbleType.App
+        ) {
           contentType = BubbleType.File.index;
         } else {
           contentType = BubbleType.Text.index;
         }
-
 
         var entities = categoriedBubbleEntities[contentType];
 
@@ -86,11 +91,13 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
         switch (type) {
           case BubbleType.Text:
             contents = await (select(textContents)
-              ..where((tbl) => tbl.id.isIn(ids))).get();
+                  ..where((tbl) => tbl.id.isIn(ids)))
+                .get();
             break;
           case BubbleType.File:
             contents = await (select(fileContents)
-              ..where((tbl) => tbl.id.isIn(ids))).get();
+                  ..where((tbl) => tbl.id.isIn(ids)))
+                .get();
             break;
           default:
             throw UnimplementedError();
@@ -111,9 +118,11 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
       return primitiveBubbles.nonNulls.toList();
     });
   }
-  
+
   Future<PrimitiveBubble?> getPrimitiveBubbleById(String id) async {
-    final bubbleEntity = await (select(bubbleEntities)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+    final bubbleEntity = await (select(bubbleEntities)
+          ..where((tbl) => tbl.id.equals(id)))
+        .getSingleOrNull();
     if (bubbleEntity == null) {
       return null;
     }
@@ -122,23 +131,20 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
     return fromDBEntity(bubbleEntity, content);
   }
 
-
   Future<dynamic> getContentById(String id, int bubbleType) async {
     final type = BubbleType.values[bubbleType];
     switch (type) {
       case BubbleType.Text:
-        return await (select(textContents)
-          ..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+        return await (select(textContents)..where((tbl) => tbl.id.equals(id)))
+            .getSingleOrNull();
       case BubbleType.File:
       case BubbleType.Image:
       case BubbleType.Video:
-         return await (select(fileContents)
-          ..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+      case BubbleType.App:
+        return await (select(fileContents)..where((tbl) => tbl.id.equals(id)))
+            .getSingleOrNull();
       default:
         throw UnimplementedError();
     }
   }
-
-
-
 }

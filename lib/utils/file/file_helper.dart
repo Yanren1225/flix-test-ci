@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:androp/model/ui_bubble/shared_file.dart';
+import 'package:device_apps/device_apps.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
@@ -62,5 +63,20 @@ extension PlatformFileConvert on PlatformFile {
         mimeType: lookupMimeType(this.name) ?? 'application/octet-stream',
         nameWithSuffix: this.name,
         size: this.size);
+  }
+}
+
+extension ApplicationConvert on Application {
+  Future<FileMeta> toFileMeta() async {
+    if (this.apkFilePath
+    == null) {
+      throw UnsupportedError('PlatformFile.path must not be null');
+    }
+    return FileMeta(
+        name: '$packageName.apk',
+        path: apkFilePath,
+        mimeType: 'application/vnd.android.package-archive',
+        nameWithSuffix: '$packageName.apk',
+        size: File(apkFilePath).lengthSync());
   }
 }

@@ -16,6 +16,7 @@ PrimitiveBubble fromUIBubble(UIBubble bubbleEntity) {
       case BubbleType.Image:
     case BubbleType.Video:
     case BubbleType.File:
+    case BubbleType.App:
     final sharedFile = bubbleEntity.shareable as SharedFile;
     return PrimitiveFileBubble(
         id: sharedFile.id,
@@ -24,8 +25,8 @@ PrimitiveBubble fromUIBubble(UIBubble bubbleEntity) {
         type: bubbleEntity.type,
         content: FileTransfer(
             meta: sharedFile.content, progress: sharedFile.progress, state: sharedFile.state));
-    case BubbleType.App:
-      throw UnimplementedError();
+    default:
+      throw UnimplementedError('Unknown bubble type: ${bubbleEntity.type}');
   }
 }
 
@@ -41,6 +42,7 @@ UIBubble toUIBubble(PrimitiveBubble bubble) {
               content: (bubble as PrimitiveTextBubble).content));
     case BubbleType.Image:
     case BubbleType.Video:
+    case BubbleType.App:
     case BubbleType.File:
       final primitive = (bubble as PrimitiveFileBubble);
 
@@ -53,7 +55,7 @@ UIBubble toUIBubble(PrimitiveBubble bubble) {
               state: primitive.content.state,
               progress: primitive.content.progress,
               content: primitive.content.meta));
-    case BubbleType.App:
+    default:
       throw UnimplementedError();
   }
 }

@@ -14,6 +14,7 @@ PrimitiveBubble fromDBEntity(BubbleEntity bubbleEntity, dynamic content) {
     case BubbleType.File:
     case BubbleType.Image:
     case BubbleType.Video:
+    case BubbleType.App:
       return PrimitiveFileBubble(
           id: bubbleEntity.id,
           from: bubbleEntity.fromDevice,

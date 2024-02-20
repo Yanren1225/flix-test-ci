@@ -153,8 +153,9 @@ class InputAreaState extends State<InputArea> {
     onSubmit(SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta), BubbleType.Video);
   }
 
-  void submitApp(Application app) {
-    onSubmit(SharedApp(id: Uuid().v4(), content: app), BubbleType.App);
+  void submitApp(FileMeta meta) {
+    // onSubmit(SharedApp(id: Uuid().v4(), content: app), BubbleType.App);
+    onSubmit(SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta), BubbleType.App);
   }
 
   void submitFile(FileMeta meta) async {
@@ -172,7 +173,7 @@ class InputAreaState extends State<InputArea> {
           submitVideo((element as PickableFile).content);
           break;
         case PickedFileType.App:
-          submitApp((element as PickableApp).content);
+          submitApp((element as PickableFile).content);
           break;
         case PickedFileType.File:
           submitFile((element as PickableFile).content);
