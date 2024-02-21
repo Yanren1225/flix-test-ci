@@ -6,5 +6,9 @@ abstract class MultiCastApi {
 
   void disconnect();
 
-  Future<void> sendAnnouncement();
+  Future<void> ping();
+
+  Future<void> pong(DeviceModal to);
+
+  Future<DeviceModal> getDeviceModal();
 }

@@ -26,6 +26,8 @@ class DeviceManager {
   /// 当前设备的id
   late String did;
 
+  late DeviceModal self;
+
   final deviceList = <DeviceModal>{};
   final _netAddress2DeviceInfo = <String, DeviceInfo>{};
   final _deviceId2NetAddress = <String, String>{};
@@ -47,16 +49,19 @@ class DeviceManager {
   }
 
   Future<void> startScan() async {
-    multiCastApi.sendAnnouncement();
+    multiCastApi.ping();
     state = MultiState.idle;
     multiCastApi.startScan(
         MultiCastUtil.defaultMulticastGroup, MultiCastUtil.defaultPort,
-        (event) {
-      bool isConnect = isDeviceConnected(event);
-      if (!isConnect) {
-        _addDevice(event);
+        (deviceModal, needPong) {
+      if (needPong) {
+        multiCastApi.pong(deviceModal);
       }
-      Logger.log("event data:$event  deviceList = $deviceList");
+      bool isConnect = isDeviceConnected(deviceModal);
+      if (!isConnect) {
+        _addDevice(deviceModal);
+      }
+      Logger.log("event data:$deviceModal  deviceList = $deviceList");
       notifyDeviceListChanged();
     });
   }
