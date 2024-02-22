@@ -16,6 +16,7 @@ part 'ping_pong.mapper.dart';
 /// B收到A向C发送的Pong, 直接忽略
 /// A收到B向C发送的Pong, 直接忽略
 /// C收到A的Pong, 记录A设备
+/// C收到B的Pong, 记录B设备
 
 @MappableClass()
 class Ping with PingMappable {

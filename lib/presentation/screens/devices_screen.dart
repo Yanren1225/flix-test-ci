@@ -1,6 +1,7 @@
 import 'package:androp/model/device_info.dart';
 import 'package:androp/network/multicast_client_provider.dart';
 import 'package:androp/utils/device/device_utils.dart';
+import 'package:androp/utils/notification_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
@@ -58,7 +59,10 @@ class _DeviceScreenState extends State<DeviceScreen> {
                     child: InkWell(
                       onTap: () async {
                         // MultiCastClientProvider.of(context).clearDevices();
-                        await MultiCastClientProvider.of(context).startScan();
+                        MultiCastClientProvider.of(context).startScan();
+                        requestNotificationPermissions();
+                        createNotificationChannel();
+                        showNotification("你好");
                       },
                       child: const Text('附近设备',
                           style: TextStyle(

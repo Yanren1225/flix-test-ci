@@ -21,7 +21,6 @@ class BubblePool {
   final _broadcast = StreamController<PrimitiveBubble>.broadcast();
 
 
-
   void _updateOrAddBubbleToCache(PrimitiveBubble bubble) {
     if (bubble is UpdateFileStateBubble) {
       final _updateStateBubble = bubble as UpdateFileStateBubble;

@@ -1,14 +1,31 @@
+import 'dart:async';
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:androp/domain/androp_context.dart';
+import 'package:androp/domain/device/device_manager.dart';
 import 'package:androp/domain/ship_server/ship_service.dart';
+import 'package:androp/model/notification/reception_notification.dart';
 import 'package:androp/network/multicast_client_provider.dart';
+import 'package:androp/presentation/screens/concert_screen.dart';
 import 'package:androp/presentation/screens/devices_screen.dart';
 import 'package:androp/setting/setting_provider.dart';
+import 'package:androp/utils/device/device_utils.dart';
+import 'package:androp/utils/iterable_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-void main() {
+int id = 1;
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
+final receptionNotificationStream = StreamController<ReceptionNotification>();
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   ShipService.instance.startShipServer();
 
   SystemChrome.setSystemUIOverlayStyle(
@@ -17,6 +34,8 @@ void main() {
         statusBarBrightness: Brightness.dark, // 在状态栏上的图标和文字颜色为深色
         statusBarIconBrightness: Brightness.dark),
   );
+
+  await _initNotification();
 
   runApp(MultiProvider(
     providers: [
@@ -28,8 +47,72 @@ void main() {
   ));
 }
 
-class MyApp extends StatelessWidget {
+Future<void> _initNotification() async {
+// initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+  const AndroidInitializationSettings initializationSettingsAndroid =
+  AndroidInitializationSettings('ic_launcher');
+  final DarwinInitializationSettings initializationSettingsDarwin =
+  DarwinInitializationSettings(
+      onDidReceiveLocalNotification: null,
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+      requestCriticalPermission: true);
+  final LinuxInitializationSettings initializationSettingsLinux =
+  LinuxInitializationSettings(defaultActionName: 'Open notification');
+  final InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsDarwin,
+      macOS: initializationSettingsDarwin,
+      linux: initializationSettingsLinux);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse details) {
+        switch (details.notificationResponseType) {
+          case NotificationResponseType.selectedNotification:
+            final receptionNotification = ReceptionNotification.fromJson(
+                details.payload!);
+            receptionNotificationStream.add(receptionNotification);
+            break;
+          case NotificationResponseType.selectedNotificationAction:
+            break;
+        }
+      });
+}
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<StatefulWidget> createState() => MyAppState();
+}
+
+class MyAppState extends State<MyApp> {
+  bool _notificationsEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    receptionNotificationStream.stream.listen((receptionNotification) {
+      final deviceModal = DeviceManager.instance.deviceList.find((
+          element) => element.fingerprint == receptionNotification.from);
+      if (deviceModal != null) {
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return ConcertScreen(deviceInfo: deviceModal.toDeviceInfo());
+        }));
+      } else {
+        log('can\'t find device by id: ${receptionNotification.from}');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    receptionNotificationStream.close();
+    super.dispose();
+  }
+
+
+
 
   // This widget is the root of your application.
   @override

@@ -4,16 +4,22 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:androp/domain/bubble_pool.dart';
+import 'package:androp/domain/device/device_manager.dart';
+import 'package:androp/model/intent/trans_intent.dart';
 import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:androp/model/ship/primitive_bubble.dart';
+import 'package:androp/model/ui_bubble/ui_bubble.dart';
 import 'package:androp/network/multicast_util.dart';
+import 'package:androp/utils/bubble_convert.dart';
 import 'package:androp/utils/stream_progress.dart';
 import 'package:flutter/services.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_multipart/form_data.dart';
 import 'package:shelf_multipart/multipart.dart';
 import 'package:shelf_router/shelf_router.dart';
+import 'package:http/http.dart' as http;
 
 import '../../utils/file/file_helper.dart';
 
@@ -29,6 +35,7 @@ class ShipService {
   Future<HttpServer> startShipServer() async {
     var app = Router();
     app.post('/bubble', _receiveBubble);
+    app.post('/intent', _receiveIntent);
     app.post('/file', _receiveFile);
 
     var server = await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort);
@@ -85,7 +92,6 @@ class ShipService {
               await formData.part.progress(bubble).pipe(out);
 
               // await Future.delayed(Duration(seconds: 5));
-
               final updatedBubble = bubble.copy(
                   content: bubble.content.copy(
                       state: FileState.receiveCompleted,
@@ -110,5 +116,147 @@ class ShipService {
     } else {
       return Response.badRequest();
     }
+  }
+
+  Future<Response> _receiveIntent(Request request) async {
+    try {
+      final body = await request.readAsString();
+      final intent = TransIntent.fromJson(body);
+      final bubble = await _bubblePool.findLastById(intent.bubbleId);
+      if (bubble == null || bubble is! PrimitiveFileBubble) {
+        return Response.notFound('bubble not found');
+      }
+
+      await _updateFileShareState(intent.bubbleId, FileState.inTransit);
+      _sendFileReal(bubble as PrimitiveFileBubble);
+
+      return Response.ok('ok');
+    } on Exception catch (e) {
+      log('receive intent error: $e');
+      return Response.badRequest();
+    }
+  }
+
+  Future<void> confirmReceiveFile(String from, String bubbleId) async {
+    try {
+      // 更新接收方状态为接收中
+      await _updateFileShareState(bubbleId, FileState.inTransit);
+      var uri = Uri.parse(
+          'http://${DeviceManager.instance.getNetAdressByDeviceId(from)}/intent');
+
+      var response = await http.post(
+        uri,
+        body: TransIntent(
+                deviceId: DeviceManager.instance.did,
+                bubbleId: bubbleId,
+                action: TransAction.confirmReceive)
+            .toJson(),
+        headers: {"Content-type": "application/json; charset=UTF-8"},
+      );
+
+      if (response.statusCode == 200) {
+        log('发送成功: response: ${response.body}');
+      } else {
+        log('发送失败: status code: ${response.statusCode}, ${response.body}');
+      }
+    } catch (e) {
+      log('confirmReceiveFile failed: $e');
+    }
+  }
+
+  Future<void> _send(PrimitiveBubble primitiveBubble) async {
+    var uri = Uri.parse(
+        'http://${DeviceManager.instance.getNetAdressByDeviceId(primitiveBubble.to)}/bubble');
+
+    var response = await http.post(
+      uri,
+      body: jsonEncode(primitiveBubble.toJson()),
+      headers: {"Content-type": "application/json; charset=UTF-8"},
+    );
+
+    if (response.statusCode == 200) {
+      log('发送成功: response: ${response.body}');
+    } else {
+      log('发送失败: status code: ${response.statusCode}, ${response.body}');
+    }
+  }
+
+  Future<void> send(UIBubble uiBubble) async {
+    switch (uiBubble.type) {
+      case BubbleType.Text:
+        final primitiveBubble = fromUIBubble(uiBubble);
+        await _bubblePool.add(primitiveBubble);
+        await _send(primitiveBubble);
+        break;
+      case BubbleType.Image:
+      case BubbleType.Video:
+      case BubbleType.File:
+      case BubbleType.App:
+        await _sendFileBubble(fromUIBubble(uiBubble) as PrimitiveFileBubble);
+        break;
+      default:
+        throw UnimplementedError();
+    }
+  }
+
+  Future<void> _sendFileBubble(PrimitiveFileBubble fileBubble) async {
+    try {
+      var _fileBubble = fileBubble.copy(
+          content: fileBubble.content.copy(state: FileState.waitToAccepted));
+      await _bubblePool.add(_fileBubble);
+      // send with no path
+      await _send(_fileBubble.copy(
+          content: _fileBubble.content
+              .copy(meta: _fileBubble.content.meta.copy(path: null))));
+    } catch (e) {
+      log('发送异常: $e');
+      _updateFileShareState(fileBubble.id, FileState.sendFailed);
+    }
+  }
+
+  Future<void> _sendFileReal(PrimitiveFileBubble fileBubble) async {
+    try {
+      final shardFile = fileBubble.content.meta;
+
+      var request = http.MultipartRequest(
+          'POST',
+          Uri.parse(
+              'http://${DeviceManager.instance.getNetAdressByDeviceId(fileBubble.to)}/file'));
+
+      request.fields['share_id'] = fileBubble.id;
+      request.fields['file_name'] = shardFile.name;
+
+      var multipartFile = http.MultipartFile('file',
+          File(shardFile.path!).openRead().progress(fileBubble), shardFile.size,
+          filename: shardFile.name,
+          contentType: MediaType.parse(shardFile.mimeType));
+
+      request.files.add(multipartFile);
+      final response = await request.send();
+      if (response.statusCode == 200) {
+        log('发送成功 ${await response.stream.bytesToString()}');
+        _updateFileShareState(fileBubble.id, FileState.sendCompleted);
+      } else {
+        log('发送失败: status code: ${response.statusCode}, ${await response.stream.bytesToString()}');
+        _updateFileShareState(fileBubble.id, FileState.sendFailed);
+      }
+    } catch (e) {
+      log('发送异常: $e');
+      _updateFileShareState(fileBubble.id, FileState.sendFailed);
+    }
+  }
+
+  Future<void> _updateFileShareState(String bubbleId, FileState state) async {
+    final _bubble = await _bubblePool.findLastById(bubbleId);
+    if (_bubble == null) {
+      throw StateError('Can\'t find bubble by id: $bubbleId');
+    }
+
+    if (!(_bubble is PrimitiveFileBubble)) {
+      throw StateError('The Bubble with id: $bubbleId is not a file bubble');
+    }
+
+    await _bubblePool
+        .add(_bubble.copy(content: _bubble.content.copy(state: state)));
   }
 }

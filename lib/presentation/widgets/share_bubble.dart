@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:androp/domain/concert/concert_provider.dart';
 import 'package:androp/model/ship/primitive_bubble.dart';
 import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:androp/model/ui_bubble/ui_bubble.dart';
@@ -24,7 +25,6 @@ class ShareBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     switch (uiBubble.type) {
       case BubbleType.Text:
         return ShareTextBubble(entity: uiBubble);
@@ -97,6 +97,7 @@ class ShareImageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AndropContext andropContext = context.watch();
+    ConcertProvider concertProvider = context.watch();
     final sharedImage = entity.shareable as SharedFile;
     final Color backgroundColor;
     if (entity.isFromMe(andropContext.deviceId)) {
@@ -118,7 +119,61 @@ class ShareImageBubble extends StatelessWidget {
       // 发送
       switch (sharedImage.state) {
         case FileState.picked:
+          content =
+              Image.file(File(sharedImage.content.path!!), fit: BoxFit.contain);
+          break;
         case FileState.waitToAccepted:
+          content = IntrinsicHeight(
+            child: Stack(
+              fit: StackFit.passthrough,
+              children: [
+                Image.file(File(sharedImage.content.path!!),
+                    fit: BoxFit.contain),
+                Container(
+                  decoration:
+                      const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: const SizedBox(),
+                ),
+                const Align(
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            backgroundColor: Colors.transparent,
+                            color: Colors.white,
+                            strokeWidth: 2.0,
+                          )),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Text(
+                        '等待对方确认',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+          stateIcon = IconButton(
+              onPressed: () {
+                // TODO 取消发送
+              },
+              icon: SvgPicture.asset(
+                'assets/images/ic_cancel.svg',
+              ));
+          break;
         case FileState.inTransit:
           content = IntrinsicHeight(
             child: Stack(
@@ -192,6 +247,27 @@ class ShareImageBubble extends StatelessWidget {
       // 接收
       switch (sharedImage.state) {
         case FileState.waitToAccepted:
+          content = InkWell(
+            onTap: () {
+              concertProvider.confirmReceive(entity);
+            },
+            child: AspectRatio(
+              aspectRatio: 1.333333,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SvgPicture.asset('assets/images/ic_receive.svg'),
+                  const SizedBox(height: 6,),
+                  const Text('点击接收',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal))
+                ],
+              ),
+            ),
+          );
         case FileState.inTransit:
         case FileState.sendCompleted:
           content = AspectRatio(
@@ -469,7 +545,8 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
           ),
         ),
         Visibility(
-          visible: alignment == MainAxisAlignment.start && stateIcon != SizedBox,
+          visible:
+              alignment == MainAxisAlignment.start && stateIcon != SizedBox,
           child: Align(
               alignment: Alignment.bottomCenter,
               child: Padding(

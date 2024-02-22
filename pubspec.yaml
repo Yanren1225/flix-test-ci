@@ -61,6 +61,7 @@ dependencies:
   drift: ^2.15.0
   sqlite3_flutter_libs: ^0.5.20
   path: ^1.8.3
+  flutter_local_notifications: ^16.3.2
   # thumbnailer: ^2.2.0
 
   # pdfx: ^2.5.0
