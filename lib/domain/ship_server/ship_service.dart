@@ -226,20 +226,21 @@ class ShipService {
       request.fields['share_id'] = fileBubble.id;
       request.fields['file_name'] = shardFile.name;
 
-      var multipartFile = http.MultipartFile('file',
-          File(shardFile.path!).openRead().progress(fileBubble), shardFile.size,
+      await shardFile.resolvePath((path) async {
+          var multipartFile = http.MultipartFile('file',
+          File(path).openRead().progress(fileBubble), shardFile.size,
           filename: shardFile.name,
           contentType: MediaType.parse(shardFile.mimeType));
-
-      request.files.add(multipartFile);
-      final response = await request.send();
-      if (response.statusCode == 200) {
-        log('发送成功 ${await response.stream.bytesToString()}');
-        _updateFileShareState(fileBubble.id, FileState.sendCompleted);
-      } else {
-        log('发送失败: status code: ${response.statusCode}, ${await response.stream.bytesToString()}');
-        _updateFileShareState(fileBubble.id, FileState.sendFailed);
-      }
+          request.files.add(multipartFile);
+          final response = await request.send();
+          if (response.statusCode == 200) {
+            log('发送成功 ${await response.stream.bytesToString()}');
+            _updateFileShareState(fileBubble.id, FileState.sendCompleted);
+          } else {
+            log('发送失败: status code: ${response.statusCode}, ${await response.stream.bytesToString()}');
+            _updateFileShareState(fileBubble.id, FileState.sendFailed);
+          }
+      });
     } catch (e) {
       log('发送异常: $e');
       _updateFileShareState(fileBubble.id, FileState.sendFailed);

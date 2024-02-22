@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:androp/domain/concert/concert_provider.dart';
+import 'package:androp/domain/device/device_manager.dart';
 import 'package:androp/model/ship/primitive_bubble.dart';
 import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:androp/model/ui_bubble/ui_bubble.dart';
@@ -89,11 +90,36 @@ class ShareTextBubble extends StatelessWidget {
   }
 }
 
-class ShareImageBubble extends StatelessWidget {
+class ShareImageBubble extends StatefulWidget {
   final UIBubble entity;
 
   const ShareImageBubble({super.key, required this.entity});
 
+  @override
+  State<StatefulWidget> createState() => ShareImageBubbleState();
+}
+
+class ShareImageBubbleState extends State<ShareImageBubble> {
+  UIBubble get entity => widget.entity;
+  
+  @override
+  void initState() {
+    super.initState();
+    final sharedImage = entity.shareable as SharedFile;
+    if (entity.isFromMe(DeviceManager.instance.did) && Platform.isMacOS) {
+      sharedImage.content.startAccessPath();
+    }
+  }
+  
+  @override
+  void dispose() {
+    final sharedImage = entity.shareable as SharedFile;
+    if (entity.isFromMe(DeviceManager.instance.did) && Platform.isMacOS) {
+      sharedImage.content.stopAccessPath();
+    }
+    super.dispose();
+  }
+  
   @override
   Widget build(BuildContext context) {
     AndropContext andropContext = context.watch();
@@ -131,7 +157,7 @@ class ShareImageBubble extends StatelessWidget {
                     fit: BoxFit.contain),
                 Container(
                   decoration:
-                      const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                  const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
                   width: double.infinity,
                   height: double.infinity,
                   child: const SizedBox(),
@@ -183,7 +209,7 @@ class ShareImageBubble extends StatelessWidget {
                     fit: BoxFit.contain),
                 Container(
                   decoration:
-                      const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                  const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
                   width: double.infinity,
                   height: double.infinity,
                   child: const SizedBox(),
@@ -274,7 +300,7 @@ class ShareImageBubble extends StatelessWidget {
             aspectRatio: 1.333333,
             child: DecoratedBox(
               decoration:
-                  const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+              const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -310,7 +336,7 @@ class ShareImageBubble extends StatelessWidget {
             aspectRatio: 1.333333,
             child: DecoratedBox(
               decoration:
-                  const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+              const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
             ),
           );
           stateIcon = SvgPicture.asset('assets/images/ic_trans_fail.svg');
@@ -340,19 +366,19 @@ class ShareImageBubble extends StatelessWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(10))),
             child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
-              return ConstrainedBox(
-                  constraints: BoxConstraints(
-                      maxWidth: min(300, constraints.maxWidth - 60),
-                      minWidth: 150),
-                  child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                      child: content));
-            }),
+                  return ConstrainedBox(
+                      constraints: BoxConstraints(
+                          maxWidth: min(300, constraints.maxWidth - 60),
+                          minWidth: 150),
+                      child: ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),
+                          child: content));
+                }),
           ),
         ),
         Visibility(
           visible:
-              alignment == MainAxisAlignment.start && stateIcon != SizedBox,
+          alignment == MainAxisAlignment.start && stateIcon != SizedBox,
           child: Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
@@ -363,6 +389,7 @@ class ShareImageBubble extends StatelessWidget {
       ],
     );
   }
+  
 }
 
 class ShareVideoBubble extends StatefulWidget {

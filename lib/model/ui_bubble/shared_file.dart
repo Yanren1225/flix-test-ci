@@ -1,4 +1,5 @@
 import 'package:androp/model/ui_bubble/shareable.dart';
+import 'package:androp/utils/drawin_file_security_extension.dart';
 import 'package:file_selector/file_selector.dart';
 
 class SharedFile extends Shareable<FileMeta> {
@@ -20,7 +21,7 @@ class SharedFile extends Shareable<FileMeta> {
       this.progress = 0});
 }
 
-class FileMeta {
+class FileMeta with DrawinFileSecurityExtension {
   final String name;
   final String mimeType;
   final String nameWithSuffix;

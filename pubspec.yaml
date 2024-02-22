@@ -62,6 +62,7 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.20
   path: ^1.8.3
   flutter_local_notifications: ^16.3.2
+  macos_secure_bookmarks: ^0.2.1
   # thumbnailer: ^2.2.0
 
   # pdfx: ^2.5.0
