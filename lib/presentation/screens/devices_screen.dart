@@ -60,9 +60,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
                       onTap: () async {
                         // MultiCastClientProvider.of(context).clearDevices();
                         MultiCastClientProvider.of(context).startScan();
-                        requestNotificationPermissions();
-                        createNotificationChannel();
-                        showNotification("你好");
                       },
                       child: const Text('附近设备',
                           style: TextStyle(

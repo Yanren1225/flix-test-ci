@@ -1,5 +1,5 @@
 import 'package:androp/model/ui_bubble/shared_file.dart';
-import 'package:androp/presentation/widgets/share_bubble.dart';
+import 'package:androp/presentation/widgets/bubbles/share_bubble.dart';
 import 'package:http/http.dart';
 
 abstract class PrimitiveBubble<Content> {

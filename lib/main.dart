@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:androp/domain/androp_context.dart';
 import 'package:androp/domain/device/device_manager.dart';
+import 'package:androp/domain/notification/NotificationService.dart';
 import 'package:androp/domain/ship_server/ship_service.dart';
 import 'package:androp/model/notification/reception_notification.dart';
 import 'package:androp/network/multicast_client_provider.dart';
@@ -26,6 +27,7 @@ final receptionNotificationStream = StreamController<ReceptionNotification>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  NotificationService.instance.init();
   ShipService.instance.startShipServer();
 
   SystemChrome.setSystemUIOverlayStyle(
@@ -87,33 +89,6 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  bool _notificationsEnabled = false;
-
-  @override
-  void initState() {
-    super.initState();
-    receptionNotificationStream.stream.listen((receptionNotification) {
-      final deviceModal = DeviceManager.instance.deviceList.find((
-          element) => element.fingerprint == receptionNotification.from);
-      if (deviceModal != null) {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return ConcertScreen(deviceInfo: deviceModal.toDeviceInfo());
-        }));
-      } else {
-        log('can\'t find device by id: ${receptionNotification.from}');
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    receptionNotificationStream.close();
-    super.dispose();
-  }
-
-
-
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -167,6 +142,28 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    receptionNotificationStream.stream.listen((receptionNotification) {
+      final deviceModal = DeviceManager.instance.deviceList.find((
+          element) => element.fingerprint == receptionNotification.from);
+      if (deviceModal != null) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return ConcertScreen(deviceInfo: deviceModal.toDeviceInfo());
+        }));
+      } else {
+        log('can\'t find device by id: ${receptionNotification.from}');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    receptionNotificationStream.close();
+    super.dispose();
+  }
 
   void setSelectedIndex(int index) {
     setState(() {

@@ -2,6 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:androp/main.dart';
+import 'package:androp/model/notification/reception_notification.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 Future<bool> isAndroidNotificationPermissionGranted() async {
@@ -60,7 +61,7 @@ Future<void> createNotificationChannel() async {
       ?.createNotificationChannel(androidNotificationChannel);
 }
 
-Future<void> showNotification(String content) async {
+Future<void> showNotification(String deviceName, ReceptionNotification notification) async {
   const AndroidNotificationDetails androidNotificationDetails =
       AndroidNotificationDetails('reception', 'reception',
           channelDescription: '通知新的文件',
@@ -70,6 +71,6 @@ Future<void> showNotification(String content) async {
   const NotificationDetails notificationDetails =
       NotificationDetails(android: androidNotificationDetails);
   await flutterLocalNotificationsPlugin.show(
-      id++, '收到一个图片', '来自Xiaomi 14', notificationDetails,
-      payload: 'item x');
+      id++, '接收到一个新的文件', '来自$deviceName', notificationDetails,
+      payload: notification.toJson());
 }

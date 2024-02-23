@@ -9,17 +9,19 @@ import 'package:androp/model/device_info.dart';
 import 'package:androp/model/pickable.dart';
 import 'package:androp/model/ui_bubble/shareable.dart';
 import 'package:androp/presentation/widgets/blur_appbar.dart';
+import 'package:androp/presentation/widgets/bubbles/share_bubble.dart';
 import 'package:androp/presentation/widgets/pick_actions.dart';
-import 'package:androp/presentation/widgets/share_bubble.dart';
-import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class ConcertScreen extends StatelessWidget {
   final DeviceInfo deviceInfo;
+  final String? anchor;
 
-  const ConcertScreen({super.key, required this.deviceInfo});
+  const ConcertScreen(
+      {super.key, required this.deviceInfo, this.anchor = null});
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +56,7 @@ class ConcertScreen extends StatelessWidget {
             // const ShareConcertMainView()
             ShareConcertMainView(
           padding: EdgeInsets.only(top: appBarHeight),
+          anchor: anchor,
         ),
       ),
     );
@@ -62,8 +65,10 @@ class ConcertScreen extends StatelessWidget {
 
 class ShareConcertMainView extends StatefulWidget {
   final EdgeInsets padding;
+  final String? anchor;
 
-  const ShareConcertMainView({super.key, required this.padding});
+  const ShareConcertMainView(
+      {super.key, required this.padding, required this.anchor});
 
   @override
   State<StatefulWidget> createState() {
@@ -74,9 +79,16 @@ class ShareConcertMainView extends StatefulWidget {
 class ShareConcertMainViewState extends State<ShareConcertMainView> {
   EdgeInsets get padding => widget.padding;
 
+  String? get anchor => widget.anchor;
+  bool isAnchored = false;
+  final ScrollController _scrollController = ScrollController();
+
   // List<BubbleEntity> shareList = [];
 
-  void submit(ConcertProvider concertProvider, Shareable shareable, BubbleType type) async {
+  void submit(ConcertProvider concertProvider, Shareable shareable,
+      BubbleType type) async {
+    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
     await concertProvider.send(UIBubble(
         from: DeviceManager.instance.did,
         to: Provider.of<ConcertProvider>(context, listen: false).deviceInfo.id,
@@ -88,10 +100,27 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
   Widget build(BuildContext context) {
     final concertProvider = Provider.of<ConcertProvider>(context, listen: true);
     final shareList = concertProvider.bubbles;
+    // if (!isInit && anchor != null) {
+    //   for (int i = 0; i < shareList.length; i++) {
+    //     final item = shareList[i];
+    //     if (item.shareable.id == anchor) {
+    //       _scrollController.jumpTo(i * 50);
+    //       break;
+    //     }
+    //   }
+    // }
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (!isAnchored && shareList.isNotEmpty) {
+        isAnchored = true;
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
+    });
+
     return Stack(
       fit: StackFit.expand,
       children: [
         ListView.builder(
+            controller: _scrollController,
             padding: EdgeInsets.only(top: padding.top, bottom: 260),
             itemCount: shareList.length,
             itemBuilder: (context, index) {
@@ -146,21 +175,28 @@ class InputAreaState extends State<InputArea> {
   }
 
   void submitImage(FileMeta meta) {
-    onSubmit(SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta), BubbleType.Image);
+    onSubmit(
+        SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta),
+        BubbleType.Image);
   }
 
   void submitVideo(FileMeta meta) {
-    onSubmit(SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta), BubbleType.Video);
+    onSubmit(
+        SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta),
+        BubbleType.Video);
   }
 
   void submitApp(FileMeta meta) {
     // onSubmit(SharedApp(id: Uuid().v4(), content: app), BubbleType.App);
-    onSubmit(SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta), BubbleType.App);
+    onSubmit(
+        SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta),
+        BubbleType.App);
   }
 
   void submitFile(FileMeta meta) async {
-    onSubmit(SharedFile(
-        id: Uuid().v4(), state: FileState.picked, content: meta), BubbleType.File);
+    onSubmit(
+        SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta),
+        BubbleType.File);
   }
 
   void onPicked(List<Pickable> pickables) {
