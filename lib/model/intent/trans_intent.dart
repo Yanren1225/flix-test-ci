@@ -18,5 +18,6 @@ class TransIntent with TransIntentMappable {
 
 @MappableEnum()
 enum TransAction {
-  confirmReceive;
+  confirmReceive,
+  cancel;
 }

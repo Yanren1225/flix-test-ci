@@ -27,6 +27,8 @@ class TransActionMapper extends EnumMapper<TransAction> {
     switch (value) {
       case 'confirmReceive':
         return TransAction.confirmReceive;
+      case 'cancel':
+        return TransAction.cancel;
       default:
         throw MapperException.unknownEnumValue(value);
     }
@@ -37,6 +39,8 @@ class TransActionMapper extends EnumMapper<TransAction> {
     switch (self) {
       case TransAction.confirmReceive:
         return 'confirmReceive';
+      case TransAction.cancel:
+        return 'cancel';
     }
   }
 }

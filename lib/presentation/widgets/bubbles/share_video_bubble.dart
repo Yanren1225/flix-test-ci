@@ -57,7 +57,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
           content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
           stateIcon = IconButton(
               onPressed: () {
-                // TODO 取消发送
+                concertProvider.cancel(entity);
               },
               icon: SvgPicture.asset(
                 'assets/images/ic_cancel.svg',
@@ -85,7 +85,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
           );
           stateIcon = IconButton(
               onPressed: () {
-                // TODO 取消发送
+                concertProvider.cancel(entity);
               },
               icon: SvgPicture.asset(
                 'assets/images/ic_cancel.svg',
@@ -135,7 +135,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
           );
           stateIcon = IconButton(
               onPressed: () {
-                // TODO 取消发送
+                concertProvider.cancel(entity);
               },
               icon: SvgPicture.asset(
                 'assets/images/ic_cancel.svg',

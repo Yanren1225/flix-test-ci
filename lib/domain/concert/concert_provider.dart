@@ -30,6 +30,10 @@ class ConcertProvider extends ChangeNotifier {
     return await _concertService.confirmReceiveFile(uiBubble);
   }
 
+  Future<void> cancel(UIBubble uiBubble) async {
+    return await _concertService.cancel(uiBubble);
+  }
+
   @override
   void dispose() {
     _concertService.clear();

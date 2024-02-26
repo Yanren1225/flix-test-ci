@@ -72,7 +72,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
               Image.file(File(sharedImage.content.path!!), fit: BoxFit.contain);
           stateIcon = IconButton(
               onPressed: () {
-                // TODO 取消发送
+                concertProvider.cancel(entity);
               },
               icon: SvgPicture.asset(
                 'assets/images/ic_cancel.svg',
@@ -101,7 +101,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
           );
           stateIcon = IconButton(
               onPressed: () {
-                // TODO 取消发送
+                concertProvider.cancel(entity);
               },
               icon: SvgPicture.asset(
                 'assets/images/ic_cancel.svg',
@@ -153,7 +153,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
           );
           stateIcon = IconButton(
               onPressed: () {
-                // TODO 取消发送
+                concertProvider.cancel(entity);
               },
               icon: SvgPicture.asset(
                 'assets/images/ic_cancel.svg',

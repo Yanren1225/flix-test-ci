@@ -21,7 +21,7 @@ class BubblePool {
 
 
   Future<void> add(PrimitiveBubble bubble) async {
-    log('add bubble ${bubble.id}, $bubble');
+    log('add bubble $bubble');
     _buffer = bubble;
     _broadcast.add(bubble);
     await appDatabase.bubblesDao.insert(bubble);

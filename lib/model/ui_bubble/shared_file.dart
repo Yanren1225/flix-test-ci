@@ -64,6 +64,11 @@ class FileMeta with DrawinFileSecurityExtension {
         size: size ?? this.size,
         path: path ?? this.path);
   }
+
+  @override
+  String toString() {
+    return 'name: $name, mimeType: $mimeType, nameWithSuffix: $nameWithSuffix, size: $size, path: $path';
+  }
 }
 
 enum FileState {

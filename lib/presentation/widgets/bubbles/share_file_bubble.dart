@@ -62,7 +62,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           showStateIcon = true;
           stateIcon = IconButton(
               onPressed: () {
-                // TODO 取消发送
+                concertProvider.cancel(entity);
               },
               icon: SvgPicture.asset(
                 'assets/images/ic_cancel.svg',
@@ -75,7 +75,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           showStateIcon = true;
           stateIcon = IconButton(
               onPressed: () {
-                // TODO 取消发送
+                concertProvider.cancel(entity);
               },
               icon: SvgPicture.asset(
                 'assets/images/ic_cancel.svg',
@@ -88,7 +88,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           showStateIcon = true;
           stateIcon = IconButton(
               onPressed: () {
-                // TODO 取消发送
+                concertProvider.cancel(entity);
               },
               icon: SvgPicture.asset(
                 'assets/images/ic_cancel.svg',
@@ -116,6 +116,10 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           des = '${sharedFile.content.size.formateBinarySize()} · 已取消';
           showProgressBar = true;
           progressBarColor = Color.fromRGBO(255, 59, 48, 1);
+          showStateIcon = true;
+          stateIcon = SvgPicture.asset(
+            'assets/images/ic_trans_fail.svg',
+          );
           break;
         case FileState.unknown:
           throw StateError('Unknown send state: ${sharedFile.state}');

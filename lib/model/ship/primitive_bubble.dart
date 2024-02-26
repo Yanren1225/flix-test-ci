@@ -27,6 +27,8 @@ abstract class PrimitiveBubble<Content> {
   }
 
   Map<String, dynamic> toJson();
+
+
 }
 
 class PrimitiveTextBubble extends PrimitiveBubble<String> {
@@ -74,6 +76,11 @@ class PrimitiveTextBubble extends PrimitiveBubble<String> {
     required this.type,
     required this.content,
   });
+
+  @override
+  String toString() {
+    return 'id: $id, from: $from, to: $to, type: $type, content: $content';
+  }
 }
 
 class PrimitiveFileBubble extends PrimitiveBubble<FileTransfer> {
@@ -134,6 +141,11 @@ class PrimitiveFileBubble extends PrimitiveBubble<FileTransfer> {
     required this.type,
     required this.content,
   });
+
+  @override
+  String toString() {
+    return 'id: $id, from: $from, to: $to, type: $type, content: $content';
+  }
 }
 
 class FileTransfer {
@@ -155,6 +167,11 @@ class FileTransfer {
 
   FileTransfer copy({FileState? state, double? progress, FileMeta? meta}) {
     return FileTransfer(state: state ?? this.state, progress : progress ?? this.progress, meta: meta ?? this.meta);
+  }
+
+  @override
+  String toString() {
+    return 'progress: $progress, state: $state, meta: $meta';
   }
 }
 
