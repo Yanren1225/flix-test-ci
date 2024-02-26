@@ -32,57 +32,58 @@ class PickActionAreaState extends State<PickActionsArea> {
     late final Widget pickAppButton;
     if (Platform.isAndroid) {
       pickAppButton = SizedBox(
-        width: 36,
-        height: 36,
+        width: 50,
+        height: 50,
         child: IconButton(
           padding: const EdgeInsets.all(0),
-          iconSize: 20,
+          iconSize: 22,
           onPressed: () {
             _onAppButtonPressed();
           },
-          icon: SvgPicture.asset('assets/images/ic_app.svg'),
+          icon: SvgPicture.asset('assets/images/ic_app.svg',  width: 22, height: 22),
         ),
       );
     } else {
       pickAppButton = const SizedBox();
     }
     return Padding(
-      padding: const EdgeInsets.only(left: 8, top: 2, right: 8, bottom: 2),
+      padding: const EdgeInsets.only(left: 6, top: 6, right: 6, bottom: 6),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SizedBox(
-            width: 36,
-            height: 36,
+            width: 50,
+            height: 50,
             child: IconButton(
                 padding: const EdgeInsets.all(0),
-                iconSize: 20,
+                iconSize: 22,
                 onPressed: () {
                   _onImageButtonPressed(context: context);
                 },
-                icon: SvgPicture.asset('assets/images/ic_image.svg')),
+                icon: SvgPicture.asset('assets/images/ic_image.svg',  width: 22, height: 22)),
           ),
           SizedBox(
-            width: 36,
-            height: 36,
+            width: 50,
+            height: 50,
             child: IconButton(
                 padding: const EdgeInsets.all(0),
-                iconSize: 20,
+                iconSize: 22,
                 onPressed: () {
                   _onVideoButtonPressed(context: context);
                 },
-                icon: SvgPicture.asset('assets/images/ic_video.svg')),
+                icon: SvgPicture.asset('assets/images/ic_video.svg',  width: 22, height: 22)),
           ),
           pickAppButton,
           SizedBox(
-            width: 36,
-            height: 36,
+            width: 50,
+            height: 50,
             child: IconButton(
               padding: const EdgeInsets.all(0),
-              iconSize: 20,
+              iconSize: 22,
               onPressed: () {
                 _onFileButtonPressed();
               },
-              icon: SvgPicture.asset('assets/images/ic_file.svg'),
+              icon: SvgPicture.asset('assets/images/ic_file.svg', width: 22, height: 22,),
             ),
           ),
         ],

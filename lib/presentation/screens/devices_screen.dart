@@ -9,23 +9,13 @@ import 'package:lottie/lottie.dart';
 import 'concert_screen.dart';
 
 class DeviceScreen extends StatefulWidget {
-  const DeviceScreen({super.key});
+  final void Function(DeviceInfo deviceInfo) onDeviceSelected;
+
+  const DeviceScreen({super.key, required this.onDeviceSelected});
 
   @override
   // ignore: no_logic_in_create_state
-  State<StatefulWidget> createState() => _DeviceScreenState(
-      // [
-      //   DeviceInfo("0", 0, 'Xiaomi 14', 'phone.webp'),
-      //   DeviceInfo("1", 1, 'RedmiBook Pro 15 锐龙版', 'pc.webp'),
-      //   DeviceInfo("2", 2, 'Xiaomi Pad 14 Max', 'pad.webp'),
-      //   DeviceInfo("3", 3, 'Xiaomi Watch S3', 'watch.webp')
-      // ], [
-      //   DeviceInfo("0", 0, 'Xiaomi 14', 'phone.webp'),
-      //   DeviceInfo("1", 1, 'RedmiBook Pro 15 锐龙版', 'pc.webp'),
-      //   DeviceInfo("2", 2, 'Xiaomi Pad 14 Max', 'pad.webp'),
-      //   DeviceInfo("3", 3, 'Xiaomi Watch S3', 'watch.webp')
-      // ]
-  );
+  State<StatefulWidget> createState() => _DeviceScreenState();
 }
 
 class _DeviceScreenState extends State<DeviceScreen> {
@@ -37,7 +27,8 @@ class _DeviceScreenState extends State<DeviceScreen> {
   @override
   Widget build(BuildContext context) {
     final deviceProvider = MultiCastClientProvider.of(context, listen: true);
-    final devices = deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
+    final devices =
+        deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
     final history = <DeviceInfo>[];
     return Container(
       decoration:
@@ -53,7 +44,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 Padding(
+                Padding(
                     padding: const EdgeInsets.only(
                         top: 60, left: 20, right: 20, bottom: 10),
                     child: InkWell(
@@ -73,11 +64,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
                       var deviceInfo = devices[index];
                       return GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ConcertScreen(
-                                      deviceInfo: deviceInfo)));
+                          widget.onDeviceSelected(deviceInfo);
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(
@@ -86,11 +73,11 @@ class _DeviceScreenState extends State<DeviceScreen> {
                         ),
                       );
                     }),
-                     Padding(
+                    Padding(
                       padding: EdgeInsets.only(
                           left: 16, right: 16, top: 20, bottom: 6),
                       child: InkWell(
-                        onTap:  (){
+                        onTap: () {
                           MultiCastClientProvider.of(context).clearDevices();
                         },
                         child: Text(
@@ -134,27 +121,31 @@ class DeviceItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image(
-                  image: AssetImage('assets/images/${deviceInfo.icon}'),
-                  width: 36,
-                  height: 36,
-                  fit: BoxFit.fill,
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  deviceInfo.name,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500),
-                ),
-              ],
+            Flexible(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image(
+                    image: AssetImage('assets/images/${deviceInfo.icon}'),
+                    width: 36,
+                    height: 36,
+                    fit: BoxFit.fill,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Flexible(
+                    child: Text(
+                      deviceInfo.name,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(
               width: 16,

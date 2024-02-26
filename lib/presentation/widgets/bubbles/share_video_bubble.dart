@@ -230,7 +230,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
                 builder: (BuildContext context, BoxConstraints constraints) {
               return ConstrainedBox(
                   constraints: BoxConstraints(
-                      maxWidth: min(300, constraints.maxWidth - 60),
+                      maxWidth: max(150, min(300, constraints.maxWidth - 60)),
                       minWidth: 150),
                   child: ClipRRect(
                       borderRadius: const BorderRadius.all(Radius.circular(10)),

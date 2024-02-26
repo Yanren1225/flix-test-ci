@@ -13,27 +13,35 @@ import 'package:androp/presentation/widgets/bubbles/share_bubble.dart';
 import 'package:androp/presentation/widgets/pick_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class ConcertScreen extends StatelessWidget {
   final DeviceInfo deviceInfo;
   final String? anchor;
+  final bool showBackButton;
 
   const ConcertScreen(
-      {super.key, required this.deviceInfo, this.anchor = null});
+      {super.key, required this.deviceInfo, this.anchor = null, required this.showBackButton});
 
   @override
   Widget build(BuildContext context) {
-    final appBar = AppBar(
-      leading: GestureDetector(
+    final Widget? backButton;
+    if (showBackButton) {
+      backButton = GestureDetector(
         onTap: () => Navigator.pop(context),
         child: const Icon(
           Icons.arrow_back_ios,
           color: Colors.black,
           size: 20,
         ),
-      ),
+      );
+    } else {
+      backButton = null;
+    }
+    final appBar = AppBar(
+      leading: backButton,
       title: Text(deviceInfo.name),
       titleTextStyle: const TextStyle(
           color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
@@ -232,60 +240,79 @@ class InputAreaState extends State<InputArea> {
                 color: Color.fromRGBO(240, 240, 240, 1),
               ))),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Padding(
-                padding:
-                    const EdgeInsets.only(left: 8, top: 2, right: 8, bottom: 2),
-                child: PickActionsArea(onPicked: onPicked)),
-            ConstrainedBox(
-                constraints:
-                    const BoxConstraints(minHeight: 18, maxHeight: 200),
-                child: SingleChildScrollView(
-                  child: TextField(
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    decoration: const InputDecoration(
-                        hintText: 'Input something.',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.only(left: 16, right: 16)),
-                    cursorColor: Colors.black,
-                    onChanged: (value) {
-                      input(value);
-                    },
-                    onSubmitted: (value) {
-                      submitText(value);
-                    },
-                  ),
-                )),
-            Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 16, bottom: 18),
-                child: SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: GestureDetector(
-                    onTap: () {
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const SizedBox(
+                  width: 16,
+                ),
+                Expanded(
+                  child: ConstrainedBox(
+                      constraints:
+                          const BoxConstraints(minHeight: 40, maxHeight: 200),
+                      child: SingleChildScrollView(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10)),
+                          child: TextField(
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal),
+                            keyboardType: TextInputType.multiline,
+                            maxLines: null,
+                            decoration: InputDecoration(
+                                hintText: 'Input something.',
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  gapPadding: 0,
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                contentPadding: const EdgeInsets.only(
+                                    left: 12, right: 12, top: 8, bottom: 8)),
+                            cursorColor: Colors.black,
+                            onChanged: (value) {
+                              input(value);
+                            },
+                            onSubmitted: (value) {
+                              submitText(value);
+                            },
+                          ),
+                        ),
+                      )),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                IconButton(
+                    onPressed: () {
                       FocusScope.of(context).unfocus();
                       submitText(inputContent);
                     },
-                    child: Container(
-                      decoration: const BoxDecoration(
-                          color: Color.fromRGBO(0, 122, 255, 1),
-                          borderRadius: BorderRadius.all(Radius.circular(100))),
-                      child: const SizedBox(
-                        width: 30,
-                        height: 30,
-                        child: Icon(
-                          Icons.arrow_upward_sharp,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
+                    padding: const EdgeInsets.all(9.0),
+                    iconSize: 22,
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateColor.resolveWith((states) => const Color.fromRGBO(0, 122, 255, 1)),
+                        shape:
+                            MaterialStatePropertyAll<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ))),
+                    icon: const Icon(
+                      Icons.arrow_upward_sharp,
+                      color: Colors.white,
+                      size: 22,
+                    )),
+                const SizedBox(
+                  width: 16,
                 ),
-              ),
-            )
+              ],
+            ),
+            PickActionsArea(onPicked: onPicked),
           ]),
         ),
       ),
