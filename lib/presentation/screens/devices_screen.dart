@@ -59,7 +59,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
                     child: InkWell(
                       onTap: () async {
                         // MultiCastClientProvider.of(context).clearDevices();
-                        MultiCastClientProvider.of(context).startScan();
                       },
                       child: const Text('附近设备',
                           style: TextStyle(

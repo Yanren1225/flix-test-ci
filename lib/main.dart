@@ -21,7 +21,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 int id = 1;
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 final receptionNotificationStream = StreamController<ReceptionNotification>();
 
 Future<void> main() async {
@@ -29,6 +29,7 @@ Future<void> main() async {
 
   NotificationService.instance.init();
   ShipService.instance.startShipServer();
+  DeviceManager.instance.init();
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -52,16 +53,16 @@ Future<void> main() async {
 Future<void> _initNotification() async {
 // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
   const AndroidInitializationSettings initializationSettingsAndroid =
-  AndroidInitializationSettings('ic_launcher');
+      AndroidInitializationSettings('ic_launcher');
   final DarwinInitializationSettings initializationSettingsDarwin =
-  DarwinInitializationSettings(
-      onDidReceiveLocalNotification: null,
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-      requestCriticalPermission: true);
+      DarwinInitializationSettings(
+          onDidReceiveLocalNotification: null,
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+          requestCriticalPermission: true);
   final LinuxInitializationSettings initializationSettingsLinux =
-  LinuxInitializationSettings(defaultActionName: 'Open notification');
+      LinuxInitializationSettings(defaultActionName: 'Open notification');
   final InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsDarwin,
@@ -69,16 +70,16 @@ Future<void> _initNotification() async {
       linux: initializationSettingsLinux);
   await flutterLocalNotificationsPlugin.initialize(initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse details) {
-        switch (details.notificationResponseType) {
-          case NotificationResponseType.selectedNotification:
-            final receptionNotification = ReceptionNotification.fromJson(
-                details.payload!);
-            receptionNotificationStream.add(receptionNotification);
-            break;
-          case NotificationResponseType.selectedNotificationAction:
-            break;
-        }
-      });
+    switch (details.notificationResponseType) {
+      case NotificationResponseType.selectedNotification:
+        final receptionNotification =
+            ReceptionNotification.fromJson(details.payload!);
+        receptionNotificationStream.add(receptionNotification);
+        break;
+      case NotificationResponseType.selectedNotificationAction:
+        break;
+    }
+  });
 }
 
 class MyApp extends StatefulWidget {
@@ -147,8 +148,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     receptionNotificationStream.stream.listen((receptionNotification) {
-      final deviceModal = DeviceManager.instance.deviceList.find((
-          element) => element.fingerprint == receptionNotification.from);
+      final deviceModal = DeviceManager.instance.deviceList
+          .find((element) => element.fingerprint == receptionNotification.from);
       if (deviceModal != null) {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return ConcertScreen(deviceInfo: deviceModal.toDeviceInfo());

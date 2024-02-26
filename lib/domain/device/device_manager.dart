@@ -14,7 +14,6 @@ import '../../utils/logger.dart';
 
 class DeviceManager {
   DeviceManager._privateConstructor() {
-    _initDeviceId().then((value) => did = value);
   }
 
   static final DeviceManager _instance = DeviceManager._privateConstructor();
@@ -36,6 +35,15 @@ class DeviceManager {
   var state = MultiState.idle;
 
   final deviceListChangeListeners = <OnDeviceListChanged>{};
+
+
+  void init() {
+    _initDeviceId().then((value) {
+      did = value;
+      startScan();
+    });
+  }
+
 
   Future<String> _initDeviceId() async {
     var sharePreference = await SharedPreferences.getInstance();
