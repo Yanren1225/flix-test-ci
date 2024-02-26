@@ -54,7 +54,22 @@ class ShipService {
     var body = await request.readAsString();
     var data = jsonDecode(body) as Map<String, dynamic>;
     var bubble = PrimitiveBubble.fromJson(data);
-    await _bubblePool.add(bubble);
+    if (bubble is PrimitiveFileBubble) {
+      final before = await _bubblePool.findLastById(bubble.id);
+      if (before is PrimitiveFileBubble) {
+        // 如果是重新发送，判断是否已经接收，已经接受直接确认接受，否则继续等待接受。
+        if ( before.content.state.index > FileState.waitToAccepted.index) {
+          await _bubblePool.add(bubble);
+          await confirmReceiveFile(bubble.from, bubble.id);
+        } else {
+          await _bubblePool.add(bubble);
+        }
+      } else {
+        await _bubblePool.add(bubble);
+      }
+    } else {
+      await _bubblePool.add(bubble);
+    }
     return Response.ok('received bubble');
   }
 
@@ -149,7 +164,9 @@ class ShipService {
 
       switch (intent.action) {
         case TransAction.confirmReceive:
-          final updatedBubble = await _updateFileShareState(intent.bubbleId, FileState.inTransit) as PrimitiveFileBubble;
+          final updatedBubble =
+              await _updateFileShareState(intent.bubbleId, FileState.inTransit)
+                  as PrimitiveFileBubble;
           _sendFileReal(updatedBubble);
           break;
         case TransAction.cancel:
@@ -268,8 +285,9 @@ class ShipService {
     }
   }
 
-
-  Future<PrimitiveBubble> _updateFileShareState(String bubbleId, FileState state, [PrimitiveFileBubble? create = null]) async {
+  Future<PrimitiveBubble> _updateFileShareState(
+      String bubbleId, FileState state,
+      [PrimitiveFileBubble? create = null]) async {
     var _bubble = await _bubblePool.findLastById(bubbleId);
     if (_bubble == null) {
       if (create != null) {
@@ -283,26 +301,14 @@ class ShipService {
       throw StateError('The Bubble with id: $bubbleId is not a file bubble');
     }
 
-    final copyBubble = _bubble.copy(content: _bubble.content.copy(state: state));
-    await _bubblePool
-        .add(copyBubble);
+    final copyBubble =
+        _bubble.copy(content: _bubble.content.copy(state: state));
+    await _bubblePool.add(copyBubble);
     return copyBubble;
   }
 
-  // Cancelable checkOrCreateCancelable(String bubbleId) {
-  //   var cancelable = tasks[bubbleId];
-  //   if (cancelable == null) {
-  //     cancelable = Cancelable();
-  //     tasks[bubbleId] = cancelable;
-  //   }
-  //   return cancelable;
-  // }
-
-  Future<void> checkCancel(String bubbleId, [void Function()? onCanceled]) async {
-    // if (tasks[bubbleId]?.isCanceled == true) {
-    //   tasks.remove(bubbleId);
-    //   throw CancelException();
-    // }
+  Future<void> checkCancel(String bubbleId,
+      [void Function()? onCanceled]) async {
     final bubble = await _bubblePool.findLastById(bubbleId);
     if (bubble is PrimitiveFileBubble) {
       if (bubble.content.state == FileState.cancelled) {
@@ -319,12 +325,17 @@ class ShipService {
     await sendCancelMessage(bubble.id, bubble.to);
   }
 
+  Future<void> resend(UIBubble uiBubble) async {
+    final bubble = fromUIBubble(uiBubble) as PrimitiveFileBubble;
+    await _updateFileShareState(bubble.id, FileState.waitToAccepted, bubble);
+    await _send(bubble.copy(content: bubble.content.copy(state: FileState.waitToAccepted)));
+  }
+
   Future<void> confirmReceiveFile(String from, String bubbleId) async {
     try {
       // 更新接收方状态为接收中
       await _updateFileShareState(bubbleId, FileState.inTransit);
-      var uri = Uri.parse(
-          'http://${DeviceManager.instance.getNetAdressByDeviceId(from)}/intent');
+      var uri = Uri.parse(intentUrl(from));
 
       var response = await http.post(
         uri,

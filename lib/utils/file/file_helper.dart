@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:androp/model/ui_bubble/shared_file.dart';
+import 'package:androp/utils/drawin_file_security_extension.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
@@ -43,6 +44,7 @@ Future<String> getDefaultDestinationDirectory() async {
 
 extension XFileConvert on XFile {
   Future<FileMeta> toFileMeta() async {
+    await authPersistentAccess(this.path);
     return FileMeta(
         name: this.name,
         path: this.path,

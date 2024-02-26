@@ -54,4 +54,8 @@ class ConcertService {
   Future<void> cancel(UIBubble uiBubble) async {
     return await ShipService.instance.cancel(uiBubble);
   }
+
+  Future<void> resend(UIBubble uiBubble) async {
+    return await ShipService.instance.resend(uiBubble);
+  }
 }

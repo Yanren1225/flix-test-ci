@@ -171,7 +171,9 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
         case FileState.failed:
           content =
               Image.file(File(sharedImage.content.path!!), fit: BoxFit.contain);
-          stateIcon = SvgPicture.asset('assets/images/ic_trans_fail.svg');
+          stateIcon = IconButton(onPressed: () {
+                concertProvider.resend(entity);
+              }, icon: SvgPicture.asset('assets/images/ic_trans_fail.svg'));
           break;
         default:
           throw StateError('Error send state: ${sharedImage.state}');

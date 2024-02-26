@@ -19,7 +19,8 @@ mixin DrawinFileSecurityExtension {
         await callback.call(fileMeta.path!);
       } else {
         final resolvedFile = await secureBookmarks.resolveBookmark(bookmark);
-        await secureBookmarks.startAccessingSecurityScopedResource(resolvedFile);
+        await secureBookmarks
+            .startAccessingSecurityScopedResource(resolvedFile);
         await callback.call(fileMeta.path!);
         await secureBookmarks.stopAccessingSecurityScopedResource(resolvedFile);
       }
@@ -39,7 +40,8 @@ mixin DrawinFileSecurityExtension {
         sharePreference.setString(fileMeta.path!, bookmark);
       } else {
         final resolvedFile = await secureBookmarks.resolveBookmark(bookmark);
-        await secureBookmarks.startAccessingSecurityScopedResource(resolvedFile);
+        await secureBookmarks
+            .startAccessingSecurityScopedResource(resolvedFile);
       }
     }
   }
@@ -57,6 +59,18 @@ mixin DrawinFileSecurityExtension {
         final resolvedFile = await secureBookmarks.resolveBookmark(bookmark);
         await secureBookmarks.stopAccessingSecurityScopedResource(resolvedFile);
       }
+    }
+  }
+}
+
+Future<void> authPersistentAccess(String path) async {
+  if (Platform.isMacOS) {
+    final secureBookmarks = SecureBookmarks();
+    var sharePreference = await SharedPreferences.getInstance();
+    var bookmark = sharePreference.getString(path);
+    if (bookmark == null) {
+      bookmark = await secureBookmarks.bookmark(File(path));
+      sharePreference.setString(path, bookmark);
     }
   }
 }

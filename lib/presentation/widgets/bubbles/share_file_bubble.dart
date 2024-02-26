@@ -106,19 +106,29 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
         case FileState.failed:
           des = '${sharedFile.content.size.formateBinarySize()} · 发送异常';
           showProgressBar = true;
-          progressBarColor = Color.fromRGBO(255, 59, 48, 1);
+          progressBarColor = const Color.fromRGBO(255, 59, 48, 1);
           showStateIcon = true;
-          stateIcon = SvgPicture.asset(
-            'assets/images/ic_trans_fail.svg',
+          stateIcon = IconButton(
+            onPressed: () {
+              concertProvider.resend(entity);
+            },
+            icon: SvgPicture.asset(
+              'assets/images/ic_trans_fail.svg',
+            ),
           );
           break;
         case FileState.cancelled:
           des = '${sharedFile.content.size.formateBinarySize()} · 已取消';
           showProgressBar = true;
-          progressBarColor = Color.fromRGBO(255, 59, 48, 1);
+          progressBarColor = const Color.fromRGBO(255, 59, 48, 1);
           showStateIcon = true;
-          stateIcon = SvgPicture.asset(
-            'assets/images/ic_trans_fail.svg',
+          stateIcon = IconButton(
+            onPressed: () {
+              concertProvider.resend(entity);
+            },
+            icon: SvgPicture.asset(
+              'assets/images/ic_trans_fail.svg',
+            ),
           );
           break;
         case FileState.unknown:
@@ -128,7 +138,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
       switch (sharedFile.state) {
         case FileState.waitToAccepted:
           showProgressBar = true;
-          progressBarColor = Color.fromRGBO(0, 122, 255, 1);
+          progressBarColor = const Color.fromRGBO(0, 122, 255, 1);
           des = '${sharedFile.content.size.formateBinarySize()} · 点击接收';
           showStateIcon = true;
           stateIcon = SvgPicture.asset(
@@ -138,13 +148,13 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
         case FileState.inTransit:
         case FileState.sendCompleted:
           showProgressBar = true;
-          progressBarColor = Color.fromRGBO(0, 122, 255, 1);
+          progressBarColor = const Color.fromRGBO(0, 122, 255, 1);
           des = sharedFile.content.size.formateBinarySize();
           break;
         case FileState.receiveCompleted:
         case FileState.completed:
           showProgressBar = false;
-          progressBarColor = Color.fromRGBO(0, 122, 255, 1);
+          progressBarColor = const Color.fromRGBO(0, 122, 255, 1);
           des = '${sharedFile.content.size.formateBinarySize()} · 已接收';
           break;
         case FileState.sendFailed:
@@ -152,7 +162,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
         case FileState.failed:
           des = '${sharedFile.content.size.formateBinarySize()} · 接收失败';
           showProgressBar = true;
-          progressBarColor = Color.fromRGBO(255, 59, 48, 1);
+          progressBarColor = const Color.fromRGBO(255, 59, 48, 1);
           showStateIcon = true;
           stateIcon = SvgPicture.asset(
             'assets/images/ic_trans_fail.svg',
@@ -161,7 +171,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
         case FileState.cancelled:
           des = '${sharedFile.content.size.formateBinarySize()} · 已取消';
           showProgressBar = true;
-          progressBarColor = Color.fromRGBO(255, 59, 48, 1);
+          progressBarColor = const Color.fromRGBO(255, 59, 48, 1);
           showStateIcon = true;
           stateIcon = SvgPicture.asset(
             'assets/images/ic_trans_fail.svg',

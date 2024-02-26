@@ -151,7 +151,9 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
         case FileState.receiveFailed:
         case FileState.failed:
           content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
-          stateIcon = SvgPicture.asset('assets/images/ic_trans_fail.svg');
+          stateIcon = IconButton(onPressed: () {
+            concertProvider.resend(entity);
+          }, icon: SvgPicture.asset('assets/images/ic_trans_fail.svg'));
           break;
         default:
           throw StateError('Error send state: ${sharedVideo.state}');
