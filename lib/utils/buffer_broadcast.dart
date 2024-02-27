@@ -7,6 +7,9 @@ class BufferBroadcast<E> {
   E? _buffer;
   final _broadcast = StreamController<E>.broadcast();
 
+  BufferBroadcast([Future<E> Function()? init]) {
+    init?.call()?.then((value) => add(value));
+  }
 
   void add(E e) {
     _buffer = e;

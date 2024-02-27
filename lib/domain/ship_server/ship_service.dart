@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:androp/domain/bubble_pool.dart';
 import 'package:androp/domain/device/device_manager.dart';
+import 'package:androp/domain/settings/SettingsRepo.dart';
 import 'package:androp/model/intent/trans_intent.dart';
 import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:androp/model/ship/primitive_bubble.dart';
@@ -54,11 +55,16 @@ class ShipService {
     var body = await request.readAsString();
     var data = jsonDecode(body) as Map<String, dynamic>;
     var bubble = PrimitiveBubble.fromJson(data);
-    if (bubble is PrimitiveFileBubble) {
+    if (await SettingsRepo.instance.getAutoReceiveAsync()) {
+      await _bubblePool.add(bubble);
+      await confirmReceiveFile(bubble.from, bubble.id);
+    } else if (bubble is PrimitiveFileBubble) {
       final before = await _bubblePool.findLastById(bubble.id);
       if (before is PrimitiveFileBubble) {
         // 如果是重新发送，判断是否已经接收，已经接受直接确认接受，否则继续等待接受。
-        if ( before.content.state.index > FileState.waitToAccepted.index) {
+        // TODO 逻辑有漏洞：如果未接收时，发送方取消发送，状态变为cancel, cancel > waitToAccepted。
+        // TODO 预期：需要接收方同意，实际：直接接收
+        if (before.content.state.index > FileState.waitToAccepted.index) {
           await _bubblePool.add(bubble);
           await confirmReceiveFile(bubble.from, bubble.id);
         } else {
@@ -328,7 +334,8 @@ class ShipService {
   Future<void> resend(UIBubble uiBubble) async {
     final bubble = fromUIBubble(uiBubble) as PrimitiveFileBubble;
     await _updateFileShareState(bubble.id, FileState.waitToAccepted, bubble);
-    await _send(bubble.copy(content: bubble.content.copy(state: FileState.waitToAccepted)));
+    await _send(bubble.copy(
+        content: bubble.content.copy(state: FileState.waitToAccepted)));
   }
 
   Future<void> confirmReceiveFile(String from, String bubbleId) async {

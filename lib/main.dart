@@ -11,6 +11,7 @@ import 'package:androp/model/notification/reception_notification.dart';
 import 'package:androp/network/multicast_client_provider.dart';
 import 'package:androp/presentation/screens/concert_screen.dart';
 import 'package:androp/presentation/screens/devices_screen.dart';
+import 'package:androp/presentation/screens/helps/help_screen.dart';
 import 'package:androp/presentation/screens/settings/settings_screen.dart';
 import 'package:androp/setting/setting_provider.dart';
 import 'package:androp/utils/device/device_utils.dart';
@@ -30,8 +31,10 @@ final receptionNotificationStream = StreamController<ReceptionNotification>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await windowManager.ensureInitialized();
-  windowManager.setMinimumSize(const Size(400, 400));
+  if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
+    await windowManager.ensureInitialized();
+    windowManager.setMinimumSize(const Size(400, 400));
+  }
 
   NotificationService.instance.init();
   ShipService.instance.startShipServer();
@@ -237,16 +240,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // }
     return Scaffold(
       backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
-      body: DeviceScreen(
-        key: GlobalKey(),
-        onDeviceSelected: (deviceInfo) => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ConcertScreen(
-                      deviceInfo: deviceInfo,
-                      showBackButton: true,
-                    ))),
-      ),
+      body: NarrowBody(),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
@@ -299,6 +293,8 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       case 1:
         return SettingsScreen();
+      case 2:
+        return HelpScreen();
       default:
         return Placeholder();
     }
@@ -374,6 +370,8 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       case 1:
         return SettingsScreen();
+      case 2:
+        return HelpScreen();
       default:
         return Placeholder();
     }

@@ -1,3 +1,4 @@
+import 'package:androp/domain/settings/SettingsRepo.dart';
 import 'package:androp/presentation/widgets/settings/switchable_item.dart';
 import 'package:flutter/material.dart';
 
@@ -57,16 +58,26 @@ class SettingsScreenState extends State<SettingsScreen> {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(14)),
                       child: Padding(
-                        padding: EdgeInsets.all(14),
-                        child: SwitchableItem(
-                          label: '自动接收',
-                          des: '收到的文件将自动保存',
-                          checked: isAutoSave,
-                          onChanged: (value) { setState(() {
-                            if (value != null) {
-                              isAutoSave = value;
-                            }
-                          }); },
+                        padding: const EdgeInsets.all(14),
+                        child: StreamBuilder<bool>(
+                          initialData: SettingsRepo.instance.getAutoReceive(),
+                          stream:
+                              SettingsRepo.instance.autoReceiveStream.stream,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<bool> snapshot) {
+                            return SwitchableItem(
+                              label: '自动接收',
+                              des: '收到的文件将自动保存',
+                              checked: snapshot.data ?? false,
+                              onChanged: (value) {
+                                setState(() {
+                                  if (value != null) {
+                                    SettingsRepo.instance.autoReceive(value);
+                                  }
+                                });
+                              },
+                            );
+                          },
                         ),
                       ),
                     ),
