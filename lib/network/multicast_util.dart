@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:androp/domain/device/device_manager.dart';
 import 'package:androp/network/protocol/device_modal.dart';
@@ -7,6 +8,7 @@ import 'package:androp/setting/setting_provider.dart';
 import 'package:androp/utils/device_info_helper.dart';
 import 'package:androp/utils/logger.dart';
 import 'package:androp/utils/sleep.dart';
+import 'package:flutter/services.dart';
 
 class MultiCastUtil {
   /// The default http server port and
@@ -48,8 +50,10 @@ class MultiCastUtil {
       await sleepAsync(wait);
       for (final socket in sockets) {
         try {
-          socket.socket.send(utf8.encode(jsonEncode(Ping(deviceModal).toJson())),
-              InternetAddress(defaultMulticastGroup), defaultPort);
+          socket.socket.send(
+              utf8.encode(jsonEncode(Ping(deviceModal).toJson())),
+              InternetAddress(defaultMulticastGroup),
+              defaultPort);
           socket.socket.close();
         } catch (e) {
           print(e.toString());
@@ -77,14 +81,34 @@ class MultiCastUtil {
       await sleepAsync(wait);
       for (final socket in sockets) {
         try {
-          socket.socket.send(utf8.encode(jsonEncode(Pong(deviceModal, to).toJson())),
-              InternetAddress(defaultMulticastGroup), defaultPort);
+          socket.socket.send(
+              utf8.encode(jsonEncode(Pong(deviceModal, to).toJson())),
+              InternetAddress(defaultMulticastGroup),
+              defaultPort);
           socket.socket.close();
         } catch (e) {
           print(e.toString());
         }
       }
     }
+  }
+
+  static const multicastLock = MethodChannel('com.example.androp/multicast-lock');
+
+  static Future aquireMulticastLock() async {
+    if (Platform.isAndroid) {
+      log("locking multicast lock");
+      multicastLock.invokeMethod('aquire');
+    }
+
+  }
+
+  static Future releaseMulticastLock() async {
+    if (Platform.isAndroid) {
+      log("releasing multicast lock");
+      multicastLock.invokeMethod('release');
+    }
+
   }
 }
 

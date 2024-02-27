@@ -23,6 +23,7 @@ class MultiCastImpl extends MultiCastApi {
       return;
     }
     _listening = true;
+    await MultiCastUtil.aquireMulticastLock();
     final sockets = await MultiCastUtil.getSockets(multiGroup, port);
     for (final socket in sockets) {
       socket.socket.listen((_) {

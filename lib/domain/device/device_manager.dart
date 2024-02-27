@@ -13,8 +13,7 @@ import '../../network/protocol/device_modal.dart';
 import '../../utils/logger.dart';
 
 class DeviceManager {
-  DeviceManager._privateConstructor() {
-  }
+  DeviceManager._privateConstructor() {}
 
   static final DeviceManager _instance = DeviceManager._privateConstructor();
 
@@ -36,14 +35,12 @@ class DeviceManager {
 
   final deviceListChangeListeners = <OnDeviceListChanged>{};
 
-
   void init() {
     _initDeviceId().then((value) {
       did = value;
       startScan();
     });
   }
-
 
   Future<String> _initDeviceId() async {
     var sharePreference = await SharedPreferences.getInstance();
@@ -57,7 +54,6 @@ class DeviceManager {
   }
 
   Future<void> startScan() async {
-    multiCastApi.ping();
     state = MultiState.idle;
     multiCastApi.startScan(
         MultiCastUtil.defaultMulticastGroup, MultiCastUtil.defaultPort,
@@ -72,6 +68,7 @@ class DeviceManager {
       Logger.log("event data:$deviceModal  deviceList = $deviceList");
       notifyDeviceListChanged();
     });
+    unawaited(multiCastApi.ping());
   }
 
   void clearDevices() {
