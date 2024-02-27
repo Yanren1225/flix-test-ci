@@ -11,6 +11,7 @@ import 'package:androp/model/notification/reception_notification.dart';
 import 'package:androp/network/multicast_client_provider.dart';
 import 'package:androp/presentation/screens/concert_screen.dart';
 import 'package:androp/presentation/screens/devices_screen.dart';
+import 'package:androp/presentation/screens/settings/settings_screen.dart';
 import 'package:androp/setting/setting_provider.dart';
 import 'package:androp/utils/device/device_utils.dart';
 import 'package:androp/utils/iterable_extension.dart';
@@ -284,6 +285,25 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Widget NarrowBody() {
+    switch (selectedIndex) {
+      case 0:
+        return DeviceScreen(
+          onDeviceSelected: (deviceInfo) => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ConcertScreen(
+                        deviceInfo: deviceInfo,
+                        showBackButton: true,
+                      ))),
+        );
+      case 1:
+        return SettingsScreen();
+      default:
+        return Placeholder();
+    }
+  }
+
   Widget WideLayout() {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
@@ -352,6 +372,8 @@ class _MyHomePageState extends State<MyHomePage> {
         return DeviceScreen(
           onDeviceSelected: (deviceInfo) => setSelectedDevice(deviceInfo),
         );
+      case 1:
+        return SettingsScreen();
       default:
         return Placeholder();
     }
