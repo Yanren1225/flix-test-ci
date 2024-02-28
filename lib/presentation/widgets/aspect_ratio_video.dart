@@ -1,11 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:video_player/video_player.dart';
 
 class AspectRatioVideo extends StatefulWidget {
-  const AspectRatioVideo(this.controller, this.preview, {super.key});
+  const AspectRatioVideo({ super.key, required this.videoPath, required this.preview});
 
-  final VideoPlayerController? controller;
+  // final VideoPlayerController? controller;
+  final String videoPath;
   final bool preview;
 
   @override
@@ -13,11 +16,13 @@ class AspectRatioVideo extends StatefulWidget {
 }
 
 class AspectRatioVideoState extends State<AspectRatioVideo> {
-  VideoPlayerController? get controller => widget.controller;
+  late VideoPlayerController controller;
 
   bool get preview => widget.preview;
 
   bool initialized = false;
+
+  AspectRatioVideoState();
 
   void _onVideoControllerUpdate() {
     if (!mounted) {
@@ -32,13 +37,29 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
   @override
   void initState() {
     super.initState();
+    controller = VideoPlayerController.file(File(widget.videoPath));
     controller!.addListener(_onVideoControllerUpdate);
+    controller?.initialize();
+    controller?.setLooping(false);
   }
 
   @override
   void dispose() {
     controller!.removeListener(_onVideoControllerUpdate);
+    controller?.dispose();
     super.dispose();
+  }
+
+  @override
+  void activate() {
+    super.activate();
+    controller?.play();
+  }
+
+  @override
+  void deactivate() {
+    controller?.pause();
+    super.deactivate();
   }
 
   @override

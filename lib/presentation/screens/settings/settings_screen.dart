@@ -1,6 +1,7 @@
 import 'package:androp/domain/settings/SettingsRepo.dart';
 import 'package:androp/presentation/widgets/settings/switchable_item.dart';
 import 'package:androp/utils/file/file_helper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -83,47 +84,53 @@ class SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 20, top: 10, right: 20),
-                    child: Text(
-                      'App设置',
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.normal,
-                          color: Color.fromRGBO(60, 60, 67, 0.6)),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 16, top: 4, right: 16, bottom: 16),
-                    child: InkWell(
-                      onTap: () {
-                        deleteAppFiles();
-                      },
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                            color: Color.fromRGBO(255, 59, 48, 1),
-                            borderRadius: BorderRadius.circular(14)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(14),
-                          child: StreamBuilder<bool>(
-                            initialData: SettingsRepo.instance.getAutoReceive(),
-                            stream:
-                                SettingsRepo.instance.autoReceiveStream.stream,
-                            builder: (BuildContext context,
-                                AsyncSnapshot<bool> snapshot) {
-                              return SizedBox(
-                                width: double.infinity,
-                                child: const Text(
-                                  textAlign: TextAlign.center,
-                                  '删除所有数据',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.normal),
-                                ),
-                              );
-                            },
+                  const Visibility(
+                      visible: !kReleaseMode,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 20, top: 10, right: 20),
+                        child: Text(
+                          'App设置',
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.normal,
+                              color: Color.fromRGBO(60, 60, 67, 0.6)),
+                        ),
+                      )),
+                  Visibility(
+                    visible: !kReleaseMode,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16, top: 4, right: 16, bottom: 16),
+                      child: InkWell(
+                        onTap: () {
+                          deleteAppFiles();
+                        },
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                              color: Color.fromRGBO(255, 59, 48, 1),
+                              borderRadius: BorderRadius.circular(14)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(14),
+                            child: StreamBuilder<bool>(
+                              initialData:
+                                  SettingsRepo.instance.getAutoReceive(),
+                              stream: SettingsRepo
+                                  .instance.autoReceiveStream.stream,
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<bool> snapshot) {
+                                return SizedBox(
+                                  width: double.infinity,
+                                  child: const Text(
+                                    textAlign: TextAlign.center,
+                                    '删除所有数据',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),

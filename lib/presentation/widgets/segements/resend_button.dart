@@ -1,17 +1,17 @@
 import 'package:androp/domain/concert/concert_provider.dart';
 import 'package:androp/model/ui_bubble/ui_bubble.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 class ResendButton extends  StatelessWidget {
   final UIBubble entity;
-  final anchorTag = const Uuid().v1();
+  late String anchorTag;
 
-  ResendButton({super.key, required this.entity});
+  ResendButton({super.key, required this.entity}) {
+    anchorTag = 'resend_button_${entity.shareable.id}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +33,7 @@ class ResendButton extends  StatelessWidget {
                       borderRadius: BorderRadius.circular(14)),
                   child: InkWell(
                     onTap: () {
+                      removeAllModals();
                       concertProvider.resend(entity);
                     },
                     child: const Padding(

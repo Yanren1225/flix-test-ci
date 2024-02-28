@@ -137,6 +137,7 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
                 padding: const EdgeInsets.only(
                     left: 16.0, right: 16.0, top: 12, bottom: 12),
                 child: ShareBubble(
+                  key: Key('$index'),
                   uiBubble: item,
                 ),
               );

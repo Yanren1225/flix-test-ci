@@ -28,6 +28,10 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
   UIBubble get entity => widget.entity;
   VideoPlayerController? controller;
 
+  final _cancelButtonKey = GlobalKey();
+  final _resendButtonKey = GlobalKey();
+  final _videoWidget = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     AndropContext andropContext = context.watch();
@@ -54,7 +58,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
       switch (sharedVideo.state) {
         case FileState.picked:
           content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
-          stateIcon = CancelSendButton(entity: entity);
+          stateIcon = CancelSendButton(key: _cancelButtonKey, entity: entity);
           break;
         case FileState.waitToAccepted:
           content = IntrinsicHeight(
@@ -76,7 +80,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
               ],
             ),
           );
-          stateIcon = CancelSendButton(entity: entity);
+          stateIcon = CancelSendButton(key: _cancelButtonKey, entity: entity);
           break;
         case FileState.inTransit:
           content = IntrinsicHeight(
@@ -120,7 +124,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
               ],
             ),
           );
-          stateIcon = CancelSendButton(entity: entity);
+          stateIcon = CancelSendButton(key: _cancelButtonKey, entity: entity);
           break;
         case FileState.sendCompleted:
         case FileState.receiveCompleted:
@@ -132,7 +136,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
         case FileState.receiveFailed:
         case FileState.failed:
           content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
-          stateIcon = ResendButton(entity: entity);
+          stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
         default:
           throw StateError('Error send state: ${sharedVideo.state}');
@@ -234,34 +238,18 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
   Widget _buildInlineVideoPlayer(String videoUri, bool preview) {
     // const double volume = kIsWeb ? 0.0 : 1.0;
     // controller.setVolume(volume);
-    if (controller == null) {
-      controller = VideoPlayerController.file(File(videoUri));
-    } else {
-      controller?.dispose();
-      controller = VideoPlayerController.file(File(videoUri));
-    }
-
-    controller?.initialize();
-    controller?.setLooping(false);
+    // if (controller == null) {
+    //   controller = VideoPlayerController.file(File(videoUri));
+    // } else {
+    //   controller?.dispose();
+    //   controller = VideoPlayerController.file(File(videoUri));
+    // }
+    //
+    // controller?.initialize();
+    // controller?.setLooping(false);
     // controller?.play();
-    return Center(child: AspectRatioVideo(controller, preview));
-  }
-
-  @override
-  void activate() {
-    super.activate();
-    controller?.play();
-  }
-
-  @override
-  void deactivate() {
-    controller?.pause();
-    super.deactivate();
-  }
-
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
+    return Center(
+        child: AspectRatioVideo(
+            key: _videoWidget, videoPath: videoUri, preview: preview));
   }
 }
