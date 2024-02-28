@@ -32,13 +32,13 @@ class AppDatabase extends _$AppDatabase {
       // put the database file, called db.sqlite here, into the documents folder
       // for your app.
       final file;
-      if (Platform.isAndroid) {
-        // TODO 方便测试，上线后修改
-        file = File(p.join('/data/user/0/com.example.androp/databases', 'db.sqlite'));
-      } else {
+      // if (Platform.isAndroid) {
+      //   // TODO 方便测试，上线后修改
+      //   file = File(p.join('/data/user/0/com.example.androp/databases', 'db.sqlite'));
+      // } else {
         final dbFolder = await getApplicationDocumentsDirectory();
         file = File(p.join(dbFolder.path, 'db.sqlite'));
-      }
+      // }
 
 
       // Also work around limitations on old Android versions

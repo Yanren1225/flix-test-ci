@@ -27,20 +27,27 @@ class FileMeta with DrawinFileSecurityExtension {
   final String nameWithSuffix;
   final int size;
   final String? path;
+  // 图片和视频文件的款高度
+  final int width;
+  final int height;
 
   FileMeta(
       {required this.name,
       required this.mimeType,
       required this.nameWithSuffix,
       required this.size,
-      this.path});
+      this.path,
+      this.width = 0,
+      this.height = 0});
 
   FileMeta.fromJson(Map<String, dynamic> json)
       : name = json['name'],
         mimeType = json['mimeType'],
         nameWithSuffix = json['nameWithSuffix'],
         size = json['size'],
-        path = null;
+        path = null,
+        width = json['width'],
+        height = json['height'];
 
   Map<String, dynamic> toJson() {
     return {
@@ -48,6 +55,8 @@ class FileMeta with DrawinFileSecurityExtension {
       'mimeType': mimeType,
       'nameWithSuffix': nameWithSuffix,
       'size': size,
+      'width': width,
+      'height': height
     };
   }
 
@@ -56,18 +65,22 @@ class FileMeta with DrawinFileSecurityExtension {
       String? mimeType,
       String? nameWithSuffix,
       int? size,
-      String? path}) {
+      String? path,
+      int? width,
+      int? height}) {
     return FileMeta(
         name: name ?? this.name,
         mimeType: mimeType ?? this.mimeType,
         nameWithSuffix: nameWithSuffix ?? this.nameWithSuffix,
         size: size ?? this.size,
-        path: path ?? this.path);
+        path: path ?? this.path,
+        width: width ?? this.width,
+        height: height ?? this.height);
   }
 
   @override
   String toString() {
-    return 'name: $name, mimeType: $mimeType, nameWithSuffix: $nameWithSuffix, size: $size, path: $path';
+    return 'name: $name, mimeType: $mimeType, nameWithSuffix: $nameWithSuffix, size: $size, path: $path, width: $width, height: $height';
   }
 }
 

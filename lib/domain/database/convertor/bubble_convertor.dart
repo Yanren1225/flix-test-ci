@@ -39,5 +39,7 @@ FileTransfer fromFileContent(FileContent fileContent) {
           mimeType: fileContent.mimeType,
           nameWithSuffix: fileContent.nameWithSuffix,
           size: fileContent.size,
-          path: fileContent.path));
+          path: fileContent.path,
+          width: fileContent.width,
+          height: fileContent.height));
 }

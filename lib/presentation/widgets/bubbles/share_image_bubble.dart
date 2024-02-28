@@ -63,7 +63,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
       alignment = MainAxisAlignment.start;
     }
 
-    Widget stateIcon = const SizedBox();
+    Widget stateIcon = const SizedBox(width: 48, height: 48,);
     final Widget content;
     if (entity.isFromMe(andropContext.deviceId)) {
       // 发送
@@ -74,71 +74,67 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
           stateIcon = CancelSendButton(entity: entity);
           break;
         case FileState.waitToAccepted:
-          content = IntrinsicHeight(
-            child: Stack(
-              fit: StackFit.passthrough,
-              children: [
-                Image.file(File(sharedImage.content.path!!),
-                    fit: BoxFit.contain),
-                Container(
-                  decoration:
-                      const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: const SizedBox(),
-                ),
-                const Align(
-                  alignment: Alignment.center,
-                  child: WaitToAcceptMediaWidget(),
-                )
-              ],
-            ),
+          content = Stack(
+            fit: StackFit.passthrough,
+            children: [
+              Image.file(File(sharedImage.content.path!!),
+                  fit: BoxFit.contain),
+              Container(
+                decoration:
+                    const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                width: double.infinity,
+                height: double.infinity,
+                child: const SizedBox(),
+              ),
+              const Align(
+                alignment: Alignment.center,
+                child: WaitToAcceptMediaWidget(),
+              )
+            ],
           );
           stateIcon = CancelSendButton(entity: entity);
           break;
         case FileState.inTransit:
-          content = IntrinsicHeight(
-            child: Stack(
-              fit: StackFit.passthrough,
-              children: [
-                Image.file(File(sharedImage.content.path!!),
-                    fit: BoxFit.contain),
-                Container(
-                  decoration:
-                      const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: const SizedBox(),
+          content = Stack(
+            fit: StackFit.passthrough,
+            children: [
+              Image.file(File(sharedImage.content.path!!),
+                  fit: BoxFit.contain),
+              Container(
+                decoration:
+                    const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                width: double.infinity,
+                height: double.infinity,
+                child: const SizedBox(),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.transparent,
+                          color: Colors.white,
+                          strokeWidth: 2.0,
+                        )),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      '${(sharedImage.progress * 100).round()}%',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal),
+                    )
+                  ],
                 ),
-                Align(
-                  alignment: Alignment.center,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            backgroundColor: Colors.transparent,
-                            color: Colors.white,
-                            strokeWidth: 2.0,
-                          )),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Text(
-                        '${(sharedImage.progress * 100).round()}%',
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.normal),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
+              )
+            ],
           );
           stateIcon = CancelSendButton(entity: entity);
           break;
@@ -220,11 +216,12 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
           throw StateError('Error receive state: ${sharedImage.state}');
       }
     }
+
     return Row(
       mainAxisAlignment: alignment,
       children: [
         Visibility(
-          visible: alignment == MainAxisAlignment.end && stateIcon != SizedBox,
+          visible: alignment == MainAxisAlignment.end,
           child: Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
@@ -241,10 +238,28 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
                 borderRadius: const BorderRadius.all(Radius.circular(10))),
             child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
-              return ConstrainedBox(
-                  constraints: BoxConstraints(
-                      maxWidth: max(150, min(300, constraints.maxWidth - 60)),
-                      minWidth: 150),
+              final width;
+              if (sharedImage.content.width >
+                  max(150, min(300, constraints.maxWidth - 60))) {
+                width = max(150, min(300, constraints.maxWidth - 60));
+              } else if (sharedImage.content.width < 150) {
+                width = 150;
+              } else {
+                width = sharedImage.content.width;
+              }
+              final height;
+
+              if (sharedImage.content.width == 0) {
+                height = width;
+              } else {
+                height = sharedImage.content.height *
+                    1.0 /
+                    sharedImage.content.width *
+                    width;
+              }
+              return SizedBox(
+                  width: width * 1.0,
+                  height: height * 1.0,
                   child: ClipRRect(
                       borderRadius: const BorderRadius.all(Radius.circular(10)),
                       child: content));
@@ -253,7 +268,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
         ),
         Visibility(
           visible:
-              alignment == MainAxisAlignment.start && stateIcon != SizedBox,
+              alignment == MainAxisAlignment.start,
           child: Align(
               alignment: Alignment.bottomCenter,
               child: Padding(

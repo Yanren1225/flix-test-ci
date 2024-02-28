@@ -495,9 +495,29 @@ class $FileContentsTable extends FileContents
   late final GeneratedColumn<double> progress = GeneratedColumn<double>(
       'progress', aliasedName, false,
       type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _widthMeta = const VerificationMeta('width');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, name, mimeType, nameWithSuffix, size, path, state, progress];
+  late final GeneratedColumn<int> width = GeneratedColumn<int>(
+      'width', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _heightMeta = const VerificationMeta('height');
+  @override
+  late final GeneratedColumn<int> height = GeneratedColumn<int>(
+      'height', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        mimeType,
+        nameWithSuffix,
+        size,
+        path,
+        state,
+        progress,
+        width,
+        height
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -555,6 +575,18 @@ class $FileContentsTable extends FileContents
     } else if (isInserting) {
       context.missing(_progressMeta);
     }
+    if (data.containsKey('width')) {
+      context.handle(
+          _widthMeta, width.isAcceptableOrUnknown(data['width']!, _widthMeta));
+    } else if (isInserting) {
+      context.missing(_widthMeta);
+    }
+    if (data.containsKey('height')) {
+      context.handle(_heightMeta,
+          height.isAcceptableOrUnknown(data['height']!, _heightMeta));
+    } else if (isInserting) {
+      context.missing(_heightMeta);
+    }
     return context;
   }
 
@@ -580,6 +612,10 @@ class $FileContentsTable extends FileContents
           .read(DriftSqlType.int, data['${effectivePrefix}state'])!,
       progress: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}progress'])!,
+      width: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}width'])!,
+      height: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}height'])!,
     );
   }
 
@@ -598,6 +634,8 @@ class FileContent extends DataClass implements Insertable<FileContent> {
   final String? path;
   final int state;
   final double progress;
+  final int width;
+  final int height;
   const FileContent(
       {required this.id,
       required this.name,
@@ -606,7 +644,9 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       required this.size,
       this.path,
       required this.state,
-      required this.progress});
+      required this.progress,
+      required this.width,
+      required this.height});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -620,6 +660,8 @@ class FileContent extends DataClass implements Insertable<FileContent> {
     }
     map['state'] = Variable<int>(state);
     map['progress'] = Variable<double>(progress);
+    map['width'] = Variable<int>(width);
+    map['height'] = Variable<int>(height);
     return map;
   }
 
@@ -633,6 +675,8 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       path: path == null && nullToAbsent ? const Value.absent() : Value(path),
       state: Value(state),
       progress: Value(progress),
+      width: Value(width),
+      height: Value(height),
     );
   }
 
@@ -648,6 +692,8 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       path: serializer.fromJson<String?>(json['path']),
       state: serializer.fromJson<int>(json['state']),
       progress: serializer.fromJson<double>(json['progress']),
+      width: serializer.fromJson<int>(json['width']),
+      height: serializer.fromJson<int>(json['height']),
     );
   }
   @override
@@ -662,6 +708,8 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       'path': serializer.toJson<String?>(path),
       'state': serializer.toJson<int>(state),
       'progress': serializer.toJson<double>(progress),
+      'width': serializer.toJson<int>(width),
+      'height': serializer.toJson<int>(height),
     };
   }
 
@@ -673,7 +721,9 @@ class FileContent extends DataClass implements Insertable<FileContent> {
           int? size,
           Value<String?> path = const Value.absent(),
           int? state,
-          double? progress}) =>
+          double? progress,
+          int? width,
+          int? height}) =>
       FileContent(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -683,6 +733,8 @@ class FileContent extends DataClass implements Insertable<FileContent> {
         path: path.present ? path.value : this.path,
         state: state ?? this.state,
         progress: progress ?? this.progress,
+        width: width ?? this.width,
+        height: height ?? this.height,
       );
   @override
   String toString() {
@@ -694,14 +746,16 @@ class FileContent extends DataClass implements Insertable<FileContent> {
           ..write('size: $size, ')
           ..write('path: $path, ')
           ..write('state: $state, ')
-          ..write('progress: $progress')
+          ..write('progress: $progress, ')
+          ..write('width: $width, ')
+          ..write('height: $height')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, name, mimeType, nameWithSuffix, size, path, state, progress);
+  int get hashCode => Object.hash(id, name, mimeType, nameWithSuffix, size,
+      path, state, progress, width, height);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -713,7 +767,9 @@ class FileContent extends DataClass implements Insertable<FileContent> {
           other.size == this.size &&
           other.path == this.path &&
           other.state == this.state &&
-          other.progress == this.progress);
+          other.progress == this.progress &&
+          other.width == this.width &&
+          other.height == this.height);
 }
 
 class FileContentsCompanion extends UpdateCompanion<FileContent> {
@@ -725,6 +781,8 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
   final Value<String?> path;
   final Value<int> state;
   final Value<double> progress;
+  final Value<int> width;
+  final Value<int> height;
   final Value<int> rowid;
   const FileContentsCompanion({
     this.id = const Value.absent(),
@@ -735,6 +793,8 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     this.path = const Value.absent(),
     this.state = const Value.absent(),
     this.progress = const Value.absent(),
+    this.width = const Value.absent(),
+    this.height = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   FileContentsCompanion.insert({
@@ -746,6 +806,8 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     this.path = const Value.absent(),
     required int state,
     required double progress,
+    required int width,
+    required int height,
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         name = Value(name),
@@ -753,7 +815,9 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
         nameWithSuffix = Value(nameWithSuffix),
         size = Value(size),
         state = Value(state),
-        progress = Value(progress);
+        progress = Value(progress),
+        width = Value(width),
+        height = Value(height);
   static Insertable<FileContent> custom({
     Expression<String>? id,
     Expression<String>? name,
@@ -763,6 +827,8 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     Expression<String>? path,
     Expression<int>? state,
     Expression<double>? progress,
+    Expression<int>? width,
+    Expression<int>? height,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -774,6 +840,8 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
       if (path != null) 'path': path,
       if (state != null) 'state': state,
       if (progress != null) 'progress': progress,
+      if (width != null) 'width': width,
+      if (height != null) 'height': height,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -787,6 +855,8 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
       Value<String?>? path,
       Value<int>? state,
       Value<double>? progress,
+      Value<int>? width,
+      Value<int>? height,
       Value<int>? rowid}) {
     return FileContentsCompanion(
       id: id ?? this.id,
@@ -797,6 +867,8 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
       path: path ?? this.path,
       state: state ?? this.state,
       progress: progress ?? this.progress,
+      width: width ?? this.width,
+      height: height ?? this.height,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -828,6 +900,12 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     if (progress.present) {
       map['progress'] = Variable<double>(progress.value);
     }
+    if (width.present) {
+      map['width'] = Variable<int>(width.value);
+    }
+    if (height.present) {
+      map['height'] = Variable<int>(height.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -845,6 +923,8 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
           ..write('path: $path, ')
           ..write('state: $state, ')
           ..write('progress: $progress, ')
+          ..write('width: $width, ')
+          ..write('height: $height, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

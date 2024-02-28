@@ -101,7 +101,7 @@ class PickActionAreaState extends State<PickActionsArea> {
         onPicked([
           for (final f in pickedFileList)
             PickableFile(
-                type: PickedFileType.Image, content: await f.toFileMeta())
+                type: PickedFileType.Image, content: await f.toFileMeta(isImg: true))
         ]);
       } catch (e) {
         log("pick images failed", error: e);

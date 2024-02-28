@@ -5,23 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class CancelSendButton extends  StatelessWidget {
   final UIBubble entity;
+  final anchorTag = const Uuid().v1();
 
-  const CancelSendButton({super.key, required this.entity});
+  CancelSendButton({super.key, required this.entity});
 
   @override
   Widget build(BuildContext context) {
     final concertProvider = context.watch<ConcertProvider>();
     return ModalAnchor(
-      tag: 'cancel_anchor',
+      tag: anchorTag,
       child: IconButton(
           onPressed: () {
             showModal(ModalEntry.anchored(context,
                 tag: 'cancel_anchor_modal',
-                anchorTag: 'cancel_anchor',
-                aboveTag: 'cancel_anchor',
+                anchorTag: anchorTag,
+                aboveTag: anchorTag,
                 barrierColor: const Color.fromRGBO(0, 0, 0, 0.45),
                 removeOnPop: true,
                 barrierDismissible: true,
@@ -31,6 +33,7 @@ class CancelSendButton extends  StatelessWidget {
                       borderRadius: BorderRadius.circular(14)),
                   child: InkWell(
                     onTap: () {
+
                       concertProvider.cancel(entity);
                     },
                     child: const Padding(

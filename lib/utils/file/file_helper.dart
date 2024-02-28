@@ -1,4 +1,7 @@
+import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:androp/utils/drawin_file_security_extension.dart';
@@ -6,7 +9,11 @@ import 'package:device_apps/device_apps.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:image_size_getter/file_input.dart';
+import 'package:image_size_getter/image_size_getter.dart';
 import 'package:mime/mime.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_storage/shared_storage.dart' as shared_storage;
 import 'package:path_provider/path_provider.dart' as path;
 
@@ -43,14 +50,22 @@ Future<String> getDefaultDestinationDirectory() async {
 }
 
 extension XFileConvert on XFile {
-  Future<FileMeta> toFileMeta() async {
+  Future<FileMeta> toFileMeta(
+      {bool isImg = false, bool isVideo = false}) async {
     await authPersistentAccess(this.path);
+    var size = const Size(0, 0);
+    if (isImg) {
+      size = ImageSizeGetter.getSize(FileInput(File(this.path)));
+    } else if (isVideo) {}
+
     return FileMeta(
         name: this.name,
         path: this.path,
         mimeType: this.mimeType ?? 'application/octet-stream',
         nameWithSuffix: this.name,
-        size: await length());
+        size: await length(),
+        width: size.width,
+        height: size.height);
   }
 }
 
@@ -70,8 +85,7 @@ extension PlatformFileConvert on PlatformFile {
 
 extension ApplicationConvert on Application {
   Future<FileMeta> toFileMeta() async {
-    if (this.apkFilePath
-    == null) {
+    if (this.apkFilePath == null) {
       throw UnsupportedError('PlatformFile.path must not be null');
     }
     return FileMeta(
@@ -81,4 +95,32 @@ extension ApplicationConvert on Application {
         nameWithSuffix: '$packageName.apk',
         size: File(apkFilePath).lengthSync());
   }
+}
+
+Future deleteAppFiles() async {
+  // ...
+  // _deleteFilesInDir(await getApplicationSupportDirectory());
+
+  // 删除数据库文件
+  // TODO getApplicationDocumentsDirectory返回的是用户的documents目录
+  _deleteFilesInDir(await getApplicationDocumentsDirectory());
+
+  // // 删除临时文件
+  // _deleteFilesInDir(await getTemporaryDirectory());
+  //
+  // // 删除缓存文件
+  // _deleteFilesInDir(await getApplicationCacheDirectory());
+}
+
+Future<void> _deleteFilesInDir(Directory dir) async {
+  dir.listSync(recursive: true)
+      .forEach((entity) {
+    if (entity is File) {
+      try {
+        entity.deleteSync();
+      } catch (e) {
+        log('delete ${entity.path} failed: $e');
+      }
+    }
+  });
 }

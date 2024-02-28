@@ -40,9 +40,6 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
       backgroundColor = Colors.white;
     }
 
-    if (entity.isFromMe(andropContext.deviceId)) {
-    } else {}
-
     final MainAxisAlignment alignment;
     if (entity.isFromMe(andropContext.deviceId)) {
       alignment = MainAxisAlignment.end;

@@ -6,7 +6,6 @@ import 'package:androp/model/database/bubble_entity.dart';
 import 'package:androp/model/database/file_content.dart';
 import 'package:androp/model/database/text_content.dart';
 import 'package:androp/model/ship/primitive_bubble.dart';
-import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:drift/drift.dart';
 
 part 'bubbles_dao.g.dart';
@@ -42,7 +41,9 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
                   size: fileBubble.content.meta.size,
                   path: Value(fileBubble.content.meta.path),
                   state: fileBubble.content.state.index,
-                  progress: fileBubble.content.progress));
+                  progress: fileBubble.content.progress,
+                  width: fileBubble.content.meta.width,
+                  height: fileBubble.content.meta.height));
         default:
           throw UnimplementedError();
       }
