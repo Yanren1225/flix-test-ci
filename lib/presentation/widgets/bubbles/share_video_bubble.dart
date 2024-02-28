@@ -61,68 +61,64 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
           stateIcon = CancelSendButton(key: _cancelButtonKey, entity: entity);
           break;
         case FileState.waitToAccepted:
-          content = IntrinsicHeight(
-            child: Stack(
-              fit: StackFit.passthrough,
-              children: [
-                _buildInlineVideoPlayer(sharedVideo.content.path!, true),
-                Container(
-                  decoration:
-                      const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: const SizedBox(),
-                ),
-                const Align(
-                  alignment: Alignment.center,
-                  child: WaitToAcceptMediaWidget(),
-                )
-              ],
-            ),
+          content = Stack(
+            fit: StackFit.passthrough,
+            children: [
+              _buildInlineVideoPlayer(sharedVideo.content.path!, true),
+              Container(
+                decoration:
+                    const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                width: double.infinity,
+                height: double.infinity,
+                child: const SizedBox(),
+              ),
+              const Align(
+                alignment: Alignment.center,
+                child: WaitToAcceptMediaWidget(),
+              )
+            ],
           );
           stateIcon = CancelSendButton(key: _cancelButtonKey, entity: entity);
           break;
         case FileState.inTransit:
-          content = IntrinsicHeight(
-            child: Stack(
-              fit: StackFit.passthrough,
-              children: [
-                _buildInlineVideoPlayer(sharedVideo.content.path!, true),
-                Container(
-                  decoration:
-                      BoxDecoration(color: Colors.black.withOpacity(0.5)),
-                  width: double.infinity,
-                  height: double.infinity,
+          content = Stack(
+            fit: StackFit.passthrough,
+            children: [
+              _buildInlineVideoPlayer(sharedVideo.content.path!, true),
+              Container(
+                decoration:
+                    BoxDecoration(color: Colors.black.withOpacity(0.5)),
+                width: double.infinity,
+                height: double.infinity,
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.transparent,
+                          color: Colors.white,
+                          strokeWidth: 2.0,
+                        )),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      '${(sharedVideo.progress * 100).round()}%',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal),
+                    )
+                  ],
                 ),
-                Align(
-                  alignment: Alignment.center,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            backgroundColor: Colors.transparent,
-                            color: Colors.white,
-                            strokeWidth: 2.0,
-                          )),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Text(
-                        '${(sharedVideo.progress * 100).round()}%',
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.normal),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
+              )
+            ],
           );
           stateIcon = CancelSendButton(key: _cancelButtonKey, entity: entity);
           break;
@@ -211,13 +207,32 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
                 borderRadius: const BorderRadius.all(Radius.circular(10))),
             child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
-              return ConstrainedBox(
-                  constraints: BoxConstraints(
-                      maxWidth: max(150, min(300, constraints.maxWidth - 60)),
-                      minWidth: 150),
-                  child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                      child: content));
+                  final width;
+                  if (sharedVideo.content.width >
+                      max(150, min(300, constraints.maxWidth - 60))) {
+                    width = max(150, min(300, constraints.maxWidth - 60));
+                  } else if (sharedVideo.content.width < 150) {
+                    width = 150;
+                  } else {
+                    width = sharedVideo.content.width;
+                  }
+                  final height;
+
+                  if (sharedVideo.content.width == 0) {
+                    height = width;
+                  } else {
+                    height = sharedVideo.content.height *
+                        1.0 /
+                        sharedVideo.content.width *
+                        width;
+                  }
+              return SizedBox(
+                width: width * 1.0,
+                height: height * 1.0,
+                child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    child: content),
+              );
             }),
           ),
         ),

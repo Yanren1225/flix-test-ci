@@ -9,7 +9,6 @@ import 'package:androp/presentation/widgets/segements/resend_button.dart';
 import 'package:androp/utils/file/size_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
 
 class ShareFileBubble extends StatefulWidget {
@@ -17,12 +16,16 @@ class ShareFileBubble extends StatefulWidget {
 
   const ShareFileBubble({super.key, required this.entity});
 
+
   @override
   State<StatefulWidget> createState() => ShareFileBubbleState();
 }
 
 class ShareFileBubbleState extends State<ShareFileBubble> {
   UIBubble get entity => widget.entity;
+
+  final _cancelSendButtonKey = GlobalKey();
+  final _resendButtonKey = GlobalKey();
 
   @override
   void initState() {
@@ -51,7 +54,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
     }
 
     var showStateIcon = false;
-    Widget stateIcon = SizedBox();
+    Widget stateIcon = const SizedBox(width: 48, height: 48);
     final showProgressBar;
     final progressBarColor;
     final des;
@@ -62,21 +65,21 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           progressBarColor = Color.fromRGBO(0, 122, 255, 1);
           des = sharedFile.content.size.formateBinarySize();
           showStateIcon = true;
-          stateIcon = CancelSendButton(entity: entity);
+          stateIcon = CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.waitToAccepted:
           showProgressBar = true;
           progressBarColor = Color.fromRGBO(0, 122, 255, 1);
           des = '${sharedFile.content.size.formateBinarySize()} · 等待对方确认';
           showStateIcon = true;
-          stateIcon = CancelSendButton(entity: entity);
+          stateIcon = CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.inTransit:
           showProgressBar = true;
           progressBarColor = Color.fromRGBO(0, 122, 255, 1);
           des = sharedFile.content.size.formateBinarySize();
           showStateIcon = true;
-          stateIcon = CancelSendButton(entity: entity);
+          stateIcon = CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.sendCompleted:
         case FileState.receiveCompleted:
@@ -92,14 +95,14 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           showProgressBar = true;
           progressBarColor = const Color.fromRGBO(255, 59, 48, 1);
           showStateIcon = true;
-          stateIcon = ResendButton(entity: entity);
+          stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
         case FileState.cancelled:
           des = '${sharedFile.content.size.formateBinarySize()} · 已取消';
           showProgressBar = true;
           progressBarColor = const Color.fromRGBO(255, 59, 48, 1);
           showStateIcon = true;
-          stateIcon = stateIcon = ResendButton(entity: entity);
+          stateIcon = stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
         case FileState.unknown:
           throw StateError('Unknown send state: ${sharedFile.state}');
@@ -161,7 +164,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
         builder: (context, constraints) {
           return ConstrainedBox(
             constraints:
-                BoxConstraints(maxWidth: max(constraints.maxWidth - 60, 200)),
+                BoxConstraints(maxWidth: max(constraints.maxWidth - 20, 200)),
             child: Padding(
               padding: const EdgeInsets.only(
                   left: 10, top: 10, right: 10, bottom: 10),
@@ -253,7 +256,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
       mainAxisAlignment: alignment,
       children: [
         Visibility(
-            visible: alignment == MainAxisAlignment.end && showStateIcon,
+            visible: alignment == MainAxisAlignment.end,
             child: Padding(
               padding: const EdgeInsets.only(right: 18.0),
               child: stateIcon,
@@ -262,7 +265,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           child: innerBubble,
         ),
         Visibility(
-            visible: alignment == MainAxisAlignment.start && showStateIcon,
+            visible: alignment == MainAxisAlignment.start,
             child: Padding(
               padding: const EdgeInsets.only(left: 18.0),
               child: stateIcon,

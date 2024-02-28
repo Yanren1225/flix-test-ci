@@ -66,6 +66,7 @@ dependencies:
   window_manager: ^0.3.8
   modals: ^1.0.0+1
   image_size_getter: ^2.1.2
+  package_info_plus: ^5.0.1
   # thumbnailer: ^2.2.0
 
   # pdfx: ^2.5.0

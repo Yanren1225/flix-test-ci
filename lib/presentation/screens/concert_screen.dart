@@ -23,7 +23,10 @@ class ConcertScreen extends StatelessWidget {
   final bool showBackButton;
 
   const ConcertScreen(
-      {super.key, required this.deviceInfo, this.anchor = null, required this.showBackButton});
+      {super.key,
+      required this.deviceInfo,
+      this.anchor = null,
+      required this.showBackButton});
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +54,7 @@ class ConcertScreen extends StatelessWidget {
     final appBarHeight =
         appBar.preferredSize.height + MediaQuery.of(context).padding.top;
     return ChangeNotifierProvider<ConcertProvider>(
+      key: Key(deviceInfo.id),
       create: (BuildContext context) {
         return ConcertProvider(deviceInfo: deviceInfo);
       },
@@ -170,6 +174,7 @@ class InputArea extends StatefulWidget {
 class InputAreaState extends State<InputArea> {
   final OnSubmit onSubmit;
   String inputContent = '';
+  final textEditController = TextEditingController();
 
   InputAreaState({required this.onSubmit});
 
@@ -260,6 +265,7 @@ class InputAreaState extends State<InputArea> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10)),
                           child: TextField(
+                            controller: textEditController,
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 16,
@@ -280,7 +286,7 @@ class InputAreaState extends State<InputArea> {
                               input(value);
                             },
                             onSubmitted: (value) {
-                              submitText(value);
+                              trySubmitText(value);
                             },
                           ),
                         ),
@@ -292,17 +298,17 @@ class InputAreaState extends State<InputArea> {
                 IconButton(
                     onPressed: () {
                       FocusScope.of(context).unfocus();
-                      submitText(inputContent);
+                      trySubmitText(inputContent);
                     },
                     padding: const EdgeInsets.all(9.0),
                     iconSize: 22,
                     style: ButtonStyle(
-                        backgroundColor: MaterialStateColor.resolveWith((states) => const Color.fromRGBO(0, 122, 255, 1)),
-                        shape:
-                            MaterialStatePropertyAll<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ))),
+                        backgroundColor: MaterialStateColor.resolveWith(
+                            (states) => const Color.fromRGBO(0, 122, 255, 1)),
+                        shape: MaterialStatePropertyAll<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ))),
                     icon: const Icon(
                       Icons.arrow_upward_sharp,
                       color: Colors.white,
@@ -318,6 +324,13 @@ class InputAreaState extends State<InputArea> {
         ),
       ),
     );
+  }
+
+  void trySubmitText(String content) {
+    if (content.trim().isNotEmpty) {
+      textEditController.clear();
+      submitText(content);
+    }
   }
 }
 

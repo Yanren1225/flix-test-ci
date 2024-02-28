@@ -16,6 +16,8 @@ import 'package:mime/mime.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_storage/shared_storage.dart' as shared_storage;
 import 'package:path_provider/path_provider.dart' as path;
+import 'package:video_player/video_player.dart';
+
 
 Future<String> getDefaultDestinationDirectory() async {
   switch (defaultTargetPlatform) {
@@ -56,7 +58,12 @@ extension XFileConvert on XFile {
     var size = const Size(0, 0);
     if (isImg) {
       size = ImageSizeGetter.getSize(FileInput(File(this.path)));
-    } else if (isVideo) {}
+    } else if (isVideo) {
+      VideoPlayerController _controller = VideoPlayerController.file(File(this.path));
+      await _controller.initialize();
+      size = Size(_controller.value?.size?.width?.toInt() ?? 0, _controller.value?.size?.height?.toInt() ?? 0);
+      _controller.dispose();
+    }
 
     return FileMeta(
         name: this.name,

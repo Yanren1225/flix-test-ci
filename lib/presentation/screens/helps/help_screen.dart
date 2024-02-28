@@ -1,8 +1,24 @@
 import 'package:androp/presentation/widgets/helps/QA.dart';
 import 'package:androp/presentation/widgets/settings/clickable_item.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
-class HelpScreen extends StatelessWidget {
+class HelpScreen extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => HelpScreenState();
+}
+
+class HelpScreenState extends State<HelpScreen> {
+  ValueNotifier<String> version = ValueNotifier('');
+
+  @override
+  void initState() {
+    super.initState();
+    PackageInfo.fromPlatform().then((packageInfo) {
+      version.value = packageInfo.version;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,10 +56,14 @@ class HelpScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(14)),
                       child: Padding(
                         padding: const EdgeInsets.all(14),
-                        child: ClickableItem(
-                            label: '关于我们',
-                            tail: 'v0.0.1-b24021',
-                            onClick: () {}),
+                        child: ValueListenableBuilder<String>(
+                          valueListenable: version,
+                          builder: (BuildContext context, String value,
+                              Widget? child) {
+                            return ClickableItem(
+                                label: '关于我们', tail: 'v$value', onClick: () {});
+                          },
+                        ),
                       ),
                     ),
                   ),

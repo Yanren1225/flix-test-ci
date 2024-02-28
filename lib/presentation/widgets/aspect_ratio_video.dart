@@ -53,7 +53,7 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
   @override
   void activate() {
     super.activate();
-    controller?.play();
+    // controller?.play();
   }
 
   @override

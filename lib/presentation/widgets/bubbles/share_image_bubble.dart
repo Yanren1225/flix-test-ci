@@ -26,6 +26,10 @@ class ShareImageBubble extends StatefulWidget {
 class ShareImageBubbleState extends State<ShareImageBubble> {
   UIBubble get entity => widget.entity;
 
+  final _imageKey = GlobalKey();
+  final _cancelSendButtonKey = GlobalKey();
+  final _resendButtonKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -70,14 +74,14 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
       switch (sharedImage.state) {
         case FileState.picked:
           content =
-              Image.file(File(sharedImage.content.path!!), fit: BoxFit.contain);
-          stateIcon = CancelSendButton(entity: entity);
+              Image.file(key: _imageKey, File(sharedImage.content.path!!), fit: BoxFit.contain);
+          stateIcon = CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.waitToAccepted:
           content = Stack(
             fit: StackFit.passthrough,
             children: [
-              Image.file(File(sharedImage.content.path!!),
+              Image.file(key: _imageKey, File(sharedImage.content.path!!),
                   fit: BoxFit.contain),
               Container(
                 decoration:
@@ -92,13 +96,13 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
               )
             ],
           );
-          stateIcon = CancelSendButton(entity: entity);
+          stateIcon = CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.inTransit:
           content = Stack(
             fit: StackFit.passthrough,
             children: [
-              Image.file(File(sharedImage.content.path!!),
+              Image.file(key: _imageKey, File(sharedImage.content.path!!),
                   fit: BoxFit.contain),
               Container(
                 decoration:
@@ -136,21 +140,21 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
               )
             ],
           );
-          stateIcon = CancelSendButton(entity: entity);
+          stateIcon = CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.sendCompleted:
         case FileState.receiveCompleted:
         case FileState.completed:
           content =
-              Image.file(File(sharedImage.content.path!!), fit: BoxFit.contain);
+              Image.file(key: _imageKey, File(sharedImage.content.path!!), fit: BoxFit.contain);
           break;
         case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
           content =
-              Image.file(File(sharedImage.content.path!!), fit: BoxFit.contain);
-          stateIcon = stateIcon = ResendButton(entity: entity);
+              Image.file(key: _imageKey, File(sharedImage.content.path!!), fit: BoxFit.contain);
+          stateIcon = stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
         default:
           throw StateError('Error send state: ${sharedImage.state}');
@@ -197,7 +201,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
         case FileState.receiveCompleted:
         case FileState.completed:
           content =
-              Image.file(File(sharedImage.content.path!!), fit: BoxFit.contain);
+              Image.file(key: _imageKey, File(sharedImage.content.path!!), fit: BoxFit.contain);
           break;
         case FileState.cancelled:
         case FileState.sendFailed:

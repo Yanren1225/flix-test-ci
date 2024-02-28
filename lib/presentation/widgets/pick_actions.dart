@@ -123,7 +123,7 @@ class PickActionAreaState extends State<PickActionsArea> {
           onPicked([
             PickableFile(
                 type: PickedFileType.Video,
-                content: await pickedFile.toFileMeta())
+                content: await pickedFile.toFileMeta(isVideo: true))
           ]);
         } else {
           log("pick video failed, return null");
