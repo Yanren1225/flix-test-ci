@@ -1,13 +1,15 @@
-
 import 'dart:math';
 
 import 'package:androp/domain/androp_context.dart';
 import 'package:androp/domain/concert/concert_provider.dart';
 import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:androp/model/ui_bubble/ui_bubble.dart';
+import 'package:androp/presentation/widgets/segements/cancel_send_button.dart';
+import 'package:androp/presentation/widgets/segements/resend_button.dart';
 import 'package:androp/utils/file/size_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
 
 class ShareFileBubble extends StatefulWidget {
@@ -60,39 +62,21 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           progressBarColor = Color.fromRGBO(0, 122, 255, 1);
           des = sharedFile.content.size.formateBinarySize();
           showStateIcon = true;
-          stateIcon = IconButton(
-              onPressed: () {
-                concertProvider.cancel(entity);
-              },
-              icon: SvgPicture.asset(
-                'assets/images/ic_cancel.svg',
-              ));
+          stateIcon = CancelSendButton(entity: entity);
           break;
         case FileState.waitToAccepted:
           showProgressBar = true;
           progressBarColor = Color.fromRGBO(0, 122, 255, 1);
           des = '${sharedFile.content.size.formateBinarySize()} · 等待对方确认';
           showStateIcon = true;
-          stateIcon = IconButton(
-              onPressed: () {
-                concertProvider.cancel(entity);
-              },
-              icon: SvgPicture.asset(
-                'assets/images/ic_cancel.svg',
-              ));
+          stateIcon = CancelSendButton(entity: entity);
           break;
-          case FileState.inTransit:
+        case FileState.inTransit:
           showProgressBar = true;
           progressBarColor = Color.fromRGBO(0, 122, 255, 1);
           des = sharedFile.content.size.formateBinarySize();
           showStateIcon = true;
-          stateIcon = IconButton(
-              onPressed: () {
-                concertProvider.cancel(entity);
-              },
-              icon: SvgPicture.asset(
-                'assets/images/ic_cancel.svg',
-              ));
+          stateIcon = CancelSendButton(entity: entity);
           break;
         case FileState.sendCompleted:
         case FileState.receiveCompleted:
@@ -108,28 +92,14 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           showProgressBar = true;
           progressBarColor = const Color.fromRGBO(255, 59, 48, 1);
           showStateIcon = true;
-          stateIcon = IconButton(
-            onPressed: () {
-              concertProvider.resend(entity);
-            },
-            icon: SvgPicture.asset(
-              'assets/images/ic_trans_fail.svg',
-            ),
-          );
+          stateIcon = ResendButton(entity: entity);
           break;
         case FileState.cancelled:
           des = '${sharedFile.content.size.formateBinarySize()} · 已取消';
           showProgressBar = true;
           progressBarColor = const Color.fromRGBO(255, 59, 48, 1);
           showStateIcon = true;
-          stateIcon = IconButton(
-            onPressed: () {
-              concertProvider.resend(entity);
-            },
-            icon: SvgPicture.asset(
-              'assets/images/ic_trans_fail.svg',
-            ),
-          );
+          stateIcon = stateIcon = ResendButton(entity: entity);
           break;
         case FileState.unknown:
           throw StateError('Unknown send state: ${sharedFile.state}');
@@ -190,8 +160,8 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           return ConstrainedBox(
-            constraints: BoxConstraints(
-                maxWidth: max(constraints.maxWidth - 60, 200)),
+            constraints:
+                BoxConstraints(maxWidth: max(constraints.maxWidth - 60, 200)),
             child: Padding(
               padding: const EdgeInsets.only(
                   left: 10, top: 10, right: 10, bottom: 10),
@@ -225,11 +195,10 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
                             height: 44,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(6),
-                                color:
-                                const Color.fromRGBO(0, 122, 255, 1)),
+                                color: const Color.fromRGBO(0, 122, 255, 1)),
                             alignment: Alignment.center,
-                            child: SvgPicture.asset(
-                                'assets/images/ic_file1.svg'),
+                            child:
+                                SvgPicture.asset('assets/images/ic_file1.svg'),
                           )
                         ]),
                     Visibility(
@@ -255,7 +224,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
                             minHeight: 6,
                             borderRadius: BorderRadius.circular(6),
                             backgroundColor:
-                            const Color.fromRGBO(247, 247, 247, 1),
+                                const Color.fromRGBO(247, 247, 247, 1),
                             color: progressBarColor),
                       ),
                     )
@@ -268,10 +237,14 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
       ),
     );
     Widget innerBubble;
-    if (!entity.isFromMe(andropContext.deviceId) && sharedFile.state == FileState.waitToAccepted)  {
-      innerBubble = InkWell(onTap: () {
-        concertProvider.confirmReceive(entity);
-      }, child: _innerBubble,);
+    if (!entity.isFromMe(andropContext.deviceId) &&
+        sharedFile.state == FileState.waitToAccepted) {
+      innerBubble = InkWell(
+        onTap: () {
+          concertProvider.confirmReceive(entity);
+        },
+        child: _innerBubble,
+      );
     } else {
       innerBubble = _innerBubble;
     }
@@ -297,4 +270,44 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
       ],
     );
   }
+
+// Widget cancelSendButton(ConcertProvider concertProvider) {
+//   return ModalAnchor(
+//     tag: 'cancel_anchor',
+//     child: IconButton(
+//         onPressed: () {
+//           showModal(ModalEntry.anchored(context,
+//               tag: 'cancel_anchor_modal',
+//               anchorTag: 'cancel_anchor',
+//               aboveTag: 'cancel_anchor',
+//               barrierColor: const Color.fromRGBO(0, 0, 0, 0.45),
+//               removeOnPop: true,
+//               barrierDismissible: true,
+//               child: Material(
+//                 color: Colors.white,
+//                 shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.circular(14)),
+//                 child: InkWell(
+//                   onTap: () {
+//                     concertProvider.cancel(entity);
+//                   },
+//                   child: const Padding(
+//                     padding:
+//                         EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+//                     child: Text(
+//                       '取消发送',
+//                       style: TextStyle(
+//                           fontSize: 16,
+//                           fontWeight: FontWeight.w500,
+//                           color: Color.fromRGBO(255, 59, 48, 1)),
+//                     ),
+//                   ),
+//                 ),
+//               )));
+//         },
+//         icon: SvgPicture.asset(
+//           'assets/images/ic_cancel.svg',
+//         )),
+//   );
+// }
 }

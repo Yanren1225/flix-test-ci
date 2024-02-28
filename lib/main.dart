@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:window_manager/window_manager.dart';
@@ -106,6 +107,7 @@ class MyAppState extends State<MyApp> {
       create: (context) => AndropContext(),
       child: MaterialApp(
         title: 'Androp',
+        navigatorObservers: [modalsRouteObserver],
         theme: ThemeData(
           // This is the theme of your application.
           //

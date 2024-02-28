@@ -8,6 +8,8 @@ import 'package:androp/model/ui_bubble/ui_bubble.dart';
 import 'package:androp/presentation/widgets/aspect_ratio_video.dart';
 import 'package:androp/presentation/widgets/bubbles/accept_media_widget.dart';
 import 'package:androp/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
+import 'package:androp/presentation/widgets/segements/cancel_send_button.dart';
+import 'package:androp/presentation/widgets/segements/resend_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -55,13 +57,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
       switch (sharedVideo.state) {
         case FileState.picked:
           content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
-          stateIcon = IconButton(
-              onPressed: () {
-                concertProvider.cancel(entity);
-              },
-              icon: SvgPicture.asset(
-                'assets/images/ic_cancel.svg',
-              ));
+          stateIcon = CancelSendButton(entity: entity);
           break;
         case FileState.waitToAccepted:
           content = IntrinsicHeight(
@@ -83,13 +79,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
               ],
             ),
           );
-          stateIcon = IconButton(
-              onPressed: () {
-                concertProvider.cancel(entity);
-              },
-              icon: SvgPicture.asset(
-                'assets/images/ic_cancel.svg',
-              ));
+          stateIcon = CancelSendButton(entity: entity);
           break;
         case FileState.inTransit:
           content = IntrinsicHeight(
@@ -133,13 +123,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
               ],
             ),
           );
-          stateIcon = IconButton(
-              onPressed: () {
-                concertProvider.cancel(entity);
-              },
-              icon: SvgPicture.asset(
-                'assets/images/ic_cancel.svg',
-              ));
+          stateIcon = CancelSendButton(entity: entity);
           break;
         case FileState.sendCompleted:
         case FileState.receiveCompleted:
@@ -151,9 +135,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
         case FileState.receiveFailed:
         case FileState.failed:
           content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
-          stateIcon = IconButton(onPressed: () {
-            concertProvider.resend(entity);
-          }, icon: SvgPicture.asset('assets/images/ic_trans_fail.svg'));
+          stateIcon = ResendButton(entity: entity);
           break;
         default:
           throw StateError('Error send state: ${sharedVideo.state}');

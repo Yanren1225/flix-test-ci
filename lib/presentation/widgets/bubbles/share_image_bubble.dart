@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'dart:math';
 
@@ -9,6 +8,8 @@ import 'package:androp/model/ui_bubble/shared_file.dart';
 import 'package:androp/model/ui_bubble/ui_bubble.dart';
 import 'package:androp/presentation/widgets/bubbles/accept_media_widget.dart';
 import 'package:androp/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
+import 'package:androp/presentation/widgets/segements/cancel_send_button.dart';
+import 'package:androp/presentation/widgets/segements/resend_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -70,13 +71,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
         case FileState.picked:
           content =
               Image.file(File(sharedImage.content.path!!), fit: BoxFit.contain);
-          stateIcon = IconButton(
-              onPressed: () {
-                concertProvider.cancel(entity);
-              },
-              icon: SvgPicture.asset(
-                'assets/images/ic_cancel.svg',
-              ));
+          stateIcon = CancelSendButton(entity: entity);
           break;
         case FileState.waitToAccepted:
           content = IntrinsicHeight(
@@ -87,7 +82,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
                     fit: BoxFit.contain),
                 Container(
                   decoration:
-                  const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                      const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
                   width: double.infinity,
                   height: double.infinity,
                   child: const SizedBox(),
@@ -99,13 +94,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
               ],
             ),
           );
-          stateIcon = IconButton(
-              onPressed: () {
-                concertProvider.cancel(entity);
-              },
-              icon: SvgPicture.asset(
-                'assets/images/ic_cancel.svg',
-              ));
+          stateIcon = CancelSendButton(entity: entity);
           break;
         case FileState.inTransit:
           content = IntrinsicHeight(
@@ -116,7 +105,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
                     fit: BoxFit.contain),
                 Container(
                   decoration:
-                  const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                      const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
                   width: double.infinity,
                   height: double.infinity,
                   child: const SizedBox(),
@@ -151,13 +140,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
               ],
             ),
           );
-          stateIcon = IconButton(
-              onPressed: () {
-                concertProvider.cancel(entity);
-              },
-              icon: SvgPicture.asset(
-                'assets/images/ic_cancel.svg',
-              ));
+          stateIcon = CancelSendButton(entity: entity);
           break;
         case FileState.sendCompleted:
         case FileState.receiveCompleted:
@@ -171,9 +154,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
         case FileState.failed:
           content =
               Image.file(File(sharedImage.content.path!!), fit: BoxFit.contain);
-          stateIcon = IconButton(onPressed: () {
-                concertProvider.resend(entity);
-              }, icon: SvgPicture.asset('assets/images/ic_trans_fail.svg'));
+          stateIcon = stateIcon = ResendButton(entity: entity);
           break;
         default:
           throw StateError('Error send state: ${sharedImage.state}');
@@ -194,7 +175,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
             aspectRatio: 1.333333,
             child: DecoratedBox(
               decoration:
-              const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                  const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -230,7 +211,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
             aspectRatio: 1.333333,
             child: DecoratedBox(
               decoration:
-              const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                  const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
             ),
           );
           stateIcon = SvgPicture.asset('assets/images/ic_trans_fail.svg');
@@ -260,19 +241,19 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
                 borderRadius: const BorderRadius.all(Radius.circular(10))),
             child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
-                  return ConstrainedBox(
-                      constraints: BoxConstraints(
-                          maxWidth: max(150, min(300, constraints.maxWidth - 60)),
-                          minWidth: 150),
-                      child: ClipRRect(
-                          borderRadius: const BorderRadius.all(Radius.circular(10)),
-                          child: content));
-                }),
+              return ConstrainedBox(
+                  constraints: BoxConstraints(
+                      maxWidth: max(150, min(300, constraints.maxWidth - 60)),
+                      minWidth: 150),
+                  child: ClipRRect(
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      child: content));
+            }),
           ),
         ),
         Visibility(
           visible:
-          alignment == MainAxisAlignment.start && stateIcon != SizedBox,
+              alignment == MainAxisAlignment.start && stateIcon != SizedBox,
           child: Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
@@ -283,6 +264,4 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
       ],
     );
   }
-
 }
-
