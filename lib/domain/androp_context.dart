@@ -1,4 +1,4 @@
-import 'package:androp/domain/device/device_manager.dart';
+import 'package:anydrop/domain/device/device_manager.dart';
 import 'package:flutter/foundation.dart';
 
 class AndropContext extends ChangeNotifier {

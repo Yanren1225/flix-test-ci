@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:androp/model/device_info.dart';
-import 'package:androp/utils/device/device_utils.dart';
-import 'package:androp/utils/iterable_extension.dart';
+import 'package:anydrop/model/device_info.dart';
+import 'package:anydrop/utils/device/device_utils.dart';
+import 'package:anydrop/utils/iterable_extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 

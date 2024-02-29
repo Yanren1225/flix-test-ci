@@ -1,7 +1,7 @@
 
-import 'package:androp/domain/androp_context.dart';
-import 'package:androp/model/ui_bubble/shareable.dart';
-import 'package:androp/model/ui_bubble/ui_bubble.dart';
+import 'package:anydrop/domain/androp_context.dart';
+import 'package:anydrop/model/ui_bubble/shareable.dart';
+import 'package:anydrop/model/ui_bubble/ui_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

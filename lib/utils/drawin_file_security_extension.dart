@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:androp/model/ui_bubble/shared_file.dart';
+import 'package:anydrop/model/ui_bubble/shared_file.dart';
 import 'package:macos_secure_bookmarks/macos_secure_bookmarks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -1,5 +1,5 @@
-import 'package:androp/model/device_info.dart';
-import 'package:androp/network/protocol/device_modal.dart';
+import 'package:anydrop/model/device_info.dart';
+import 'package:anydrop/network/protocol/device_modal.dart';
 
 extension DeviceUtils on DeviceModal {
   //   DeviceInfo("0", 0, 'Xiaomi 14', 'phone.webp'),

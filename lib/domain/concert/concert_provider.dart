@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:androp/model/device_info.dart';
-import 'package:androp/model/ui_bubble/shared_file.dart';
+import 'package:anydrop/model/device_info.dart';
+import 'package:anydrop/model/ui_bubble/shared_file.dart';
 import 'package:flutter/material.dart';
 
 import '../../model/ui_bubble/ui_bubble.dart';

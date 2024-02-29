@@ -1,5 +1,5 @@
-import 'package:androp/domain/concert/concert_provider.dart';
-import 'package:androp/model/ui_bubble/ui_bubble.dart';
+import 'package:anydrop/domain/concert/concert_provider.dart';
+import 'package:anydrop/model/ui_bubble/ui_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modals/modals.dart';

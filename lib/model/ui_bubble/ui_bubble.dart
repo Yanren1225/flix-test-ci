@@ -1,5 +1,5 @@
-import 'package:androp/model/ship/primitive_bubble.dart';
-import 'package:androp/model/ui_bubble/shareable.dart';
+import 'package:anydrop/model/ship/primitive_bubble.dart';
+import 'package:anydrop/model/ui_bubble/shareable.dart';
 
 class UIBubble {
   String from;

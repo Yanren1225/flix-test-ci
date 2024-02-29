@@ -1,4 +1,4 @@
-import 'package:androp/model/ui_bubble/shared_file.dart';
+import 'package:anydrop/model/ui_bubble/shared_file.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:image_picker/image_picker.dart';
 

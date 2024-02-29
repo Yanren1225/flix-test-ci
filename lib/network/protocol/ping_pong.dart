@@ -1,5 +1,5 @@
 
-import 'package:androp/network/protocol/device_modal.dart';
+import 'package:anydrop/network/protocol/device_modal.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
 part 'ping_pong.mapper.dart';

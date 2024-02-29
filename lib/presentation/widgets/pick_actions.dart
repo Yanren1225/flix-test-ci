@@ -2,9 +2,9 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:math' hide log;
 
-import 'package:androp/model/pickable.dart';
-import 'package:androp/presentation/screens/android_apps_screen.dart';
-import 'package:androp/utils/file/file_helper.dart';
+import 'package:anydrop/model/pickable.dart';
+import 'package:anydrop/presentation/screens/android_apps_screen.dart';
+import 'package:anydrop/utils/file/file_helper.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';

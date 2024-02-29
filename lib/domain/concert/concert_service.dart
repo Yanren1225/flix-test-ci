@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
 
-import 'package:androp/domain/bubble_pool.dart';
-import 'package:androp/domain/database/database.dart';
-import 'package:androp/domain/ship_server/ship_service.dart';
-import 'package:androp/utils/stream_progress.dart';
+import 'package:anydrop/domain/bubble_pool.dart';
+import 'package:anydrop/domain/database/database.dart';
+import 'package:anydrop/domain/ship_server/ship_service.dart';
+import 'package:anydrop/utils/stream_progress.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:macos_secure_bookmarks/macos_secure_bookmarks.dart';

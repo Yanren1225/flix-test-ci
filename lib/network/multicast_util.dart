@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'package:androp/domain/device/device_manager.dart';
-import 'package:androp/network/protocol/device_modal.dart';
-import 'package:androp/network/protocol/ping_pong.dart';
-import 'package:androp/setting/setting_provider.dart';
-import 'package:androp/utils/device_info_helper.dart';
-import 'package:androp/utils/logger.dart';
-import 'package:androp/utils/sleep.dart';
+import 'package:anydrop/domain/device/device_manager.dart';
+import 'package:anydrop/network/protocol/device_modal.dart';
+import 'package:anydrop/network/protocol/ping_pong.dart';
+import 'package:anydrop/setting/setting_provider.dart';
+import 'package:anydrop/utils/device_info_helper.dart';
+import 'package:anydrop/utils/logger.dart';
+import 'package:anydrop/utils/sleep.dart';
 import 'package:flutter/services.dart';
 
 class MultiCastUtil {
@@ -94,7 +94,7 @@ class MultiCastUtil {
     }
   }
 
-  static const multicastLock = MethodChannel('com.example.androp/multicast-lock');
+  static const multicastLock = MethodChannel('com.ifreedomer.anydrop/multicast-lock');
 
   static Future aquireMulticastLock() async {
     if (Platform.isAndroid) {

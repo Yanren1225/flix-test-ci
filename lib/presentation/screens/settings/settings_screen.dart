@@ -1,6 +1,6 @@
-import 'package:androp/domain/settings/SettingsRepo.dart';
-import 'package:androp/presentation/widgets/settings/switchable_item.dart';
-import 'package:androp/utils/file/file_helper.dart';
+import 'package:anydrop/domain/settings/SettingsRepo.dart';
+import 'package:anydrop/presentation/widgets/settings/switchable_item.dart';
+import 'package:anydrop/utils/file/file_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

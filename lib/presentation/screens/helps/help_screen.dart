@@ -1,5 +1,5 @@
-import 'package:androp/presentation/widgets/helps/QA.dart';
-import 'package:androp/presentation/widgets/settings/clickable_item.dart';
+import 'package:anydrop/presentation/widgets/helps/QA.dart';
+import 'package:anydrop/presentation/widgets/settings/clickable_item.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 

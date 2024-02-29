@@ -1,4 +1,4 @@
-import 'package:androp/model/ship/primitive_bubble.dart';
+import 'package:anydrop/model/ship/primitive_bubble.dart';
 import 'package:drift/drift.dart';
 
 class BubbleEntities extends Table {

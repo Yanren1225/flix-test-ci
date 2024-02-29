@@ -1,5 +1,5 @@
-import 'package:androp/model/ui_bubble/shareable.dart';
-import 'package:androp/utils/drawin_file_security_extension.dart';
+import 'package:anydrop/model/ui_bubble/shareable.dart';
+import 'package:anydrop/utils/drawin_file_security_extension.dart';
 import 'package:file_selector/file_selector.dart';
 
 class SharedFile extends Shareable<FileMeta> {

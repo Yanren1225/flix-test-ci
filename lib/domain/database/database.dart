@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:androp/domain/database/dao/bubbles_dao.dart';
-import 'package:androp/model/database/bubble_entity.dart';
-import 'package:androp/model/database/file_content.dart';
-import 'package:androp/model/database/text_content.dart';
+import 'package:anydrop/domain/database/dao/bubbles_dao.dart';
+import 'package:anydrop/model/database/bubble_entity.dart';
+import 'package:anydrop/model/database/file_content.dart';
+import 'package:anydrop/model/database/text_content.dart';
 import 'package:drift/drift.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -34,7 +34,7 @@ class AppDatabase extends _$AppDatabase {
       final file;
       // if (Platform.isAndroid) {
       //   // TODO 方便测试，上线后修改
-      //   file = File(p.join('/data/user/0/com.example.androp/databases', 'db.sqlite'));
+      //   file = File(p.join('/data/user/0/com.ifreedomer.anydrop/databases', 'db.sqlite'));
       // } else {
         final dbFolder = await getApplicationDocumentsDirectory();
         file = File(p.join(dbFolder.path, 'db.sqlite'));

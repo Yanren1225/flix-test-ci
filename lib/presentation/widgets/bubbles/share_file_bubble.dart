@@ -1,12 +1,12 @@
 import 'dart:math';
 
-import 'package:androp/domain/androp_context.dart';
-import 'package:androp/domain/concert/concert_provider.dart';
-import 'package:androp/model/ui_bubble/shared_file.dart';
-import 'package:androp/model/ui_bubble/ui_bubble.dart';
-import 'package:androp/presentation/widgets/segements/cancel_send_button.dart';
-import 'package:androp/presentation/widgets/segements/resend_button.dart';
-import 'package:androp/utils/file/size_utils.dart';
+import 'package:anydrop/domain/androp_context.dart';
+import 'package:anydrop/domain/concert/concert_provider.dart';
+import 'package:anydrop/model/ui_bubble/shared_file.dart';
+import 'package:anydrop/model/ui_bubble/ui_bubble.dart';
+import 'package:anydrop/presentation/widgets/segements/cancel_send_button.dart';
+import 'package:anydrop/presentation/widgets/segements/resend_button.dart';
+import 'package:anydrop/utils/file/size_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';

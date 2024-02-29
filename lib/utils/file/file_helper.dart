@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:androp/model/ui_bubble/shared_file.dart';
-import 'package:androp/utils/drawin_file_security_extension.dart';
+import 'package:anydrop/model/ui_bubble/shared_file.dart';
+import 'package:anydrop/utils/drawin_file_security_extension.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';

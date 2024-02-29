@@ -1,16 +1,16 @@
 import 'dart:ui';
 
-import 'package:androp/domain/concert/concert_provider.dart';
-import 'package:androp/domain/device/device_manager.dart';
-import 'package:androp/model/ship/primitive_bubble.dart';
-import 'package:androp/model/ui_bubble/shared_file.dart';
-import 'package:androp/model/ui_bubble/ui_bubble.dart';
-import 'package:androp/model/device_info.dart';
-import 'package:androp/model/pickable.dart';
-import 'package:androp/model/ui_bubble/shareable.dart';
-import 'package:androp/presentation/widgets/blur_appbar.dart';
-import 'package:androp/presentation/widgets/bubbles/share_bubble.dart';
-import 'package:androp/presentation/widgets/pick_actions.dart';
+import 'package:anydrop/domain/concert/concert_provider.dart';
+import 'package:anydrop/domain/device/device_manager.dart';
+import 'package:anydrop/model/ship/primitive_bubble.dart';
+import 'package:anydrop/model/ui_bubble/shared_file.dart';
+import 'package:anydrop/model/ui_bubble/ui_bubble.dart';
+import 'package:anydrop/model/device_info.dart';
+import 'package:anydrop/model/pickable.dart';
+import 'package:anydrop/model/ui_bubble/shareable.dart';
+import 'package:anydrop/presentation/widgets/blur_appbar.dart';
+import 'package:anydrop/presentation/widgets/bubbles/share_bubble.dart';
+import 'package:anydrop/presentation/widgets/pick_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/flutter_svg.dart';

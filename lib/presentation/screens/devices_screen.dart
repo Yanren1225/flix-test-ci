@@ -1,7 +1,7 @@
-import 'package:androp/model/device_info.dart';
-import 'package:androp/network/multicast_client_provider.dart';
-import 'package:androp/utils/device/device_utils.dart';
-import 'package:androp/utils/notification_utils.dart';
+import 'package:anydrop/model/device_info.dart';
+import 'package:anydrop/network/multicast_client_provider.dart';
+import 'package:anydrop/utils/device/device_utils.dart';
+import 'package:anydrop/utils/notification_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';

@@ -1,6 +1,6 @@
-import 'package:androp/domain/database/database.dart';
-import 'package:androp/model/ship/primitive_bubble.dart';
-import 'package:androp/model/ui_bubble/shared_file.dart';
+import 'package:anydrop/domain/database/database.dart';
+import 'package:anydrop/model/ship/primitive_bubble.dart';
+import 'package:anydrop/model/ui_bubble/shared_file.dart';
 
 PrimitiveBubble fromDBEntity(BubbleEntity bubbleEntity, dynamic content) {
   switch (BubbleType.values[bubbleEntity.type]) {

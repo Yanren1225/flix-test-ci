@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:androp/domain/device/device_manager.dart';
-import 'package:androp/network/multicast_api.dart';
-import 'package:androp/network/multicast_util.dart';
-import 'package:androp/network/protocol/device_modal.dart';
-import 'package:androp/network/protocol/ping_pong.dart';
-import 'package:androp/utils/logger.dart';
+import 'package:anydrop/domain/device/device_manager.dart';
+import 'package:anydrop/network/multicast_api.dart';
+import 'package:anydrop/network/multicast_util.dart';
+import 'package:anydrop/network/protocol/device_modal.dart';
+import 'package:anydrop/network/protocol/ping_pong.dart';
+import 'package:anydrop/utils/logger.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
 typedef DeviceScanCallback = void Function(DeviceModal deviceModal, bool needPong);

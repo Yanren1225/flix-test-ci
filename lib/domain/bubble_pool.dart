@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:androp/domain/database/database.dart';
-import 'package:androp/model/database/bubble_entity.dart';
-import 'package:androp/model/database/text_content.dart';
-import 'package:androp/model/ui_bubble/shared_file.dart';
-import 'package:androp/model/ship/primitive_bubble.dart';
+import 'package:anydrop/domain/database/database.dart';
+import 'package:anydrop/model/database/bubble_entity.dart';
+import 'package:anydrop/model/database/text_content.dart';
+import 'package:anydrop/model/ui_bubble/shared_file.dart';
+import 'package:anydrop/model/ship/primitive_bubble.dart';
 
 /// 承担bubble的传递、查找和缓存、订阅分发
 class BubblePool {

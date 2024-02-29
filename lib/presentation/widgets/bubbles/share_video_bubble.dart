@@ -1,15 +1,15 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:androp/domain/androp_context.dart';
-import 'package:androp/domain/concert/concert_provider.dart';
-import 'package:androp/model/ui_bubble/shared_file.dart';
-import 'package:androp/model/ui_bubble/ui_bubble.dart';
-import 'package:androp/presentation/widgets/aspect_ratio_video.dart';
-import 'package:androp/presentation/widgets/bubbles/accept_media_widget.dart';
-import 'package:androp/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
-import 'package:androp/presentation/widgets/segements/cancel_send_button.dart';
-import 'package:androp/presentation/widgets/segements/resend_button.dart';
+import 'package:anydrop/domain/androp_context.dart';
+import 'package:anydrop/domain/concert/concert_provider.dart';
+import 'package:anydrop/model/ui_bubble/shared_file.dart';
+import 'package:anydrop/model/ui_bubble/ui_bubble.dart';
+import 'package:anydrop/presentation/widgets/aspect_ratio_video.dart';
+import 'package:anydrop/presentation/widgets/bubbles/accept_media_widget.dart';
+import 'package:anydrop/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
+import 'package:anydrop/presentation/widgets/segements/cancel_send_button.dart';
+import 'package:anydrop/presentation/widgets/segements/resend_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';

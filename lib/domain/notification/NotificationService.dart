@@ -1,10 +1,10 @@
 
-import 'package:androp/domain/bubble_pool.dart';
-import 'package:androp/domain/device/device_manager.dart';
-import 'package:androp/model/notification/reception_notification.dart';
-import 'package:androp/model/ship/primitive_bubble.dart';
-import 'package:androp/model/ui_bubble/shared_file.dart';
-import 'package:androp/utils/notification_utils.dart';
+import 'package:anydrop/domain/bubble_pool.dart';
+import 'package:anydrop/domain/device/device_manager.dart';
+import 'package:anydrop/model/notification/reception_notification.dart';
+import 'package:anydrop/model/ship/primitive_bubble.dart';
+import 'package:anydrop/model/ui_bubble/shared_file.dart';
+import 'package:anydrop/utils/notification_utils.dart';
 
 class NotificationService {
   final _bubblePool = BubblePool.instance;
