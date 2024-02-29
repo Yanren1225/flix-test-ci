@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -22,6 +23,8 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
 
   bool initialized = false;
 
+  bool isError = false;
+
   AspectRatioVideoState();
 
   void _onVideoControllerUpdate() {
@@ -37,15 +40,23 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
   @override
   void initState() {
     super.initState();
+    isError = false;
     controller = VideoPlayerController.file(File(widget.videoPath));
     controller!.addListener(_onVideoControllerUpdate);
-    controller?.initialize();
+    controller?.initialize().catchError((e) {
+      log('init video player error: $e');
+      setState(() {
+        isError = true;
+      });
+    });
     controller?.setLooping(false);
+
+
   }
 
   @override
   void dispose() {
-    controller!.removeListener(_onVideoControllerUpdate);
+    controller?.removeListener(_onVideoControllerUpdate);
     controller?.dispose();
     super.dispose();
   }
@@ -64,7 +75,15 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
 
   @override
   Widget build(BuildContext context) {
-    if (initialized) {
+    if (isError) {
+      return const Center(
+        child: Text('此视频无法预览',
+            style: TextStyle(
+                color: Color.fromRGBO(255, 59, 48, 1),
+                fontSize: 14,
+                fontWeight: FontWeight.normal)),
+      );
+    } else if (initialized) {
       return IntrinsicHeight(
         child: Stack(
           fit: StackFit.passthrough,

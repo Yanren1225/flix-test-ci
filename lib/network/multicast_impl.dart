@@ -49,9 +49,15 @@ class MultiCastImpl extends MultiCastApi {
             try {
               final ping = Ping.fromJson(data);
               deviceModal = ping.deviceModal;
+              if (MultiCastUtil.isFromSelf(deviceModal.fingerprint)) {
+                return;
+              }
               needPong = true;
             } on MapperException catch (e) {
               final pong = Pong.fromJson(data);
+              if (MultiCastUtil.isFromSelf(pong.from.fingerprint)) {
+                return;
+              }
               if (pong.to.fingerprint == DeviceManager.instance.did) {
                 deviceModal = pong.from;
                 needPong == false;

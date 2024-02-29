@@ -19,7 +19,7 @@ part 'ping_pong.mapper.dart';
 /// C收到B的Pong, 记录B设备
 
 @MappableClass()
-class Ping with PingMappable {
+class Ping with  PingMappable {
   final DeviceModal deviceModal;
 
   Ping(this.deviceModal);

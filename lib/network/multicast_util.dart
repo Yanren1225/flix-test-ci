@@ -111,6 +111,14 @@ class MultiCastUtil {
     }
 
   }
+
+  static bool isFromSelf(String from) {
+    if (from == DeviceManager.instance.did) {
+      log('receive self datagram');
+      return true;
+    }
+    return false;
+  }
 }
 
 class SocketResult {
