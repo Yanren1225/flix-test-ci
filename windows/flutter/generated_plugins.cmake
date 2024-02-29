@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_windows
   screen_retriever
   sqlite3_flutter_libs
+  video_player_win
   window_manager
 )
 
