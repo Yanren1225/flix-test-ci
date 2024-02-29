@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:androp/domain/device/device_manager.dart';
@@ -14,44 +15,66 @@ typedef DeviceScanCallback = void Function(DeviceModal deviceModal, bool needPon
 
 class MultiCastImpl extends MultiCastApi {
   var _listening = false;
+  final List<SocketResult> _sockets = [];
 
   @override
   void startScan(String multiGroup, int port,
       DeviceScanCallback deviceScanCallback) async {
-    if (_listening) {
-      Logger.log('Already listening to multicast');
-      return;
-    }
-    _listening = true;
+    // if (_listening) {
+    //   Logger.log('Already listening to multicast');
+    //   return;
+    // }
+    // _listening = true;
+
+    await MultiCastUtil.releaseMulticastLock();
     await MultiCastUtil.aquireMulticastLock();
+    for (final socket in _sockets) {
+      socket.socket.close();
+    }
+    _sockets.clear();
     final sockets = await MultiCastUtil.getSockets(multiGroup, port);
+    _sockets.addAll(sockets);
     for (final socket in sockets) {
-      socket.socket.listen((_) {
-        final datagram = socket.socket.receive();
-        if (datagram == null) {
-          return;
+      socket.socket.listen((event) {
+        switch (event) {
+          case RawSocketEvent.read:
+            final datagram = socket.socket.receive();
+            if (datagram == null) {
+              return;
+            }
+            var data = jsonDecode(utf8.decode(datagram.data));
+            Logger.log('receive data:$data');
+            DeviceModal deviceModal;
+            bool needPong = false;
+            try {
+              final ping = Ping.fromJson(data);
+              deviceModal = ping.deviceModal;
+              needPong = true;
+            } on MapperException catch (e) {
+              final pong = Pong.fromJson(data);
+              if (pong.to.fingerprint == DeviceManager.instance.did) {
+                deviceModal = pong.from;
+                needPong == false;
+              } else {
+                return;
+              }
+            }
+            // final deviceModal = DeviceModal.fromJson(data);
+            final ip = datagram.address.address;
+            deviceModal.ip = ip;
+            deviceScanCallback(deviceModal, needPong);
+            break;
+          case RawSocketEvent.write:
+            Logger.log('===RawSocketEvent.write===');
+            break;
+          case RawSocketEvent.readClosed:
+            Logger.log('===RawSocketEvent.readClosed===');
+            break;
+          case RawSocketEvent.closed:
+            Logger.log('===RawSocketEvent.close===');
+            break;
         }
-        var data = jsonDecode(utf8.decode(datagram.data));
-        Logger.log('receive data:$data');
-        DeviceModal deviceModal;
-        bool needPong = false;
-        try {
-          final ping = Ping.fromJson(data);
-          deviceModal = ping.deviceModal;
-          needPong = true;
-        } on MapperException catch (e) {
-          final pong = Pong.fromJson(data);
-          if (pong.to.fingerprint == DeviceManager.instance.did) {
-            deviceModal = pong.from;
-            needPong == false;
-          } else {
-            return;
-          }
-        }
-        // final deviceModal = DeviceModal.fromJson(data);
-        final ip = datagram.address.address;
-        deviceModal.ip = ip;
-        deviceScanCallback(deviceModal, needPong);
+      
       });
     }
   }
@@ -61,12 +84,12 @@ class MultiCastImpl extends MultiCastApi {
 
   @override
   Future<void> ping() async {
-    await MultiCastUtil.ping();
+    await MultiCastUtil.ping(_sockets);
   }
 
   @override
   Future<void> pong(DeviceModal to) async {
-    await MultiCastUtil.pong(to);
+    await MultiCastUtil.pong(_sockets, to);
   }
 
   @override

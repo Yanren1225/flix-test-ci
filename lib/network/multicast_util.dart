@@ -20,10 +20,10 @@ class MultiCastUtil {
   /// that can receive UDP multicast messages.
   static const defaultMulticastGroup = '224.0.0.168';
 
-  static Future<List<_SocketResult>> getSockets(String multicastGroup,
+  static Future<List<SocketResult>> getSockets(String multicastGroup,
       [int? port]) async {
     final interfaces = await NetworkInterface.list();
-    final sockets = <_SocketResult>[];
+    final sockets = <SocketResult>[];
     for (final interface in interfaces) {
       try {
         final socket =
@@ -31,7 +31,8 @@ class MultiCastUtil {
         socket.joinMulticast(InternetAddress(multicastGroup), interface);
         // 不允许接收自己发送的消息
         socket.multicastLoopback = false;
-        sockets.add(_SocketResult(interface, socket));
+        sockets.add(SocketResult(interface, socket));
+        Logger.log('$socket $interface');
       } catch (e) {
         Logger.logException(
           'Could not bind UDP multicast port (ip: ${interface.addresses.map((a) => a.address).toList()}, group: $multicastGroup, port: $port)',
@@ -43,8 +44,8 @@ class MultiCastUtil {
   }
 
   /// Sends an announcement which triggers a response on every LocalSend member of the network.
-  static Future<void> ping() async {
-    final sockets = await getSockets(defaultMulticastGroup);
+  static Future<void> ping(List<SocketResult> sockets) async {
+    // final sockets = await getSockets(defaultMulticastGroup);
     DeviceModal deviceModal = await getDeviceModal();
     for (final wait in [100, 500, 2000]) {
       await sleepAsync(wait);
@@ -54,7 +55,7 @@ class MultiCastUtil {
               utf8.encode(jsonEncode(Ping(deviceModal).toJson())),
               InternetAddress(defaultMulticastGroup),
               defaultPort);
-          socket.socket.close();
+          // socket.socket.close();
         } catch (e) {
           print(e.toString());
         }
@@ -74,8 +75,8 @@ class MultiCastUtil {
     return deviceModal;
   }
 
-  static Future<void> pong(DeviceModal to) async {
-    final sockets = await getSockets(defaultMulticastGroup);
+  static Future<void> pong(List<SocketResult> sockets, DeviceModal to) async {
+    // final sockets = await getSockets(defaultMulticastGroup);
     DeviceModal deviceModal = await getDeviceModal();
     for (final wait in [100, 500, 2000]) {
       await sleepAsync(wait);
@@ -85,7 +86,7 @@ class MultiCastUtil {
               utf8.encode(jsonEncode(Pong(deviceModal, to).toJson())),
               InternetAddress(defaultMulticastGroup),
               defaultPort);
-          socket.socket.close();
+          // socket.socket.close();
         } catch (e) {
           print(e.toString());
         }
@@ -112,9 +113,9 @@ class MultiCastUtil {
   }
 }
 
-class _SocketResult {
+class SocketResult {
   final NetworkInterface interface;
   final RawDatagramSocket socket;
 
-  _SocketResult(this.interface, this.socket);
+  SocketResult(this.interface, this.socket);
 }
