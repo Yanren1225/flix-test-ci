@@ -1,5 +1,6 @@
 import 'package:anydrop/model/device_info.dart';
 import 'package:anydrop/network/multicast_client_provider.dart';
+import 'package:anydrop/presentation/widgets/devices/device_list.dart';
 import 'package:anydrop/utils/device/device_utils.dart';
 import 'package:anydrop/utils/notification_utils.dart';
 import 'package:flutter/material.dart';
@@ -58,43 +59,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
                               fontWeight: FontWeight.normal)),
                     )),
                 Expanded(
-                    child: ListView(
-                  children: [
-                    ...List.generate(devices.length, (index) {
-                      var deviceInfo = devices[index];
-                      return GestureDetector(
-                        onTap: () {
-                          widget.onDeviceSelected(deviceInfo);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 10, left: 16, right: 16),
-                          child: DeviceItem(Key(devices[index].id), deviceInfo),
-                        ),
-                      );
-                    }),
-                    Padding(
-                      padding: EdgeInsets.only(
-                          left: 16, right: 16, top: 20, bottom: 6),
-                      child: InkWell(
-                        onTap: () {
-                          MultiCastClientProvider.of(context).clearDevices();
-                        },
-                        child: Text(
-                          '历史记录',
-                          style: TextStyle(
-                              color: Color.fromRGBO(60, 60, 67, 0.6),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ),
-                    ...List.generate(history.length, (index) {
-                      var historyItemInfo = history[index];
-                      return HistoryItem(historyItemInfo: historyItemInfo);
-                    })
-                  ],
-                ))
+                    child: DeviceList(devices: devices, onDeviceSelected: widget.onDeviceSelected, showHistory: true, history: history))
               ],
             ),
           ),
@@ -104,63 +69,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
   }
 }
 
-class DeviceItem extends StatelessWidget {
-  final DeviceInfo deviceInfo;
 
-  const DeviceItem(Key key, this.deviceInfo) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(20))),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Flexible(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image(
-                    image: AssetImage('assets/images/${deviceInfo.icon}'),
-                    width: 36,
-                    height: 36,
-                    fit: BoxFit.fill,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Flexible(
-                    child: Text(
-                      deviceInfo.name,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              width: 16,
-            ),
-            SvgPicture.asset(
-              'assets/images/arrow_right.svg',
-              width: 24,
-              height: 24,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class HistoryItem extends StatelessWidget {
   final DeviceInfo historyItemInfo;

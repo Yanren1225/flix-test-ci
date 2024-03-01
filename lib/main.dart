@@ -12,17 +12,19 @@ import 'package:anydrop/network/multicast_client_provider.dart';
 import 'package:anydrop/presentation/screens/concert_screen.dart';
 import 'package:anydrop/presentation/screens/devices_screen.dart';
 import 'package:anydrop/presentation/screens/helps/help_screen.dart';
+import 'package:anydrop/presentation/screens/pick_device_screen.dart';
 import 'package:anydrop/presentation/screens/settings/settings_screen.dart';
 import 'package:anydrop/setting/setting_provider.dart';
 import 'package:anydrop/utils/device/device_utils.dart';
 import 'package:anydrop/utils/iterable_extension.dart';
+import 'package:anydrop/utils/meida/media_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:share_handler/share_handler.dart';
 import 'package:window_manager/window_manager.dart';
 
 int id = 1;
@@ -101,6 +103,7 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -128,6 +131,7 @@ class MyAppState extends State<MyApp> {
               primary: Color.fromRGBO(0, 122, 255, 1), onPrimary: Colors.white),
           useMaterial3: true,
         ),
+        // initialRoute: 'home',
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
     );
@@ -157,14 +161,49 @@ class _MyHomePageState extends State<MyHomePage> {
   DeviceInfo? selectedDevice;
   bool isLeaved = false;
 
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initPlatformState() async {
+    final handler = ShareHandlerPlatform.instance;
+    final media = await handler.getInitialSharedMedia();
+    _tryGoPickDeviceScreen(media);
+    handler.sharedMediaStream.listen((SharedMedia media) {
+      _tryGoPickDeviceScreen(media);
+    });
+    if (!mounted) return;
+  }
+
+  void _tryGoPickDeviceScreen(SharedMedia? sharedMedia) {
+    if (sharedMedia == null) {
+      log('shareMedia is null');
+      return;
+    }
+    if (!context.mounted) {
+      log('context has unmounted');
+      return;
+    }
+
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute<DeviceInfo?>(
+            builder: (context) => PickDeviceScreen(sharedMedia: sharedMedia)),
+        ModalRoute.withName('/')).then((deviceInfo) {
+          if (deviceInfo == null) {
+            log('取消分享，未选择设备');
+          } else {
+            setSelectedDevice(deviceInfo);
+          }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    initPlatformState();
     receptionNotificationStream.stream.listen((receptionNotification) {
       final deviceModal = DeviceManager.instance.deviceList
           .find((element) => element.fingerprint == receptionNotification.from);
       if (deviceModal != null) {
-        if (_isOverMediumWidth()) {
+        if (isOverMediumWidth(context)) {
           setSelectedIndex(0);
           setSelectedDevice(deviceModal.toDeviceInfo());
         } else {
@@ -213,16 +252,14 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    if (_isOverMediumWidth()) {
+    if (isOverMediumWidth(context)) {
       return WideLayout();
     } else {
       return NarrowLayout();
     }
   }
 
-  bool _isOverMediumWidth() {
-    return MediaQuery.of(context).size.width > 600;
-  }
+
 
   Widget NarrowLayout() {
     // final deviceInfo = selectedDevice;

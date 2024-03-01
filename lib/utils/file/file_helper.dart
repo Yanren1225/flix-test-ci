@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:anydrop/model/ui_bubble/shared_file.dart';
 import 'package:anydrop/utils/drawin_file_security_extension.dart';
 import 'package:device_apps/device_apps.dart';
+import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
@@ -14,6 +14,7 @@ import 'package:image_size_getter/file_input.dart';
 import 'package:image_size_getter/image_size_getter.dart';
 import 'package:mime/mime.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:share_handler/share_handler.dart';
 import 'package:shared_storage/shared_storage.dart' as shared_storage;
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:video_player/video_player.dart';
@@ -76,6 +77,33 @@ extension XFileConvert on XFile {
   }
 }
 
+extension AttachmentConvert on SharedAttachment {
+  Future<FileMeta> toFileMeta() async {
+    await authPersistentAccess(this.path);
+    var size = const Size(0, 0);
+    final file = File(this.path);
+    if (this.type == SharedAttachmentType.image) {
+      size = ImageSizeGetter.getSize(FileInput(file));
+    } else if (this.type == SharedAttachmentType.video) {
+      VideoPlayerController _controller = VideoPlayerController.file(file);
+      await _controller.initialize();
+      size = Size(_controller.value?.size?.width?.toInt() ?? 0, _controller.value?.size?.height?.toInt() ?? 0);
+      _controller.dispose();
+    }
+
+    final fileName = _getFileNameFromPath(this.path);
+
+    return FileMeta(
+        name: _getFileNameFromPath(this.path),
+        path: this.path,
+        mimeType: lookupMimeType(this.path) ?? 'application/octet-stream',
+        nameWithSuffix: fileName,
+        size: await file.length(),
+        width: size.width,
+        height: size.height);
+  }
+}
+
 extension PlatformFileConvert on PlatformFile {
   Future<FileMeta> toFileMeta() async {
     if (this.path == null) {
@@ -130,4 +158,8 @@ Future<void> _deleteFilesInDir(Directory dir) async {
       }
     }
   });
+}
+
+String _getFileNameFromPath(String path) {
+  return path.substring(path.lastIndexOf('/') + 1);
 }
