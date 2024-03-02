@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:anydrop/model/ui_bubble/shared_file.dart';
-import 'package:anydrop/utils/drawin_file_security_extension.dart';
+import 'package:flix/model/ui_bubble/shared_file.dart';
+import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';

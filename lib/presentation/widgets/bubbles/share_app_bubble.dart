@@ -1,7 +1,7 @@
 
-import 'package:anydrop/model/ui_bubble/shareable.dart';
-import 'package:anydrop/model/ui_bubble/ui_bubble.dart';
-import 'package:anydrop/presentation/widgets/app_icon.dart';
+import 'package:flix/model/ui_bubble/shareable.dart';
+import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/presentation/widgets/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

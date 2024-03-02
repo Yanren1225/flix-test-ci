@@ -1,6 +1,6 @@
-import 'package:anydrop/model/device_info.dart';
-import 'package:anydrop/network/multicast_client_provider.dart';
-import 'package:anydrop/presentation/screens/devices_screen.dart';
+import 'package:flix/model/device_info.dart';
+import 'package:flix/network/multicast_client_provider.dart';
+import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';

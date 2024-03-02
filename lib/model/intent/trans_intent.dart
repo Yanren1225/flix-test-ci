@@ -1,4 +1,4 @@
-import 'package:anydrop/network/protocol/device_modal.dart';
+import 'package:flix/network/protocol/device_modal.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
 part 'trans_intent.mapper.dart';

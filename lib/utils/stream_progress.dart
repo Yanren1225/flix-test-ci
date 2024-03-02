@@ -1,7 +1,7 @@
 import 'dart:developer';
 
-import 'package:anydrop/domain/bubble_pool.dart';
-import 'package:anydrop/model/ship/primitive_bubble.dart';
+import 'package:flix/domain/bubble_pool.dart';
+import 'package:flix/model/ship/primitive_bubble.dart';
 
 extension StreamProgress on Stream<List<int>> {
   Stream<List<int>> progress(String bubbleId) {

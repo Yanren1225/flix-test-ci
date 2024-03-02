@@ -1,4 +1,4 @@
-package com.ifreedomer.anydrop
+package com.ifreedomer.flix
 
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -10,7 +10,7 @@ import io.flutter.plugins.GeneratedPluginRegistrant
 
 class MainActivity : FlutterActivity() {
     companion object {
-        const val MULTICAST_LOCK_CHANNEL = "com.ifreedomer.anydrop/multicast-lock"
+        const val MULTICAST_LOCK_CHANNEL = "com.ifreedomer.flix/multicast-lock"
     }
 
     private var multicastLock: WifiManager.MulticastLock? = null

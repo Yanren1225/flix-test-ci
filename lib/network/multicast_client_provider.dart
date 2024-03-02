@@ -1,8 +1,8 @@
-import 'package:anydrop/domain/device/device_manager.dart';
-import 'package:anydrop/network/multicast_impl.dart';
-import 'package:anydrop/network/multicast_util.dart';
-import 'package:anydrop/network/protocol/device_modal.dart';
-import 'package:anydrop/utils/logger.dart';
+import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/network/multicast_impl.dart';
+import 'package:flix/network/multicast_util.dart';
+import 'package:flix/network/protocol/device_modal.dart';
+import 'package:flix/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

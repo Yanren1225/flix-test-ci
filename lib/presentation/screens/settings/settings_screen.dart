@@ -1,6 +1,6 @@
-import 'package:anydrop/domain/settings/SettingsRepo.dart';
-import 'package:anydrop/presentation/widgets/settings/switchable_item.dart';
-import 'package:anydrop/utils/file/file_helper.dart';
+import 'package:flix/domain/settings/SettingsRepo.dart';
+import 'package:flix/presentation/widgets/settings/switchable_item.dart';
+import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

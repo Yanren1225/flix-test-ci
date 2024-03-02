@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:anydrop/domain/database/convertor/bubble_convertor.dart';
-import 'package:anydrop/domain/database/database.dart';
-import 'package:anydrop/model/database/bubble_entity.dart';
-import 'package:anydrop/model/database/file_content.dart';
-import 'package:anydrop/model/database/text_content.dart';
-import 'package:anydrop/model/ship/primitive_bubble.dart';
+import 'package:flix/domain/database/convertor/bubble_convertor.dart';
+import 'package:flix/domain/database/database.dart';
+import 'package:flix/model/database/bubble_entity.dart';
+import 'package:flix/model/database/file_content.dart';
+import 'package:flix/model/database/text_content.dart';
+import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:drift/drift.dart';
 
 part 'bubbles_dao.g.dart';

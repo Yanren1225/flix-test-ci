@@ -1,4 +1,4 @@
-import 'package:anydrop/presentation/widgets/settings/settings_label.dart';
+import 'package:flix/presentation/widgets/settings/settings_label.dart';
 import 'package:flutter/material.dart';
 
 class ClickableItem extends StatelessWidget {

@@ -1,4 +1,4 @@
-import 'package:anydrop/network/protocol/device_modal.dart';
+import 'package:flix/network/protocol/device_modal.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:slang/builder/model/enums.dart';

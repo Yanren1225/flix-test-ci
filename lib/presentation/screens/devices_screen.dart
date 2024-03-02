@@ -1,8 +1,8 @@
-import 'package:anydrop/model/device_info.dart';
-import 'package:anydrop/network/multicast_client_provider.dart';
-import 'package:anydrop/presentation/widgets/devices/device_list.dart';
-import 'package:anydrop/utils/device/device_utils.dart';
-import 'package:anydrop/utils/notification_utils.dart';
+import 'package:flix/model/device_info.dart';
+import 'package:flix/network/multicast_client_provider.dart';
+import 'package:flix/presentation/widgets/devices/device_list.dart';
+import 'package:flix/utils/device/device_utils.dart';
+import 'package:flix/utils/notification_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';

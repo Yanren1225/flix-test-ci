@@ -1,5 +1,5 @@
-import 'package:anydrop/network/multicast_impl.dart';
-import 'package:anydrop/network/protocol/device_modal.dart';
+import 'package:flix/network/multicast_impl.dart';
+import 'package:flix/network/protocol/device_modal.dart';
 
 abstract class MultiCastApi {
   void startScan(String multiGroup, int port,DeviceScanCallback deviceScanCallback);

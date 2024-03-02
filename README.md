@@ -1,4 +1,4 @@
-# anydrop
+# flix
 
 A new Flutter project.
 

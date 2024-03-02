@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:anydrop/utils/buffer_broadcast.dart';
+import 'package:flix/utils/buffer_broadcast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsRepo {

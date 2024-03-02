@@ -1,8 +1,8 @@
 import 'dart:ffi';
 import 'dart:io';
 
-import 'package:anydrop/main.dart';
-import 'package:anydrop/model/notification/reception_notification.dart';
+import 'package:flix/main.dart';
+import 'package:flix/model/notification/reception_notification.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 Future<bool> isAndroidNotificationPermissionGranted() async {

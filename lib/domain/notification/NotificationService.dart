@@ -1,10 +1,10 @@
 
-import 'package:anydrop/domain/bubble_pool.dart';
-import 'package:anydrop/domain/device/device_manager.dart';
-import 'package:anydrop/model/notification/reception_notification.dart';
-import 'package:anydrop/model/ship/primitive_bubble.dart';
-import 'package:anydrop/model/ui_bubble/shared_file.dart';
-import 'package:anydrop/utils/notification_utils.dart';
+import 'package:flix/domain/bubble_pool.dart';
+import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/model/notification/reception_notification.dart';
+import 'package:flix/model/ship/primitive_bubble.dart';
+import 'package:flix/model/ui_bubble/shared_file.dart';
+import 'package:flix/utils/notification_utils.dart';
 
 class NotificationService {
   final _bubblePool = BubblePool.instance;

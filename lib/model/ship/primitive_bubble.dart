@@ -1,5 +1,5 @@
-import 'package:anydrop/model/ui_bubble/shared_file.dart';
-import 'package:anydrop/presentation/widgets/bubbles/share_bubble.dart';
+import 'package:flix/model/ui_bubble/shared_file.dart';
+import 'package:flix/presentation/widgets/bubbles/share_bubble.dart';
 import 'package:http/http.dart';
 
 abstract class PrimitiveBubble<Content> {
