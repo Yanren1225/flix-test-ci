@@ -22,7 +22,7 @@ class MultiCastUtil {
 
   static Future<List<SocketResult>> getSockets(String multicastGroup,
       [int? port]) async {
-    final interfaces = await NetworkInterface.list();
+    final interfaces = await NetworkInterface.list(type: InternetAddressType.IPv4);
     final sockets = <SocketResult>[];
     for (final interface in interfaces) {
       try {
