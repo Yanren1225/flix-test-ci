@@ -24,6 +24,8 @@ class ResendButton extends  StatelessWidget {
                 tag: 'cancel_anchor_modal',
                 anchorTag: anchorTag,
                 aboveTag: anchorTag,
+                modalAlignment: Alignment.bottomLeft,
+                anchorAlignment: Alignment.topRight,
                 barrierColor: const Color.fromRGBO(0, 0, 0, 0.45),
                 removeOnPop: true,
                 barrierDismissible: true,
