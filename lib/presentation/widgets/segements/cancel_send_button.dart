@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class CancelSendButton extends  StatelessWidget {
   final UIBubble entity;
-  late String anchorTag ;
+  late String anchorTag;
 
   CancelSendButton({super.key, required this.entity}) {
-    anchorTag = 'cancel_button_${entity.shareable.id}';
+    anchorTag = 'cancel_button_${const Uuid().v4()}';
   }
 
   @override

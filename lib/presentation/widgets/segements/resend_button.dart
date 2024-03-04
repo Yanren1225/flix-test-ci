@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class ResendButton extends  StatelessWidget {
   final UIBubble entity;
   late String anchorTag;
 
   ResendButton({super.key, required this.entity}) {
-    anchorTag = 'resend_button_${entity.shareable.id}';
+    anchorTag = 'resend_button_${const Uuid().v4()}';
   }
 
   @override

@@ -100,7 +100,7 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
   void submit(ConcertProvider concertProvider, Shareable shareable,
       BubbleType type) async {
     _scrollController.animateTo(_scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+        duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
     await concertProvider.send(UIBubble(
         from: DeviceManager.instance.did,
         to: Provider.of<ConcertProvider>(context, listen: false).deviceInfo.id,
@@ -111,7 +111,7 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
   @override
   Widget build(BuildContext context) {
     final concertProvider = Provider.of<ConcertProvider>(context, listen: true);
-    final shareList = concertProvider.bubbles;
+    final shareList = concertProvider.bubbles.reversed.toList();
     // if (!isInit && anchor != null) {
     //   for (int i = 0; i < shareList.length; i++) {
     //     final item = shareList[i];
@@ -121,17 +121,19 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
     //     }
     //   }
     // }
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (!isAnchored && shareList.isNotEmpty) {
-        isAnchored = true;
-        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-      }
-    });
+    // SchedulerBinding.instance.addPostFrameCallback((_) {
+    //   if (!isAnchored && shareList.isNotEmpty) {
+    //     isAnchored = true;
+    //     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    //   }
+    // });
 
     return Stack(
-      fit: StackFit.expand,
+      fit: StackFit.loose,
       children: [
         ListView.builder(
+            reverse: true,
+            shrinkWrap: true,
             controller: _scrollController,
             padding: EdgeInsets.only(top: padding.top, bottom: 260),
             itemCount: shareList.length,
