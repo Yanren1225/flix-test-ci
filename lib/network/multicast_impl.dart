@@ -18,7 +18,7 @@ class MultiCastImpl extends MultiCastApi {
   final List<SocketResult> _sockets = [];
 
   @override
-  void startScan(String multiGroup, int port,
+  Future<void> startScan(String multiGroup, int port,
       DeviceScanCallback deviceScanCallback) async {
     // if (_listening) {
     //   Logger.log('Already listening to multicast');
@@ -81,6 +81,8 @@ class MultiCastImpl extends MultiCastApi {
             break;
         }
       
+      }, onError: (e) {
+        Logger.log('[multicast] multicast error: $e');
       });
     }
   }

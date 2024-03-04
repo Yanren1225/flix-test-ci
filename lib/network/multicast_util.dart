@@ -22,12 +22,14 @@ class MultiCastUtil {
 
   static Future<List<SocketResult>> getSockets(String multicastGroup,
       [int? port]) async {
-    final interfaces = await NetworkInterface.list(type: InternetAddressType.IPv4);
+    final interfaces = await NetworkInterface.list();
     final sockets = <SocketResult>[];
     for (final interface in interfaces) {
       try {
         final socket =
             await RawDatagramSocket.bind(InternetAddress.anyIPv4, port ?? 0);
+        // 不允许接收自己发送的消息
+        // socket.multicastLoopback = false;
         socket.joinMulticast(InternetAddress(multicastGroup), interface);
         // 不允许接收自己发送的消息
         socket.multicastLoopback = false;

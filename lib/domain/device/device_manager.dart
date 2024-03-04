@@ -55,7 +55,7 @@ class DeviceManager {
 
   Future<void> startScan() async {
     state = MultiState.idle;
-    multiCastApi.startScan(
+    await multiCastApi.startScan(
         MultiCastUtil.defaultMulticastGroup, MultiCastUtil.defaultPort,
         (deviceModal, needPong) {
       if (needPong) {
