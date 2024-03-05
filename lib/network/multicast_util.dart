@@ -152,7 +152,7 @@ class MultiCastUtil {
   static Future<void> pong(DeviceModal to) async {
     // final sockets = await getSockets(defaultMulticastGroup);
     DeviceModal deviceModal = await getDeviceModal();
-    final message = jsonEncode(Ping(deviceModal).toJson());
+    final message = jsonEncode(Pong(deviceModal, to).toJson());
     if (Platform.isIOS) {
       pongOnIOS(message);
     } else {
