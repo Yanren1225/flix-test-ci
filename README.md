@@ -22,3 +22,4 @@ samples, guidance on mobile development, and a full API reference.
 4. iPad图片宽高度错误
 5. iPad WildScreen下，导航条对会话页面的action buttons有遮挡
 6. iPhone无法发送广播
+7. 发送消息后列表滚到上方
