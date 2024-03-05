@@ -99,7 +99,7 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
 
   void submit(ConcertProvider concertProvider, Shareable shareable,
       BubbleType type) async {
-    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+    _scrollController.animateTo(_scrollController.position.minScrollExtent,
         duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
     await concertProvider.send(UIBubble(
         from: DeviceManager.instance.did,
