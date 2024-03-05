@@ -55,7 +55,7 @@ dependencies:
   shelf_multipart: ^1.0.0
   path_provider: ^2.1.2
   http_parser: ^4.0.2
-  shared_storage: ^0.8.0
+  shared_storage: ^0.8.1
   file_picker: ^6.1.1
   mime: ^1.0.5
   drift: ^2.15.0
