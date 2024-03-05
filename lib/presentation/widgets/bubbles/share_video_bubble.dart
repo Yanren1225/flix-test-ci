@@ -86,8 +86,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
             children: [
               _buildInlineVideoPlayer(sharedVideo.content.path!, true),
               Container(
-                decoration:
-                    BoxDecoration(color: Colors.black.withOpacity(0.5)),
+                decoration: BoxDecoration(color: Colors.black.withOpacity(0.5)),
                 width: double.infinity,
                 height: double.infinity,
               ),
@@ -193,12 +192,14 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
       children: [
         Visibility(
           visible: alignment == MainAxisAlignment.end && stateIcon != SizedBox,
-          child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 18.0),
-                child: stateIcon,
-              )),
+          replacement: const SizedBox(
+            width: 48 + 18,
+            height: 48,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(right: 18.0),
+            child: stateIcon,
+          ),
         ),
         Flexible(
           child: Container(
@@ -207,25 +208,25 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
                 borderRadius: const BorderRadius.all(Radius.circular(10))),
             child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
-                  final width;
-                  if (sharedVideo.content.width >
-                      max(150, min(300, constraints.maxWidth - 60))) {
-                    width = max(150, min(300, constraints.maxWidth - 60));
-                  } else if (sharedVideo.content.width < 150) {
-                    width = 150;
-                  } else {
-                    width = sharedVideo.content.width;
-                  }
-                  final height;
+              final width;
+              if (sharedVideo.content.width >
+                  max(150, min(300, constraints.maxWidth - 60))) {
+                width = max(150, min(300, constraints.maxWidth - 60));
+              } else if (sharedVideo.content.width < 150) {
+                width = 150;
+              } else {
+                width = sharedVideo.content.width;
+              }
+              final height;
 
-                  if (sharedVideo.content.width == 0) {
-                    height = width;
-                  } else {
-                    height = sharedVideo.content.height *
-                        1.0 /
-                        sharedVideo.content.width *
-                        width;
-                  }
+              if (sharedVideo.content.width == 0) {
+                height = width;
+              } else {
+                height = sharedVideo.content.height *
+                    1.0 /
+                    sharedVideo.content.width *
+                    width;
+              }
               return SizedBox(
                 width: width * 1.0,
                 height: height * 1.0,
@@ -239,12 +240,14 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
         Visibility(
           visible:
               alignment == MainAxisAlignment.start && stateIcon != SizedBox,
-          child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 18.0),
-                child: stateIcon,
-              )),
+          replacement: const SizedBox(
+            width: 48 + 18,
+            height: 48,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 18.0),
+            child: stateIcon,
+          ),
         ),
       ],
     );

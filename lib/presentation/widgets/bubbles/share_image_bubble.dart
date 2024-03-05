@@ -223,15 +223,15 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
 
     return Row(
       mainAxisAlignment: alignment,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Visibility(
           visible: alignment == MainAxisAlignment.end,
-          child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 18.0),
-                child: stateIcon,
-              )),
+          replacement: alignment == MainAxisAlignment.end ? const SizedBox(width: 48 + 18, height: 48,) : SizedBox.shrink(),
+          child: Padding(
+            padding: const EdgeInsets.only(right: 18.0),
+            child: stateIcon,
+          ),
         ),
         // Expanded强制占用剩余的空间
         // Flexible默认允许子元素占用尽可能的剩余空间
@@ -273,12 +273,11 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
         Visibility(
           visible:
               alignment == MainAxisAlignment.start,
-          child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 18.0),
-                child: stateIcon,
-              )),
+          replacement: alignment == MainAxisAlignment.start ? SizedBox(width: 48 + 18, height: 48,) : SizedBox.shrink(),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 18.0),
+            child: stateIcon,
+          ),
         ),
       ],
     );

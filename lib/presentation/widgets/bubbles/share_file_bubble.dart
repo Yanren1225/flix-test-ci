@@ -254,9 +254,14 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
 
     return Row(
       mainAxisAlignment: alignment,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Visibility(
             visible: alignment == MainAxisAlignment.end,
+            replacement: const SizedBox(
+              width: 48 + 18,
+              height: 48,
+            ),
             child: Padding(
               padding: const EdgeInsets.only(right: 18.0),
               child: stateIcon,
@@ -266,6 +271,10 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
         ),
         Visibility(
             visible: alignment == MainAxisAlignment.start,
+            replacement: const SizedBox(
+              width: 48 + 18,
+              height: 48,
+            ),
             child: Padding(
               padding: const EdgeInsets.only(left: 18.0),
               child: stateIcon,
