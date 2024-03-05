@@ -64,11 +64,15 @@ dependencies:
   flutter_local_notifications: ^16.3.2
   macos_secure_bookmarks: ^0.2.1
   window_manager: ^0.3.8
-  modals: ^1.0.0+1
+#  modals: ^1.0.0+1
   image_size_getter: ^2.1.2
   package_info_plus: ^5.0.1
   video_player_win: ^2.3.5
   share_handler: ^0.0.20
+  modals:
+    git:
+      url: "https://github.com/heiha100/modals"
+      ref: "8d5f1c1a6ea19f8c6de603f1815f0d3131b4d086"
   # thumbnailer: ^2.2.0
 
   # pdfx: ^2.5.0

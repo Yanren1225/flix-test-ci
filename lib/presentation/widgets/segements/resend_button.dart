@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flutter/material.dart';
@@ -6,12 +8,32 @@ import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-class ResendButton extends  StatelessWidget {
+class ResendButton extends  StatefulWidget {
   final UIBubble entity;
-  late String anchorTag;
+  // late String anchorTag;
 
   ResendButton({super.key, required this.entity}) {
-    anchorTag = 'resend_button_${const Uuid().v4()}';
+    // anchorTag = 'resend_button_${entity.shareable.id}';
+  }
+
+  @override
+  State<ResendButton> createState() => _ResendButtonState();
+}
+
+class _ResendButtonState extends State<ResendButton> {
+  late String anchorTag;
+
+  @override
+  void initState() {
+    super.initState();
+    anchorTag = Uuid().v4();
+  }
+
+  @override
+  void dispose() {
+    removeModal(anchorTag);
+    log('resend button disposed: $anchorTag');
+    super.dispose();
   }
 
   @override
@@ -21,6 +43,7 @@ class ResendButton extends  StatelessWidget {
       tag: anchorTag,
       child: IconButton(
           onPressed: () {
+            if (!context.mounted) {return;}
             showModal(ModalEntry.anchored(context,
                 tag: 'cancel_anchor_modal',
                 anchorTag: anchorTag,
@@ -37,7 +60,7 @@ class ResendButton extends  StatelessWidget {
                   child: InkWell(
                     onTap: () {
                       removeAllModals();
-                      concertProvider.resend(entity);
+                      concertProvider.resend(widget.entity);
                     },
                     child: const Padding(
                       padding:

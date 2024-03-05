@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flutter/material.dart';
@@ -6,13 +8,23 @@ import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-class CancelSendButton extends  StatelessWidget {
-  final UIBubble entity;
+class CancelSendButtonState extends State<CancelSendButton> {
+
   late String anchorTag;
 
-  CancelSendButton({super.key, required this.entity}) {
-    anchorTag = 'cancel_button_${const Uuid().v4()}';
+  @override
+  void initState() {
+    super.initState();
+    anchorTag = Uuid().v4();
   }
+
+  @override
+  void dispose() {
+    removeModal(anchorTag);
+    log('cancel send button disposed: $anchorTag');
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +33,7 @@ class CancelSendButton extends  StatelessWidget {
       tag: anchorTag,
       child: IconButton(
           onPressed: () {
+            if (!context.mounted) {return;}
             showModal(ModalEntry.anchored(context,
                 tag: 'cancel_anchor_modal',
                 anchorTag: anchorTag,
@@ -37,7 +50,7 @@ class CancelSendButton extends  StatelessWidget {
                   child: InkWell(
                     onTap: () {
                       removeAllModals();
-                      concertProvider.cancel(entity);
+                      concertProvider.cancel(widget.entity);
                     },
                     child: const Padding(
                       padding:
@@ -59,4 +72,16 @@ class CancelSendButton extends  StatelessWidget {
     );
 
   }
+
+}
+
+class CancelSendButton extends  StatefulWidget {
+  final UIBubble entity;
+
+  CancelSendButton({super.key, required this.entity});
+
+  @override
+  State<StatefulWidget> createState() => CancelSendButtonState();
+
+
 }

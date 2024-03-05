@@ -23,3 +23,7 @@ samples, guidance on mobile development, and a full API reference.
 5. iPad WildScreen下，导航条对会话页面的action buttons有遮挡
 6. iPhone无法发送广播
 7. 发送消息后列表滚到上方
+8. iPhone选择图片到上屏有延迟，视觉上卡顿
+9. Android偶现无法接收文件（可能是App退到后台太久，导致服务掉了？）
+10. iPhone上频繁点击取消和重新发送按钮有概率触发，modal背景无法消失的问题。
+11. 已经在会话页面，点击消息会弹出新的会话页面
