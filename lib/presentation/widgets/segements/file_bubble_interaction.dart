@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:downloadsfolder/downloadsfolder.dart';
@@ -18,25 +19,35 @@ class FileBubbleInteraction extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
         onDoubleTap: () {
-          if (Platform.isIOS || Platform.isAndroid) {
-            openDownloadFolder().then((value) {
-              if (value) {
-                print('Download folder opened successfully');
-              } else {
-                print('Failed to open download folder');
-              }
-            }).catchError((error, stackTrace) =>
-                print('Failed to open download folder: $error'));
-          } else {
-            getDefaultDestinationDirectory()
-                .then((value) => OpenDir().openNativeDir(path: filePath))
-                .catchError(
-                    (error) => print('Failed to open download folder: $error'));
-          }
+          _openDir();
         },
         onTap: () {
-          OpenFilex.open(filePath);
+          log('filePath: $filePath');
+          OpenFilex.open(filePath).then((value) {
+            if (value.type != ResultType.done) {
+              log('Failed open file: $filePath, result: $value');
+              _openDir();
+            }
+          });
         },
         child: child);
+  }
+
+  void _openDir() {
+    if (Platform.isIOS || Platform.isAndroid) {
+      openDownloadFolder().then((value) {
+        if (value) {
+          print('Download folder opened successfully');
+        } else {
+          print('Failed to open download folder');
+        }
+      }).catchError((error, stackTrace) =>
+          print('Failed to open download folder: $error'));
+    } else {
+      getDefaultDestinationDirectory()
+          .then((value) => OpenDir().openNativeDir(path: filePath))
+          .catchError(
+              (error) => print('Failed to open download folder: $error'));
+    }
   }
 }

@@ -50,8 +50,6 @@ PODS:
     - Toast
   - image_picker_ios (0.0.1):
     - Flutter
-  - open_file_manager (0.0.1):
-    - Flutter
   - open_filex (0.0.2):
     - Flutter
   - package_info_plus (0.4.5):
@@ -109,7 +107,6 @@ DEPENDENCIES:
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
-  - open_file_manager (from `.symlinks/plugins/open_file_manager/ios`)
   - open_filex (from `.symlinks/plugins/open_filex/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
@@ -150,8 +147,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/fluttertoast/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
-  open_file_manager:
-    :path: ".symlinks/plugins/open_file_manager/ios"
   open_filex:
     :path: ".symlinks/plugins/open_filex/ios"
   package_info_plus:
@@ -185,7 +180,6 @@ SPEC CHECKSUMS:
   flutter_local_notifications: 4cde75091f6327eb8517fa068a0a5950212d2086
   fluttertoast: 31b00dabfa7fb7bacd9e7dbee580d7a2ff4bf265
   image_picker_ios: 99dfe1854b4fa34d0364e74a78448a0151025425
-  open_file_manager: cdc5849f062aa70cad3da24a0dde74955d78c1ec
   open_filex: 6e26e659846ec990262224a12ef1c528bb4edbe4
   package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
   path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
