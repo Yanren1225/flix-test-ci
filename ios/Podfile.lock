@@ -40,6 +40,9 @@ PODS:
   - Flutter (1.0.0)
   - flutter_local_notifications (0.0.1):
     - Flutter
+  - fluttertoast (0.0.2):
+    - Flutter
+    - Toast
   - image_picker_ios (0.0.1):
     - Flutter
   - package_info_plus (0.4.5):
@@ -77,6 +80,7 @@ PODS:
     - sqlite3/perf-threadsafe
     - sqlite3/rtree
   - SwiftyGif (5.4.4)
+  - Toast (4.1.0)
   - video_player_avfoundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -87,6 +91,7 @@ DEPENDENCIES:
   - file_selector_ios (from `.symlinks/plugins/file_selector_ios/ios`)
   - Flutter (from `Flutter`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
+  - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
@@ -103,6 +108,7 @@ SPEC REPOS:
     - SDWebImage
     - sqlite3
     - SwiftyGif
+    - Toast
 
 EXTERNAL SOURCES:
   device_info_plus:
@@ -115,6 +121,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_local_notifications:
     :path: ".symlinks/plugins/flutter_local_notifications/ios"
+  fluttertoast:
+    :path: ".symlinks/plugins/fluttertoast/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   package_info_plus:
@@ -140,6 +148,7 @@ SPEC CHECKSUMS:
   file_selector_ios: b6a6c6667913d571590169ef946afbafe3b52688
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_local_notifications: 4cde75091f6327eb8517fa068a0a5950212d2086
+  fluttertoast: 31b00dabfa7fb7bacd9e7dbee580d7a2ff4bf265
   image_picker_ios: 99dfe1854b4fa34d0364e74a78448a0151025425
   package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
   path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
@@ -150,6 +159,7 @@ SPEC CHECKSUMS:
   sqlite3: 73b7fc691fdc43277614250e04d183740cb15078
   sqlite3_flutter_libs: af0e8fe9bce48abddd1ffdbbf839db0302d72d80
   SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
+  Toast: ec33c32b8688982cecc6348adeae667c1b9938da
   video_player_avfoundation: 02011213dab73ae3687df27ce441fbbcc82b5579
 
 PODFILE CHECKSUM: 10d82bfe15c1549ac17958b7d171326be1d4e622

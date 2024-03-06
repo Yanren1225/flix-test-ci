@@ -73,6 +73,7 @@ dependencies:
     git:
       url: "https://github.com/heiha100/modals"
       ref: "8d5f1c1a6ea19f8c6de603f1815f0d3131b4d086"
+  fluttertoast: ^8.2.4
   # thumbnailer: ^2.2.0
 
   # pdfx: ^2.5.0
