@@ -5,6 +5,7 @@ import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
+import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/resend_button.dart';
 import 'package:flix/utils/file/size_utils.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
       alignment = MainAxisAlignment.start;
     }
 
-    var showStateIcon = false;
+    var clickable = false;
     Widget stateIcon = const SizedBox(width: 48, height: 48);
     final showProgressBar;
     final progressBarColor;
@@ -64,28 +65,29 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           showProgressBar = true;
           progressBarColor = Color.fromRGBO(0, 122, 255, 1);
           des = sharedFile.content.size.formateBinarySize();
-          showStateIcon = true;
+          clickable = true;
           stateIcon = CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.waitToAccepted:
           showProgressBar = true;
           progressBarColor = Color.fromRGBO(0, 122, 255, 1);
           des = '${sharedFile.content.size.formateBinarySize()} · 等待对方确认';
-          showStateIcon = true;
+          clickable = true;
           stateIcon = CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.inTransit:
           showProgressBar = true;
           progressBarColor = Color.fromRGBO(0, 122, 255, 1);
           des = sharedFile.content.size.formateBinarySize();
-          showStateIcon = true;
+          clickable = true;
           stateIcon = CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.sendCompleted:
         case FileState.receiveCompleted:
         case FileState.completed:
+          clickable = true;
           showProgressBar = false;
-          progressBarColor = Color.fromRGBO(0, 122, 255, 1);
+          progressBarColor = const Color.fromRGBO(0, 122, 255, 1);
           des = '${sharedFile.content.size.formateBinarySize()} · 已发送';
           break;
         case FileState.sendFailed:
@@ -94,14 +96,14 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           des = '${sharedFile.content.size.formateBinarySize()} · 发送异常';
           showProgressBar = true;
           progressBarColor = const Color.fromRGBO(255, 59, 48, 1);
-          showStateIcon = true;
+          clickable = true;
           stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
         case FileState.cancelled:
           des = '${sharedFile.content.size.formateBinarySize()} · 已取消';
           showProgressBar = true;
           progressBarColor = const Color.fromRGBO(255, 59, 48, 1);
-          showStateIcon = true;
+          clickable = true;
           stateIcon = stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
         case FileState.unknown:
@@ -113,19 +115,21 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           showProgressBar = true;
           progressBarColor = const Color.fromRGBO(0, 122, 255, 1);
           des = '${sharedFile.content.size.formateBinarySize()} · 点击接收';
-          showStateIcon = true;
+          clickable = false;
           stateIcon = SvgPicture.asset(
             'assets/images/ic_receive.svg',
           );
           break;
         case FileState.inTransit:
         case FileState.sendCompleted:
+          clickable = false;
           showProgressBar = true;
           progressBarColor = const Color.fromRGBO(0, 122, 255, 1);
           des = sharedFile.content.size.formateBinarySize();
           break;
         case FileState.receiveCompleted:
         case FileState.completed:
+          clickable = true;
           showProgressBar = false;
           progressBarColor = const Color.fromRGBO(0, 122, 255, 1);
           des = '${sharedFile.content.size.formateBinarySize()} · 已接收';
@@ -136,7 +140,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           des = '${sharedFile.content.size.formateBinarySize()} · 接收失败';
           showProgressBar = true;
           progressBarColor = const Color.fromRGBO(255, 59, 48, 1);
-          showStateIcon = true;
+          clickable = false;
           stateIcon = SvgPicture.asset(
             'assets/images/ic_trans_fail.svg',
           );
@@ -145,7 +149,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           des = '${sharedFile.content.size.formateBinarySize()} · 已取消';
           showProgressBar = true;
           progressBarColor = const Color.fromRGBO(255, 59, 48, 1);
-          showStateIcon = true;
+          clickable = false;
           stateIcon = SvgPicture.asset(
             'assets/images/ic_trans_fail.svg',
           );
@@ -248,8 +252,12 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
         },
         child: _innerBubble,
       );
+    } else if (clickable) {
+      innerBubble = FileBubbleInteraction(filePath: sharedFile.content.path!, child: _innerBubble);
+
     } else {
       innerBubble = _innerBubble;
+
     }
 
     return Row(
@@ -282,44 +290,5 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
       ],
     );
   }
-
-// Widget cancelSendButton(ConcertProvider concertProvider) {
-//   return ModalAnchor(
-//     tag: 'cancel_anchor',
-//     child: IconButton(
-//         onPressed: () {
-//           showModal(ModalEntry.anchored(context,
-//               tag: 'cancel_anchor_modal',
-//               anchorTag: 'cancel_anchor',
-//               aboveTag: 'cancel_anchor',
-//               barrierColor: const Color.fromRGBO(0, 0, 0, 0.45),
-//               removeOnPop: true,
-//               barrierDismissible: true,
-//               child: Material(
-//                 color: Colors.white,
-//                 shape: RoundedRectangleBorder(
-//                     borderRadius: BorderRadius.circular(14)),
-//                 child: InkWell(
-//                   onTap: () {
-//                     concertProvider.cancel(entity);
-//                   },
-//                   child: const Padding(
-//                     padding:
-//                         EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-//                     child: Text(
-//                       '取消发送',
-//                       style: TextStyle(
-//                           fontSize: 16,
-//                           fontWeight: FontWeight.w500,
-//                           color: Color.fromRGBO(255, 59, 48, 1)),
-//                     ),
-//                   ),
-//                 ),
-//               )));
-//         },
-//         icon: SvgPicture.asset(
-//           'assets/images/ic_cancel.svg',
-//         )),
-//   );
-// }
+  
 }

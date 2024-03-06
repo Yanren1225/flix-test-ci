@@ -9,6 +9,7 @@ import 'package:flix/presentation/widgets/aspect_ratio_video.dart';
 import 'package:flix/presentation/widgets/bubbles/accept_media_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
 import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
+import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/resend_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -57,14 +58,14 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
       // 发送
       switch (sharedVideo.state) {
         case FileState.picked:
-          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
+          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false, true);
           stateIcon = CancelSendButton(key: _cancelButtonKey, entity: entity);
           break;
         case FileState.waitToAccepted:
           content = Stack(
             fit: StackFit.passthrough,
             children: [
-              _buildInlineVideoPlayer(sharedVideo.content.path!, true),
+              _buildInlineVideoPlayer(sharedVideo.content.path!, true, false),
               Container(
                 decoration:
                     const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
@@ -84,7 +85,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
           content = Stack(
             fit: StackFit.passthrough,
             children: [
-              _buildInlineVideoPlayer(sharedVideo.content.path!, true),
+              _buildInlineVideoPlayer(sharedVideo.content.path!, true, false),
               Container(
                 decoration: BoxDecoration(color: Colors.black.withOpacity(0.5)),
                 width: double.infinity,
@@ -124,13 +125,13 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
         case FileState.sendCompleted:
         case FileState.receiveCompleted:
         case FileState.completed:
-          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
+          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false, true);
           break;
         case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
-          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
+          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false, true);
           stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
         default:
@@ -169,7 +170,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
           );
         case FileState.receiveCompleted:
         case FileState.completed:
-          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
+          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false, true);
         case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
@@ -192,10 +193,12 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
       children: [
         Visibility(
           visible: alignment == MainAxisAlignment.end,
-          replacement: alignment == MainAxisAlignment.end ? const SizedBox(
-            width: 48 + 18,
-            height: 48,
-          ) : const SizedBox.shrink(),
+          replacement: alignment == MainAxisAlignment.end
+              ? const SizedBox(
+                  width: 48 + 18,
+                  height: 48,
+                )
+              : const SizedBox.shrink(),
           child: Padding(
             padding: const EdgeInsets.only(right: 18.0),
             child: stateIcon,
@@ -238,12 +241,13 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
           ),
         ),
         Visibility(
-          visible:
-              alignment == MainAxisAlignment.start,
-          replacement: alignment == MainAxisAlignment.start ? const SizedBox(
-            width: 48 + 18,
-            height: 48,
-          ) : const SizedBox.shrink(),
+          visible: alignment == MainAxisAlignment.start,
+          replacement: alignment == MainAxisAlignment.start
+              ? const SizedBox(
+                  width: 48 + 18,
+                  height: 48,
+                )
+              : const SizedBox.shrink(),
           child: Padding(
             padding: const EdgeInsets.only(left: 18.0),
             child: stateIcon,
@@ -253,21 +257,16 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
     );
   }
 
-  Widget _buildInlineVideoPlayer(String videoUri, bool preview) {
-    // const double volume = kIsWeb ? 0.0 : 1.0;
-    // controller.setVolume(volume);
-    // if (controller == null) {
-    //   controller = VideoPlayerController.file(File(videoUri));
-    // } else {
-    //   controller?.dispose();
-    //   controller = VideoPlayerController.file(File(videoUri));
-    // }
-    //
-    // controller?.initialize();
-    // controller?.setLooping(false);
-    // controller?.play();
-    return Center(
+  Widget _buildInlineVideoPlayer(
+      String videoUri, bool preview, bool clickable) {
+    if (clickable) {
+      return FileBubbleInteraction(
+        filePath: videoUri,
         child: AspectRatioVideo(
-            key: _videoWidget, videoPath: videoUri, preview: preview));
+            key: _videoWidget, videoPath: videoUri, preview: preview),
+      );
+    }
+    return AspectRatioVideo(
+        key: _videoWidget, videoPath: videoUri, preview: preview);
   }
 }

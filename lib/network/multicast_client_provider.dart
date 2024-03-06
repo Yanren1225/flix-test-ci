@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:developer';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/multicast_util.dart';
@@ -10,6 +14,7 @@ enum MultiState { idle, scanning, connect, failure }
 
 class MultiCastClientProvider extends ChangeNotifier {
   Set<DeviceModal> get deviceList => DeviceManager.instance.deviceList;
+  StreamSubscription? connectivitySubscription;
 
   static MultiCastClientProvider of(BuildContext context,
       {bool listen = false}) {
@@ -18,6 +23,10 @@ class MultiCastClientProvider extends ChangeNotifier {
 
   MultiCastClientProvider() {
     DeviceManager.instance.addDeviceListChangeListener(_onDeviceListChanged);
+    connectivitySubscription = Connectivity().onConnectivityChanged.listen((result) {
+      log('connectivity changed: $result');
+      startScan();
+    });
   }
 
   void _onDeviceListChanged(Set<DeviceModal> deviceList) {
@@ -26,6 +35,7 @@ class MultiCastClientProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    connectivitySubscription?.cancel();
     DeviceManager.instance.removeDeviceListChangeListener(_onDeviceListChanged);
     super.dispose();
   }

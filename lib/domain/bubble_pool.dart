@@ -22,9 +22,14 @@ class BubblePool {
 
   Future<void> add(PrimitiveBubble bubble) async {
     log('add bubble $bubble');
-    _buffer = bubble;
-    _broadcast.add(bubble);
-    await appDatabase.bubblesDao.insert(bubble);
+    try {
+      _buffer = bubble;
+      _broadcast.add(bubble);
+      await appDatabase.bubblesDao.insert(bubble);
+    } catch (e) {
+      log('failed to insert bubble into database: $e');
+    }
+
   }
 
   StreamSubscription<PrimitiveBubble> listen(void onData(PrimitiveBubble bubble)?,

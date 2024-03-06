@@ -28,3 +28,18 @@ samples, guidance on mobile development, and a full API reference.
 ~~10. iPhone上频繁点击取消和重新发送按钮有概率触发，modal背景无法消失的问题。~~
 11. 已经在会话页面，点击消息会弹出新的会话页面
 12. 文字消息，没有系统通知
+13. android发送，macos接收时速度慢，接收速度只有4M/S
+
+## 功能
+单击消息，打开文件
+- Android
+  - 预览图片，会申请访问照片和视频的权限
+    - 拒绝后，再次点击会没有任何提示
+    - 
+双击消息，打开文件所在文件夹
+- open_file_manager
+  - Android：无法打开下载目录
+  - iOS：在Files中打开flix目录
+  - 不支持其他平台
+- open_dir
+  - 

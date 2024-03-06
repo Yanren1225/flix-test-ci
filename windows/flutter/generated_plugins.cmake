@@ -3,9 +3,14 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  connectivity_plus
+  downloadsfolder
   file_selector_windows
+  open_dir_windows
+  permission_handler_windows
   screen_retriever
   sqlite3_flutter_libs
+  url_launcher_windows
   video_player_win
   window_manager
 )

@@ -60,10 +60,15 @@ extension XFileConvert on XFile {
     if (isImg) {
       size = ImageSizeGetter.getSize(FileInput(File(this.path)));
     } else if (isVideo) {
-      VideoPlayerController _controller = VideoPlayerController.file(File(this.path));
-      await _controller.initialize();
-      size = Size(_controller.value?.size?.width?.toInt() ?? 0, _controller.value?.size?.height?.toInt() ?? 0);
-      _controller.dispose();
+      try {
+        VideoPlayerController _controller = VideoPlayerController.file(File(this.path));
+        await _controller.initialize();
+        size = Size(_controller.value?.size?.width?.toInt() ?? 0, _controller.value?.size?.height?.toInt() ?? 0);
+        _controller.dispose();
+      } catch (e) {
+        log('Failed to get size of video, path: ${this.path}', error: e);
+      }
+
     }
 
     return FileMeta(

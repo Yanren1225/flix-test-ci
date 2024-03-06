@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:downloadsfolder/downloadsfolder.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_manager.dart';
@@ -9,9 +10,13 @@ import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/widgets/bubbles/accept_media_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
 import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
+import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/resend_button.dart';
+import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:open_dir/open_dir.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:provider/provider.dart';
 
 class ShareImageBubble extends StatefulWidget {
@@ -67,22 +72,24 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
       alignment = MainAxisAlignment.start;
     }
 
-    Widget stateIcon = const SizedBox(width: 48, height: 48,);
+    Widget stateIcon = const SizedBox(
+      width: 48,
+      height: 48,
+    );
     final Widget content;
     if (entity.isFromMe(andropContext.deviceId)) {
       // 发送
       switch (sharedImage.state) {
         case FileState.picked:
-          content =
-              Image.file(key: _imageKey, File(sharedImage.content.path!!), fit: BoxFit.contain);
-          stateIcon = CancelSendButton(key: _cancelSendButtonKey, entity: entity);
+          content = _image(sharedImage, true);
+          stateIcon =
+              CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.waitToAccepted:
           content = Stack(
             fit: StackFit.passthrough,
             children: [
-              Image.file(key: _imageKey, File(sharedImage.content.path!!),
-                  fit: BoxFit.contain),
+              _image(sharedImage, false),
               Container(
                 decoration:
                     const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
@@ -96,14 +103,14 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
               )
             ],
           );
-          stateIcon = CancelSendButton(key: _cancelSendButtonKey, entity: entity);
+          stateIcon =
+              CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.inTransit:
           content = Stack(
             fit: StackFit.passthrough,
             children: [
-              Image.file(key: _imageKey, File(sharedImage.content.path!!),
-                  fit: BoxFit.contain),
+              _image(sharedImage, false),
               Container(
                 decoration:
                     const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
@@ -140,21 +147,21 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
               )
             ],
           );
-          stateIcon = CancelSendButton(key: _cancelSendButtonKey, entity: entity);
+          stateIcon =
+              CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.sendCompleted:
         case FileState.receiveCompleted:
         case FileState.completed:
-          content =
-              Image.file(key: _imageKey, File(sharedImage.content.path!!), fit: BoxFit.contain);
+          content = _image(sharedImage, true);
           break;
         case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
-          content =
-              Image.file(key: _imageKey, File(sharedImage.content.path!!), fit: BoxFit.contain);
-          stateIcon = stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
+          content = _image(sharedImage, true);
+          stateIcon =
+              stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
         default:
           throw StateError('Error send state: ${sharedImage.state}');
@@ -200,8 +207,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
           break;
         case FileState.receiveCompleted:
         case FileState.completed:
-          content =
-              Image.file(key: _imageKey, File(sharedImage.content.path!!), fit: BoxFit.contain);
+          content = _image(sharedImage, true);
           break;
         case FileState.cancelled:
         case FileState.sendFailed:
@@ -227,7 +233,12 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
       children: [
         Visibility(
           visible: alignment == MainAxisAlignment.end,
-          replacement: alignment == MainAxisAlignment.end ? const SizedBox(width: 48 + 18, height: 48,) : SizedBox.shrink(),
+          replacement: alignment == MainAxisAlignment.end
+              ? const SizedBox(
+                  width: 48 + 18,
+                  height: 48,
+                )
+              : SizedBox.shrink(),
           child: Padding(
             padding: const EdgeInsets.only(right: 18.0),
             child: stateIcon,
@@ -271,9 +282,13 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
           ),
         ),
         Visibility(
-          visible:
-              alignment == MainAxisAlignment.start,
-          replacement: alignment == MainAxisAlignment.start ? SizedBox(width: 48 + 18, height: 48,) : SizedBox.shrink(),
+          visible: alignment == MainAxisAlignment.start,
+          replacement: alignment == MainAxisAlignment.start
+              ? SizedBox(
+                  width: 48 + 18,
+                  height: 48,
+                )
+              : SizedBox.shrink(),
           child: Padding(
             padding: const EdgeInsets.only(left: 18.0),
             child: stateIcon,
@@ -281,5 +296,19 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
         ),
       ],
     );
+  }
+
+  Widget _image(SharedFile sharedFile, bool clickable) {
+    if (clickable) {
+      return FileBubbleInteraction(
+          filePath: sharedFile.content.path!,
+          child: Image.file(
+              key: _imageKey,
+              File(sharedFile.content.path!!),
+              fit: BoxFit.contain));
+    } else {
+      return Image.file(
+          key: _imageKey, File(sharedFile.content.path!!), fit: BoxFit.contain);
+    }
   }
 }

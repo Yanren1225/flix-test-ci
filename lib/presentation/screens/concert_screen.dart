@@ -13,6 +13,7 @@ import 'package:flix/presentation/widgets/bubbles/share_bubble.dart';
 import 'package:flix/presentation/widgets/pick_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -333,6 +334,7 @@ class InputAreaState extends State<InputArea> {
       textEditController.clear();
       submitText(content);
     }
+    inputContent = '';
   }
 }
 

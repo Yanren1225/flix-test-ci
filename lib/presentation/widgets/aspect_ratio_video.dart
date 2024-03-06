@@ -34,6 +34,10 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
     if (initialized != controller!.value.isInitialized) {
       initialized = controller!.value.isInitialized;
       setState(() {});
+    } else if (controller!.value.hasError) {
+      setState(() {
+        isError = true;
+      });
     }
   }
 
@@ -69,7 +73,7 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
 
   @override
   void deactivate() {
-    controller?.pause();
+    // controller?.pause();
     super.deactivate();
   }
 
@@ -98,11 +102,7 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
               alignment: Alignment.center,
               child: Visibility(
                 visible: !preview,
-                child: IconButton(
-                    onPressed: () {
-                      controller?.play();
-                    },
-                    icon: SvgPicture.asset('assets/images/ic_play.svg')),
+                child: SvgPicture.asset('assets/images/ic_play.svg'),
               ),
             )
           ],
