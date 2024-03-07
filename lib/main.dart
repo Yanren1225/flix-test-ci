@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
@@ -130,7 +131,7 @@ class MyAppState extends State<MyApp> {
           colorScheme: const ColorScheme.light(
               primary: Color.fromRGBO(0, 122, 255, 1), onPrimary: Colors.white),
           useMaterial3: true,
-        ),
+        ).useSystemChineseFont(Brightness.light),
         // initialRoute: 'home',
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
@@ -163,13 +164,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    final handler = ShareHandlerPlatform.instance;
-    final media = await handler.getInitialSharedMedia();
-    _tryGoPickDeviceScreen(media);
-    handler.sharedMediaStream.listen((SharedMedia media) {
+    if (Platform.isAndroid || Platform.isIOS) {
+      final handler = ShareHandlerPlatform.instance;
+      final media = await handler.getInitialSharedMedia();
       _tryGoPickDeviceScreen(media);
-    });
-    if (!mounted) return;
+      handler.sharedMediaStream.listen((SharedMedia media) {
+        _tryGoPickDeviceScreen(media);
+      });
+      if (!mounted) return;
+    }
   }
 
   void _tryGoPickDeviceScreen(SharedMedia? sharedMedia) {

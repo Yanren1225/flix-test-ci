@@ -79,6 +79,7 @@ dependencies:
   open_dir: ^0.0.1+5
   connectivity_plus: ^5.0.2
   quiver: ^3.2.1
+  chinese_font_library: ^1.1.0
   # thumbnailer: ^2.2.0
 
   # pdfx: ^2.5.0
