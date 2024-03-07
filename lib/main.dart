@@ -10,7 +10,7 @@ import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/notification/reception_notification.dart';
 import 'package:flix/network/multicast_client_provider.dart';
-import 'package:flix/presentation/screens/concert_screen.dart';
+import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/screens/helps/help_screen.dart';
 import 'package:flix/presentation/screens/pick_device_screen.dart';

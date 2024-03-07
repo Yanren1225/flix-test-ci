@@ -8,7 +8,7 @@ import 'package:flix/model/ui_bubble/shareable.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/network/multicast_client_provider.dart';
-import 'package:flix/presentation/screens/concert_screen.dart';
+import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/widgets/devices/device_list.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/file/file_helper.dart';

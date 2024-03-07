@@ -8,9 +8,11 @@ import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/pickable.dart';
 import 'package:flix/model/ui_bubble/shareable.dart';
+import 'package:flix/presentation/screens/concert/bubble_list.dart';
 import 'package:flix/presentation/widgets/blur_appbar.dart';
-import 'package:flix/presentation/widgets/bubbles/share_bubble.dart';
+import 'package:flix/presentation/widgets/bubbles/bubble_widget.dart';
 import 'package:flix/presentation/widgets/pick_actions.dart';
+import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -31,48 +33,14 @@ class ConcertScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Widget? backButton;
-    if (showBackButton) {
-      backButton = GestureDetector(
-        onTap: () => Navigator.pop(context),
-        child: const Icon(
-          Icons.arrow_back_ios,
-          color: Colors.black,
-          size: 20,
-        ),
-      );
-    } else {
-      backButton = null;
-    }
-    final appBar = AppBar(
-      leading: backButton,
-      title: Text(deviceInfo.name),
-      titleTextStyle: const TextStyle(
-          color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
-      backgroundColor: const Color.fromRGBO(247, 247, 247, 0.8),
-      surfaceTintColor: const Color.fromRGBO(247, 247, 247, 0.8),
-    );
-    final appBarHeight =
-        appBar.preferredSize.height + MediaQuery.of(context).padding.top;
     return ChangeNotifierProvider<ConcertProvider>(
-      key: Key(deviceInfo.id),
-      create: (BuildContext context) {
-        return ConcertProvider(deviceInfo: deviceInfo);
-      },
-      child: Scaffold(
-        backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
-        extendBodyBehindAppBar: true,
-        appBar: BlurAppBar(
-          appBar: appBar,
-        ),
-        body:
-            // const ShareConcertMainView()
-            ShareConcertMainView(
-          padding: EdgeInsets.only(top: appBarHeight),
-          anchor: anchor,
-        ),
-      ),
-    );
+        key: Key(deviceInfo.id),
+        create: (BuildContext context) {
+          return ConcertProvider(deviceInfo: deviceInfo);
+        }, child: NavigationScaffold(showBackButton: showBackButton, title: deviceInfo.name, builder: (padding) {
+      return ShareConcertMainView(
+          padding: padding, anchor: anchor,);
+    },));
   }
 }
 
@@ -96,8 +64,6 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
   bool isAnchored = false;
   final ScrollController _scrollController = ScrollController();
 
-  // List<BubbleEntity> shareList = [];
-
   void submit(ConcertProvider concertProvider, Shareable shareable,
       BubbleType type) async {
     _scrollController.animateTo(_scrollController.position.minScrollExtent,
@@ -112,43 +78,12 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
   @override
   Widget build(BuildContext context) {
     final concertProvider = Provider.of<ConcertProvider>(context, listen: true);
-    final shareList = concertProvider.bubbles.reversed.toList();
-    // if (!isInit && anchor != null) {
-    //   for (int i = 0; i < shareList.length; i++) {
-    //     final item = shareList[i];
-    //     if (item.shareable.id == anchor) {
-    //       _scrollController.jumpTo(i * 50);
-    //       break;
-    //     }
-    //   }
-    // }
-    // SchedulerBinding.instance.addPostFrameCallback((_) {
-    //   if (!isAnchored && shareList.isNotEmpty) {
-    //     isAnchored = true;
-    //     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-    //   }
-    // });
+    final items = concertProvider.bubbles.reversed.toList();
 
     return Stack(
       fit: StackFit.loose,
       children: [
-        ListView.builder(
-            reverse: true,
-            shrinkWrap: true,
-            controller: _scrollController,
-            padding: EdgeInsets.only(top: padding.top, bottom: 260),
-            itemCount: shareList.length,
-            itemBuilder: (context, index) {
-              final item = shareList[index];
-              return Padding(
-                padding: const EdgeInsets.only(
-                    left: 16.0, right: 16.0, top: 12, bottom: 12),
-                child: ShareBubble(
-                  key: Key('$index'),
-                  uiBubble: item,
-                ),
-              );
-            }),
+        BubbleList(scrollController: _scrollController, padding: padding, items: items, reverse: true, shrinkWrap: true,),
         Align(
           alignment: Alignment.bottomLeft,
           child: InputArea(
@@ -162,6 +97,7 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
     );
   }
 }
+
 
 class InputArea extends StatefulWidget {
   final OnSubmit onSubmit;

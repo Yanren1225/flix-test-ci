@@ -1,3 +1,4 @@
+import 'package:flix/presentation/screens/helps/about_us.dart';
 import 'package:flix/presentation/widgets/helps/QA.dart';
 import 'package:flix/presentation/widgets/settings/clickable_item.dart';
 import 'package:flutter/material.dart';
@@ -50,19 +51,29 @@ class HelpScreenState extends State<HelpScreen> {
                   Padding(
                     padding: const EdgeInsets.only(
                         left: 16, top: 4, right: 16, bottom: 16),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(14)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: ValueListenableBuilder<String>(
-                          valueListenable: version,
-                          builder: (BuildContext context, String value,
-                              Widget? child) {
-                            return ClickableItem(
-                                label: '关于我们', tail: 'v$value', onClick: () {});
-                          },
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return AboutUSScreen();
+                        }));
+                      },
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(14)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: ValueListenableBuilder<String>(
+                            valueListenable: version,
+                            builder: (BuildContext context, String value,
+                                Widget? child) {
+                              return ClickableItem(
+                                  label: '关于我们',
+                                  tail: 'v$value',
+                                  onClick: () {});
+                            },
+                          ),
                         ),
                       ),
                     ),

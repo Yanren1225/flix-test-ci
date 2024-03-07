@@ -38,7 +38,7 @@ class AppsScreenState extends State<AppsScreen> {
       ),
       title: const Text('选择本机应用'),
       titleTextStyle: const TextStyle(
-          color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
+          color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500),
       actions: [
         ValueListenableBuilder(
             valueListenable: selectedApps,
@@ -66,27 +66,7 @@ class AppsScreenState extends State<AppsScreen> {
         extendBodyBehindAppBar: true,
         backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
         appBar: BlurAppBar(
-          appBar: AppBar(
-            leading: GestureDetector(
-              onTap: _back,
-              child: const Icon(
-                Icons.arrow_back_ios,
-                color: Colors.black,
-                size: 20,
-              ),
-            ),
-            title: const Text('选择本机应用'),
-            titleTextStyle: const TextStyle(
-                color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500),
-            actions: [
-              ValueListenableBuilder(
-                  valueListenable: selectedApps,
-                  builder: (_, selectedApps, __) =>
-                      confirmButton(selectedApps.length))
-            ],
-            backgroundColor: const Color.fromRGBO(247, 247, 247, 0.8),
-            surfaceTintColor: const Color.fromRGBO(247, 247, 247, 0.8),
-          ),
+          appBar: appBar,
         ),
         body: ListView.builder(
             padding: EdgeInsets.only(top: appBarHeight),

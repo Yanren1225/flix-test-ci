@@ -23,10 +23,10 @@ import 'package:video_player/video_player.dart';
 
 import '../../../domain/androp_context.dart';
 
-class ShareBubble extends StatelessWidget {
+class BubbleWidget extends StatelessWidget {
   final UIBubble uiBubble;
 
-  const ShareBubble({super.key, required this.uiBubble});
+  const BubbleWidget({super.key, required this.uiBubble});
 
   @override
   Widget build(BuildContext context) {

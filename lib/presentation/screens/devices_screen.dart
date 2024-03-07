@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
 
-import 'concert_screen.dart';
+import 'concert/concert_screen.dart';
 
 class DeviceScreen extends StatefulWidget {
   final void Function(DeviceInfo deviceInfo) onDeviceSelected;
