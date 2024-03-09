@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:ffi';
 
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/presentation/widgets/app_icon.dart';
 import 'package:flix/presentation/widgets/check_state_box.dart';
 import 'package:flix/utils/app/apk_utils.dart';
@@ -38,7 +39,7 @@ class AppsScreenState extends State<AppsScreen> {
       ),
       title: const Text('选择本机应用'),
       titleTextStyle: const TextStyle(
-          color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500),
+          color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500).useSystemChineseFont(),
       actions: [
         ValueListenableBuilder(
             valueListenable: selectedApps,

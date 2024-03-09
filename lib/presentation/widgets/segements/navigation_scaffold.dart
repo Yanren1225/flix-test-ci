@@ -1,3 +1,4 @@
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/presentation/widgets/blur_appbar.dart';
 import 'package:flutter/material.dart';
 
@@ -36,9 +37,9 @@ class NavigationScaffold extends StatelessWidget {
     final appBar = AppBar(
       leading: backButton,
       centerTitle: true,
-      title: Text(title),
+      title: Text(title,),
       titleTextStyle: const TextStyle(
-          color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500),
+          color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500).useSystemChineseFont(),
       backgroundColor: const Color.fromRGBO(247, 247, 247, 0.8),
       surfaceTintColor: const Color.fromRGBO(247, 247, 247, 0.8),
     );

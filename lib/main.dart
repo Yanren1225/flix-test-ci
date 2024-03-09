@@ -113,25 +113,26 @@ class MyAppState extends State<MyApp> {
         title: 'Androp',
         navigatorObservers: [modalsRouteObserver],
         theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // TRY THIS: Try running your application with "flutter run". You'll see
-          // the application has a purple toolbar. Then, without quitting the app,
-          // try changing the seedColor in the colorScheme below to Colors.green
-          // and then invoke "hot reload" (save your changes or press the "hot
-          // reload" button in a Flutter-supported IDE, or press "r" if you used
-          // the command line to start the app).
-          //
-          // Notice that the counter didn't reset back to zero; the application
-          // state is not lost during the reload. To reset the state, use hot
-          // restart instead.
-          //
-          // This works for code too, not just values: Most code changes can be
-          // tested with just a hot reload.
-          colorScheme: const ColorScheme.light(
-              primary: Color.fromRGBO(0, 122, 255, 1), onPrimary: Colors.white),
-          useMaterial3: true,
-        ).useSystemChineseFont(Brightness.light),
+            // This is the theme of your application.
+            //
+            // TRY THIS: Try running your application with "flutter run". You'll see
+            // the application has a purple toolbar. Then, without quitting the app,
+            // try changing the seedColor in the colorScheme below to Colors.green
+            // and then invoke "hot reload" (save your changes or press the "hot
+            // reload" button in a Flutter-supported IDE, or press "r" if you used
+            // the command line to start the app).
+            //
+            // Notice that the counter didn't reset back to zero; the application
+            // state is not lost during the reload. To reset the state, use hot
+            // restart instead.
+            //
+            // This works for code too, not just values: Most code changes can be
+            // tested with just a hot reload.
+            colorScheme: const ColorScheme.light(
+                primary: Color.fromRGBO(0, 122, 255, 1),
+                onPrimary: Colors.white),
+            useMaterial3: true,
+            ).useSystemChineseFont(Brightness.light),
         // initialRoute: 'home',
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
@@ -186,15 +187,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute<DeviceInfo?>(
-            builder: (context) => PickDeviceScreen(sharedMedia: sharedMedia)),
-        ModalRoute.withName('/')).then((deviceInfo) {
-          if (deviceInfo == null) {
-            log('取消分享，未选择设备');
-          } else {
-            setSelectedDevice(deviceInfo);
-          }
+            context,
+            MaterialPageRoute<DeviceInfo?>(
+                builder: (context) =>
+                    PickDeviceScreen(sharedMedia: sharedMedia)),
+            ModalRoute.withName('/'))
+        .then((deviceInfo) {
+      if (deviceInfo == null) {
+        log('取消分享，未选择设备');
+      } else {
+        setSelectedDevice(deviceInfo);
+      }
     });
   }
 
@@ -262,24 +265,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-
-
   Widget NarrowLayout() {
-    // final deviceInfo = selectedDevice;
-    // if (deviceInfo != null) {
-    //   SchedulerBinding.instance.addPostFrameCallback((_) {
-    //     if (!isLeaved) {
-    //       isLeaved = true;
-    //       Navigator.push(
-    //           context,
-    //           MaterialPageRoute(
-    //               builder: (context) => ConcertScreen(
-    //                     deviceInfo: deviceInfo,
-    //                     showBackButton: true,
-    //                   ))).then((value) => isLeaved = false);
-    //     }
-    //   });
-    // }
     return Scaffold(
       backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
       body: NarrowBody(),
@@ -312,8 +298,8 @@ class _MyHomePageState extends State<MyHomePage> {
         unselectedItemColor: const Color.fromRGBO(60, 60, 67, 0.3),
         selectedFontSize: 10,
         unselectedFontSize: 10,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500).useSystemChineseFont(),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500).useSystemChineseFont(),
         backgroundColor: Colors.white,
         elevation: 0,
         onTap: (value) => setSelectedIndex(value),
@@ -386,13 +372,15 @@ class _MyHomePageState extends State<MyHomePage> {
             unselectedIconTheme: const IconThemeData(
                 size: 26, color: Color.fromRGBO(60, 60, 67, 0.3)),
             selectedLabelTextStyle: TextStyle(
-                color: Colors.black,
-                fontSize: 12,
-                fontWeight: FontWeight.normal),
+              color: Colors.black,
+              fontSize: 12,
+              fontWeight: FontWeight.normal,
+
+            ).useSystemChineseFont(),
             unselectedLabelTextStyle: TextStyle(
                 color: Color.fromRGBO(60, 60, 67, 0.3),
                 fontSize: 12,
-                fontWeight: FontWeight.normal),
+                fontWeight: FontWeight.normal).useSystemChineseFont(),
             backgroundColor: Colors.white,
           ),
           Flexible(child: secondPart(), flex: 1),

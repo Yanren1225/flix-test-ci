@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/model/device_info.dart';
@@ -39,11 +40,11 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 247, 247, 247),
-        title: const Text('选择一个设备',
+        title: Text('选择一个设备',
             style: TextStyle(
                 color: Colors.black,
                 fontSize: 14,
-                fontWeight: FontWeight.w500)),
+                fontWeight: FontWeight.w500).useSystemChineseFont()),
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 20),
