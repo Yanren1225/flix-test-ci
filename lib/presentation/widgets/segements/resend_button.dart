@@ -41,44 +41,50 @@ class _ResendButtonState extends State<ResendButton> {
     final concertProvider = context.watch<ConcertProvider>();
     return ModalAnchor(
       tag: anchorTag,
-      child: IconButton(
-          onPressed: () {
-            if (!context.mounted) {return;}
-            showModal(ModalEntry.anchored(context,
-                tag: 'cancel_anchor_modal',
-                anchorTag: anchorTag,
-                aboveTag: anchorTag,
-                modalAlignment: Alignment.bottomLeft,
-                anchorAlignment: Alignment.topRight,
-                barrierColor: const Color.fromRGBO(0, 0, 0, 0.45),
-                removeOnPop: true,
-                barrierDismissible: true,
-                child: Material(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
-                  child: InkWell(
-                    onTap: () {
-                      removeAllModals();
-                      concertProvider.resend(widget.entity);
-                    },
-                    child: const Padding(
-                      padding:
-                      EdgeInsets.only(left: 20, top: 14, right: 40, bottom: 14),
-                      child: Text(
-                        '重新发送',
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Color.fromRGBO(255, 59, 48, 1)),
+      child: SizedBox(
+        width: 20,
+        height: 20,
+        child: IconButton(
+            iconSize: 20,
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              if (!context.mounted) {return;}
+              showModal(ModalEntry.anchored(context,
+                  tag: 'cancel_anchor_modal',
+                  anchorTag: anchorTag,
+                  aboveTag: anchorTag,
+                  modalAlignment: Alignment.bottomLeft,
+                  anchorAlignment: Alignment.topRight,
+                  barrierColor: const Color.fromRGBO(0, 0, 0, 0.45),
+                  removeOnPop: true,
+                  barrierDismissible: true,
+                  child: Material(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                    child: InkWell(
+                      onTap: () {
+                        removeAllModals();
+                        concertProvider.resend(widget.entity);
+                      },
+                      child: const Padding(
+                        padding:
+                        EdgeInsets.only(left: 20, top: 14, right: 40, bottom: 14),
+                        child: Text(
+                          '重新发送',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Color.fromRGBO(255, 59, 48, 1)),
+                        ),
                       ),
                     ),
-                  ),
-                )));
-          },
-          icon: SvgPicture.asset(
-            'assets/images/ic_trans_fail.svg',
-          )),
+                  )));
+            },
+            icon: SvgPicture.asset(
+              'assets/images/ic_trans_fail.svg',
+            )),
+      ),
     );
 
   }

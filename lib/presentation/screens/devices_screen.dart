@@ -38,8 +38,9 @@ class _DeviceScreenState extends State<DeviceScreen> {
         children: [
           SizedBox(
               width: double.infinity,
+              height: 158,
               child: Lottie.asset('assets/animations/radar.json',
-                  fit: BoxFit.cover)),
+                  fit: BoxFit.contain)),
           SafeArea(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,

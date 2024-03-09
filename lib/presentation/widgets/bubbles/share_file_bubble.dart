@@ -6,6 +6,7 @@ import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
+import 'package:flix/presentation/widgets/segements/receive_button.dart';
 import 'package:flix/presentation/widgets/segements/resend_button.dart';
 import 'package:flix/utils/file/size_utils.dart';
 import 'package:flutter/material.dart';
@@ -116,9 +117,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
           progressBarColor = const Color.fromRGBO(0, 122, 255, 1);
           des = '${sharedFile.content.size.formateBinarySize()} · 点击接收';
           clickable = false;
-          stateIcon = SvgPicture.asset(
-            'assets/images/ic_receive.svg',
-          );
+          stateIcon = ReceiveButton(onTap: () => concertProvider.confirmReceive(entity));
           break;
         case FileState.inTransit:
         case FileState.sendCompleted:
@@ -182,6 +181,17 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: const Color.fromRGBO(0, 122, 255, 1)),
+                            alignment: Alignment.center,
+                            child:
+                            SvgPicture.asset('assets/images/ic_file1.svg'),
+                          ),
+                          const SizedBox(width: 16,),
                           Flexible(
                             child: Text(
                               sharedFile.content.name,
@@ -193,19 +203,6 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
                               // TODO: 省略中间
                               overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          const SizedBox(
-                            width: 16,
-                          ),
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                color: const Color.fromRGBO(0, 122, 255, 1)),
-                            alignment: Alignment.center,
-                            child:
-                                SvgPicture.asset('assets/images/ic_file1.svg'),
                           )
                         ]),
                     Visibility(
@@ -290,5 +287,6 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
       ],
     );
   }
-  
+
 }
+
