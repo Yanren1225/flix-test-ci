@@ -375,7 +375,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   label: Text('帮助'))
             ],
             labelType: NavigationRailLabelType.all,
-            useIndicator: false,
+            useIndicator: true,
+            indicatorColor: Colors.white,
             groupAlignment: 0.0,
             extended: false,
             elevation: null,
