@@ -19,6 +19,7 @@ import 'package:flix/setting/setting_provider.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/iterable_extension.dart';
 import 'package:flix/utils/meida/media_utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -27,6 +28,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:share_handler/share_handler.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:flutter_ume/flutter_ume.dart'; // UME framework
+import 'package:flutter_ume_kit_ui/flutter_ume_kit_ui.dart'; // UI kits
 
 int id = 1;
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -53,14 +56,18 @@ Future<void> main() async {
 
   await _initNotification();
 
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (_) => SettingProvider()),
-      ChangeNotifierProvider<MultiCastClientProvider>(
-          create: (_) => MultiCastClientProvider())
-    ],
-    child: const MyApp(),
-  ));
+  if (kDebugMode) {
+    PluginManager.instance                                 // Register plugin kits
+      ..register(const WidgetInfoInspector())
+      ..register(const ColorSucker())
+      ..register(AlignRuler())
+      // ..register(const ColorPicker())                            // New feature
+      ..register(const TouchIndicator());                  // Pass in your Dio instance
+    // After flutter_ume 0.3.0
+    runApp(const UMEWidget(child: const MyApp(), enable: true));
+  } else {
+    runApp(const MyApp());
+  }
 }
 
 Future<void> _initNotification() async {
@@ -107,36 +114,43 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AndropContext(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SettingProvider()),
+        ChangeNotifierProvider<MultiCastClientProvider>(
+            create: (_) => MultiCastClientProvider()),
+    ChangeNotifierProvider(
+    create: (context) => AndropContext())
+      ],
       child: MaterialApp(
         title: 'Androp',
         navigatorObservers: [modalsRouteObserver],
         theme: ThemeData(
-            // This is the theme of your application.
-            //
-            // TRY THIS: Try running your application with "flutter run". You'll see
-            // the application has a purple toolbar. Then, without quitting the app,
-            // try changing the seedColor in the colorScheme below to Colors.green
-            // and then invoke "hot reload" (save your changes or press the "hot
-            // reload" button in a Flutter-supported IDE, or press "r" if you used
-            // the command line to start the app).
-            //
-            // Notice that the counter didn't reset back to zero; the application
-            // state is not lost during the reload. To reset the state, use hot
-            // restart instead.
-            //
-            // This works for code too, not just values: Most code changes can be
-            // tested with just a hot reload.
-            colorScheme: const ColorScheme.light(
-                primary: Color.fromRGBO(0, 122, 255, 1),
-                onPrimary: Colors.white),
-            useMaterial3: true,
-            ).useSystemChineseFont(Brightness.light),
+          // This is the theme of your application.
+          //
+          // TRY THIS: Try running your application with "flutter run". You'll see
+          // the application has a purple toolbar. Then, without quitting the app,
+          // try changing the seedColor in the colorScheme below to Colors.green
+          // and then invoke "hot reload" (save your changes or press the "hot
+          // reload" button in a Flutter-supported IDE, or press "r" if you used
+          // the command line to start the app).
+          //
+          // Notice that the counter didn't reset back to zero; the application
+          // state is not lost during the reload. To reset the state, use hot
+          // restart instead.
+          //
+          // This works for code too, not just values: Most code changes can be
+          // tested with just a hot reload.
+          colorScheme: const ColorScheme.light(
+              primary: Color.fromRGBO(0, 122, 255, 1),
+              onPrimary: Colors.white),
+          useMaterial3: true,
+        ).useSystemChineseFont(Brightness.light),
         // initialRoute: 'home',
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
     );
+
   }
 }
 
