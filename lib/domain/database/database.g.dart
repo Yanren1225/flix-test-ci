@@ -931,16 +931,408 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
   }
 }
 
+class $PersistenceDevicesTable extends PersistenceDevices
+    with TableInfo<$PersistenceDevicesTable, PersistenceDevice> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PersistenceDevicesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _aliasMeta = const VerificationMeta('alias');
+  @override
+  late final GeneratedColumn<String> alias = GeneratedColumn<String>(
+      'alias', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _deviceModelMeta =
+      const VerificationMeta('deviceModel');
+  @override
+  late final GeneratedColumn<String> deviceModel = GeneratedColumn<String>(
+      'device_model', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _deviceTypeMeta =
+      const VerificationMeta('deviceType');
+  @override
+  late final GeneratedColumn<int> deviceType = GeneratedColumn<int>(
+      'device_type', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _fingerprintMeta =
+      const VerificationMeta('fingerprint');
+  @override
+  late final GeneratedColumn<String> fingerprint = GeneratedColumn<String>(
+      'fingerprint', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _portMeta = const VerificationMeta('port');
+  @override
+  late final GeneratedColumn<int> port = GeneratedColumn<int>(
+      'port', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _ipMeta = const VerificationMeta('ip');
+  @override
+  late final GeneratedColumn<String> ip = GeneratedColumn<String>(
+      'ip', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _insertOrUpdateTimeMeta =
+      const VerificationMeta('insertOrUpdateTime');
+  @override
+  late final GeneratedColumn<DateTime> insertOrUpdateTime =
+      GeneratedColumn<DateTime>('insert_or_update_time', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns => [
+        alias,
+        deviceModel,
+        deviceType,
+        fingerprint,
+        port,
+        ip,
+        insertOrUpdateTime
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'persistence_devices';
+  @override
+  VerificationContext validateIntegrity(Insertable<PersistenceDevice> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('alias')) {
+      context.handle(
+          _aliasMeta, alias.isAcceptableOrUnknown(data['alias']!, _aliasMeta));
+    } else if (isInserting) {
+      context.missing(_aliasMeta);
+    }
+    if (data.containsKey('device_model')) {
+      context.handle(
+          _deviceModelMeta,
+          deviceModel.isAcceptableOrUnknown(
+              data['device_model']!, _deviceModelMeta));
+    }
+    if (data.containsKey('device_type')) {
+      context.handle(
+          _deviceTypeMeta,
+          deviceType.isAcceptableOrUnknown(
+              data['device_type']!, _deviceTypeMeta));
+    }
+    if (data.containsKey('fingerprint')) {
+      context.handle(
+          _fingerprintMeta,
+          fingerprint.isAcceptableOrUnknown(
+              data['fingerprint']!, _fingerprintMeta));
+    } else if (isInserting) {
+      context.missing(_fingerprintMeta);
+    }
+    if (data.containsKey('port')) {
+      context.handle(
+          _portMeta, port.isAcceptableOrUnknown(data['port']!, _portMeta));
+    }
+    if (data.containsKey('ip')) {
+      context.handle(_ipMeta, ip.isAcceptableOrUnknown(data['ip']!, _ipMeta));
+    }
+    if (data.containsKey('insert_or_update_time')) {
+      context.handle(
+          _insertOrUpdateTimeMeta,
+          insertOrUpdateTime.isAcceptableOrUnknown(
+              data['insert_or_update_time']!, _insertOrUpdateTimeMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {fingerprint};
+  @override
+  PersistenceDevice map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PersistenceDevice(
+      alias: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}alias'])!,
+      deviceModel: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}device_model']),
+      deviceType: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}device_type']),
+      fingerprint: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}fingerprint'])!,
+      port: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}port']),
+      ip: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}ip']),
+      insertOrUpdateTime: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime,
+          data['${effectivePrefix}insert_or_update_time'])!,
+    );
+  }
+
+  @override
+  $PersistenceDevicesTable createAlias(String alias) {
+    return $PersistenceDevicesTable(attachedDatabase, alias);
+  }
+}
+
+class PersistenceDevice extends DataClass
+    implements Insertable<PersistenceDevice> {
+  final String alias;
+  final String? deviceModel;
+  final int? deviceType;
+  final String fingerprint;
+  final int? port;
+  final String? ip;
+  final DateTime insertOrUpdateTime;
+  const PersistenceDevice(
+      {required this.alias,
+      this.deviceModel,
+      this.deviceType,
+      required this.fingerprint,
+      this.port,
+      this.ip,
+      required this.insertOrUpdateTime});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['alias'] = Variable<String>(alias);
+    if (!nullToAbsent || deviceModel != null) {
+      map['device_model'] = Variable<String>(deviceModel);
+    }
+    if (!nullToAbsent || deviceType != null) {
+      map['device_type'] = Variable<int>(deviceType);
+    }
+    map['fingerprint'] = Variable<String>(fingerprint);
+    if (!nullToAbsent || port != null) {
+      map['port'] = Variable<int>(port);
+    }
+    if (!nullToAbsent || ip != null) {
+      map['ip'] = Variable<String>(ip);
+    }
+    map['insert_or_update_time'] = Variable<DateTime>(insertOrUpdateTime);
+    return map;
+  }
+
+  PersistenceDevicesCompanion toCompanion(bool nullToAbsent) {
+    return PersistenceDevicesCompanion(
+      alias: Value(alias),
+      deviceModel: deviceModel == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deviceModel),
+      deviceType: deviceType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deviceType),
+      fingerprint: Value(fingerprint),
+      port: port == null && nullToAbsent ? const Value.absent() : Value(port),
+      ip: ip == null && nullToAbsent ? const Value.absent() : Value(ip),
+      insertOrUpdateTime: Value(insertOrUpdateTime),
+    );
+  }
+
+  factory PersistenceDevice.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PersistenceDevice(
+      alias: serializer.fromJson<String>(json['alias']),
+      deviceModel: serializer.fromJson<String?>(json['deviceModel']),
+      deviceType: serializer.fromJson<int?>(json['deviceType']),
+      fingerprint: serializer.fromJson<String>(json['fingerprint']),
+      port: serializer.fromJson<int?>(json['port']),
+      ip: serializer.fromJson<String?>(json['ip']),
+      insertOrUpdateTime:
+          serializer.fromJson<DateTime>(json['insertOrUpdateTime']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'alias': serializer.toJson<String>(alias),
+      'deviceModel': serializer.toJson<String?>(deviceModel),
+      'deviceType': serializer.toJson<int?>(deviceType),
+      'fingerprint': serializer.toJson<String>(fingerprint),
+      'port': serializer.toJson<int?>(port),
+      'ip': serializer.toJson<String?>(ip),
+      'insertOrUpdateTime': serializer.toJson<DateTime>(insertOrUpdateTime),
+    };
+  }
+
+  PersistenceDevice copyWith(
+          {String? alias,
+          Value<String?> deviceModel = const Value.absent(),
+          Value<int?> deviceType = const Value.absent(),
+          String? fingerprint,
+          Value<int?> port = const Value.absent(),
+          Value<String?> ip = const Value.absent(),
+          DateTime? insertOrUpdateTime}) =>
+      PersistenceDevice(
+        alias: alias ?? this.alias,
+        deviceModel: deviceModel.present ? deviceModel.value : this.deviceModel,
+        deviceType: deviceType.present ? deviceType.value : this.deviceType,
+        fingerprint: fingerprint ?? this.fingerprint,
+        port: port.present ? port.value : this.port,
+        ip: ip.present ? ip.value : this.ip,
+        insertOrUpdateTime: insertOrUpdateTime ?? this.insertOrUpdateTime,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('PersistenceDevice(')
+          ..write('alias: $alias, ')
+          ..write('deviceModel: $deviceModel, ')
+          ..write('deviceType: $deviceType, ')
+          ..write('fingerprint: $fingerprint, ')
+          ..write('port: $port, ')
+          ..write('ip: $ip, ')
+          ..write('insertOrUpdateTime: $insertOrUpdateTime')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(alias, deviceModel, deviceType, fingerprint,
+      port, ip, insertOrUpdateTime);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PersistenceDevice &&
+          other.alias == this.alias &&
+          other.deviceModel == this.deviceModel &&
+          other.deviceType == this.deviceType &&
+          other.fingerprint == this.fingerprint &&
+          other.port == this.port &&
+          other.ip == this.ip &&
+          other.insertOrUpdateTime == this.insertOrUpdateTime);
+}
+
+class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
+  final Value<String> alias;
+  final Value<String?> deviceModel;
+  final Value<int?> deviceType;
+  final Value<String> fingerprint;
+  final Value<int?> port;
+  final Value<String?> ip;
+  final Value<DateTime> insertOrUpdateTime;
+  final Value<int> rowid;
+  const PersistenceDevicesCompanion({
+    this.alias = const Value.absent(),
+    this.deviceModel = const Value.absent(),
+    this.deviceType = const Value.absent(),
+    this.fingerprint = const Value.absent(),
+    this.port = const Value.absent(),
+    this.ip = const Value.absent(),
+    this.insertOrUpdateTime = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PersistenceDevicesCompanion.insert({
+    required String alias,
+    this.deviceModel = const Value.absent(),
+    this.deviceType = const Value.absent(),
+    required String fingerprint,
+    this.port = const Value.absent(),
+    this.ip = const Value.absent(),
+    this.insertOrUpdateTime = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : alias = Value(alias),
+        fingerprint = Value(fingerprint);
+  static Insertable<PersistenceDevice> custom({
+    Expression<String>? alias,
+    Expression<String>? deviceModel,
+    Expression<int>? deviceType,
+    Expression<String>? fingerprint,
+    Expression<int>? port,
+    Expression<String>? ip,
+    Expression<DateTime>? insertOrUpdateTime,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (alias != null) 'alias': alias,
+      if (deviceModel != null) 'device_model': deviceModel,
+      if (deviceType != null) 'device_type': deviceType,
+      if (fingerprint != null) 'fingerprint': fingerprint,
+      if (port != null) 'port': port,
+      if (ip != null) 'ip': ip,
+      if (insertOrUpdateTime != null)
+        'insert_or_update_time': insertOrUpdateTime,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PersistenceDevicesCompanion copyWith(
+      {Value<String>? alias,
+      Value<String?>? deviceModel,
+      Value<int?>? deviceType,
+      Value<String>? fingerprint,
+      Value<int?>? port,
+      Value<String?>? ip,
+      Value<DateTime>? insertOrUpdateTime,
+      Value<int>? rowid}) {
+    return PersistenceDevicesCompanion(
+      alias: alias ?? this.alias,
+      deviceModel: deviceModel ?? this.deviceModel,
+      deviceType: deviceType ?? this.deviceType,
+      fingerprint: fingerprint ?? this.fingerprint,
+      port: port ?? this.port,
+      ip: ip ?? this.ip,
+      insertOrUpdateTime: insertOrUpdateTime ?? this.insertOrUpdateTime,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (alias.present) {
+      map['alias'] = Variable<String>(alias.value);
+    }
+    if (deviceModel.present) {
+      map['device_model'] = Variable<String>(deviceModel.value);
+    }
+    if (deviceType.present) {
+      map['device_type'] = Variable<int>(deviceType.value);
+    }
+    if (fingerprint.present) {
+      map['fingerprint'] = Variable<String>(fingerprint.value);
+    }
+    if (port.present) {
+      map['port'] = Variable<int>(port.value);
+    }
+    if (ip.present) {
+      map['ip'] = Variable<String>(ip.value);
+    }
+    if (insertOrUpdateTime.present) {
+      map['insert_or_update_time'] =
+          Variable<DateTime>(insertOrUpdateTime.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PersistenceDevicesCompanion(')
+          ..write('alias: $alias, ')
+          ..write('deviceModel: $deviceModel, ')
+          ..write('deviceType: $deviceType, ')
+          ..write('fingerprint: $fingerprint, ')
+          ..write('port: $port, ')
+          ..write('ip: $ip, ')
+          ..write('insertOrUpdateTime: $insertOrUpdateTime, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   late final $BubbleEntitiesTable bubbleEntities = $BubbleEntitiesTable(this);
   late final $TextContentsTable textContents = $TextContentsTable(this);
   late final $FileContentsTable fileContents = $FileContentsTable(this);
+  late final $PersistenceDevicesTable persistenceDevices =
+      $PersistenceDevicesTable(this);
   late final BubblesDao bubblesDao = BubblesDao(this as AppDatabase);
+  late final DevicesDao devicesDao = DevicesDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [bubbleEntities, textContents, fileContents];
+      [bubbleEntities, textContents, fileContents, persistenceDevices];
 }

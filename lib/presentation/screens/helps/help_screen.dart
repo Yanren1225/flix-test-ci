@@ -1,6 +1,7 @@
 import 'package:flix/presentation/screens/helps/about_us.dart';
 import 'package:flix/presentation/widgets/helps/QA.dart';
 import 'package:flix/presentation/widgets/settings/clickable_item.dart';
+import 'package:flix/presentation/widgets/super_title.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -37,11 +38,7 @@ class HelpScreenState extends State<HelpScreen> {
                   onTap: () async {
                     // MultiCastClientProvider.of(context).clearDevices();
                   },
-                  child: const Text('软件帮助',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 36.0,
-                          fontWeight: FontWeight.normal)),
+                  child: const SuperTitle(title: '软件帮助'),
                 )),
             Expanded(
                 child: SingleChildScrollView(

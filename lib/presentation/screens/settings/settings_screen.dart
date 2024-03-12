@@ -1,5 +1,6 @@
 import 'package:flix/domain/settings/SettingsRepo.dart';
 import 'package:flix/presentation/widgets/settings/switchable_item.dart';
+import 'package:flix/presentation/widgets/super_title.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -31,11 +32,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   onTap: () async {
                     // MultiCastClientProvider.of(context).clearDevices();
                   },
-                  child: const Text('软件配置',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 36.0,
-                          fontWeight: FontWeight.normal)),
+                  child: const SuperTitle(title: '软件配置'),
                 )),
             Expanded(
                 child: SingleChildScrollView(

@@ -18,7 +18,9 @@ class DeviceModal with DeviceModalMappable {
     required this.deviceType,
     required this.fingerprint,
     required this.port,
+    this.ip = ''
   });
+
 
   static const fromJson = DeviceModalMapper.fromJson;
 }

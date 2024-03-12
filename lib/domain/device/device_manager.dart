@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flix/domain/database/database.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/iterable_extension.dart';
@@ -27,6 +28,7 @@ class DeviceManager {
   late DeviceModal self;
 
   final deviceList = <DeviceModal>{};
+  final history = <DeviceModal>{};
   final _netAddress2DeviceInfo = <String, DeviceInfo>{};
   final _deviceId2NetAddress = <String, String>{};
 
@@ -34,10 +36,12 @@ class DeviceManager {
   var state = MultiState.idle;
 
   final deviceListChangeListeners = <OnDeviceListChanged>{};
+  final historyChangeListeners = <OnDeviceListChanged>{};
 
   void init() {
     _initDeviceId().then((value) {
       did = value;
+      _watchHistory();
       startScan();
     });
   }
@@ -94,6 +98,12 @@ class DeviceManager {
     }
   }
 
+  void notifyHistoryChanged() {
+    for (var element in historyChangeListeners) {
+      element(history);
+    }
+  }
+
   void addDeviceListChangeListener(OnDeviceListChanged onDeviceListChanged) {
     onDeviceListChanged(deviceList);
     deviceListChangeListeners.add(onDeviceListChanged);
@@ -103,12 +113,22 @@ class DeviceManager {
     deviceListChangeListeners.remove(onDeviceListChanged);
   }
 
+  void addHistoryChangeListener(OnDeviceListChanged onDeviceListChanged) {
+    onDeviceListChanged(history);
+    historyChangeListeners.add(onDeviceListChanged);
+  }
+
+  void removeHistoryChangeListener(OnDeviceListChanged onDeviceListChanged) {
+    historyChangeListeners.remove(onDeviceListChanged);
+  }
+
   void _addDevice(DeviceModal device) {
     deviceList.add(device);
     _netAddress2DeviceInfo[toNetAddress(device.ip, device.port)] =
         device.toDeviceInfo();
     _deviceId2NetAddress[device.fingerprint] =
         toNetAddress(device.ip, device.port);
+    appDatabase.devicesDao.insertDevice(device);
     notifyDeviceListChanged();
   }
 
@@ -128,6 +148,15 @@ class DeviceManager {
 
   String toNetAddress(String ip, int? port) {
     return '$ip:${port ?? MultiCastUtil.defaultPort}';
+  }
+
+  void _watchHistory() {
+    appDatabase.devicesDao.watchDevices().listen((event) {
+      history.clear();
+      event.removeWhere((element) => deviceList.contains(element));
+      history.addAll(event);
+      notifyHistoryChanged();
+    });
   }
 }
 

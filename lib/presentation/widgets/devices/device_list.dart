@@ -30,17 +30,15 @@ class DeviceList extends StatelessWidget {
               onDeviceSelected(deviceInfo);
             },
             child: Padding(
-              padding: const EdgeInsets.only(
-                  bottom: 10, left: 16, right: 16),
+              padding: const EdgeInsets.only(bottom: 10, left: 16, right: 16),
               child: DeviceItem(Key(devices[index].id), deviceInfo),
             ),
           );
         }),
         Visibility(
-          visible: showHistory,
+          visible: showHistory && history.isNotEmpty,
           child: Padding(
-            padding: EdgeInsets.only(
-                left: 16, right: 16, top: 20, bottom: 6),
+            padding: EdgeInsets.only(left: 16, right: 16, top: 20, bottom: 6),
             child: InkWell(
               onTap: () {
                 MultiCastClientProvider.of(context).clearDevices();
@@ -55,7 +53,7 @@ class DeviceList extends StatelessWidget {
             ),
           ),
         ),
-        ...List.generate(showHistory ? 0 : history.length, (index) {
+        ...List.generate(showHistory ? history.length : 0, (index) {
           var historyItemInfo = history[index];
           return HistoryItem(historyItemInfo: historyItemInfo);
         })

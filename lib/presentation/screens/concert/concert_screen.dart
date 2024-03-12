@@ -13,6 +13,7 @@ import 'package:flix/presentation/widgets/blur_appbar.dart';
 import 'package:flix/presentation/widgets/bubbles/bubble_widget.dart';
 import 'package:flix/presentation/widgets/pick_actions.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -24,12 +25,14 @@ class ConcertScreen extends StatelessWidget {
   final DeviceInfo deviceInfo;
   final String? anchor;
   final bool showBackButton;
+  final bool playable;
 
   const ConcertScreen(
       {super.key,
       required this.deviceInfo,
       this.anchor = null,
-      required this.showBackButton});
+      required this.showBackButton,
+      this.playable = true});
 
   @override
   Widget build(BuildContext context) {
@@ -37,19 +40,31 @@ class ConcertScreen extends StatelessWidget {
         key: Key(deviceInfo.id),
         create: (BuildContext context) {
           return ConcertProvider(deviceInfo: deviceInfo);
-        }, child: NavigationScaffold(showBackButton: showBackButton, title: deviceInfo.name, builder: (padding) {
-      return ShareConcertMainView(
-          padding: padding, anchor: anchor,);
-    },));
+        },
+        child: NavigationScaffold(
+          showBackButton: showBackButton,
+          title: deviceInfo.name,
+          builder: (padding) {
+            return ShareConcertMainView(
+              padding: padding,
+              anchor: anchor,
+              playable: playable,
+            );
+          },
+        ));
   }
 }
 
 class ShareConcertMainView extends StatefulWidget {
   final EdgeInsets padding;
   final String? anchor;
+  final bool playable;
 
   const ShareConcertMainView(
-      {super.key, required this.padding, required this.anchor});
+      {super.key,
+      required this.padding,
+      required this.anchor,
+      required this.playable});
 
   @override
   State<StatefulWidget> createState() {
@@ -83,21 +98,29 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
     return Stack(
       fit: StackFit.loose,
       children: [
-        BubbleList(scrollController: _scrollController, padding: padding, items: items, reverse: true, shrinkWrap: true,),
-        Align(
-          alignment: Alignment.bottomLeft,
-          child: InputArea(
-            // onSubmit: (content) => submit(content),
-            onSubmit: (shareable, type) {
-              submit(concertProvider, shareable, type);
-            },
+        BubbleList(
+          scrollController: _scrollController,
+          padding: padding,
+          items: items,
+          reverse: true,
+          shrinkWrap: true,
+        ),
+        Visibility(
+          visible: widget.playable,
+          child: Align(
+            alignment: Alignment.bottomLeft,
+            child: InputArea(
+              // onSubmit: (content) => submit(content),
+              onSubmit: (shareable, type) {
+                submit(concertProvider, shareable, type);
+              },
+            ),
           ),
         ),
       ],
     );
   }
 }
-
 
 class InputArea extends StatefulWidget {
   final OnSubmit onSubmit;

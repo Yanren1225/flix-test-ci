@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flix/domain/database/dao/bubbles_dao.dart';
+import 'package:flix/domain/database/dao/devices_dao.dart';
 import 'package:flix/model/database/bubble_entity.dart';
+import 'package:flix/model/database/device/persistence_devices.dart';
 import 'package:flix/model/database/file_content.dart';
 import 'package:flix/model/database/text_content.dart';
 import 'package:drift/drift.dart';
@@ -18,7 +20,7 @@ import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 part 'database.g.dart'; // the generated code will be there
 
 
-@DriftDatabase(tables: [BubbleEntities, TextContents, FileContents], daos: [BubblesDao])
+@DriftDatabase(tables: [BubbleEntities, TextContents, FileContents, PersistenceDevices], daos: [BubblesDao, DevicesDao])
 class AppDatabase extends _$AppDatabase {
 
   AppDatabase(): super(_openConnection());

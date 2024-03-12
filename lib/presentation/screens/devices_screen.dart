@@ -1,6 +1,7 @@
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/widgets/devices/device_list.dart';
+import 'package:flix/presentation/widgets/super_title.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/notification_utils.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,8 @@ class _DeviceScreenState extends State<DeviceScreen> {
     final deviceProvider = MultiCastClientProvider.of(context, listen: true);
     final devices =
         deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
-    final history = <DeviceInfo>[];
+    final history =
+    deviceProvider.history.map((d) => d.toDeviceInfo()).toList();
     return Container(
       decoration:
           const BoxDecoration(color: Color.fromARGB(255, 247, 247, 247)),
@@ -54,11 +56,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
                       onTap: () async {
                         MultiCastClientProvider.of(context).startScan();
                       },
-                      child: const Text('附近设备',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 36.0,
-                              fontWeight: FontWeight.normal)),
+                      child: const SuperTitle(title: '附近设备', ),
                     )),
                 Expanded(
                     child: DeviceList(devices: devices, onDeviceSelected: widget.onDeviceSelected, showHistory: true, history: history))
@@ -73,6 +71,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
 
 
 
+
 class HistoryItem extends StatelessWidget {
   final DeviceInfo historyItemInfo;
 
@@ -81,39 +80,47 @@ class HistoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 10, top: 10, bottom: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                'assets/images/history.svg',
-                width: 20,
-                height: 20,
-              ),
-              const SizedBox(
-                width: 6,
-              ),
-              Text(historyItemInfo.name,
-                  style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500))
-            ],
-          ),
-          const SizedBox(
-            width: 16,
-          ),
-          SvgPicture.asset(
-            'assets/images/arrow_right.svg',
-            width: 20,
-            height: 20,
-          ),
-        ],
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ConcertScreen(
+                  deviceInfo: historyItemInfo, showBackButton: true, playable: false,
+                )));
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(left: 20, right: 10, top: 10, bottom: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  'assets/images/history.svg',
+                  width: 20,
+                  height: 20,
+                ),
+                const SizedBox(
+                  width: 6,
+                ),
+                Text(historyItemInfo.name,
+                    style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500))
+              ],
+            ),
+            const SizedBox(
+              width: 16,
+            ),
+            SvgPicture.asset(
+              'assets/images/arrow_right.svg',
+              width: 20,
+              height: 20,
+            ),
+          ],
+        ),
       ),
     );
   }
