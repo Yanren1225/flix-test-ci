@@ -226,30 +226,53 @@ class InputAreaState extends State<InputArea> {
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10)),
-                          child: TextField(
-                            controller: textEditController,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal),
-                            keyboardType: TextInputType.multiline,
-                            maxLines: null,
-                            decoration: InputDecoration(
-                                hintText: 'Input something.',
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  gapPadding: 0,
-                                  borderRadius: BorderRadius.circular(10.0),
+                          child: Shortcuts(
+                            shortcuts: {
+                              LogicalKeySet(LogicalKeyboardKey.control,
+                                      LogicalKeyboardKey.enter):
+                                  const BreakLineIntent(),
+                              LogicalKeySet(LogicalKeyboardKey.enter):
+                                  const SubmitIntent()
+                            },
+                            child: Actions(
+                              actions: <Type, Action<Intent>> {
+                                BreakLineIntent: CallbackAction<BreakLineIntent>(
+                                  onInvoke: (intent) {
+                                    textEditController.text += '\n';
+                                  },
                                 ),
-                                contentPadding: const EdgeInsets.only(
-                                    left: 12, right: 12, top: 8, bottom: 8)),
-                            cursorColor: Colors.black,
-                            onChanged: (value) {
-                              input(value);
-                            },
-                            onSubmitted: (value) {
-                              trySubmitText(value);
-                            },
+                                SubmitIntent: CallbackAction<SubmitIntent>(
+                                  onInvoke: (intent) {
+                                    trySubmitText(inputContent);
+                                  },
+                                ),
+                              },
+                              child: TextField(
+                                controller: textEditController,
+                                style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal),
+                                keyboardType: TextInputType.multiline,
+                                maxLines: null,
+                                decoration: InputDecoration(
+                                    hintText: 'Input something.',
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      gapPadding: 0,
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    contentPadding: const EdgeInsets.only(
+                                        left: 12, right: 12, top: 8, bottom: 8)),
+                                cursorColor: Colors.black,
+                                onChanged: (value) {
+                                  input(value);
+                                },
+                                onSubmitted: (value) {
+                                  trySubmitText(value);
+                                },
+                              ),
+                            ),
                           ),
                         ),
                       )),
@@ -298,3 +321,11 @@ class InputAreaState extends State<InputArea> {
 }
 
 typedef OnSubmit = void Function(Shareable shareable, BubbleType type);
+
+class BreakLineIntent extends Intent {
+  const BreakLineIntent();
+}
+
+class SubmitIntent extends Intent {
+  const SubmitIntent();
+}
