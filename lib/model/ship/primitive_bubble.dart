@@ -152,8 +152,9 @@ class FileTransfer {
   late double progress;
   late FileState state;
   late FileMeta meta;
+  bool waitingForAccept = true;
 
-  FileTransfer({this.state = FileState.unknown, this.progress = 0.0, required this.meta });
+  FileTransfer({this.state = FileState.unknown, this.progress = 0.0, required this.meta, this.waitingForAccept = true });
 
   FileTransfer.fromJson(Map<String, dynamic> json) {
     state = FileState.values[json['state'] as int];
@@ -165,8 +166,8 @@ class FileTransfer {
     return {'state': state.index, 'progress': progress, 'meta': meta.toJson()};
   }
 
-  FileTransfer copy({FileState? state, double? progress, FileMeta? meta}) {
-    return FileTransfer(state: state ?? this.state, progress : progress ?? this.progress, meta: meta ?? this.meta);
+  FileTransfer copy({FileState? state, double? progress, FileMeta? meta, bool? waitingForAccept}) {
+    return FileTransfer(state: state ?? this.state, progress : progress ?? this.progress, meta: meta ?? this.meta, waitingForAccept: waitingForAccept ?? this.waitingForAccept);
   }
 
   @override

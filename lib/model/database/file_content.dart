@@ -11,6 +11,7 @@ class FileContents extends Table {
   RealColumn get progress => real()();
   IntColumn get width => integer()();
   IntColumn get height => integer()();
+  BoolColumn get waitingForAccept => boolean().withDefault(const Constant(true))();
 
   @override
   Set<Column> get primaryKey => {id};

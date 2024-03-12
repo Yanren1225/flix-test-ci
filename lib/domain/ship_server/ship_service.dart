@@ -62,13 +62,11 @@ class ShipService {
       final before = await _bubblePool.findLastById(bubble.id);
       if (before is PrimitiveFileBubble) {
         // 如果是重新发送，判断是否已经接收，已经接受直接确认接受，否则继续等待接受。
-        // TODO 逻辑有漏洞：如果未接收时，发送方取消发送，状态变为cancel, cancel > waitToAccepted。
-        // TODO 预期：需要接收方同意，实际：直接接收
-        if (before.content.state.index > FileState.waitToAccepted.index) {
+        if (!before.content.waitingForAccept) {
           await _bubblePool.add(bubble);
           await confirmReceiveFile(bubble.from, bubble.id);
         } else {
-          await _bubblePool.add(bubble);
+          await _bubblePool.add(bubble.copy(content: bubble.content.copy(state: FileState.waitToAccepted)));
         }
       } else {
         await _bubblePool.add(bubble);
@@ -99,6 +97,9 @@ class ShipService {
               if (_bubble is! PrimitiveFileBubble) {
                 throw StateError(
                     'Primitive Bubble should be PrimitiveFileBubble');
+              }
+              if (_bubble.content.waitingForAccept) {
+                throw StateError('Bubble should be accept');
               }
               bubble = _bubble;
               checkCancel(bubble.id);
@@ -292,8 +293,8 @@ class ShipService {
   }
 
   Future<PrimitiveBubble> _updateFileShareState(
-      String bubbleId, FileState state,
-      [PrimitiveFileBubble? create = null]) async {
+    String bubbleId, FileState state,
+  {PrimitiveFileBubble? create = null, bool? waitingForAccept = null}) async {
     var _bubble = await _bubblePool.findLastById(bubbleId);
     if (_bubble == null) {
       if (create != null) {
@@ -307,8 +308,12 @@ class ShipService {
       throw StateError('The Bubble with id: $bubbleId is not a file bubble');
     }
 
-    final copyBubble =
-        _bubble.copy(content: _bubble.content.copy(state: state));
+    final copyBubble;
+    if (waitingForAccept == null) {
+      copyBubble = _bubble.copy(content: _bubble.content.copy(state: state));
+    } else {
+      copyBubble = _bubble.copy(content: _bubble.content.copy(state: state, waitingForAccept: waitingForAccept));
+    }
     await _bubblePool.add(copyBubble);
     return copyBubble;
   }
@@ -327,13 +332,13 @@ class ShipService {
   Future<void> cancel(UIBubble uiBubble) async {
     // tasks[bubbleId]?.cancel();
     final bubble = fromUIBubble(uiBubble) as PrimitiveFileBubble;
-    await _updateFileShareState(bubble.id, FileState.cancelled, bubble);
+    await _updateFileShareState(bubble.id, FileState.cancelled, create: bubble);
     await sendCancelMessage(bubble.id, bubble.to);
   }
 
   Future<void> resend(UIBubble uiBubble) async {
     final bubble = fromUIBubble(uiBubble) as PrimitiveFileBubble;
-    await _updateFileShareState(bubble.id, FileState.waitToAccepted, bubble);
+    await _updateFileShareState(bubble.id, FileState.waitToAccepted, create: bubble);
     await _send(bubble.copy(
         content: bubble.content.copy(state: FileState.waitToAccepted)));
   }
@@ -341,7 +346,7 @@ class ShipService {
   Future<void> confirmReceiveFile(String from, String bubbleId) async {
     try {
       // 更新接收方状态为接收中
-      await _updateFileShareState(bubbleId, FileState.inTransit);
+      await _updateFileShareState(bubbleId, FileState.inTransit, waitingForAccept: false);
       var uri = Uri.parse(intentUrl(from));
 
       var response = await http.post(

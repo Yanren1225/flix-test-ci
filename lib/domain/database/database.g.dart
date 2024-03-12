@@ -505,6 +505,16 @@ class $FileContentsTable extends FileContents
   late final GeneratedColumn<int> height = GeneratedColumn<int>(
       'height', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _waitingForAcceptMeta =
+      const VerificationMeta('waitingForAccept');
+  @override
+  late final GeneratedColumn<bool> waitingForAccept = GeneratedColumn<bool>(
+      'waiting_for_accept', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("waiting_for_accept" IN (0, 1))'),
+      defaultValue: const Constant(true));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -516,7 +526,8 @@ class $FileContentsTable extends FileContents
         state,
         progress,
         width,
-        height
+        height,
+        waitingForAccept
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -587,6 +598,12 @@ class $FileContentsTable extends FileContents
     } else if (isInserting) {
       context.missing(_heightMeta);
     }
+    if (data.containsKey('waiting_for_accept')) {
+      context.handle(
+          _waitingForAcceptMeta,
+          waitingForAccept.isAcceptableOrUnknown(
+              data['waiting_for_accept']!, _waitingForAcceptMeta));
+    }
     return context;
   }
 
@@ -616,6 +633,8 @@ class $FileContentsTable extends FileContents
           .read(DriftSqlType.int, data['${effectivePrefix}width'])!,
       height: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}height'])!,
+      waitingForAccept: attachedDatabase.typeMapping.read(
+          DriftSqlType.bool, data['${effectivePrefix}waiting_for_accept'])!,
     );
   }
 
@@ -636,6 +655,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
   final double progress;
   final int width;
   final int height;
+  final bool waitingForAccept;
   const FileContent(
       {required this.id,
       required this.name,
@@ -646,7 +666,8 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       required this.state,
       required this.progress,
       required this.width,
-      required this.height});
+      required this.height,
+      required this.waitingForAccept});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -662,6 +683,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
     map['progress'] = Variable<double>(progress);
     map['width'] = Variable<int>(width);
     map['height'] = Variable<int>(height);
+    map['waiting_for_accept'] = Variable<bool>(waitingForAccept);
     return map;
   }
 
@@ -677,6 +699,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       progress: Value(progress),
       width: Value(width),
       height: Value(height),
+      waitingForAccept: Value(waitingForAccept),
     );
   }
 
@@ -694,6 +717,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       progress: serializer.fromJson<double>(json['progress']),
       width: serializer.fromJson<int>(json['width']),
       height: serializer.fromJson<int>(json['height']),
+      waitingForAccept: serializer.fromJson<bool>(json['waitingForAccept']),
     );
   }
   @override
@@ -710,6 +734,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       'progress': serializer.toJson<double>(progress),
       'width': serializer.toJson<int>(width),
       'height': serializer.toJson<int>(height),
+      'waitingForAccept': serializer.toJson<bool>(waitingForAccept),
     };
   }
 
@@ -723,7 +748,8 @@ class FileContent extends DataClass implements Insertable<FileContent> {
           int? state,
           double? progress,
           int? width,
-          int? height}) =>
+          int? height,
+          bool? waitingForAccept}) =>
       FileContent(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -735,6 +761,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
         progress: progress ?? this.progress,
         width: width ?? this.width,
         height: height ?? this.height,
+        waitingForAccept: waitingForAccept ?? this.waitingForAccept,
       );
   @override
   String toString() {
@@ -748,14 +775,15 @@ class FileContent extends DataClass implements Insertable<FileContent> {
           ..write('state: $state, ')
           ..write('progress: $progress, ')
           ..write('width: $width, ')
-          ..write('height: $height')
+          ..write('height: $height, ')
+          ..write('waitingForAccept: $waitingForAccept')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(id, name, mimeType, nameWithSuffix, size,
-      path, state, progress, width, height);
+      path, state, progress, width, height, waitingForAccept);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -769,7 +797,8 @@ class FileContent extends DataClass implements Insertable<FileContent> {
           other.state == this.state &&
           other.progress == this.progress &&
           other.width == this.width &&
-          other.height == this.height);
+          other.height == this.height &&
+          other.waitingForAccept == this.waitingForAccept);
 }
 
 class FileContentsCompanion extends UpdateCompanion<FileContent> {
@@ -783,6 +812,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
   final Value<double> progress;
   final Value<int> width;
   final Value<int> height;
+  final Value<bool> waitingForAccept;
   final Value<int> rowid;
   const FileContentsCompanion({
     this.id = const Value.absent(),
@@ -795,6 +825,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     this.progress = const Value.absent(),
     this.width = const Value.absent(),
     this.height = const Value.absent(),
+    this.waitingForAccept = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   FileContentsCompanion.insert({
@@ -808,6 +839,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     required double progress,
     required int width,
     required int height,
+    this.waitingForAccept = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         name = Value(name),
@@ -829,6 +861,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     Expression<double>? progress,
     Expression<int>? width,
     Expression<int>? height,
+    Expression<bool>? waitingForAccept,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -842,6 +875,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
       if (progress != null) 'progress': progress,
       if (width != null) 'width': width,
       if (height != null) 'height': height,
+      if (waitingForAccept != null) 'waiting_for_accept': waitingForAccept,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -857,6 +891,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
       Value<double>? progress,
       Value<int>? width,
       Value<int>? height,
+      Value<bool>? waitingForAccept,
       Value<int>? rowid}) {
     return FileContentsCompanion(
       id: id ?? this.id,
@@ -869,6 +904,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
       progress: progress ?? this.progress,
       width: width ?? this.width,
       height: height ?? this.height,
+      waitingForAccept: waitingForAccept ?? this.waitingForAccept,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -906,6 +942,9 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     if (height.present) {
       map['height'] = Variable<int>(height.value);
     }
+    if (waitingForAccept.present) {
+      map['waiting_for_accept'] = Variable<bool>(waitingForAccept.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -925,6 +964,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
           ..write('progress: $progress, ')
           ..write('width: $width, ')
           ..write('height: $height, ')
+          ..write('waitingForAccept: $waitingForAccept, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
