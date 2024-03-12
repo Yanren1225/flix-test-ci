@@ -5,11 +5,11 @@ part 'reception_notification.mapper.dart';
 
 
 @MappableClass()
-class ReceptionNotification with ReceptionNotificationMappable {
+class MessageNotification with MessageNotificationMappable {
   final String from;
   final String bubbleId;
 
-  ReceptionNotification({required this.from, required this.bubbleId});
+  MessageNotification({required this.from, required this.bubbleId});
 
-  static const fromJson = ReceptionNotificationMapper.fromJson;
+  static const fromJson = MessageNotificationMapper.fromJson;
 }
