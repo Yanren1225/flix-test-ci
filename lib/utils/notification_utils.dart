@@ -19,22 +19,24 @@ Future<bool> isAndroidNotificationPermissionGranted() async {
 Future<bool> requestNotificationPermissions() async {
   if (Platform.isIOS) {
     return await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        ) ?? false;
+            .resolvePlatformSpecificImplementation<
+                IOSFlutterLocalNotificationsPlugin>()
+            ?.requestPermissions(
+              alert: true,
+              badge: true,
+              sound: true,
+            ) ??
+        false;
   } else if (Platform.isMacOS) {
     return await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            MacOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        ) ?? false;
+            .resolvePlatformSpecificImplementation<
+                MacOSFlutterLocalNotificationsPlugin>()
+            ?.requestPermissions(
+              alert: true,
+              badge: true,
+              sound: true,
+            ) ??
+        false;
   } else if (Platform.isAndroid) {
     final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
         flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
@@ -51,9 +53,9 @@ Future<bool> requestNotificationPermissions() async {
 Future<void> createNotificationChannel() async {
   const AndroidNotificationChannel androidNotificationChannel =
       AndroidNotificationChannel(
-    'reception',
-    'reception',
-    description: '通知新的文件',
+    'message',
+    'message',
+    description: '消息通知',
   );
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
@@ -61,16 +63,45 @@ Future<void> createNotificationChannel() async {
       ?.createNotificationChannel(androidNotificationChannel);
 }
 
-Future<void> showNotification(String deviceName, ReceptionNotification notification) async {
-  const AndroidNotificationDetails androidNotificationDetails =
+Future<void> showTextNotification(
+    String deviceName, String text, MessageNotification notification) async {
+  AndroidNotificationDetails androidNotificationDetails =
+      AndroidNotificationDetails('message', 'message',
+          channelDescription: '消息通知',
+          importance: Importance.max,
+          priority: Priority.high,
+          ticker: 'ticker',
+          autoCancel: true,
+          tag: notification.from);
+  NotificationDetails notificationDetails =
+      NotificationDetails(android: androidNotificationDetails);
+  await flutterLocalNotificationsPlugin.show(
+      id++, deviceName, text, notificationDetails,
+      payload: notification.toJson());
+}
+
+Future<void> showFileNotification(
+    String deviceName, MessageNotification notification) async {
+  AndroidNotificationDetails androidNotificationDetails =
       AndroidNotificationDetails('reception', 'reception',
           channelDescription: '通知新的文件',
           importance: Importance.max,
           priority: Priority.high,
-          ticker: 'ticker');
-  const NotificationDetails notificationDetails =
+          ticker: 'ticker',
+          autoCancel: true,
+          tag: notification.from);
+  NotificationDetails notificationDetails =
       NotificationDetails(android: androidNotificationDetails);
   await flutterLocalNotificationsPlugin.show(
       id++, '接收到一个新的文件', '来自$deviceName', notificationDetails,
       payload: notification.toJson());
+}
+
+Future<List<ActiveNotification>> getNotifications() async {
+  try {
+    return (await flutterLocalNotificationsPlugin
+        .getActiveNotifications());
+  } on UnimplementedError catch (e) {
+    return <ActiveNotification>[];
+  }
 }

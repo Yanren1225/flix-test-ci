@@ -34,7 +34,7 @@ import 'package:flutter_ume_kit_ui/flutter_ume_kit_ui.dart'; // UI kits
 int id = 1;
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
-final receptionNotificationStream = StreamController<ReceptionNotification>();
+final receptionNotificationStream = StreamController<MessageNotification>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -100,7 +100,7 @@ Future<void> _initNotification() async {
     switch (details.notificationResponseType) {
       case NotificationResponseType.selectedNotification:
         final receptionNotification =
-            ReceptionNotification.fromJson(details.payload!);
+            MessageNotification.fromJson(details.payload!);
         receptionNotificationStream.add(receptionNotification);
         break;
       case NotificationResponseType.selectedNotificationAction:
