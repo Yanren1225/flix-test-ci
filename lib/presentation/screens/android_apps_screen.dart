@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:ffi';
 
 import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/app_icon.dart';
 import 'package:flix/presentation/widgets/check_state_box.dart';
 import 'package:flix/utils/app/apk_utils.dart';
@@ -103,7 +104,7 @@ class AppsScreenState extends State<AppsScreen> {
   void initState() {
     super.initState();
     getInstalledApps().then((apps) {
-      log('loaded apps size: ${apps.length}');
+      talker.verbose('loaded apps size: ${apps.length}');
       setState(() {
         this.apps = apps;
       });

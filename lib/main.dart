@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/model/device_info.dart';
@@ -30,6 +31,8 @@ import 'package:share_handler/share_handler.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_ume/flutter_ume.dart'; // UME framework
 import 'package:flutter_ume_kit_ui/flutter_ume_kit_ui.dart'; // UI kits
+import 'package:flutter_ume_kit_console/flutter_ume_kit_console.dart'; // Show debugPrint
+
 
 int id = 1;
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -69,7 +72,8 @@ Future<void> main() async {
       ..register(const ColorSucker())
       ..register(AlignRuler())
       // ..register(const ColorPicker())                            // New feature
-      ..register(const TouchIndicator()); // Pass in your Dio instance
+      ..register(const TouchIndicator())
+      ..register(Console()); // Pass in your Dio instance
     // After flutter_ume 0.3.0
     runApp(const UMEWidget(child: const MyApp(), enable: true));
   } else {
@@ -104,7 +108,7 @@ Future<void> _initNotification() async {
         receptionNotificationStream.add(receptionNotification);
         break;
       case NotificationResponseType.selectedNotificationAction:
-        log('selectedNotificationAction, actionId: ${details.actionId}');
+        talker.verbose('selectedNotificationAction, actionId: ${details.actionId}');
         break;
     }
   });
@@ -197,11 +201,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _tryGoPickDeviceScreen(SharedMedia? sharedMedia) {
     if (sharedMedia == null) {
-      log('shareMedia is null');
+      talker.error('shareMedia is null');
       return;
     }
     if (!context.mounted) {
-      log('context has unmounted');
+      talker.warning('context has unmounted');
       return;
     }
 
@@ -213,7 +217,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ModalRoute.withName('/'))
         .then((deviceInfo) {
       if (deviceInfo == null) {
-        log('取消分享，未选择设备');
+        talker.warning('取消分享，未选择设备');
       } else {
         setSelectedDevice(deviceInfo);
       }
@@ -240,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }));
         }
       } else {
-        log('can\'t find device by id: ${receptionNotification.from}');
+        talker.error('can\'t find device by id: ${receptionNotification.from}');
       }
     });
   }

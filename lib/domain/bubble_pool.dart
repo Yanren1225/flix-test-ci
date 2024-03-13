@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flix/domain/database/database.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/database/bubble_entity.dart';
 import 'package:flix/model/database/text_content.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
@@ -23,14 +24,14 @@ class BubblePool {
 
 
   Future<void> add(PrimitiveBubble bubble) async {
-    log('add bubble $bubble');
+    talker.debug('add bubble $bubble');
     try {
       _cache[bubble.id] = bubble;
       _buffer = bubble;
       _broadcast.add(bubble);
       await appDatabase.bubblesDao.insert(bubble);
     } catch (e) {
-      log('failed to insert bubble into database: $e');
+      talker.error('failed to insert bubble into database', e);
     }
 
   }

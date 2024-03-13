@@ -3,12 +3,12 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/setting/setting_provider.dart';
 import 'package:flix/utils/device_info_helper.dart';
-import 'package:flix/utils/logger.dart';
 import 'package:flix/utils/sleep.dart';
 import 'package:flutter/services.dart';
 
@@ -38,12 +38,11 @@ class MultiCastUtil {
         // 不允许接收自己发送的消息
         socket.multicastLoopback = false;
         sockets.add(SocketResult(interface, socket));
-        Logger.log('$socket $interface');
+        talker.debug('$socket $interface');
       } catch (e) {
-        Logger.logException(
-          'Could not bind UDP multicast port (ip: ${interface.addresses.map((a) => a.address).toList()}, group: $multicastGroup, port: $port)',
-          e,
-        );
+        talker.error(
+            'Could not bind UDP multicast port (ip: ${interface.addresses.map((a) => a.address).toList()}, group: $multicastGroup, port: $port)',
+            e);
       }
     }
     return sockets;
@@ -77,22 +76,22 @@ class MultiCastUtil {
                 return;
               }
               var data = jsonDecode(utf8.decode(datagram.data));
-              Logger.log('receive data:$data');
+              talker.debug('receive data:$data');
               _receiveMessage(
                   datagram.address.address, data, deviceScanCallback);
               break;
             case RawSocketEvent.write:
-              Logger.log('===RawSocketEvent.write===');
+              talker.debug('===RawSocketEvent.write===');
               break;
             case RawSocketEvent.readClosed:
-              Logger.log('===RawSocketEvent.readClosed===');
+              talker.debug('===RawSocketEvent.readClosed===');
               break;
             case RawSocketEvent.closed:
-              Logger.log('===RawSocketEvent.close===');
+              talker.debug('===RawSocketEvent.close===');
               break;
           }
         }, onError: (e) {
-          Logger.log('[multicast] multicast error: $e');
+          talker.error('[multicast] multicast error', e);
         });
       }
     }
@@ -190,21 +189,21 @@ class MultiCastUtil {
 
   static Future aquireMulticastLock() async {
     if (Platform.isAndroid) {
-      log("locking multicast lock");
+      talker.verbose("locking multicast lock");
       MULTICAST_LOCK_CHANNEL.invokeMethod('aquire');
     }
   }
 
   static Future releaseMulticastLock() async {
     if (Platform.isAndroid) {
-      log("releasing multicast lock");
+      talker.verbose("releasing multicast lock");
       MULTICAST_LOCK_CHANNEL.invokeMethod('release');
     }
   }
 
   static bool isFromSelf(String from) {
     if (from == DeviceManager.instance.did) {
-      log('receive self datagram');
+      talker.verbose('receive self datagram');
       return true;
     }
     return false;
@@ -216,12 +215,12 @@ class MultiCastUtil {
       try {
         if (call.method == "receiveMulticastMessage") {
           final args = call.arguments as Map;
-          await onReceiveMessageOnIOS(args["fromIp"] as String, jsonDecode(args["message"] as String), deviceScanCallback);
+          await onReceiveMessageOnIOS(args["fromIp"] as String,
+              jsonDecode(args["message"] as String), deviceScanCallback);
         }
       } catch (e) {
-        Logger.log('receive message on iOS failed: $e');
+        talker.debug('receive message on iOS failed', e);
       }
-
     });
 
     // await MULTICAST_IOS_CHANNEL

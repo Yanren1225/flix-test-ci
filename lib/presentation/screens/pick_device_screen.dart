@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/androp_context.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
@@ -75,7 +76,7 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
         }));
       }
     } else {
-      log('无法跳转会话页，选择设备页面已销毁');
+      talker.error('无法跳转会话页，选择设备页面已销毁');
     }
   }
 
@@ -106,7 +107,7 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
           shareable: SharedText(
               id: const Uuid().v4(), content: widget.sharedMedia.content!)));
     } else {
-      log('无法创建UIBubble，分享内容为空');
+      talker.error('无法创建UIBubble，分享内容为空');
     }
 
     return bubbles;

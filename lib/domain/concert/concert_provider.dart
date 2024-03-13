@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,7 @@ class ConcertProvider extends ChangeNotifier {
   void _logLastProgress() {
     final last = this.bubbles.lastOrNull;
     if (last != null && last.shareable is SharedFile) {
-      dev.log('progress: ${(last.shareable as SharedFile).progress}');
+      talker.verbose('progress: ${(last.shareable as SharedFile).progress}');
     }
   }
 

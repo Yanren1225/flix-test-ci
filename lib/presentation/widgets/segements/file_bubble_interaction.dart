@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:downloadsfolder/downloadsfolder.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -22,10 +23,10 @@ class FileBubbleInteraction extends StatelessWidget {
           _openDir();
         },
         onTap: () {
-          log('filePath: $filePath');
+          talker.verbose('filePath: $filePath');
           OpenFilex.open(filePath).then((value) {
             if (value.type != ResultType.done) {
-              log('Failed open file: $filePath, result: $value');
+              talker.error('Failed open file: $filePath, result: $value');
               _openDir();
             }
           });

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flix/domain/database/database.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/iterable_extension.dart';
@@ -11,7 +12,6 @@ import '../../network/multicast_client_provider.dart';
 import '../../network/multicast_impl.dart';
 import '../../network/multicast_util.dart';
 import '../../network/protocol/device_modal.dart';
-import '../../utils/logger.dart';
 
 class DeviceManager {
   DeviceManager._privateConstructor() {}
@@ -69,7 +69,7 @@ class DeviceManager {
       if (!isConnect) {
         _addDevice(deviceModal);
       }
-      Logger.log("event data:$deviceModal  deviceList = $deviceList");
+      talker.debug("event data:$deviceModal  deviceList = $deviceList");
       notifyDeviceListChanged();
     });
     unawaited(multiCastApi.ping());

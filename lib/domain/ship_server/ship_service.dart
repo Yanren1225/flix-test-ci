@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/SettingsRepo.dart';
 import 'package:flix/model/intent/trans_intent.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
@@ -47,7 +48,7 @@ class ShipService {
 
     var server = await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort);
 
-    log('Servering at http://0.0.0.0:${MultiCastUtil.defaultPort}');
+    talker.debug('Servering at http://0.0.0.0:${MultiCastUtil.defaultPort}');
     return server;
   }
 
@@ -55,7 +56,7 @@ class ShipService {
     var body = await request.readAsString();
     var data = jsonDecode(body) as Map<String, dynamic>;
     var bubble = PrimitiveBubble.fromJson(data);
-    if (await SettingsRepo.instance.getAutoReceiveAsync()) {
+    if (await SettingsRepo.instance.getAutoReceiveAsync() && bubble is PrimitiveFileBubble) {
       await _bubblePool.add(bubble);
       await confirmReceiveFile(bubble.from, bubble.id);
     } else if (bubble is PrimitiveFileBubble) {
@@ -113,7 +114,7 @@ class ShipService {
                 final String desDir = await getDefaultDestinationDirectory();
                 final String filePath = '$desDir/${formData.filename}';
                 final outFile = File(filePath);
-                log('writing file to ${outFile.path}');
+                talker.debug('writing file to ${outFile.path}');
                 if (!(await outFile.exists())) {
                   await outFile.create();
                 }
@@ -136,7 +137,7 @@ class ShipService {
                 // removeBubbleById(updatedBubble.id);
                 await _bubblePool.add(updatedBubble);
               } on Error catch (e) {
-                log('receive file error: $e');
+                talker.error('receive file error', e);
                 final updatedBubble = bubble.copy(
                     content: bubble.content
                         .copy(state: FileState.receiveFailed, progress: 1.0));
@@ -153,7 +154,7 @@ class ShipService {
         return Response.badRequest();
       }
     } on CancelException catch (e) {
-      log('_receiveFile canceled: $e');
+      talker.warning('_receiveFile canceled', e);
       return Response.ok('canceled');
     }
   }
@@ -184,7 +185,7 @@ class ShipService {
 
       return Response.ok('ok');
     } on Exception catch (e) {
-      log('receive intent error: $e');
+      talker.error('receive intent error', e);
       return Response.badRequest();
     }
   }
@@ -202,12 +203,12 @@ class ShipService {
       );
 
       if (response.statusCode == 200) {
-        log('发送成功: response: ${response.body}');
+        talker.debug('发送成功: response: ${response.body}');
       } else {
-        log('发送失败: status code: ${response.statusCode}, ${response.body}');
+        talker.debug('发送失败: status code: ${response.statusCode}, ${response.body}');
       }
     } on CancelException catch (e) {
-      log('取消发送: $e');
+      talker.warning('取消发送', e);
     }
   }
 
@@ -230,7 +231,7 @@ class ShipService {
           throw UnimplementedError();
       }
     } on CancelException catch (e) {
-      log('取消发送: $e');
+      talker.warning('取消发送', e);
     }
   }
 
@@ -245,9 +246,9 @@ class ShipService {
           content: _fileBubble.content
               .copy(meta: _fileBubble.content.meta.copy(path: null))));
     } on CancelException catch (e) {
-      log('取消发送: $e');
+      talker.warning('取消发送', e);
     } catch (e) {
-      log('发送异常: $e');
+      talker.error('发送异常', e);
       _updateFileShareState(fileBubble.id, FileState.sendFailed);
     }
   }
@@ -277,17 +278,17 @@ class ShipService {
         request.files.add(multipartFile);
         final response = await request.send();
         if (response.statusCode == 200) {
-          log('发送成功 ${await response.stream.bytesToString()}');
+          talker.debug('发送成功 ${await response.stream.bytesToString()}');
           _updateFileShareState(fileBubble.id, FileState.sendCompleted);
         } else {
-          log('发送失败: status code: ${response.statusCode}, ${await response.stream.bytesToString()}');
+          talker.error('发送失败: status code: ${response.statusCode}, ${await response.stream.bytesToString()}');
           _updateFileShareState(fileBubble.id, FileState.sendFailed);
         }
       });
     } on CancelException catch (e) {
-      log('发送取消: $e');
+      talker.warning('发送取消', e);
     } catch (e) {
-      log('发送异常: $e');
+      talker.error('发送异常', e);
       _updateFileShareState(fileBubble.id, FileState.sendFailed);
     }
   }
@@ -360,12 +361,12 @@ class ShipService {
       );
 
       if (response.statusCode == 200) {
-        log('发送成功: response: ${response.body}');
+        talker.debug('发送成功: response: ${response.body}');
       } else {
-        log('发送失败: status code: ${response.statusCode}, ${response.body}');
+        talker.error('发送失败: status code: ${response.statusCode}, ${response.body}');
       }
     } catch (e) {
-      log('confirmReceiveFile failed: $e');
+      talker.error('confirmReceiveFile failed', e);
     }
   }
 
@@ -385,12 +386,12 @@ class ShipService {
       );
 
       if (response.statusCode == 200) {
-        log('sendCancelMessage发送成功: response: ${response.body}');
+        talker.debug('sendCancelMessage发送成功: response: ${response.body}');
       } else {
-        log('sendCancelMessage发送失败: status code: ${response.statusCode}, ${response.body}');
+        talker.error('sendCancelMessage发送失败: status code: ${response.statusCode}, ${response.body}');
       }
     } catch (e) {
-      log('sendCancelMessage failed: $e');
+      talker.error('sendCancelMessage failed', e);
     }
   }
 }

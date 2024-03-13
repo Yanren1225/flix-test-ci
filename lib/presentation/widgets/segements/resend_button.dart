@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flix/domain/concert/concert_provider.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -32,7 +33,7 @@ class _ResendButtonState extends State<ResendButton> {
   @override
   void dispose() {
     removeModal(anchorTag);
-    log('resend button disposed: $anchorTag');
+    talker.verbose('resend button disposed: $anchorTag');
     super.dispose();
   }
 

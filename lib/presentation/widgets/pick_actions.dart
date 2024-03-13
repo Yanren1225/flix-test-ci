@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:math' hide log;
 
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/pickable.dart';
 import 'package:flix/presentation/screens/android_apps_screen.dart';
 import 'package:flix/utils/file/file_helper.dart';
@@ -104,7 +105,7 @@ class PickActionAreaState extends State<PickActionsArea> {
                 type: PickedFileType.Image, content: await f.toFileMeta(isImg: true))
         ]);
       } catch (e) {
-        log("pick images failed", error: e);
+        talker.error("pick images failed", e);
         setState(() {
           _pickFileError = e;
         });
@@ -126,10 +127,10 @@ class PickActionAreaState extends State<PickActionsArea> {
                 content: await pickedFile.toFileMeta(isVideo: true))
           ]);
         } else {
-          log("pick video failed, return null");
+          talker.error("pick video failed, return null");
         }
       } catch (e) {
-        log("pick video failed", error: e);
+        talker.error("pick video failed", e);
         setState(() {
           _pickFileError = e;
         });

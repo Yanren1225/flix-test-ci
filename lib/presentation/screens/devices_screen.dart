@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/BadgeService.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
 import 'package:flix/model/device_info.dart';
@@ -94,7 +95,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
 
   void _onBadgesChanged(Map<String, int> badges) {
     if (!context.mounted) {
-      log('context has unmounted');
+      talker.warning('context has unmounted');
       return;
     }
 

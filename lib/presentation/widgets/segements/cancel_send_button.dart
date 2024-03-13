@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flix/domain/concert/concert_provider.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -21,7 +22,7 @@ class CancelSendButtonState extends State<CancelSendButton> {
   @override
   void dispose() {
     removeModal(anchorTag);
-    log('cancel send button disposed: $anchorTag');
+    talker.debug('cancel send button disposed: $anchorTag');
     super.dispose();
   }
 

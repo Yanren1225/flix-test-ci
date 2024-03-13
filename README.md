@@ -37,7 +37,8 @@ samples, guidance on mobile development, and a full API reference.
 19. iOS上返回按钮比较难点击
 20. ~~桌面端，快捷键发送~~
 21. ~~Android导航栏白条~~
-22. 通知红点
+22. ~~通知红点~~
+23. pad端点击查看消息后，未读消息角标不会消失
 
 ## 功能
 单击消息，打开文件

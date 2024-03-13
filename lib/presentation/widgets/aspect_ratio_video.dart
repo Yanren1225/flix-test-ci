@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:video_player/video_player.dart';
@@ -48,7 +49,7 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
     controller = VideoPlayerController.file(File(widget.videoPath));
     controller!.addListener(_onVideoControllerUpdate);
     controller?.initialize().catchError((e) {
-      log('init video player error: $e');
+      talker.error('init video player error', e);
       setState(() {
         isError = true;
       });

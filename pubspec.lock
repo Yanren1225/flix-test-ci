@@ -457,6 +457,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.3+1"
+  firebase_core:
+    dependency: transitive
+    description:
+      name: firebase_core
+      sha256: "776fc0d7a0da72adfb7e486c6be05798b7f4290a8be4819cb1e6cc93077e60f2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.19.0"
+  firebase_core_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_core_platform_interface
+      sha256: "3cd70171c6bdd314d726a46706c75554b75b20b97869dbace71832615ea8ef3c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.4.1"
+  firebase_core_web:
+    dependency: transitive
+    description:
+      name: firebase_core_web
+      sha256: eed8abeec3d504df05019b6a5c781aa01f76491d51ff60579d855c4b2197f116
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.5"
+  firebase_crashlytics:
+    dependency: "direct main"
+    description:
+      name: firebase_crashlytics
+      sha256: b6752d49bef66d7ef6b8f89b03add2ed297dea2b6b985a7ac635caed1640de2b
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.8.3"
+  firebase_crashlytics_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_crashlytics_platform_interface
+      sha256: a02a0e668a09e7ac821c8f2cf40a8571fdc0a080da447ce4dcf2f4ffaeda0ba3
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.17"
   fixnum:
     dependency: transitive
     description:
@@ -531,6 +571,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.2"
+  flutter_ume_kit_console:
+    dependency: "direct dev"
+    description:
+      path: "kits/flutter_ume_kit_console"
+      ref: "73beedf0e00c4c3a3ef36899ff16846395e7c6c6"
+      resolved-ref: "73beedf0e00c4c3a3ef36899ff16846395e7c6c6"
+      url: "https://github.com/bytedance/flutter_ume"
+    source: git
+    version: "1.1.0"
   flutter_ume_kit_ui:
     dependency: "direct dev"
     description:
@@ -577,6 +626,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
+  group_button:
+    dependency: transitive
+    description:
+      name: group_button
+      sha256: "0610fcf28ed122bfb4b410fce161a390f7f2531d55d1d65c5375982001415940"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.3.4"
   hashcodes:
     dependency: transitive
     description:
@@ -1114,6 +1171,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.9"
+  share:
+    dependency: transitive
+    description:
+      name: share
+      sha256: "97e6403f564ed1051a01534c2fc919cb6e40ea55e60a18ec23cee6e0ce19f4be"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.4"
   share_handler:
     dependency: "direct main"
     description:
@@ -1146,6 +1211,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.6"
+  share_plus:
+    dependency: transitive
+    description:
+      name: share_plus
+      sha256: "3ef39599b00059db0990ca2e30fca0a29d8b37aae924d60063f8e0184cf20900"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.2.2"
+  share_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: share_plus_platform_interface
+      sha256: df08bc3a07d01f5ea47b45d03ffcba1fa9cd5370fb44b3f38c70e42cced0f956
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.3.1"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -1343,6 +1424,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  talker:
+    dependency: "direct main"
+    description:
+      name: talker
+      sha256: "4e7d69f70579bf12c39206a80b74601b014691e96efd75e4a8a3a075710b859f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.3"
+  talker_flutter:
+    dependency: "direct main"
+    description:
+      name: talker_flutter
+      sha256: a4ee3c376f5a59d172394de313bc79ee8edbb2bc1ce5c9781e0ec75a7d373740
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.3"
+  talker_logger:
+    dependency: transitive
+    description:
+      name: talker_logger
+      sha256: "795f7e434be0449a1b0deb1cc80e7f8ed44ba6083da7050ffcb734f859dddfc6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.3"
   term_glyph:
     dependency: transitive
     description:

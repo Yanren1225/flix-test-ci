@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:device_apps/device_apps.dart';
@@ -66,7 +67,7 @@ extension XFileConvert on XFile {
         size = Size(_controller.value?.size?.width?.toInt() ?? 0, _controller.value?.size?.height?.toInt() ?? 0);
         _controller.dispose();
       } catch (e) {
-        log('Failed to get size of video, path: ${this.path}', error: e);
+        talker.error('Failed to get size of video, path: ${this.path}', e);
       }
 
     }
@@ -159,7 +160,7 @@ Future<void> _deleteFilesInDir(Directory dir) async {
       try {
         entity.deleteSync();
       } catch (e) {
-        log('delete ${entity.path} failed: $e');
+        talker.error('delete ${entity.path} failed', e);
       }
     }
   });

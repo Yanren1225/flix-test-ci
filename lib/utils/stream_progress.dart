@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flix/domain/bubble_pool.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 
 extension StreamProgress on Stream<List<int>> {
@@ -19,7 +20,7 @@ extension StreamProgress on Stream<List<int>> {
           content: bubble.content
               .copy(progress: byteCount.toDouble() / bubble.content.meta.size),
         );
-        log("file transfer, byteCount: $byteCount, size: ${bubble.content.meta.size}");
+        talker.verbose("file transfer, byteCount: $byteCount, size: ${bubble.content.meta.size}");
 
         // 异步插入，减少对发送和接收的阻塞
         BubblePool.instance.add(updatedBubble);
