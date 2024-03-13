@@ -22,6 +22,7 @@ class DeviceList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
+      physics: const BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast),
       children: [
         ...List.generate(devices.length, (index) {
           var deviceInfo = devices[index];

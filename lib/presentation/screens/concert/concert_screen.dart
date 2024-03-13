@@ -207,105 +207,109 @@ class InputAreaState extends State<InputArea> {
                   top: BorderSide(
                 color: Color.fromRGBO(240, 240, 240, 1),
               ))),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                const SizedBox(
-                  width: 16,
-                ),
-                Expanded(
-                  child: ConstrainedBox(
-                      constraints:
-                          const BoxConstraints(minHeight: 40, maxHeight: 200),
-                      child: SingleChildScrollView(
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Shortcuts(
-                            shortcuts: {
-                              LogicalKeySet(LogicalKeyboardKey.control,
-                                      LogicalKeyboardKey.enter):
-                                  const BreakLineIntent(),
-                              LogicalKeySet(LogicalKeyboardKey.enter):
-                                  const SubmitIntent()
-                            },
-                            child: Actions(
-                              actions: <Type, Action<Intent>> {
-                                BreakLineIntent: CallbackAction<BreakLineIntent>(
-                                  onInvoke: (intent) {
-                                    textEditController.text += '\n';
-                                  },
-                                ),
-                                SubmitIntent: CallbackAction<SubmitIntent>(
-                                  onInvoke: (intent) {
-                                    trySubmitText(inputContent);
-                                  },
-                                ),
+          child: Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  const SizedBox(
+                    width: 16,
+                  ),
+                  Expanded(
+                    child: ConstrainedBox(
+                        constraints:
+                            const BoxConstraints(minHeight: 40, maxHeight: 200),
+                        child: SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Shortcuts(
+                              shortcuts: {
+                                LogicalKeySet(LogicalKeyboardKey.control,
+                                        LogicalKeyboardKey.enter):
+                                    const BreakLineIntent(),
+                                LogicalKeySet(LogicalKeyboardKey.enter):
+                                    const SubmitIntent()
                               },
-                              child: TextField(
-                                controller: textEditController,
-                                style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.normal),
-                                keyboardType: TextInputType.multiline,
-                                maxLines: null,
-                                decoration: InputDecoration(
-                                    hintText: 'Input something.',
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                      gapPadding: 0,
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    contentPadding: const EdgeInsets.only(
-                                        left: 12, right: 12, top: 8, bottom: 8)),
-                                cursorColor: Colors.black,
-                                onChanged: (value) {
-                                  input(value);
+                              child: Actions(
+                                actions: <Type, Action<Intent>> {
+                                  BreakLineIntent: CallbackAction<BreakLineIntent>(
+                                    onInvoke: (intent) {
+                                      textEditController.text += '\n';
+                                    },
+                                  ),
+                                  SubmitIntent: CallbackAction<SubmitIntent>(
+                                    onInvoke: (intent) {
+                                      trySubmitText(inputContent);
+                                    },
+                                  ),
                                 },
-                                onSubmitted: (value) {
-                                  trySubmitText(value);
-                                },
+                                child: TextField(
+                                  controller: textEditController,
+                                  style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal),
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                  decoration: InputDecoration(
+                                      hintText: 'Input something.',
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                        gapPadding: 0,
+                                        borderRadius: BorderRadius.circular(10.0),
+                                      ),
+                                      contentPadding: const EdgeInsets.only(
+                                          left: 12, right: 12, top: 8, bottom: 8)),
+                                  cursorColor: Colors.black,
+                                  onChanged: (value) {
+                                    input(value);
+                                  },
+                                  onSubmitted: (value) {
+                                    trySubmitText(value);
+                                  },
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                        )),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+                        trySubmitText(inputContent);
+                      },
+                      padding: const EdgeInsets.all(9.0),
+                      iconSize: 22,
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateColor.resolveWith(
+                              (states) => const Color.fromRGBO(0, 122, 255, 1)),
+                          shape: MaterialStatePropertyAll<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ))),
+                      icon: const Icon(
+                        Icons.arrow_upward_sharp,
+                        color: Colors.white,
+                        size: 22,
                       )),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                IconButton(
-                    onPressed: () {
-                      FocusScope.of(context).unfocus();
-                      trySubmitText(inputContent);
-                    },
-                    padding: const EdgeInsets.all(9.0),
-                    iconSize: 22,
-                    style: ButtonStyle(
-                        backgroundColor: MaterialStateColor.resolveWith(
-                            (states) => const Color.fromRGBO(0, 122, 255, 1)),
-                        shape: MaterialStatePropertyAll<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ))),
-                    icon: const Icon(
-                      Icons.arrow_upward_sharp,
-                      color: Colors.white,
-                      size: 22,
-                    )),
-                const SizedBox(
-                  width: 16,
-                ),
-              ],
-            ),
-            PickActionsArea(onPicked: onPicked),
-          ]),
+                  const SizedBox(
+                    width: 16,
+                  ),
+                ],
+              ),
+              PickActionsArea(onPicked: onPicked),
+            ]),
+          ),
         ),
       ),
     );

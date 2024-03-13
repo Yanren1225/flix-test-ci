@@ -22,6 +22,7 @@ class BubbleList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+        physics: const BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast),
         reverse: reverse,
         shrinkWrap: shrinkWrap,
         controller: _scrollController,

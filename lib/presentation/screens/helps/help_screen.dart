@@ -42,7 +42,8 @@ class HelpScreenState extends State<HelpScreen> {
                 )),
             Expanded(
                 child: SingleChildScrollView(
-              child: Column(
+                  physics: const BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast),
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(

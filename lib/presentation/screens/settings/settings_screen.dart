@@ -36,7 +36,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                 )),
             Expanded(
                 child: SingleChildScrollView(
-              child: Column(
+                  physics: const BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast),
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(

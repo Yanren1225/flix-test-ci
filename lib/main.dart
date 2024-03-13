@@ -47,22 +47,29 @@ Future<void> main() async {
   ShipService.instance.startShipServer();
   DeviceManager.instance.init();
 
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent, // 设置为透明
-        statusBarBrightness: Brightness.dark, // 在状态栏上的图标和文字颜色为深色
-        statusBarIconBrightness: Brightness.dark),
+        statusBarColor: Colors.transparent,
+        // 设置为透明
+        statusBarBrightness: Brightness.dark,
+        systemStatusBarContrastEnforced: false,
+        // 在状态栏上的图标和文字颜色为深色
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarContrastEnforced: false,
+        systemNavigationBarIconBrightness: Brightness.dark),
   );
 
   await _initNotification();
 
   if (kDebugMode) {
-    PluginManager.instance                                 // Register plugin kits
+    PluginManager.instance // Register plugin kits
       ..register(const WidgetInfoInspector())
       ..register(const ColorSucker())
       ..register(AlignRuler())
       // ..register(const ColorPicker())                            // New feature
-      ..register(const TouchIndicator());                  // Pass in your Dio instance
+      ..register(const TouchIndicator()); // Pass in your Dio instance
     // After flutter_ume 0.3.0
     runApp(const UMEWidget(child: const MyApp(), enable: true));
   } else {
@@ -119,8 +126,7 @@ class MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => SettingProvider()),
         ChangeNotifierProvider<MultiCastClientProvider>(
             create: (_) => MultiCastClientProvider()),
-    ChangeNotifierProvider(
-    create: (context) => AndropContext())
+        ChangeNotifierProvider(create: (context) => AndropContext())
       ],
       child: MaterialApp(
         title: 'Androp',
@@ -142,15 +148,13 @@ class MyAppState extends State<MyApp> {
           // This works for code too, not just values: Most code changes can be
           // tested with just a hot reload.
           colorScheme: const ColorScheme.light(
-              primary: Color.fromRGBO(0, 122, 255, 1),
-              onPrimary: Colors.white),
+              primary: Color.fromRGBO(0, 122, 255, 1), onPrimary: Colors.white),
           useMaterial3: true,
         ).useSystemChineseFont(Brightness.light),
         // initialRoute: 'home',
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
     );
-
   }
 }
 
@@ -283,40 +287,45 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
       body: NarrowBody(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                'assets/images/ic_share.svg',
-                colorFilter: ColorFilter.mode(
-                    getColor(0, selectedIndex), BlendMode.srcIn),
-              ),
-              label: '互传'),
-          BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                'assets/images/ic_config.svg',
-                colorFilter: ColorFilter.mode(
-                    getColor(1, selectedIndex), BlendMode.srcIn),
-              ),
-              label: '配置'),
-          BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                'assets/images/ic_help.svg',
-                colorFilter: ColorFilter.mode(
-                    getColor(2, selectedIndex), BlendMode.srcIn),
-              ),
-              label: '帮助'),
-        ],
-        currentIndex: selectedIndex,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: const Color.fromRGBO(60, 60, 67, 0.3),
-        selectedFontSize: 10,
-        unselectedFontSize: 10,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500).useSystemChineseFont(),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500).useSystemChineseFont(),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        onTap: (value) => setSelectedIndex(value),
+      bottomNavigationBar: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: 60 + MediaQuery.of(context).padding.bottom),
+        child: BottomNavigationBar(
+          items: [
+            BottomNavigationBarItem(
+                icon: SvgPicture.asset(
+                  'assets/images/ic_share.svg',
+                  colorFilter: ColorFilter.mode(
+                      getColor(0, selectedIndex), BlendMode.srcIn),
+                ),
+                label: '互传'),
+            BottomNavigationBarItem(
+                icon: SvgPicture.asset(
+                  'assets/images/ic_config.svg',
+                  colorFilter: ColorFilter.mode(
+                      getColor(1, selectedIndex), BlendMode.srcIn),
+                ),
+                label: '配置'),
+            BottomNavigationBarItem(
+                icon: SvgPicture.asset(
+                  'assets/images/ic_help.svg',
+                  colorFilter: ColorFilter.mode(
+                      getColor(2, selectedIndex), BlendMode.srcIn),
+                ),
+                label: '帮助'),
+          ],
+          currentIndex: selectedIndex,
+          selectedItemColor: Colors.black,
+          unselectedItemColor: const Color.fromRGBO(60, 60, 67, 0.3),
+          selectedFontSize: 10,
+          unselectedFontSize: 10,
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500)
+              .useSystemChineseFont(),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500)
+              .useSystemChineseFont(),
+          backgroundColor: Colors.white,
+          elevation: 0,
+          onTap: (value) => setSelectedIndex(value),
+        ),
       ),
     );
   }
@@ -355,6 +364,8 @@ class _MyHomePageState extends State<MyHomePage> {
               NavigationRailDestination(
                   icon: SvgPicture.asset(
                     'assets/images/ic_share.svg',
+                    width: 26,
+                    height: 26,
                     colorFilter: ColorFilter.mode(
                         getColor(0, selectedIndex), BlendMode.srcIn),
                   ),
@@ -362,6 +373,8 @@ class _MyHomePageState extends State<MyHomePage> {
               NavigationRailDestination(
                   icon: SvgPicture.asset(
                     'assets/images/ic_config.svg',
+                    width: 26,
+                    height: 26,
                     colorFilter: ColorFilter.mode(
                         getColor(1, selectedIndex), BlendMode.srcIn),
                   ),
@@ -369,11 +382,14 @@ class _MyHomePageState extends State<MyHomePage> {
               NavigationRailDestination(
                   icon: SvgPicture.asset(
                     'assets/images/ic_help.svg',
+                    width: 26,
+                    height: 26,
                     colorFilter: ColorFilter.mode(
                         getColor(2, selectedIndex), BlendMode.srcIn),
                   ),
                   label: Text('帮助'))
             ],
+            minWidth: 60,
             labelType: NavigationRailLabelType.all,
             useIndicator: true,
             indicatorColor: Colors.white,
@@ -389,12 +405,12 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.black,
               fontSize: 12,
               fontWeight: FontWeight.normal,
-
             ).useSystemChineseFont(),
-            unselectedLabelTextStyle: TextStyle(
-                color: Color.fromRGBO(60, 60, 67, 0.3),
-                fontSize: 12,
-                fontWeight: FontWeight.normal).useSystemChineseFont(),
+            unselectedLabelTextStyle: const TextStyle(
+                    color: Color.fromRGBO(60, 60, 67, 0.3),
+                    fontSize: 12,
+                    fontWeight: FontWeight.normal)
+                .useSystemChineseFont(),
             backgroundColor: Colors.white,
           ),
           Flexible(child: secondPart(), flex: 1),
