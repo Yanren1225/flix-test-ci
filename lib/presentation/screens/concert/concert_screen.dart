@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/notification/BadgeService.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
@@ -27,12 +28,11 @@ class ConcertScreen extends StatelessWidget {
   final bool showBackButton;
   final bool playable;
 
-  const ConcertScreen(
-      {super.key,
-      required this.deviceInfo,
-      this.anchor = null,
-      required this.showBackButton,
-      this.playable = true});
+  const ConcertScreen({super.key,
+    required this.deviceInfo,
+    this.anchor = null,
+    required this.showBackButton,
+    this.playable = true});
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +46,7 @@ class ConcertScreen extends StatelessWidget {
           title: deviceInfo.name,
           builder: (padding) {
             return ShareConcertMainView(
+              deviceInfo: deviceInfo,
               padding: padding,
               anchor: anchor,
               playable: playable,
@@ -56,15 +57,16 @@ class ConcertScreen extends StatelessWidget {
 }
 
 class ShareConcertMainView extends StatefulWidget {
+  final DeviceInfo deviceInfo;
   final EdgeInsets padding;
   final String? anchor;
   final bool playable;
 
-  const ShareConcertMainView(
-      {super.key,
-      required this.padding,
-      required this.anchor,
-      required this.playable});
+  const ShareConcertMainView({super.key,
+    required this.deviceInfo,
+    required this.padding,
+    required this.anchor,
+    required this.playable});
 
   @override
   State<StatefulWidget> createState() {
@@ -79,13 +81,28 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
   bool isAnchored = false;
   final ScrollController _scrollController = ScrollController();
 
+  @override
+  void initState() {
+    super.initState();
+    BadgeService.instance.clearBadgesFrom(widget.deviceInfo.id);
+  }
+
+  @override
+  void dispose() {
+    BadgeService.instance.clearBadgesFrom(widget.deviceInfo.id);
+    super.dispose();
+  }
+
   void submit(ConcertProvider concertProvider, Shareable shareable,
       BubbleType type) async {
     _scrollController.animateTo(_scrollController.position.minScrollExtent,
         duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
     await concertProvider.send(UIBubble(
         from: DeviceManager.instance.did,
-        to: Provider.of<ConcertProvider>(context, listen: false).deviceInfo.id,
+        to: Provider
+            .of<ConcertProvider>(context, listen: false)
+            .deviceInfo
+            .id,
         type: type,
         shareable: shareable));
   }
@@ -205,10 +222,13 @@ class InputAreaState extends State<InputArea> {
               color: Color.fromRGBO(247, 247, 247, 0.8),
               border: Border(
                   top: BorderSide(
-                color: Color.fromRGBO(240, 240, 240, 1),
-              ))),
+                    color: Color.fromRGBO(240, 240, 240, 1),
+                  ))),
           child: Padding(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+            padding: EdgeInsets.only(bottom: MediaQuery
+                .of(context)
+                .padding
+                .bottom),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               const SizedBox(
                 height: 10,
@@ -222,9 +242,10 @@ class InputAreaState extends State<InputArea> {
                   Expanded(
                     child: ConstrainedBox(
                         constraints:
-                            const BoxConstraints(minHeight: 40, maxHeight: 200),
+                        const BoxConstraints(minHeight: 40, maxHeight: 200),
                         child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast),
+                          physics: const BouncingScrollPhysics(
+                              decelerationRate: ScrollDecelerationRate.fast),
                           child: DecoratedBox(
                             decoration: BoxDecoration(
                                 color: Colors.white,
@@ -232,14 +253,15 @@ class InputAreaState extends State<InputArea> {
                             child: Shortcuts(
                               shortcuts: {
                                 LogicalKeySet(LogicalKeyboardKey.control,
-                                        LogicalKeyboardKey.enter):
-                                    const BreakLineIntent(),
+                                    LogicalKeyboardKey.enter):
+                                const BreakLineIntent(),
                                 LogicalKeySet(LogicalKeyboardKey.enter):
-                                    const SubmitIntent()
+                                const SubmitIntent()
                               },
                               child: Actions(
-                                actions: <Type, Action<Intent>> {
-                                  BreakLineIntent: CallbackAction<BreakLineIntent>(
+                                actions: <Type, Action<Intent>>{
+                                  BreakLineIntent: CallbackAction<
+                                      BreakLineIntent>(
                                     onInvoke: (intent) {
                                       textEditController.text += '\n';
                                     },
@@ -263,10 +285,14 @@ class InputAreaState extends State<InputArea> {
                                       border: OutlineInputBorder(
                                         borderSide: BorderSide.none,
                                         gapPadding: 0,
-                                        borderRadius: BorderRadius.circular(10.0),
+                                        borderRadius: BorderRadius.circular(
+                                            10.0),
                                       ),
                                       contentPadding: const EdgeInsets.only(
-                                          left: 12, right: 12, top: 8, bottom: 8)),
+                                          left: 12,
+                                          right: 12,
+                                          top: 8,
+                                          bottom: 8)),
                                   cursorColor: Colors.black,
                                   onChanged: (value) {
                                     input(value);
@@ -292,11 +318,13 @@ class InputAreaState extends State<InputArea> {
                       iconSize: 22,
                       style: ButtonStyle(
                           backgroundColor: MaterialStateColor.resolveWith(
-                              (states) => const Color.fromRGBO(0, 122, 255, 1)),
-                          shape: MaterialStatePropertyAll<RoundedRectangleBorder>(
+                                  (states) =>
+                              const Color.fromRGBO(0, 122, 255, 1)),
+                          shape: MaterialStatePropertyAll<
+                              RoundedRectangleBorder>(
                               RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ))),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ))),
                       icon: const Icon(
                         Icons.arrow_upward_sharp,
                         color: Colors.white,
@@ -316,7 +344,9 @@ class InputAreaState extends State<InputArea> {
   }
 
   void trySubmitText(String content) {
-    if (content.trim().isNotEmpty) {
+    if (content
+        .trim()
+        .isNotEmpty) {
       textEditController.clear();
       submitText(content);
     }

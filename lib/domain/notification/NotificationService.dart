@@ -1,5 +1,6 @@
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/notification/BadgeService.dart';
 import 'package:flix/model/notification/reception_notification.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
@@ -20,12 +21,16 @@ class NotificationService {
 
   void init() {
     _bubblePool.listen((bubble) {
+      final notification =
+          MessageNotification(from: bubble.from, bubbleId: bubble.id);
       if (bubble.to == DeviceManager.instance.did) {
         if (bubble is PrimitiveTextBubble) {
-          requestPermission(() => showTextNotification(bubble));
+          notified(notification);
+          requestPermission(() => showTextNotification(bubble, notification));
         } else if (bubble is PrimitiveFileBubble &&
             bubble.content.state == FileState.waitToAccepted) {
-          requestPermission(() => showFileNotification(bubble));
+          notified(notification);
+          requestPermission(() => showFileNotification(bubble, notification));
         }
       }
     });
@@ -46,24 +51,28 @@ class NotificationService {
     });
   }
 
-  void showTextNotification(PrimitiveTextBubble bubble) {
+  void showTextNotification(
+      PrimitiveTextBubble bubble, MessageNotification notification) {
     notifyUtils.showTextNotification(
-        DeviceManager.instance.getDeviceInfoById(bubble.from)?.name ?? "", bubble.content,
-        MessageNotification(from: bubble.from, bubbleId: bubble.id));
-    notified();
+        DeviceManager.instance.getDeviceInfoById(bubble.from)?.name ?? "",
+        bubble.content,
+        notification);
   }
 
-  void showFileNotification(PrimitiveBubble bubble) {
+  void showFileNotification(
+      PrimitiveBubble bubble, MessageNotification notification) {
     notifyUtils.showFileNotification(
         DeviceManager.instance.getDeviceInfoById(bubble.from)?.name ?? "",
-        MessageNotification(from: bubble.from, bubbleId: bubble.id));
-    notified();
+        notification);
   }
 
-  void notified() {
-    onNotificated.forEach((element) {
-      element();
-    });
+  void notified(MessageNotification notification) {
+    BadgeService.instance.addBadge(notification);
+    Future.delayed(
+        const Duration(seconds: 1),
+        () => onNotificated.forEach((element) {
+              element();
+            }));
   }
 
   void addOnNotificatedListener(VoidCallback callback) {

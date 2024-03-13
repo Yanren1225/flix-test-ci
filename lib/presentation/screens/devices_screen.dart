@@ -1,6 +1,7 @@
-
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:flix/domain/notification/BadgeService.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/notification/reception_notification.dart';
@@ -9,11 +10,11 @@ import 'package:flix/presentation/widgets/devices/device_list.dart';
 import 'package:flix/presentation/widgets/super_title.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/notification_utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modals/modals.dart';
-
 
 import 'concert/concert_screen.dart';
 
@@ -28,6 +29,8 @@ class DeviceScreen extends StatefulWidget {
 }
 
 class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
+  final _badges = BadgeService.instance.badges;
+
   @override
   Widget build(BuildContext context) {
     final deviceProvider = MultiCastClientProvider.of(context, listen: true);
@@ -67,7 +70,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
                   onDeviceSelected: widget.onDeviceSelected,
                   showHistory: true,
                   history: history,
-                  badges: badges,
+                  badges: _badges,
                 ))
               ],
             ),
@@ -77,70 +80,27 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
     );
   }
 
-  var badges = <String, int>{};
-
   @override
   void initState() {
     super.initState();
-    NotificationService.instance.addOnNotificatedListener(_updateBadges);
+    BadgeService.instance.addOnBadgesChangedListener(_onBadgesChanged);
   }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    modalsRouteObserver.subscribe(
-        this, ModalRoute.of(context) as PageRoute);
-  }
-
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  // }
 
   @override
   void dispose() {
-    NotificationService.instance.removeOnNotificatedListener(_updateBadges);
-    modalsRouteObserver.unsubscribe(this);
+    BadgeService.instance.removeOnBadgeChangedListener(_onBadgesChanged);
     super.dispose();
   }
 
-  @override
-  void didPopNext() {
-    super.didPopNext();
-    _updateBadges();
-  }
-
-
-  @override
-  void didPush() {
-    _updateBadges();
-  }
-
-  void _updateBadges() {
-    if (ModalRoute.of(context)?.isCurrent == true) {
-      getNotifications().then((value) {
-        final _badges = <String, int>{};
-
-        for (final notification in value) {
-          final String from;
-          if (Platform.isAndroid) {
-            from = notification.tag ?? '';
-          } else if (Platform.isIOS || Platform.isMacOS) {
-            final noti = MessageNotification.fromJson(notification.payload ?? "");
-            from = noti.from;
-          } else {
-            from = '';
-          }
-          _badges[from] = (badges[from] ?? 0) + 1;
-        }
-
-        if (badges != _badges) {
-          setState(() {
-            badges = _badges;
-          });
-        }
-      });
+  void _onBadgesChanged(Map<String, int> badges) {
+    if (!context.mounted) {
+      log('context has unmounted');
+      return;
     }
+
+    Future.delayed(Duration.zero, () {
+      setState(() {});
+    });
   }
 }
 

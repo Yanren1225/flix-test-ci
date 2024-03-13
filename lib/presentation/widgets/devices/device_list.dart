@@ -1,4 +1,3 @@
-import 'package:badges/badges.dart' as badges;
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
@@ -23,7 +22,8 @@ class DeviceList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      physics: const BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast),
+      physics: const BouncingScrollPhysics(
+          decelerationRate: ScrollDecelerationRate.fast),
       children: [
         ...List.generate(devices.length, (index) {
           var deviceInfo = devices[index];
@@ -91,22 +91,28 @@ class DeviceItem extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  badges.Badge(
-                    showBadge: badge > 0,
-                    badgeContent: Text(
-                      badge > 9 ? '9+' : '$badge',
-                      style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.white),
-                    ),
-                    child: Image(
-                      image: AssetImage('assets/images/${deviceInfo.icon}'),
-                      width: 36,
-                      height: 36,
-                      fit: BoxFit.fill,
-                    ),
-                  ),
+                  badge > 0
+                      ? Badge(
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          label: badge > 9
+                              ? const Padding(padding: EdgeInsets.symmetric(horizontal: 4), child: const Text('9+'))
+                              : SizedBox(width: 16, height:16, child: Center(child: Text('$badge'))),
+                          padding: EdgeInsets.zero,
+                          child: Image(
+                            image:
+                                AssetImage('assets/images/${deviceInfo.icon}'),
+                            width: 36,
+                            height: 36,
+                            fit: BoxFit.fill,
+                          ),
+                        )
+                      : Image(
+                          image: AssetImage('assets/images/${deviceInfo.icon}'),
+                          width: 36,
+                          height: 36,
+                          fit: BoxFit.fill,
+                        ),
                   const SizedBox(
                     width: 10,
                   ),

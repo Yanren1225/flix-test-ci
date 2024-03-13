@@ -104,6 +104,7 @@ Future<void> _initNotification() async {
         receptionNotificationStream.add(receptionNotification);
         break;
       case NotificationResponseType.selectedNotificationAction:
+        log('selectedNotificationAction, actionId: ${details.actionId}');
         break;
     }
   });
