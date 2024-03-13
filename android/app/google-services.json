@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "342559837177",
+    "project_id": "flix-872e",
+    "storage_bucket": "flix-872e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:342559837177:android:3621729c8f4b9c8beecb28",
+        "android_client_info": {
+          "package_name": "com.ifreedomer.flix"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdla_bc7oAXEHSp--pN8T64bJp8wcIh74"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

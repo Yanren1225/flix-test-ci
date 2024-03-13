@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   downloadsfolder
   file_selector_windows
+  firebase_core
   open_dir_windows
   permission_handler_windows
   screen_retriever

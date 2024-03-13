@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyAzVd6HoALwV1_a9DMmFbwxYUG2V3NvKPM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>342559837177</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.ifreedomer.flix.ShareExtension</string>
+	<key>PROJECT_ID</key>
+	<string>flix-872e</string>
+	<key>STORAGE_BUCKET</key>
+	<string>flix-872e.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:342559837177:ios:f042bf091b78ca9eeecb28</string>
+</dict>
+</plist>

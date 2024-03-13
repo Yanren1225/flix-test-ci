@@ -82,7 +82,8 @@ dependencies:
   chinese_font_library: ^1.1.0
   talker: ^4.0.3
   talker_flutter: ^4.0.3
-  firebase_crashlytics: ^2.8.3
+  firebase_crashlytics: ^3.4.19
+  firebase_core: ^2.27.1
   # thumbnailer: ^2.2.0
 
   # pdfx: ^2.5.0
@@ -91,6 +92,10 @@ dependencies:
   #     url: "https://github.com/fodilfliti/thumbnailer"
   #     ref: "976e3884916ffbfee99eca12088ca594a5f1f3e2"
       # path: packages/pdfx
+
+dependency_overrides:
+  web: ^0.5.1
+  vm_service: ^9.4.0
 
 dev_dependencies:
   build_runner: ^2.4.8

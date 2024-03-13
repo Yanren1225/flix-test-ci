@@ -32,6 +32,8 @@ import 'package:window_manager/window_manager.dart';
 import 'package:flutter_ume/flutter_ume.dart'; // UME framework
 import 'package:flutter_ume_kit_ui/flutter_ume_kit_ui.dart'; // UI kits
 import 'package:flutter_ume_kit_console/flutter_ume_kit_console.dart'; // Show debugPrint
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 
 int id = 1;
@@ -41,6 +43,13 @@ final receptionNotificationStream = StreamController<MessageNotification>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isMacOS || Platform.isIOS || Platform.isAndroid) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
+
+
   if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
     await windowManager.ensureInitialized();
     windowManager.setMinimumSize(const Size(400, 400));
