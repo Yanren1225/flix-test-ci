@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -47,6 +48,11 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true, information: ['asynchronous errors']);
+      return true;
+    };
   }
 
 

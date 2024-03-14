@@ -8,6 +8,7 @@ import 'package:flix/model/device_info.dart';
 import 'package:flix/model/notification/reception_notification.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/widgets/devices/device_list.dart';
+import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/super_title.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/notification_utils.dart';
@@ -44,38 +45,22 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
           const BoxDecoration(color: Color.fromARGB(255, 247, 247, 247)),
       child: Stack(
         children: [
+          CupertinoNavigationScaffold(
+            title: '附近设备',
+            isSliverChild: true,
+            child: DeviceList(
+              devices: devices,
+              onDeviceSelected: widget.onDeviceSelected,
+              showHistory: true,
+              history: history,
+              badges: _badges,
+            ),
+          ),
           SizedBox(
               width: double.infinity,
               height: 120,
               child: Lottie.asset('assets/animations/radar.json',
                   fit: BoxFit.cover, alignment: Alignment.topRight)),
-          SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                    padding: const EdgeInsets.only(
-                        top: 60, left: 20, right: 20, bottom: 10),
-                    child: InkWell(
-                      onTap: () async {
-                        MultiCastClientProvider.of(context).startScan();
-                      },
-                      child: const SuperTitle(
-                        title: '附近设备',
-                      ),
-                    )),
-                Expanded(
-                    child: DeviceList(
-                  devices: devices,
-                  onDeviceSelected: widget.onDeviceSelected,
-                  showHistory: true,
-                  history: history,
-                  badges: _badges,
-                ))
-              ],
-            ),
-          ),
         ],
       ),
     );

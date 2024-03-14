@@ -244,8 +244,8 @@ class InputAreaState extends State<InputArea> {
                         constraints:
                         const BoxConstraints(minHeight: 40, maxHeight: 200),
                         child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(
-                              decelerationRate: ScrollDecelerationRate.fast),
+                          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics(
+                              decelerationRate: ScrollDecelerationRate.fast)),
                           child: DecoratedBox(
                             decoration: BoxDecoration(
                                 color: Colors.white,

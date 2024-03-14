@@ -8,7 +8,7 @@ final talker = TalkerFlutter.init(
     /// You can enable/disable saving logs data in history
     useHistory: true,
     /// Length of history that saving logs data
-    maxHistoryItems: 100,
+    maxHistoryItems: 10000,
     /// You can enable/disable console logs
     useConsoleLogs: true,
   ),
@@ -16,10 +16,6 @@ final talker = TalkerFlutter.init(
   logger: TalkerLogger(),
   ///etc...
 );
-
-void aa() {
-
-}
 
 // /// Jsut logs
 // talker.warning('The pizza is over 😥');

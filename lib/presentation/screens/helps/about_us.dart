@@ -18,7 +18,7 @@ class AboutUSScreen extends StatelessWidget {
             version()
           ];
           return ListView.builder(
-              physics: const BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast),
+              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast)),
               padding: padding.copyWith(bottom: padding.bottom + MediaQuery.of(context).padding.bottom + 20),
               itemBuilder: (context, index) {
                 return Padding(
