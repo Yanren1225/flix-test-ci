@@ -5,6 +5,7 @@ import 'dart:math' hide log;
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/pickable.dart';
 import 'package:flix/presentation/screens/android_apps_screen.dart';
+import 'package:flix/presentation/widgets/segements/mask_loading.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:file_picker/file_picker.dart';
@@ -117,6 +118,7 @@ class PickActionAreaState extends State<PickActionsArea> {
     required BuildContext context,
   }) async {
     if (context.mounted) {
+      showMaskLoading(context);
       try {
         final XFile? pickedFile =
             await _picker.pickVideo(source: ImageSource.gallery);
@@ -135,6 +137,8 @@ class PickActionAreaState extends State<PickActionsArea> {
         setState(() {
           _pickFileError = e;
         });
+      } finally {
+        dismissMaskLoading();
       }
     }
   }
