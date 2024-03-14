@@ -32,16 +32,16 @@ class BubbleWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (uiBubble.type) {
       case BubbleType.Text:
-        return ShareTextBubble(entity: uiBubble);
+        return ShareTextBubble(key: ValueKey<String>(uiBubble.shareable.id), entity: uiBubble);
       case BubbleType.Image:
-        return ShareImageBubble(entity: uiBubble);
+        return ShareImageBubble(key: ValueKey<String>(uiBubble.shareable.id), entity: uiBubble);
       case BubbleType.Video:
-        return ShareVideoBubble(entity: uiBubble);
+        return ShareVideoBubble(key: ValueKey<String>(uiBubble.shareable.id), entity: uiBubble);
       case BubbleType.File:
-        return ShareFileBubble(entity: uiBubble);
+        return ShareFileBubble(key: ValueKey<String>(uiBubble.shareable.id), entity: uiBubble);
       case BubbleType.App:
         // return ShareAppBubble(entity: uiBubble);
-        return ShareFileBubble(entity: uiBubble);
+        return ShareFileBubble(key: ValueKey<String>(uiBubble.shareable.id), entity: uiBubble);
     }
   }
 }

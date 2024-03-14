@@ -91,7 +91,7 @@ class MultiCastUtil {
               break;
           }
         }, onError: (e) {
-          talker.error('[multicast] multicast error', e);
+          talker.error('[multicast] multicast error: $e', e);
         });
       }
     }
@@ -219,7 +219,7 @@ class MultiCastUtil {
               jsonDecode(args["message"] as String), deviceScanCallback);
         }
       } catch (e) {
-        talker.debug('receive message on iOS failed', e);
+        talker.debug('receive message on iOS failed: $e', e);
       }
     });
 

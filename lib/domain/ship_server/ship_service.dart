@@ -137,7 +137,7 @@ class ShipService {
                 // removeBubbleById(updatedBubble.id);
                 await _bubblePool.add(updatedBubble);
               } on Error catch (e) {
-                talker.error('receive file error', e);
+                talker.error('receive file error: $e', e);
                 final updatedBubble = bubble.copy(
                     content: bubble.content
                         .copy(state: FileState.receiveFailed, progress: 1.0));
@@ -154,7 +154,7 @@ class ShipService {
         return Response.badRequest();
       }
     } on CancelException catch (e) {
-      talker.warning('_receiveFile canceled', e);
+      talker.warning('_receiveFile canceled: $e', e);
       return Response.ok('canceled');
     }
   }
@@ -185,7 +185,7 @@ class ShipService {
 
       return Response.ok('ok');
     } on Exception catch (e) {
-      talker.error('receive intent error', e);
+      talker.error('receive intent error: $e', e);
       return Response.badRequest();
     }
   }
@@ -208,7 +208,7 @@ class ShipService {
         talker.debug('发送失败: status code: ${response.statusCode}, ${response.body}');
       }
     } on CancelException catch (e) {
-      talker.warning('取消发送', e);
+      talker.warning('取消发送: $e', e);
     }
   }
 
@@ -231,7 +231,7 @@ class ShipService {
           throw UnimplementedError();
       }
     } on CancelException catch (e) {
-      talker.warning('取消发送', e);
+      talker.warning('取消发送: $e', e);
     }
   }
 
@@ -246,9 +246,9 @@ class ShipService {
           content: _fileBubble.content
               .copy(meta: _fileBubble.content.meta.copy(path: null))));
     } on CancelException catch (e) {
-      talker.warning('取消发送', e);
+      talker.warning('取消发送: $e', e);
     } catch (e) {
-      talker.error('发送异常', e);
+      talker.error('发送异常: $e', e);
       _updateFileShareState(fileBubble.id, FileState.sendFailed);
     }
   }
@@ -286,9 +286,9 @@ class ShipService {
         }
       });
     } on CancelException catch (e) {
-      talker.warning('发送取消', e);
+      talker.warning('发送取消: $e', e);
     } catch (e) {
-      talker.error('发送异常', e);
+      talker.error('发送异常: $e', e);
       _updateFileShareState(fileBubble.id, FileState.sendFailed);
     }
   }
@@ -366,7 +366,7 @@ class ShipService {
         talker.error('发送失败: status code: ${response.statusCode}, ${response.body}');
       }
     } catch (e) {
-      talker.error('confirmReceiveFile failed', e);
+      talker.error('confirmReceiveFile failed: $e', e);
     }
   }
 
@@ -391,7 +391,7 @@ class ShipService {
         talker.error('sendCancelMessage发送失败: status code: ${response.statusCode}, ${response.body}');
       }
     } catch (e) {
-      talker.error('sendCancelMessage failed', e);
+      talker.error('sendCancelMessage failed: $e', e);
     }
   }
 }

@@ -31,7 +31,7 @@ class BubblePool {
       _broadcast.add(bubble);
       await appDatabase.bubblesDao.insert(bubble);
     } catch (e) {
-      talker.error('failed to insert bubble into database', e);
+      talker.error('failed to insert bubble into database: $e', e);
     }
 
   }

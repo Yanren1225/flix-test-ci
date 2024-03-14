@@ -67,7 +67,7 @@ extension XFileConvert on XFile {
         size = Size(_controller.value?.size?.width?.toInt() ?? 0, _controller.value?.size?.height?.toInt() ?? 0);
         _controller.dispose();
       } catch (e) {
-        talker.error('Failed to get size of video, path: ${this.path}', e);
+        talker.error('Failed to get size of video, path: ${this.path}: $e', e);
       }
 
     }
@@ -160,7 +160,7 @@ Future<void> _deleteFilesInDir(Directory dir) async {
       try {
         entity.deleteSync();
       } catch (e) {
-        talker.error('delete ${entity.path} failed', e);
+        talker.error('delete ${entity.path} failed: $e', e);
       }
     }
   });

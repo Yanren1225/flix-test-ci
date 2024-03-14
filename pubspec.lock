@@ -720,7 +720,7 @@ packages:
     source: hosted
     version: "1.0.7"
   image_picker_android:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: image_picker_android
       sha256: "39f2bfe497e495450c81abcd44b62f56c2a36a37a175da7d137b4454977b51b1"
@@ -1472,10 +1472,11 @@ packages:
   talker:
     dependency: "direct main"
     description:
-      name: talker
-      sha256: "4e7d69f70579bf12c39206a80b74601b014691e96efd75e4a8a3a075710b859f"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/talker"
+      ref: "450129ee9e085ddd0e5452e8cb5818ef19854f33"
+      resolved-ref: "450129ee9e085ddd0e5452e8cb5818ef19854f33"
+      url: "https://github.com/qwadrox/talker"
+    source: git
     version: "4.0.3"
   talker_flutter:
     dependency: "direct main"

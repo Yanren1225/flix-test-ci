@@ -34,7 +34,7 @@ class BubbleList extends StatelessWidget {
             padding: const EdgeInsets.only(
                 left: 16.0, right: 16.0, top: 12, bottom: 12),
             child: BubbleWidget(
-              key: Key('$index'),
+              key: ValueKey('$index'),
               uiBubble: item,
             ),
           );

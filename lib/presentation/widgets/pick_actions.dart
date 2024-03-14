@@ -105,7 +105,7 @@ class PickActionAreaState extends State<PickActionsArea> {
                 type: PickedFileType.Image, content: await f.toFileMeta(isImg: true))
         ]);
       } catch (e) {
-        talker.error("pick images failed", e);
+        talker.error("pick images failed: $e", e);
         setState(() {
           _pickFileError = e;
         });
@@ -120,6 +120,7 @@ class PickActionAreaState extends State<PickActionsArea> {
       try {
         final XFile? pickedFile =
             await _picker.pickVideo(source: ImageSource.gallery);
+        talker.verbose('video selected: ${pickedFile?.path}');
         if (pickedFile != null) {
           onPicked([
             PickableFile(
@@ -130,7 +131,7 @@ class PickActionAreaState extends State<PickActionsArea> {
           talker.error("pick video failed, return null");
         }
       } catch (e) {
-        talker.error("pick video failed", e);
+        talker.error("pick video failed: $e", e);
         setState(() {
           _pickFileError = e;
         });
