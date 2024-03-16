@@ -11,6 +11,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_size_getter/file_input.dart';
 import 'package:image_size_getter/image_size_getter.dart';
 import 'package:mime/mime.dart';
@@ -59,17 +60,9 @@ extension XFileConvert on XFile {
     await authPersistentAccess(this.path);
     var size = const Size(0, 0);
     if (isImg) {
-      size = ImageSizeGetter.getSize(FileInput(File(this.path)));
+      size = await getImgSize(size, this.path);
     } else if (isVideo) {
-      try {
-        VideoPlayerController _controller = VideoPlayerController.file(File(this.path));
-        await _controller.initialize();
-        size = Size(_controller.value?.size?.width?.toInt() ?? 0, _controller.value?.size?.height?.toInt() ?? 0);
-        _controller.dispose();
-      } catch (e) {
-        talker.error('Failed to get size of video, path: ${this.path}: $e', e);
-      }
-
+      size = await getVideoSize(size, this.path);
     }
 
     return FileMeta(
@@ -81,6 +74,10 @@ extension XFileConvert on XFile {
         width: size.width,
         height: size.height);
   }
+
+
+
+
 }
 
 extension AttachmentConvert on SharedAttachment {
@@ -89,12 +86,9 @@ extension AttachmentConvert on SharedAttachment {
     var size = const Size(0, 0);
     final file = File(this.path);
     if (this.type == SharedAttachmentType.image) {
-      size = ImageSizeGetter.getSize(FileInput(file));
+      size = await getImgSize(size, this.path);
     } else if (this.type == SharedAttachmentType.video) {
-      VideoPlayerController _controller = VideoPlayerController.file(file);
-      await _controller.initialize();
-      size = Size(_controller.value?.size?.width?.toInt() ?? 0, _controller.value?.size?.height?.toInt() ?? 0);
-      _controller.dispose();
+      size = await getVideoSize(size, this.path);
     }
 
     final fileName = _getFileNameFromPath(this.path);
@@ -168,4 +162,39 @@ Future<void> _deleteFilesInDir(Directory dir) async {
 
 String _getFileNameFromPath(String path) {
   return path.substring(path.lastIndexOf('/') + 1);
+}
+
+Future<Size> getImgSize(Size size, String path) async {
+  try {
+    size = ImageSizeGetter.getSize(FileInput(File(path)));
+  } catch (e, stack) {
+    talker.error('Failed to get size of image, path: ${path}: $e, $stack', e, stack);
+    final _size = await getHeifImageSize2(path);
+    if (_size == null) {
+      talker.error('Failed to get size of heifImage, path: ${path}');
+    } else {
+      size = _size;
+    }
+  }
+  return size;
+}
+
+Future<Size> getVideoSize(Size size, String path) async {
+  try {
+    VideoPlayerController _controller = VideoPlayerController.file(File(path));
+    await _controller.initialize();
+    size = Size(_controller.value?.size?.width?.toInt() ?? 0, _controller.value?.size?.height?.toInt() ?? 0);
+    _controller.dispose();
+  } catch (e, stack) {
+    talker.error('Failed to get size of video, path: ${path}: $e, $stack', e, stack);
+  }
+  return size;
+}
+
+Future<Size?> getHeifImageSize2(String filePath) async  {
+  final properties = await FlutterNativeImage.getImageProperties(filePath);
+  if (properties.width != 0 && properties.height != 0) {
+    return Size(properties.width!, properties.height!);
+  }
+  return null;
 }

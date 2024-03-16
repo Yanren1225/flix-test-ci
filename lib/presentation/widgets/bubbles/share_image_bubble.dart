@@ -73,8 +73,8 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
     }
 
     Widget stateIcon = const SizedBox(
-      width: 48,
-      height: 48,
+      width: 20,
+      height: 20,
     );
     final Widget content;
     if (entity.isFromMe(andropContext.deviceId)) {
@@ -235,8 +235,8 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
           visible: alignment == MainAxisAlignment.end,
           replacement: alignment == MainAxisAlignment.end
               ? const SizedBox(
-                  width: 48 + 18,
-                  height: 48,
+                  width: 20 + 18,
+                  height: 20,
                 )
               : SizedBox.shrink(),
           child: Padding(
@@ -247,46 +247,56 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
         // Expanded强制占用剩余的空间
         // Flexible默认允许子元素占用尽可能的剩余空间
         Flexible(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-                color: backgroundColor,
-                borderRadius: const BorderRadius.all(Radius.circular(10))),
-            child: LayoutBuilder(
-                builder: (BuildContext context, BoxConstraints constraints) {
-              final width;
-              if (sharedImage.content.width >
-                  max(150, min(300, constraints.maxWidth - 60))) {
-                width = max(150, min(300, constraints.maxWidth - 60));
-              } else if (sharedImage.content.width < 150) {
-                width = 150;
-              } else {
-                width = sharedImage.content.width;
-              }
-              final height;
+          child: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                    color: backgroundColor,
+                    borderRadius: const BorderRadius.all(Radius.circular(10))),
+                child: LayoutBuilder(builder:
+                    (BuildContext context, BoxConstraints constraints) {
+                  if (sharedImage.content.width == 0) {
+                    return ConstrainedBox(
+                        constraints: BoxConstraints(
+                            minWidth: 150,
+                            maxWidth:
+                                max(150, min(constraints.maxWidth - 60, 300)),
+                            minHeight: 150),
+                        child: IntrinsicHeight(child: content));
+                  } else {
+                    final width;
+                    if (sharedImage.content.width >
+                        max(150, min(300, constraints.maxWidth - 60))) {
+                      width = max(150, min(300, constraints.maxWidth - 60));
+                    } else if (sharedImage.content.width < 150) {
+                      width = 150;
+                    } else {
+                      width = sharedImage.content.width;
+                    }
+                    final height;
 
-              if (sharedImage.content.width == 0) {
-                height = width;
-              } else {
-                height = sharedImage.content.height *
-                    1.0 /
-                    sharedImage.content.width *
-                    width;
-              }
-              return SizedBox(
-                  width: width * 1.0,
-                  height: height * 1.0,
-                  child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                      child: content));
-            }),
-          ),
+                    if (sharedImage.content.width == 0) {
+                      height = width;
+                    } else {
+                      height = sharedImage.content.height *
+                          1.0 /
+                          sharedImage.content.width *
+                          width;
+                    }
+                    return SizedBox(
+                        width: width * 1.0,
+                        height: height * 1.0,
+                        child: content);
+                  }
+                }),
+              )),
         ),
         Visibility(
           visible: alignment == MainAxisAlignment.start,
           replacement: alignment == MainAxisAlignment.start
               ? SizedBox(
-                  width: 48 + 18,
-                  height: 48,
+                  width: 20 + 18,
+                  height: 20,
                 )
               : SizedBox.shrink(),
           child: Padding(

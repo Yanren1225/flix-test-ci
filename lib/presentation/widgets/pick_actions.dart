@@ -105,8 +105,8 @@ class PickActionAreaState extends State<PickActionsArea> {
             PickableFile(
                 type: PickedFileType.Image, content: await f.toFileMeta(isImg: true))
         ]);
-      } catch (e) {
-        talker.error("pick images failed: $e", e);
+      } catch (e, stack) {
+        talker.error("pick images failed: $e, $stack", e, stack);
         setState(() {
           _pickFileError = e;
         });

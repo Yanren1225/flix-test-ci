@@ -56,7 +56,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
     }
 
     var clickable = false;
-    Widget stateIcon = const SizedBox(width: 48, height: 48);
+    Widget stateIcon = const SizedBox(width: 20, height: 20);
     final showProgressBar;
     final progressBarColor;
     final des;
@@ -264,8 +264,8 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
         Visibility(
             visible: alignment == MainAxisAlignment.end,
             replacement: alignment == MainAxisAlignment.end ? const SizedBox(
-              width: 48 + 18,
-              height: 48,
+              width: 20 + 18,
+              height: 20,
             ) : const SizedBox.shrink(),
             child: Padding(
               padding: const EdgeInsets.only(right: 18.0),
@@ -277,8 +277,8 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
         Visibility(
             visible: alignment == MainAxisAlignment.start,
             replacement: alignment == MainAxisAlignment.start ? const SizedBox(
-              width: 48 + 18,
-              height: 48,
+              width: 20 + 18,
+              height: 20,
             ) : const SizedBox.shrink(),
             child: Padding(
               padding: const EdgeInsets.only(left: 18.0),

@@ -195,8 +195,8 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
           visible: alignment == MainAxisAlignment.end,
           replacement: alignment == MainAxisAlignment.end
               ? const SizedBox(
-                  width: 48 + 18,
-                  height: 48,
+                  width: 20 + 18,
+                  height: 20,
                 )
               : const SizedBox.shrink(),
           child: Padding(
@@ -244,8 +244,8 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
           visible: alignment == MainAxisAlignment.start,
           replacement: alignment == MainAxisAlignment.start
               ? const SizedBox(
-                  width: 48 + 18,
-                  height: 48,
+                  width: 20 + 18,
+                  height: 20,
                 )
               : const SizedBox.shrink(),
           child: Padding(

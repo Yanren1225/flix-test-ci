@@ -45,15 +45,18 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
           const BoxDecoration(color: Color.fromARGB(255, 247, 247, 247)),
       child: Stack(
         children: [
-          CupertinoNavigationScaffold(
-            title: '附近设备',
-            isSliverChild: true,
-            child: DeviceList(
-              devices: devices,
-              onDeviceSelected: widget.onDeviceSelected,
-              showHistory: true,
-              history: history,
-              badges: _badges,
+          InkWell(
+            onTap: () => deviceProvider.startScan(),
+            child: CupertinoNavigationScaffold(
+              title: '附近设备',
+              isSliverChild: true,
+              child: DeviceList(
+                devices: devices,
+                onDeviceSelected: widget.onDeviceSelected,
+                showHistory: true,
+                history: history,
+                badges: _badges,
+              ),
             ),
           ),
           SizedBox(
