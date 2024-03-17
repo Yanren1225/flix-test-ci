@@ -49,7 +49,8 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
             onTap: () => deviceProvider.startScan(),
             child: CupertinoNavigationScaffold(
               title: '附近设备',
-              isSliverChild: true,
+              isSliverChild: false,
+              padding: 16,
               child: DeviceList(
                 devices: devices,
                 onDeviceSelected: widget.onDeviceSelected,

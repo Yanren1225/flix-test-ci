@@ -24,6 +24,7 @@ class SettingsScreenState extends State<SettingsScreen> {
     return CupertinoNavigationScaffold(
       title: '软件配置',
       isSliverChild: false,
+      padding: 16,
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
