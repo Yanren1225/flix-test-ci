@@ -8,8 +8,8 @@ class CustomSliverHeader extends StatelessWidget {
   final Widget lagerTitle;
   final Function(bool isFolded) onFolded;
 
-
-  const CustomSliverHeader({super.key, required this.lagerTitle, required this.onFolded});
+  const CustomSliverHeader(
+      {super.key, required this.lagerTitle, required this.onFolded});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,6 @@ class CustomSliverHeader extends StatelessWidget {
 
 class _LargeTitle extends SingleChildRenderObjectWidget {
   final Function(bool isFolded) onFolded;
-
 
   _LargeTitle({super.key, required super.child, required this.onFolded});
 
@@ -42,18 +41,16 @@ class _LargeTitleAdapter extends RenderSliverSingleBoxAdapter {
   @override
   void performLayout() {
     // 滑动距离大于_visibleExtent时则表示子节点已经在屏幕之外了
-    if (child == null || (constraints.scrollOffset > hei)) {
-      geometry = SliverGeometry(scrollExtent: hei);
+    if (child == null) {
       _setFolded(true);
+      geometry = SliverGeometry(scrollExtent: hei);
       return;
     }
 
-    _setFolded(false);
+    talker.verbose(
+        'scrollOffset ${constraints.scrollOffset}, ${constraints.overlap}');
 
-
-    talker.verbose('scrollOffset ${constraints.scrollOffset}');
-
-    if (constraints.scrollOffset <= 0) {
+    if (constraints.scrollOffset < 0 || constraints.overlap < 0) {
       child?.layout(constraints.asBoxConstraints(maxExtent: hei),
           parentUsesSize: false);
       geometry = SliverGeometry(
@@ -77,12 +74,18 @@ class _LargeTitleAdapter extends RenderSliverSingleBoxAdapter {
 
       //设置geometry，Viewport 在布局时会用到
       geometry = SliverGeometry(
-        scrollExtent: hei,
-        paintOrigin: -constraints.scrollOffset,
-        paintExtent: paintExtent,
-        maxPaintExtent: paintExtent,
-        layoutExtent: layoutExtent,
-      );
+          scrollExtent: hei,
+          paintOrigin: -constraints.scrollOffset,
+          paintExtent: paintExtent,
+          maxPaintExtent: hei,
+          layoutExtent: layoutExtent,
+          hasVisualOverflow: true);
+    }
+
+    if ((constraints.scrollOffset + constraints.overlap > hei)) {
+      _setFolded(true);
+    } else {
+      _setFolded(false);
     }
   }
 

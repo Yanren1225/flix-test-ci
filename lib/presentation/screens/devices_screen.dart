@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/BadgeService.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
@@ -14,6 +15,7 @@ import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/notification_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modals/modals.dart';
@@ -51,6 +53,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
               title: '附近设备',
               isSliverChild: false,
               padding: 16,
+              enableRefresh: true,
               child: DeviceList(
                 devices: devices,
                 onDeviceSelected: widget.onDeviceSelected,
@@ -60,11 +63,13 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
               ),
             ),
           ),
-          SizedBox(
-              width: double.infinity,
-              height: 120,
-              child: Lottie.asset('assets/animations/radar.json',
-                  fit: BoxFit.cover, alignment: Alignment.topRight)),
+          ClipRect(
+            child: SizedBox(
+                width: double.infinity,
+                height: 160,
+                child: Lottie.asset('assets/animations/radar.json',
+                    fit: BoxFit.fill, alignment: Alignment.topRight)),
+          ),
         ],
       ),
     );

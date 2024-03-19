@@ -308,7 +308,7 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
       body: NarrowBody(),
       bottomNavigationBar: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: 60 + MediaQuery.of(context).padding.bottom),
+        constraints: BoxConstraints(minHeight: 70 + MediaQuery.of(context).padding.bottom),
         child: BottomNavigationBar(
           items: [
             BottomNavigationBarItem(

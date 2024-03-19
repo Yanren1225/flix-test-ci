@@ -27,6 +27,7 @@ class HelpScreenState extends State<HelpScreen> {
       title: '软件帮助',
       isSliverChild: false,
       padding: 10,
+      enableRefresh: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

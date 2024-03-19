@@ -86,6 +86,8 @@ dependencies:
   firebase_crashlytics: ^3.4.19
   firebase_core: ^2.27.1
   flutter_native_image: ^0.0.6+1
+  easy_refresh: ^3.3.4
+  sliver_tools: ^0.2.12
   # thumbnailer: ^2.2.0
 
   # pdfx: ^2.5.0

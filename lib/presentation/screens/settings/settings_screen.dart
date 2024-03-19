@@ -25,6 +25,7 @@ class SettingsScreenState extends State<SettingsScreen> {
       title: '软件配置',
       isSliverChild: false,
       padding: 16,
+      enableRefresh: false,
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
