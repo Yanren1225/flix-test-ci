@@ -250,7 +250,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
         child: _innerBubble,
       );
     } else if (clickable) {
-      innerBubble = FileBubbleInteraction(filePath: sharedFile.content.path!, child: _innerBubble);
+      innerBubble = FileBubbleInteraction(filePath: sharedFile.content.path!, child: _innerBubble, clickable: true,);
 
     } else {
       innerBubble = _innerBubble;

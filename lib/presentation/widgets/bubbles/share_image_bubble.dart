@@ -65,6 +65,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
       backgroundColor = Colors.white;
     }
 
+    bool clickable = false;
     final MainAxisAlignment alignment;
     if (entity.isFromMe(andropContext.deviceId)) {
       alignment = MainAxisAlignment.end;
@@ -81,15 +82,18 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
       // 发送
       switch (sharedImage.state) {
         case FileState.picked:
-          content = _image(sharedImage, true);
+          clickable = true;
+          content = _image(sharedImage);
           stateIcon =
               CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.waitToAccepted:
+          clickable = false;
+
           content = Stack(
             fit: StackFit.passthrough,
             children: [
-              _image(sharedImage, false),
+              _image(sharedImage),
               Container(
                 decoration:
                     const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
@@ -107,10 +111,12 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
               CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.inTransit:
+          clickable = false;
+
           content = Stack(
             fit: StackFit.passthrough,
             children: [
-              _image(sharedImage, false),
+              _image(sharedImage),
               Container(
                 decoration:
                     const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
@@ -153,13 +159,15 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
         case FileState.sendCompleted:
         case FileState.receiveCompleted:
         case FileState.completed:
-          content = _image(sharedImage, true);
+          clickable = true;
+          content = _image(sharedImage);
           break;
         case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
-          content = _image(sharedImage, true);
+          clickable = true;
+          content = _image(sharedImage);
           stateIcon =
               stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
@@ -207,7 +215,8 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
           break;
         case FileState.receiveCompleted:
         case FileState.completed:
-          content = _image(sharedImage, true);
+          clickable = true;
+          content = _image(sharedImage);
           break;
         case FileState.cancelled:
         case FileState.sendFailed:
@@ -247,49 +256,53 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
         // Expanded强制占用剩余的空间
         // Flexible默认允许子元素占用尽可能的剩余空间
         Flexible(
-          child: ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                    color: backgroundColor,
-                    borderRadius: const BorderRadius.all(Radius.circular(10))),
-                child: LayoutBuilder(builder:
-                    (BuildContext context, BoxConstraints constraints) {
-                  if (sharedImage.content.width == 0) {
-                    return ConstrainedBox(
-                        constraints: BoxConstraints(
-                            minWidth: 150,
-                            maxWidth:
-                                max(150, min(constraints.maxWidth - 60, 300)),
-                            minHeight: 150),
-                        child: IntrinsicHeight(child: content));
-                  } else {
-                    final width;
-                    if (sharedImage.content.width >
-                        max(150, min(300, constraints.maxWidth - 60))) {
-                      width = max(150, min(300, constraints.maxWidth - 60));
-                    } else if (sharedImage.content.width < 150) {
-                      width = 150;
-                    } else {
-                      width = sharedImage.content.width;
-                    }
-                    final height;
-
+          child: FileBubbleInteraction(
+            filePath: sharedImage.content.path ?? '',
+            clickable: clickable,
+            child: ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                      color: backgroundColor,
+                      borderRadius: const BorderRadius.all(Radius.circular(10))),
+                  child: LayoutBuilder(builder:
+                      (BuildContext context, BoxConstraints constraints) {
                     if (sharedImage.content.width == 0) {
-                      height = width;
+                      return ConstrainedBox(
+                          constraints: BoxConstraints(
+                              minWidth: 150,
+                              maxWidth:
+                                  max(150, min(constraints.maxWidth - 60, 300)),
+                              minHeight: 150),
+                          child: IntrinsicHeight(child: content));
                     } else {
-                      height = sharedImage.content.height *
-                          1.0 /
-                          sharedImage.content.width *
-                          width;
+                      final width;
+                      if (sharedImage.content.width >
+                          max(150, min(300, constraints.maxWidth - 60))) {
+                        width = max(150, min(300, constraints.maxWidth - 60));
+                      } else if (sharedImage.content.width < 150) {
+                        width = 150;
+                      } else {
+                        width = sharedImage.content.width;
+                      }
+                      final height;
+
+                      if (sharedImage.content.width == 0) {
+                        height = width;
+                      } else {
+                        height = sharedImage.content.height *
+                            1.0 /
+                            sharedImage.content.width *
+                            width;
+                      }
+                      return SizedBox(
+                          width: width * 1.0,
+                          height: height * 1.0,
+                          child: content);
                     }
-                    return SizedBox(
-                        width: width * 1.0,
-                        height: height * 1.0,
-                        child: content);
-                  }
-                }),
-              )),
+                  }),
+                )),
+          ),
         ),
         Visibility(
           visible: alignment == MainAxisAlignment.start,
@@ -308,17 +321,8 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
     );
   }
 
-  Widget _image(SharedFile sharedFile, bool clickable) {
-    if (clickable) {
-      return FileBubbleInteraction(
-          filePath: sharedFile.content.path!,
-          child: Image.file(
-              key: _imageKey,
-              File(sharedFile.content.path!!),
-              fit: BoxFit.contain));
-    } else {
-      return Image.file(
-          key: _imageKey, File(sharedFile.content.path!!), fit: BoxFit.contain);
-    }
+  Widget _image(SharedFile sharedFile) {
+    return Image.file(
+        key: _imageKey, File(sharedFile.content.path!!), fit: BoxFit.contain);
   }
 }
