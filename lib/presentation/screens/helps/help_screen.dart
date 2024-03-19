@@ -26,6 +26,7 @@ class HelpScreenState extends State<HelpScreen> {
     return CupertinoNavigationScaffold(
       title: '软件帮助',
       isSliverChild: false,
+      padding: 10,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

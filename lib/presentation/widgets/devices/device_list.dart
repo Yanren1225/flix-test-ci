@@ -22,7 +22,7 @@ class DeviceList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverList.list(
+    return Column(
         children: [
       ...List.generate(devices.length, (index) {
         var deviceInfo = devices[index];
