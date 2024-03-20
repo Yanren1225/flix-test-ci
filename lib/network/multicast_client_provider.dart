@@ -14,7 +14,10 @@ enum MultiState { idle, scanning, connect, failure }
 
 class MultiCastClientProvider extends ChangeNotifier {
   Set<DeviceModal> get deviceList => DeviceManager.instance.deviceList;
-  Set<DeviceModal> get history => DeviceManager.instance.history;
+
+  Set<DeviceModal> get history => DeviceManager.instance.history
+      .where((e) => !deviceList.contains(e))
+      .toSet();
   StreamSubscription? connectivitySubscription;
 
   static MultiCastClientProvider of(BuildContext context,
@@ -25,7 +28,8 @@ class MultiCastClientProvider extends ChangeNotifier {
   MultiCastClientProvider() {
     DeviceManager.instance.addDeviceListChangeListener(_onDeviceListChanged);
     DeviceManager.instance.addHistoryChangeListener(_onHistoryListChanged);
-    connectivitySubscription = Connectivity().onConnectivityChanged.listen((result) {
+    connectivitySubscription =
+        Connectivity().onConnectivityChanged.listen((result) {
       talker.verbose('connectivity changed: $result');
       startScan();
     });

@@ -119,7 +119,7 @@ class CupertinoNavigationScalffoldState
           onRefresh: () async {
             deviceProvider.clearDevices();
             deviceProvider.startScan();
-            await Future.delayed(Duration(seconds: 2));
+            await Future.delayed(const Duration(seconds: 2));
             return IndicatorResult.success;
           },
           header: const MaterialHeader(color: Color.fromRGBO(0, 122, 255, 1)),

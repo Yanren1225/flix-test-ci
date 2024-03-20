@@ -153,7 +153,8 @@ class DeviceManager {
   void _watchHistory() {
     appDatabase.devicesDao.watchDevices().listen((event) {
       history.clear();
-      event.removeWhere((element) => deviceList.contains(element));
+      // 在前端去重，当在线设备变化时，可以再次去重
+      // event.removeWhere((element) => deviceList.contains(element));
       history.addAll(event);
       notifyHistoryChanged();
     });
