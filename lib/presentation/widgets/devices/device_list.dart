@@ -1,11 +1,12 @@
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
+import 'package:flix/presentation/widgets/devices/device_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class DeviceList extends StatelessWidget {
+class DeviceList extends StatefulWidget {
   const DeviceList(
       {super.key,
       required this.devices,
@@ -21,23 +22,41 @@ class DeviceList extends StatelessWidget {
   final Map<String, int> badges;
 
   @override
+  _DeviceListState createState() => _DeviceListState();
+}
+
+class _DeviceListState extends State<DeviceList> {
+  List<DeviceInfo> get devices => widget.devices;
+
+  void Function(DeviceInfo deviceInfo) get onDeviceSelected =>
+      widget.onDeviceSelected;
+
+  bool get showHistory => widget.showHistory;
+
+  List<DeviceInfo> get history => widget.history;
+
+  Map<String, int> get badges => widget.badges;
+
+  var selectedIndex = -1;
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       ...List.generate(devices.length, (index) {
         var deviceInfo = devices[index];
-        return GestureDetector(
-          onTap: () {
-            onDeviceSelected(deviceInfo);
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 10, left: 16, right: 16),
-            child: DeviceItem(
-              ValueKey(devices[index].id),
-              deviceInfo,
-              badge: badges[deviceInfo.id] ?? 0,
-            ),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10, left: 16, right: 16),
+          child: DeviceItem(
+            ValueKey(devices[index].id),
+            deviceInfo,
+            () {
+              onDeviceSelected(deviceInfo);
+              setState(() {
+                selectedIndex = index;
+              });
+            },
+            selected: selectedIndex == index,
+            badge: badges[deviceInfo.id] ?? 0,
           ),
         );
       }),
@@ -65,87 +84,5 @@ class DeviceList extends StatelessWidget {
       }),
       const Expanded(child: SizedBox())
     ]);
-  }
-
-}
-
-class DeviceItem extends StatelessWidget {
-  final DeviceInfo deviceInfo;
-  final int badge;
-
-  const DeviceItem(Key key, this.deviceInfo, {this.badge = 0})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(20))),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Flexible(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  badge > 0
-                      ? Badge(
-                          backgroundColor: Colors.red,
-                          textColor: Colors.white,
-                          label: badge > 9
-                              ? const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 4),
-                                  child: const Text('9+'))
-                              : SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: Center(child: Text('$badge'))),
-                          padding: EdgeInsets.zero,
-                          child: Image(
-                            image:
-                                AssetImage('assets/images/${deviceInfo.icon}'),
-                            width: 36,
-                            height: 36,
-                            fit: BoxFit.fill,
-                          ),
-                        )
-                      : Image(
-                          image: AssetImage('assets/images/${deviceInfo.icon}'),
-                          width: 36,
-                          height: 36,
-                          fit: BoxFit.fill,
-                        ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Flexible(
-                    child: Text(
-                      deviceInfo.name,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              width: 16,
-            ),
-            SvgPicture.asset(
-              'assets/images/arrow_right.svg',
-              width: 24,
-              height: 24,
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
