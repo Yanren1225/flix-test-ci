@@ -51,7 +51,7 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
         padding: const EdgeInsets.only(top: 20),
         child: DeviceList(
           devices: devices,
-          onDeviceSelected: _onDeviceSelected,
+          onDeviceSelected: (deviceInfo, _) => _onDeviceSelected(deviceInfo),
           showHistory: false,
           history: [],
         ),

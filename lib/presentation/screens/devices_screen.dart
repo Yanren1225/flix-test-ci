@@ -23,7 +23,7 @@ import 'package:modals/modals.dart';
 import 'concert/concert_screen.dart';
 
 class DeviceScreen extends StatefulWidget {
-  final void Function(DeviceInfo deviceInfo) onDeviceSelected;
+  final void Function(DeviceInfo deviceInfo, bool isHistory) onDeviceSelected;
 
   const DeviceScreen({super.key, required this.onDeviceSelected});
 
@@ -66,9 +66,9 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
           ClipRect(
             child: SizedBox(
                 width: double.infinity,
-                height: 160,
+                height: 140,
                 child: Lottie.asset('assets/animations/radar.json',
-                    fit: BoxFit.fill, alignment: Alignment.topRight)),
+                    fit: BoxFit.cover, alignment: Alignment.topRight)),
           ),
         ],
       ),
@@ -101,21 +101,15 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
 
 class HistoryItem extends StatelessWidget {
   final DeviceInfo historyItemInfo;
+  final VoidCallback onTap;
 
-  const HistoryItem({Key? key, required this.historyItemInfo})
+  const HistoryItem({Key? key, required this.historyItemInfo, required this.onTap})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => ConcertScreen(
-                  deviceInfo: historyItemInfo,
-                  showBackButton: true,
-                  playable: false,
-                )));
-      },
+      onTap: onTap,
       child: Padding(
         padding:
             const EdgeInsets.only(left: 20, right: 10, top: 10, bottom: 10),

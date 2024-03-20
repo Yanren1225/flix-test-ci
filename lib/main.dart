@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/device/device_manager.dart';
@@ -14,6 +14,7 @@ import 'package:flix/model/notification/reception_notification.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
+import 'package:flix/presentation/screens/helps/about_us.dart';
 import 'package:flix/presentation/screens/helps/help_screen.dart';
 import 'package:flix/presentation/screens/pick_device_screen.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
@@ -24,22 +25,20 @@ import 'package:flix/utils/meida/media_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_ume/flutter_ume.dart'; // UME framework
+import 'package:flutter_ume_kit_console/flutter_ume_kit_console.dart'; // Show debugPrint
+import 'package:flutter_ume_kit_ui/flutter_ume_kit_ui.dart'; // UI kits
 import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:share_handler/share_handler.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:flutter_ume/flutter_ume.dart'; // UME framework
-import 'package:flutter_ume_kit_ui/flutter_ume_kit_ui.dart'; // UI kits
-import 'package:flutter_ume_kit_console/flutter_ume_kit_console.dart'; // Show debugPrint
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
+import 'firebase_options.dart';
 
 // final demoSplitViewKey = GlobalKey<NavigatorState>();
 // final _leftKey = GlobalKey();
-
 
 int id = 1;
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -54,11 +53,11 @@ Future<void> main() async {
     );
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
     PlatformDispatcher.instance.onError = (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true, information: ['asynchronous errors']);
+      FirebaseCrashlytics.instance.recordError(error, stack,
+          fatal: true, information: ['asynchronous errors']);
       return true;
     };
   }
-
 
   if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
     await windowManager.ensureInitialized();
@@ -127,7 +126,8 @@ Future<void> _initNotification() async {
         receptionNotificationStream.add(receptionNotification);
         break;
       case NotificationResponseType.selectedNotificationAction:
-        talker.debug('selectedNotificationAction, actionId: ${details.actionId}');
+        talker
+            .debug('selectedNotificationAction, actionId: ${details.actionId}');
         break;
     }
   });
@@ -202,8 +202,30 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
-  DeviceInfo? selectedDevice;
+  // DeviceInfo? selectedDevice;
   bool isLeaved = false;
+  Widget? thirdWidget;
+
+  Center selectedDeviceTipsScreen() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SvgPicture.asset('assets/images/img_placeholder.svg'),
+          const SizedBox(
+            height: 16,
+          ),
+          const Text(
+            '请选择设备',
+            style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.normal,
+                color: Colors.black),
+          )
+        ],
+      ),
+    );
+  }
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
@@ -238,7 +260,12 @@ class _MyHomePageState extends State<MyHomePage> {
       if (deviceInfo == null) {
         talker.warning('取消分享，未选择设备');
       } else {
-        setSelectedDevice(deviceInfo);
+        setState(() {
+          thirdWidget = ConcertScreen(
+            deviceInfo: deviceInfo,
+            showBackButton: true,
+          );
+        });
       }
     });
   }
@@ -253,7 +280,12 @@ class _MyHomePageState extends State<MyHomePage> {
       if (deviceModal != null) {
         if (isOverMediumWidth(context)) {
           setSelectedIndex(0);
-          setSelectedDevice(deviceModal.toDeviceInfo());
+          setState(() {
+            thirdWidget = ConcertScreen(
+              deviceInfo: deviceModal.toDeviceInfo(),
+              showBackButton: true,
+            );
+          });
         } else {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return ConcertScreen(
@@ -280,11 +312,11 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void setSelectedDevice(DeviceInfo? deviceInfo) {
-    setState(() {
-      selectedDevice = deviceInfo;
-    });
-  }
+  // void setSelectedDevice(DeviceInfo? deviceInfo) {
+  //   setState(() {
+  //     selectedDevice = deviceInfo;
+  //   });
+  // }
 
   Color getColor(int index, int selectedIndex) {
     return index == selectedIndex
@@ -312,7 +344,8 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
       body: NarrowBody(),
       bottomNavigationBar: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: 70 + MediaQuery.of(context).padding.bottom),
+        constraints: BoxConstraints(
+            minHeight: 70 + MediaQuery.of(context).padding.bottom),
         child: BottomNavigationBar(
           items: [
             BottomNavigationBarItem(
@@ -348,10 +381,12 @@ class _MyHomePageState extends State<MyHomePage> {
           unselectedItemColor: const Color.fromRGBO(60, 60, 67, 0.3),
           selectedFontSize: 10,
           unselectedFontSize: 10,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 10)
-              .useSystemChineseFont(),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 10)
-              .useSystemChineseFont(),
+          selectedLabelStyle:
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 10)
+                  .useSystemChineseFont(),
+          unselectedLabelStyle:
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 10)
+                  .useSystemChineseFont(),
           backgroundColor: Colors.white,
           elevation: 0,
           onTap: (value) => setSelectedIndex(value),
@@ -364,18 +399,21 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (selectedIndex) {
       case 0:
         return DeviceScreen(
-          onDeviceSelected: (deviceInfo) => Navigator.push(
+          onDeviceSelected: (deviceInfo, isHistory) => Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => ConcertScreen(
                         deviceInfo: deviceInfo,
                         showBackButton: true,
+                        playable: !isHistory,
                       ))),
         );
       case 1:
         return SettingsScreen();
       case 2:
-        return HelpScreen();
+        return HelpScreen(goVersionScreen: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AboutUSScreen()));
+        },);
       default:
         return Placeholder();
     }
@@ -443,10 +481,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 .useSystemChineseFont(),
             backgroundColor: Colors.white,
           ),
-          Flexible(child: secondPart(), flex: 1),
+          Flexible(flex: 1, child: secondPart()),
           Expanded(
-            child: thirdPart(),
             flex: 2,
+            child: thirdPart(),
           )
         ],
       ),
@@ -457,41 +495,37 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (selectedIndex) {
       case 0:
         return DeviceScreen(
-          onDeviceSelected: (deviceInfo) => setSelectedDevice(deviceInfo),
+          onDeviceSelected: (deviceInfo, isHistory) => setState(() {
+            thirdWidget = ConcertScreen(deviceInfo: deviceInfo, showBackButton: false, playable: !isHistory,);
+          }),
         );
       case 1:
         return SettingsScreen();
       case 2:
-        return HelpScreen();
+        return HelpScreen(goVersionScreen: () {
+          setState(() {
+            thirdWidget = AboutUSScreen(showBack: false,);
+          });
+        },);
       default:
         return Placeholder();
     }
   }
 
-  Widget thirdPart() {
-    final deviceInfo = selectedDevice;
 
-    if (deviceInfo != null) {
-      return ConcertScreen(deviceInfo: deviceInfo, showBackButton: false);
+  Widget thirdPart() {
+    // final deviceInfo = selectedDevice;
+
+    // if (deviceInfo != null) {
+    //   return ;
+    // } else {
+    //   return selectedDeviceTipsScreen();
+    // }
+
+    if (thirdWidget == null) {
+      return selectedDeviceTipsScreen();
     } else {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SvgPicture.asset('assets/images/img_placeholder.svg'),
-            const SizedBox(
-              height: 16,
-            ),
-            const Text(
-              '请选择设备',
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.black),
-            )
-          ],
-        ),
-      );
+      return thirdWidget!;
     }
   }
 }

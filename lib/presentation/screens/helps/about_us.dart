@@ -4,16 +4,44 @@ import 'package:flix/utils/download_nonweb_logs.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:talker/talker.dart';
 
-class AboutUSScreen extends StatelessWidget {
+class AboutUSScreen extends StatefulWidget {
   var versionTapCount = 0;
   int lastTapTime = 0;
+  bool showBack = true;
 
+
+  AboutUSScreen({this.showBack = true});
+
+
+
+  @override
+  State<StatefulWidget> createState() => AboutUSScreenState();
+
+}
+
+
+class AboutUSScreenState extends State<AboutUSScreen> {
+  var versionTapCount = 0;
+  int lastTapTime = 0;
+  bool get showBack => widget.showBack;
+
+  ValueNotifier<String> _version = ValueNotifier('');
+
+  @override
+  void initState() {
+    super.initState();
+    PackageInfo.fromPlatform().then((packageInfo) {
+      _version.value = packageInfo.version;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return NavigationScaffold(
+        showBackButton: showBack,
         title: '关于我们',
         builder: (padding) {
           final widgets = <Widget>[
@@ -135,7 +163,7 @@ class AboutUSScreen extends StatelessWidget {
           versionTapCount = 0;
 
           downloadFile(talker.history.text).onError(
-            (error, stackTrace) {
+                (error, stackTrace) {
               talker.error('日志分享失败, $error, $stackTrace', error, stackTrace);
               Fluttertoast.showToast(
                   msg: "已复制到剪切板",
@@ -145,18 +173,20 @@ class AboutUSScreen extends StatelessWidget {
                   backgroundColor: Colors.grey.shade200,
                   textColor: Colors.black,
                   fontSize: 16.0);
-            }
-                ,
+            },
           );
         }
       },
-      child: const Padding(
+      child: Padding(
         padding: EdgeInsets.all(10.0),
-        child: Text('当前软件版本：V0.0.1-b24010601',
-            style: TextStyle(
-                color: Colors.black,
-                fontSize: 14,
-                fontWeight: FontWeight.w500)),
+        child: ValueListenableBuilder(
+          valueListenable: _version,
+          builder: (_, _version, child) => Text('当前软件版本：v$_version',
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500)),
+        ),
       ),
     );
   }

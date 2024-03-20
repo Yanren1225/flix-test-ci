@@ -17,7 +17,7 @@ class DeviceList extends StatefulWidget {
       this.badges = const <String, int>{}});
 
   final List<DeviceInfo> devices;
-  final void Function(DeviceInfo deviceInfo) onDeviceSelected;
+  final void Function(DeviceInfo deviceInfo, bool isHistory) onDeviceSelected;
   final bool showHistory;
   final List<DeviceInfo> history;
   final Map<String, int> badges;
@@ -29,7 +29,7 @@ class DeviceList extends StatefulWidget {
 class _DeviceListState extends State<DeviceList> {
   List<DeviceInfo> get devices => widget.devices;
 
-  void Function(DeviceInfo deviceInfo) get onDeviceSelected =>
+  void Function(DeviceInfo deviceInfo, bool isHistory) get onDeviceSelected =>
       widget.onDeviceSelected;
 
   bool get showHistory => widget.showHistory;
@@ -52,7 +52,7 @@ class _DeviceListState extends State<DeviceList> {
             ValueKey(devices[index].id),
             deviceInfo,
             () {
-              onDeviceSelected(deviceInfo);
+              onDeviceSelected(deviceInfo, false);
               deviceProvider.setSelectedDeviceId(deviceInfo.id);
             },
             selected: isOverMediumWidth(context) ? deviceProvider.selectedDeviceId == deviceInfo.id : false,
@@ -62,25 +62,22 @@ class _DeviceListState extends State<DeviceList> {
       }),
       Visibility(
         visible: showHistory && history.isNotEmpty,
-        child: Padding(
+        child: const Padding(
           padding: EdgeInsets.only(left: 16, right: 16, top: 20, bottom: 6),
-          child: InkWell(
-            onTap: () {
-              MultiCastClientProvider.of(context).clearDevices();
-            },
-            child: const Text(
-              '历史记录',
-              style: TextStyle(
-                  color: Color.fromRGBO(60, 60, 67, 0.6),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500),
-            ),
+          child: Text(
+            '历史记录',
+            style: TextStyle(
+                color: Color.fromRGBO(60, 60, 67, 0.6),
+                fontSize: 14,
+                fontWeight: FontWeight.w500),
           ),
         ),
       ),
       ...List.generate(showHistory ? history.length : 0, (index) {
         var historyItemInfo = history[index];
-        return HistoryItem(historyItemInfo: historyItemInfo);
+        return HistoryItem(historyItemInfo: historyItemInfo, onTap: () {
+          onDeviceSelected(historyItemInfo, true);
+        },);
       }),
       const Expanded(child: SizedBox())
     ]);

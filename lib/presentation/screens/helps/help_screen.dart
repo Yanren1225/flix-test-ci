@@ -6,6 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class HelpScreen extends StatefulWidget {
+  VoidCallback goVersionScreen;
+
+  HelpScreen({required this.goVersionScreen});
+
   @override
   State<StatefulWidget> createState() => HelpScreenState();
 }
@@ -35,12 +39,7 @@ class HelpScreenState extends State<HelpScreen> {
             padding: const EdgeInsets.only(
                 left: 16, top: 8, right: 16, bottom: 16),
             child: InkWell(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) {
-                      return AboutUSScreen();
-                    }));
-              },
+              onTap: widget.goVersionScreen,
               child: DecoratedBox(
                 decoration: BoxDecoration(
                     color: Colors.white,
