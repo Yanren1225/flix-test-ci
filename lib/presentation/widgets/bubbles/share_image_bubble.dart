@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:downloadsfolder/downloadsfolder.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_manager.dart';
@@ -12,11 +11,8 @@ import 'package:flix/presentation/widgets/bubbles/wait_to_accept_media_widget.da
 import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/resend_button.dart';
-import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:open_dir/open_dir.dart';
-import 'package:open_filex/open_filex.dart';
 import 'package:provider/provider.dart';
 
 class ShareImageBubble extends StatefulWidget {
