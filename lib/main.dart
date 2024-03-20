@@ -37,6 +37,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 
+// final demoSplitViewKey = GlobalKey<NavigatorState>();
+// final _leftKey = GlobalKey();
+
+
 int id = 1;
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -313,6 +317,8 @@ class _MyHomePageState extends State<MyHomePage> {
           items: [
             BottomNavigationBarItem(
                 icon: SvgPicture.asset(
+                  width: 26,
+                  height: 26,
                   'assets/images/ic_share.svg',
                   colorFilter: ColorFilter.mode(
                       getColor(0, selectedIndex), BlendMode.srcIn),
@@ -320,6 +326,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 label: '互传'),
             BottomNavigationBarItem(
                 icon: SvgPicture.asset(
+                  width: 26,
+                  height: 26,
                   'assets/images/ic_config.svg',
                   colorFilter: ColorFilter.mode(
                       getColor(1, selectedIndex), BlendMode.srcIn),
@@ -327,6 +335,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 label: '配置'),
             BottomNavigationBarItem(
                 icon: SvgPicture.asset(
+                  width: 26,
+                  height: 26,
                   'assets/images/ic_help.svg',
                   colorFilter: ColorFilter.mode(
                       getColor(2, selectedIndex), BlendMode.srcIn),
@@ -338,9 +348,9 @@ class _MyHomePageState extends State<MyHomePage> {
           unselectedItemColor: const Color.fromRGBO(60, 60, 67, 0.3),
           selectedFontSize: 10,
           unselectedFontSize: 10,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500)
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 10)
               .useSystemChineseFont(),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500)
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 10)
               .useSystemChineseFont(),
           backgroundColor: Colors.white,
           elevation: 0,

@@ -1,1 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24" fill="none"><g opacity="1"  transform="translate(0 0)"><mask id="bg-mask-0" fill="white"><use transform="translate(0 0)" xlink:href="#path_0"></use></mask><g mask="url(#bg-mask-0)" ><path id="路径 1" fill-rule="evenodd" style="fill:#000000" opacity="1" d="M12 1L21.5 6.5L21.5 17.5L12 23L2.5 17.5L2.5 6.5L12 1ZM6.49896 9.97089L11 12.5768L11 17.6252L13 17.6252L13 12.5768L17.501 9.9709L16.499 8.24005L12 10.8447L7.50104 8.24004L6.49896 9.97089Z"></path></g></g><defs><rect id="path_0" x="0" y="0" width="24" height="24" rx="0" ry="0"/></defs></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="26" height="26" viewBox="0 0 26 26" fill="none">
+<path d="M13 1.08337L23.2917 7.04171L23.2917 18.9584L13 24.9167L2.70837 18.9584L2.70837 7.04171L13 1.08337ZM7.04058 10.8018L11.9167 13.6249L11.9167 19.094L14.0834 19.094L14.0834 13.6249L18.9595 10.8018L17.874 8.92676L13 11.7485L8.12617 8.92675L7.04058 10.8018Z"   fill="#3C3C43">
+</path>
+</svg>

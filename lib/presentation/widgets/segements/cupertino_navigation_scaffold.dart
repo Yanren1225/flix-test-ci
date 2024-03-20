@@ -39,6 +39,8 @@ class CupertinoNavigationScalffoldState
 
   double get padding => widget.padding;
   var isFolded = ValueNotifier(false);
+  // RefreshController _refreshController =
+  // RefreshController(initialRefresh: false);
 
   @override
   Widget build(BuildContext context) {
@@ -120,8 +122,11 @@ class CupertinoNavigationScalffoldState
             await Future.delayed(Duration(seconds: 2));
             return IndicatorResult.success;
           },
-          // header: const MaterialHeader(color: Color.fromRGBO(0, 122, 255, 1)),
-          header: MaterialHeader(color: Colors.black),
+          header: const MaterialHeader(color: Color.fromRGBO(0, 122, 255, 1)),
+          // header: BezierHeader(
+          //
+          //   // backgroundColor: ,
+          // ),
           child: CustomScrollView(
             slivers: slivers,
           ),
