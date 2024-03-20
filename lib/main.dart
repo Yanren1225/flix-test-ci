@@ -35,6 +35,7 @@ import 'package:provider/provider.dart';
 import 'package:share_handler/share_handler.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'domain/notification/BadgeService.dart';
 import 'firebase_options.dart';
 
 // final demoSplitViewKey = GlobalKey<NavigatorState>();
@@ -261,6 +262,7 @@ class _MyHomePageState extends State<MyHomePage> {
         talker.warning('取消分享，未选择设备');
       } else {
         setState(() {
+          BadgeService.instance.clearBadgesFrom(deviceInfo.id);
           thirdWidget = ConcertScreen(
             deviceInfo: deviceInfo,
             showBackButton: true,
@@ -280,6 +282,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (deviceModal != null) {
         if (isOverMediumWidth(context)) {
           setSelectedIndex(0);
+          BadgeService.instance.clearBadgesFrom(deviceModal.fingerprint);
           setState(() {
             thirdWidget = ConcertScreen(
               deviceInfo: deviceModal.toDeviceInfo(),
@@ -495,9 +498,12 @@ class _MyHomePageState extends State<MyHomePage> {
     switch (selectedIndex) {
       case 0:
         return DeviceScreen(
-          onDeviceSelected: (deviceInfo, isHistory) => setState(() {
-            thirdWidget = ConcertScreen(deviceInfo: deviceInfo, showBackButton: false, playable: !isHistory,);
-          }),
+          onDeviceSelected: (deviceInfo, isHistory) {
+            BadgeService.instance.clearBadgesFrom(deviceInfo.id);
+            setState(() {
+              thirdWidget = ConcertScreen(deviceInfo: deviceInfo, showBackButton: false, playable: !isHistory,);
+            });
+          },
         );
       case 1:
         return SettingsScreen();
