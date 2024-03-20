@@ -189,21 +189,21 @@ class MultiCastUtil {
 
   static Future aquireMulticastLock() async {
     if (Platform.isAndroid) {
-      talker.verbose("locking multicast lock");
+      talker.debug("locking multicast lock");
       MULTICAST_LOCK_CHANNEL.invokeMethod('aquire');
     }
   }
 
   static Future releaseMulticastLock() async {
     if (Platform.isAndroid) {
-      talker.verbose("releasing multicast lock");
+      talker.debug("releasing multicast lock");
       MULTICAST_LOCK_CHANNEL.invokeMethod('release');
     }
   }
 
   static bool isFromSelf(String from) {
     if (from == DeviceManager.instance.did) {
-      talker.verbose('receive self datagram');
+      talker.debug('receive self datagram');
       return true;
     }
     return false;

@@ -33,7 +33,7 @@ class _ResendButtonState extends State<ResendButton> {
   @override
   void dispose() {
     removeModal(anchorTag);
-    talker.verbose('resend button disposed: $anchorTag');
+    talker.debug('resend button disposed: $anchorTag');
     super.dispose();
   }
 

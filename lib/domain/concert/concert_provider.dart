@@ -48,7 +48,7 @@ class ConcertProvider extends ChangeNotifier {
   void _logLastProgress() {
     final last = this.bubbles.lastOrNull;
     if (last != null && last.shareable is SharedFile) {
-      talker.verbose('progress: ${(last.shareable as SharedFile).progress}');
+      talker.debug('progress: ${(last.shareable as SharedFile).progress}');
     }
   }
 

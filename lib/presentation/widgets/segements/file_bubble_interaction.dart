@@ -76,7 +76,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
         onTap: () {
           if (!widget.clickable) return;
           // _controller.forward().whenComplete(() => _controller.reverse());
-          talker.verbose('filePath: ${widget.filePath}');
+          talker.debug('filePath: ${widget.filePath}');
           OpenFilex.open(widget.filePath).then((value) {
             if (value.type != ResultType.done) {
               talker.error(

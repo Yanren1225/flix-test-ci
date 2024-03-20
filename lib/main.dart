@@ -127,7 +127,7 @@ Future<void> _initNotification() async {
         receptionNotificationStream.add(receptionNotification);
         break;
       case NotificationResponseType.selectedNotificationAction:
-        talker.verbose('selectedNotificationAction, actionId: ${details.actionId}');
+        talker.debug('selectedNotificationAction, actionId: ${details.actionId}');
         break;
     }
   });

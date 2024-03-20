@@ -104,7 +104,7 @@ class AppsScreenState extends State<AppsScreen> {
   void initState() {
     super.initState();
     getInstalledApps().then((apps) {
-      talker.verbose('loaded apps size: ${apps.length}');
+      talker.debug('loaded apps size: ${apps.length}');
       setState(() {
         this.apps = apps;
       });

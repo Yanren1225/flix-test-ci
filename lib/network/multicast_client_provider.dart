@@ -20,6 +20,9 @@ class MultiCastClientProvider extends ChangeNotifier {
       .toSet();
   StreamSubscription? connectivitySubscription;
 
+  String? _selectedDeviceId = null;
+  String? get selectedDeviceId => _selectedDeviceId;
+
   static MultiCastClientProvider of(BuildContext context,
       {bool listen = false}) {
     return Provider.of<MultiCastClientProvider>(context, listen: listen);
@@ -30,7 +33,7 @@ class MultiCastClientProvider extends ChangeNotifier {
     DeviceManager.instance.addHistoryChangeListener(_onHistoryListChanged);
     connectivitySubscription =
         Connectivity().onConnectivityChanged.listen((result) {
-      talker.verbose('connectivity changed: $result');
+      talker.debug('connectivity changed: $result');
       startScan();
     });
   }
@@ -61,5 +64,10 @@ class MultiCastClientProvider extends ChangeNotifier {
 
   bool isDeviceConnected(DeviceModal event) {
     return DeviceManager.instance.isDeviceConnected(event);
+  }
+
+  void setSelectedDeviceId(String id) {
+    _selectedDeviceId = id;
+    notifyListeners();
   }
 }

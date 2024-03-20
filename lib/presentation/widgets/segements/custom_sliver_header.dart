@@ -47,8 +47,8 @@ class _LargeTitleAdapter extends RenderSliverSingleBoxAdapter {
       return;
     }
 
-    talker.verbose(
-        'scrollOffset ${constraints.scrollOffset}, ${constraints.overlap}');
+    // talker.verbose(
+    //     'scrollOffset ${constraints.scrollOffset}, ${constraints.overlap}');
 
     if (constraints.scrollOffset < 0 || constraints.overlap < 0) {
       child?.layout(constraints.asBoxConstraints(maxExtent: hei),

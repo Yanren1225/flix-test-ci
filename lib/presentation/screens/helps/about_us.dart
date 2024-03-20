@@ -1,8 +1,16 @@
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
+import 'package:flix/utils/download_nonweb_logs.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:talker/talker.dart';
 
 class AboutUSScreen extends StatelessWidget {
+  var versionTapCount = 0;
+  int lastTapTime = 0;
+
+
   @override
   Widget build(BuildContext context) {
     return NavigationScaffold(
@@ -18,8 +26,13 @@ class AboutUSScreen extends StatelessWidget {
             version()
           ];
           return ListView.builder(
-              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast)),
-              padding: padding.copyWith(bottom: padding.bottom + MediaQuery.of(context).padding.bottom + 20),
+              physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(
+                      decelerationRate: ScrollDecelerationRate.fast)),
+              padding: padding.copyWith(
+                  bottom: padding.bottom +
+                      MediaQuery.of(context).padding.bottom +
+                      20),
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.only(
@@ -108,11 +121,43 @@ class AboutUSScreen extends StatelessWidget {
   }
 
   Widget version() {
-    return const Padding(
-      padding: EdgeInsets.all(10.0),
-      child: Text('当前软件版本：V0.0.1-b24010601',
-          style: TextStyle(
-              color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500)),
+    return GestureDetector(
+      onTap: () {
+        final now = DateTime.now().millisecondsSinceEpoch;
+        if (now - lastTapTime < 300) {
+          versionTapCount++;
+        } else {
+          versionTapCount = 0;
+        }
+        lastTapTime = now;
+
+        if (versionTapCount >= 5) {
+          versionTapCount = 0;
+
+          downloadFile(talker.history.text).onError(
+            (error, stackTrace) {
+              talker.error('日志分享失败, $error, $stackTrace', error, stackTrace);
+              Fluttertoast.showToast(
+                  msg: "已复制到剪切板",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.grey.shade200,
+                  textColor: Colors.black,
+                  fontSize: 16.0);
+            }
+                ,
+          );
+        }
+      },
+      child: const Padding(
+        padding: EdgeInsets.all(10.0),
+        child: Text('当前软件版本：V0.0.1-b24010601',
+            style: TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.w500)),
+      ),
     );
   }
 

@@ -122,7 +122,7 @@ class PickActionAreaState extends State<PickActionsArea> {
       try {
         final XFile? pickedFile =
             await _picker.pickVideo(source: ImageSource.gallery);
-        talker.verbose('video selected: ${pickedFile?.path}');
+        talker.debug('video selected: ${pickedFile?.path}');
         if (pickedFile != null) {
           onPicked([
             PickableFile(

@@ -20,7 +20,7 @@ extension StreamProgress on Stream<List<int>> {
           content: bubble.content
               .copy(progress: byteCount.toDouble() / bubble.content.meta.size),
         );
-        talker.verbose("file transfer, byteCount: $byteCount, size: ${bubble.content.meta.size}");
+        talker.debug("file transfer, byteCount: $byteCount, size: ${bubble.content.meta.size}");
 
         // 异步插入，减少对发送和接收的阻塞
         BubblePool.instance.add(updatedBubble);
