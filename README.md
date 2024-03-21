@@ -41,6 +41,8 @@ samples, guidance on mobile development, and a full API reference.
 23. ~~pad端点击查看消息后，未读消息角标不会消失~~
 24. ~~在iPad上分享日志无法使用~~
 25. macos包名需要和ios包名区分
+26. 只有android ios支持heif图片格式
+27. macos上输入框高度错误
 
 ## 功能
 单击消息，打开文件

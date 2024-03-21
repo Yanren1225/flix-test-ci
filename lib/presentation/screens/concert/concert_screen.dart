@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flix/domain/concert/concert_provider.dart';
@@ -246,64 +247,61 @@ class InputAreaState extends State<InputArea> {
                         child: SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics(
                               decelerationRate: ScrollDecelerationRate.fast)),
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Shortcuts(
-                              shortcuts: {
-                                LogicalKeySet(LogicalKeyboardKey.control,
-                                    LogicalKeyboardKey.enter):
-                                const BreakLineIntent(),
-                                LogicalKeySet(LogicalKeyboardKey.enter):
-                                const SubmitIntent()
-                              },
-                              child: Actions(
-                                actions: <Type, Action<Intent>>{
-                                  BreakLineIntent: CallbackAction<
-                                      BreakLineIntent>(
-                                    onInvoke: (intent) {
-                                      textEditController.text += '\n';
-                                    },
-                                  ),
-                                  SubmitIntent: CallbackAction<SubmitIntent>(
-                                    onInvoke: (intent) {
-                                      trySubmitText(inputContent);
-                                    },
-                                  ),
-                                },
-                                child: TextField(
-                                  controller: textEditController,
-                                  style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.normal),
-                                  keyboardType: TextInputType.multiline,
-                                  minLines: null,
-                                  maxLines: null,
-                                  decoration: InputDecoration(
-                                      isDense: true,
-                                      // hintText: 'Input something.',
-                                      border: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        gapPadding: 0,
-                                        borderRadius: BorderRadius.circular(
-                                            10.0),
-                                      ),
-                                      filled: true,
-                                      contentPadding: const EdgeInsets.only(
-                                          left: 12,
-                                          right: 12,
-                                          top: 8,
-                                          bottom: 8)),
-                                  cursorColor: Colors.black,
-                                  onChanged: (value) {
-                                    input(value);
-                                  },
-                                  onSubmitted: (value) {
-                                    trySubmitText(value);
+                          child: Shortcuts(
+                            shortcuts: {
+                              LogicalKeySet(LogicalKeyboardKey.control,
+                                  LogicalKeyboardKey.enter):
+                              const BreakLineIntent(),
+                              LogicalKeySet(LogicalKeyboardKey.enter):
+                              const SubmitIntent()
+                            },
+                            child: Actions(
+                              actions: <Type, Action<Intent>>{
+                                BreakLineIntent: CallbackAction<
+                                    BreakLineIntent>(
+                                  onInvoke: (intent) {
+                                    textEditController.text += '\n';
                                   },
                                 ),
+                                SubmitIntent: CallbackAction<SubmitIntent>(
+                                  onInvoke: (intent) {
+                                    trySubmitText(inputContent);
+                                  },
+                                ),
+                              },
+                              child: TextField(
+                                controller: textEditController,
+                                style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal),
+                                keyboardType: TextInputType.multiline,
+                                minLines: null,
+                                maxLines: null,
+                                decoration: InputDecoration(
+                                    isDense: true,
+                                    // hintText: 'Input something.',
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                      gapPadding: 0,
+                                      borderRadius: BorderRadius.circular(
+                                          10.0),
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    hoverColor: Colors.white,
+                                    contentPadding: EdgeInsets.only(
+                                        left: 12,
+                                        right: 12,
+                                        top: 8,
+                                        bottom: Platform.isMacOS ? 16 : 8)),
+                                cursorColor: Colors.black,
+                                onChanged: (value) {
+                                  input(value);
+                                },
+                                onSubmitted: (value) {
+                                  trySubmitText(value);
+                                },
                               ),
                             ),
                           ),
