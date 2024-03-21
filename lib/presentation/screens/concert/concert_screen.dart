@@ -294,7 +294,7 @@ class InputAreaState extends State<InputArea> {
                                         left: 12,
                                         right: 12,
                                         top: 8,
-                                        bottom: Platform.isMacOS ? 16 : 8)),
+                                        bottom: Platform.isMacOS || Platform.isWindows || Platform.isLinux ? 16 : 8)),
                                 cursorColor: Colors.black,
                                 onChanged: (value) {
                                   input(value);
