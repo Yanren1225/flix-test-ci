@@ -47,6 +47,13 @@ class _LargeTitleAdapter extends RenderSliverSingleBoxAdapter {
       return;
     }
 
+    if ((constraints.scrollOffset + constraints.overlap > hei)) {
+      _setFolded(true);
+      return;
+    } else {
+      _setFolded(false);
+    }
+
     // talker.verbose(
     //     'scrollOffset ${constraints.scrollOffset}, ${constraints.overlap}');
 
@@ -82,11 +89,7 @@ class _LargeTitleAdapter extends RenderSliverSingleBoxAdapter {
           hasVisualOverflow: true);
     }
 
-    if ((constraints.scrollOffset + constraints.overlap > hei)) {
-      _setFolded(true);
-    } else {
-      _setFolded(false);
-    }
+
   }
 
   void _setFolded(bool folded) {
