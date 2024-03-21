@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flix/domain/database/dao/bubbles_dao.dart';
 import 'package:flix/domain/database/dao/devices_dao.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/database/bubble_entity.dart';
 import 'package:flix/model/database/device/persistence_devices.dart';
 import 'package:flix/model/database/file_content.dart';
@@ -38,7 +39,8 @@ class AppDatabase extends _$AppDatabase {
       //   // TODO 方便测试，上线后修改
       //   file = File(p.join('/data/user/0/com.ifreedomer.flix/databases', 'db.sqlite'));
       // } else {
-        final dbFolder = await getApplicationDocumentsDirectory();
+        final dbFolder = await getApplicationSupportDirectory();
+        talker.verbose('create db in folder: $dbFolder');
         file = File(p.join(dbFolder.path, 'db.sqlite'));
       // }
 
