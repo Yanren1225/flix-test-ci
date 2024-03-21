@@ -51,7 +51,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
             brief(),
             participate(),
             feedbackGuide(),
-            donate(),
+            // donate(),
             version()
           ];
           return ListView.builder(
