@@ -279,15 +279,18 @@ class InputAreaState extends State<InputArea> {
                                       fontSize: 16,
                                       fontWeight: FontWeight.normal),
                                   keyboardType: TextInputType.multiline,
+                                  minLines: null,
                                   maxLines: null,
                                   decoration: InputDecoration(
-                                      hintText: 'Input something.',
+                                      isDense: true,
+                                      // hintText: 'Input something.',
                                       border: OutlineInputBorder(
                                         borderSide: BorderSide.none,
                                         gapPadding: 0,
                                         borderRadius: BorderRadius.circular(
                                             10.0),
                                       ),
+                                      filled: true,
                                       contentPadding: const EdgeInsets.only(
                                           left: 12,
                                           right: 12,
@@ -309,27 +312,31 @@ class InputAreaState extends State<InputArea> {
                   const SizedBox(
                     width: 10,
                   ),
-                  IconButton(
-                      onPressed: () {
-                        FocusScope.of(context).unfocus();
-                        trySubmitText(inputContent);
-                      },
-                      padding: const EdgeInsets.all(9.0),
-                      iconSize: 22,
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStateColor.resolveWith(
-                                  (states) =>
-                              const Color.fromRGBO(0, 122, 255, 1)),
-                          shape: MaterialStatePropertyAll<
-                              RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ))),
-                      icon: const Icon(
-                        Icons.arrow_upward_sharp,
-                        color: Colors.white,
-                        size: 22,
-                      )),
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: IconButton(
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          trySubmitText(inputContent);
+                        },
+                        // padding: const EdgeInsets.all(9.0),
+                        iconSize: 22,
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateColor.resolveWith(
+                                    (states) =>
+                                const Color.fromRGBO(0, 122, 255, 1)),
+                            shape: MaterialStatePropertyAll<
+                                RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ))),
+                        icon: const Icon(
+                          Icons.arrow_upward_sharp,
+                          color: Colors.white,
+                          size: 22,
+                        )),
+                  ),
                   const SizedBox(
                     width: 16,
                   ),

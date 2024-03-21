@@ -19,7 +19,7 @@ samples, guidance on mobile development, and a full API reference.
 1. 在Windows上的Clash打开Tun mode, 会影响组播数据的发送，导致局域网内其他设备无法发现此Windows设备；
 2. 在Macos上偶现图片无法发送至Android客户端，删除Android客户端已经接受的内容后，恢复正常；
 3. 在Android上偶现无法发现其他设备
-4. ~~iPad图片宽高度错误~~
+4. iPad图片宽高度错误
 5. ~~iPad WildScreen下，导航条对会话页面的action buttons有遮挡~~
 6. ~~iPhone无法发送广播~~
 7. ~~发送消息后列表滚到上方~~
@@ -38,7 +38,9 @@ samples, guidance on mobile development, and a full API reference.
 20. ~~桌面端，快捷键发送~~
 21. ~~Android导航栏白条~~
 22. ~~通知红点~~
-23. pad端点击查看消息后，未读消息角标不会消失
+23. ~~pad端点击查看消息后，未读消息角标不会消失~~
+24. ~~在iPad上分享日志无法使用~~
+25. macos包名需要和ios包名区分
 
 ## 功能
 单击消息，打开文件

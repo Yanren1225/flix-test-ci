@@ -15,6 +15,7 @@ import 'package:flix/presentation/widgets/devices/device_list.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/meida/media_utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_handler/share_handler.dart';
@@ -38,7 +39,7 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
         deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 247, 247, 247),
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: false,
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 247, 247, 247),
         title: Text('选择一个设备',
@@ -68,7 +69,7 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
       if (isOverMediumWidth(context)) {
         Navigator.pop(context, deviceInfo);
       } else {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context) {
           return ConcertScreen(
             deviceInfo: deviceInfo,
             showBackButton: true,

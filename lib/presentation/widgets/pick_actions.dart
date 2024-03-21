@@ -10,6 +10,7 @@ import 'package:flix/utils/file/file_helper.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -145,7 +146,7 @@ class PickActionAreaState extends State<PickActionsArea> {
 
   Future<void> _onAppButtonPressed() async {
     List<Application>? apps = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const AppsScreen()));
+        context, CupertinoPageRoute(builder: (context) => const AppsScreen()));
     if (apps != null) {
       onPicked([
         for (final app in apps)

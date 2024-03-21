@@ -56,19 +56,19 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAzVd6HoALwV1_a9DMmFbwxYUG2V3NvKPM',
-    appId: '1:342559837177:ios:f042bf091b78ca9eeecb28',
+    appId: '1:342559837177:ios:d0a43562df38ec9aeecb28',
     messagingSenderId: '342559837177',
     projectId: 'flix-872e',
     storageBucket: 'flix-872e.appspot.com',
-    iosBundleId: 'com.ifreedomer.flix.ShareExtension',
+    iosBundleId: 'com.ifreedomer.flix',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyAzVd6HoALwV1_a9DMmFbwxYUG2V3NvKPM',
-    appId: '1:342559837177:ios:7ebfca1686613978eecb28',
+    appId: '1:342559837177:ios:d0a43562df38ec9aeecb28',
     messagingSenderId: '342559837177',
     projectId: 'flix-872e',
     storageBucket: 'flix-872e.appspot.com',
-    iosBundleId: 'com.ifreedomer.flix.RunnerTests',
+    iosBundleId: 'com.ifreedomer.flix',
   );
 }

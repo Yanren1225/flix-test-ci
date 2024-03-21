@@ -5,6 +5,7 @@ import 'package:flix/presentation/widgets/settings/clickable_item.dart';
 import 'package:flix/presentation/widgets/settings/switchable_item.dart';
 import 'package:flix/presentation/widgets/super_title.dart';
 import 'package:flix/utils/file/file_helper.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:talker_flutter/talker_flutter.dart';
@@ -95,7 +96,7 @@ class SettingsScreenState extends State<SettingsScreen> {
             onTap: () {
               Navigator.push(
                   context,
-                  MaterialPageRoute(
+                  CupertinoPageRoute(
                     builder: (context) =>
                         TalkerScreen(talker: talker),
                   ));

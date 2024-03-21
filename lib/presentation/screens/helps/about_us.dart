@@ -149,43 +149,45 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   }
 
   Widget version() {
-    return GestureDetector(
-      onTap: () {
-        final now = DateTime.now().millisecondsSinceEpoch;
-        if (now - lastTapTime < 300) {
-          versionTapCount++;
-        } else {
-          versionTapCount = 0;
-        }
-        lastTapTime = now;
+    return Builder(
+      builder: (versionContext) => GestureDetector(
+        onDoubleTap: () {
+          // final now = DateTime.now().millisecondsSinceEpoch;
+          // if (versionTapCount == 0 || now - lastTapTime < 300) {
+          //   versionTapCount++;
+          // } else {
+          //   talker.verbose('=== else ===');
+          //   versionTapCount = 1;
+          // }
+          // lastTapTime = now;
+          // if (versionTapCount >= 5) {
+          //   versionTapCount = 0;
 
-        if (versionTapCount >= 5) {
-          versionTapCount = 0;
-
-          downloadFile(talker.history.text).onError(
-                (error, stackTrace) {
-              talker.error('日志分享失败, $error, $stackTrace', error, stackTrace);
-              Fluttertoast.showToast(
-                  msg: "已复制到剪切板",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.grey.shade200,
-                  textColor: Colors.black,
-                  fontSize: 16.0);
-            },
-          );
-        }
-      },
-      child: Padding(
-        padding: EdgeInsets.all(10.0),
-        child: ValueListenableBuilder(
-          valueListenable: _version,
-          builder: (_, _version, child) => Text('当前软件版本：v$_version',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500)),
+            downloadFile(versionContext, talker.history.text).onError(
+                  (error, stackTrace) {
+                talker.error('日志分享失败, $error, $stackTrace', error, stackTrace);
+                Fluttertoast.showToast(
+                    msg: "日志分享失败",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.grey.shade200,
+                    textColor: Colors.black,
+                    fontSize: 16.0);
+              },
+            );
+          // }
+        },
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: ValueListenableBuilder(
+            valueListenable: _version,
+            builder: (_, _version, child) => Text('当前软件版本：v$_version',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500)),
+          ),
         ),
       ),
     );

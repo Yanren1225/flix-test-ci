@@ -22,6 +22,7 @@ import 'package:flix/setting/setting_provider.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/iterable_extension.dart';
 import 'package:flix/utils/meida/media_utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -253,7 +254,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute<DeviceInfo?>(
+        CupertinoPageRoute<DeviceInfo?>(
                 builder: (context) =>
                     PickDeviceScreen(sharedMedia: sharedMedia)),
             ModalRoute.withName('/'))
@@ -290,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           });
         } else {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
+          Navigator.push(context, CupertinoPageRoute(builder: (context) {
             return ConcertScreen(
               deviceInfo: deviceModal.toDeviceInfo(),
               showBackButton: true,
@@ -382,13 +383,13 @@ class _MyHomePageState extends State<MyHomePage> {
           currentIndex: selectedIndex,
           selectedItemColor: Colors.black,
           unselectedItemColor: const Color.fromRGBO(60, 60, 67, 0.3),
-          selectedFontSize: 10,
-          unselectedFontSize: 10,
+          selectedFontSize: 12,
+          unselectedFontSize: 12,
           selectedLabelStyle:
-              const TextStyle(fontWeight: FontWeight.w400, fontSize: 10)
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)
                   .useSystemChineseFont(),
           unselectedLabelStyle:
-              const TextStyle(fontWeight: FontWeight.w400, fontSize: 10)
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)
                   .useSystemChineseFont(),
           backgroundColor: Colors.white,
           elevation: 0,
@@ -404,7 +405,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return DeviceScreen(
           onDeviceSelected: (deviceInfo, isHistory) => Navigator.push(
               context,
-              MaterialPageRoute(
+              CupertinoPageRoute(
                   builder: (context) => ConcertScreen(
                         deviceInfo: deviceInfo,
                         showBackButton: true,
@@ -415,11 +416,12 @@ class _MyHomePageState extends State<MyHomePage> {
         return SettingsScreen();
       case 2:
         return HelpScreen(goVersionScreen: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AboutUSScreen()));
+          Navigator.push(context, CupertinoPageRoute(builder: (context) => AboutUSScreen()));
         },);
       default:
         return Placeholder();
     }
+
   }
 
   Widget WideLayout() {

@@ -1281,21 +1281,21 @@ packages:
     source: hosted
     version: "0.0.6"
   share_plus:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: share_plus
-      sha256: "3ef39599b00059db0990ca2e30fca0a29d8b37aae924d60063f8e0184cf20900"
+      sha256: "05ec043470319bfbabe0adbc90d3a84cbff0426b9d9f3a6e2ad3e131fa5fa629"
       url: "https://pub.dev"
     source: hosted
-    version: "7.2.2"
+    version: "8.0.2"
   share_plus_platform_interface:
     dependency: transitive
     description:
       name: share_plus_platform_interface
-      sha256: df08bc3a07d01f5ea47b45d03ffcba1fa9cd5370fb44b3f38c70e42cced0f956
+      sha256: "251eb156a8b5fa9ce033747d73535bf53911071f8d3b6f4f0b578505ce0d4496"
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.1"
+    version: "3.4.0"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -1504,28 +1504,27 @@ packages:
   talker:
     dependency: "direct main"
     description:
-      path: "packages/talker"
-      ref: "450129ee9e085ddd0e5452e8cb5818ef19854f33"
-      resolved-ref: "450129ee9e085ddd0e5452e8cb5818ef19854f33"
-      url: "https://github.com/qwadrox/talker"
-    source: git
-    version: "4.0.3"
+      name: talker
+      sha256: a6c826385c0dd1f35cf574b21427e980a76fe38f08ddae13974114824a11e957
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
   talker_flutter:
     dependency: "direct main"
     description:
       name: talker_flutter
-      sha256: a4ee3c376f5a59d172394de313bc79ee8edbb2bc1ce5c9781e0ec75a7d373740
+      sha256: ceb4e475957c82c41f853caa9fce851f8ebeade787eccf0bfe3dea1834b83120
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.3"
+    version: "4.1.0"
   talker_logger:
     dependency: transitive
     description:
       name: talker_logger
-      sha256: "795f7e434be0449a1b0deb1cc80e7f8ed44ba6083da7050ffcb734f859dddfc6"
+      sha256: "983a3ac0e3ee39ad37fb0d73c376c74bc3c57a2deab6e54bfec0895046c89c2a"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.3"
+    version: "4.1.0"
   term_glyph:
     dependency: transitive
     description:
