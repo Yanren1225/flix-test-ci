@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:talker/talker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutUSScreen extends StatefulWidget {
   var versionTapCount = 0;
@@ -124,10 +125,17 @@ class AboutUSScreenState extends State<AboutUSScreen> {
       child: Text.rich(TextSpan(
           children: [
             TextSpan(text: '如果你有任何想法，欢迎你'),
-            ClickableSpan('点我进入官方QQ群', () {}),
-            TextSpan(text: '，也可以通过'),
-            ClickableSpan('邮箱 xxxxx@xx.com', () {}),
-            TextSpan(text: ' 联系我们 🌸')
+            ClickableSpan('点我进入官方QQ群 🌸', () {
+              final Uri _url = Uri.parse('http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=sLHZTbK8nxPPoKl2BWApIKoO9TBBGua8&authKey=XBVLWiLqFFt5UD72Gc8tOhyj2Y02J%2FF%2Bw4ijEv%2FsWrYVPy8Y%2B5lbbxvLyx6EQwMP&noverify=0&group_code=539943326');
+              launchUrl(_url).then((value) {
+                if (!value) {
+                  talker.error('join qq error');
+                }
+              }).onError((error, stackTrace) {
+                talker.error('join qq error', error, stackTrace);
+              });
+
+            }),
           ],
           style: TextStyle(
               color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500))),

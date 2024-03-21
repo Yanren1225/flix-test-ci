@@ -89,6 +89,7 @@ dependencies:
   easy_refresh: ^3.3.4
   sliver_tools: ^0.2.12
   share_plus: ^8.0.2
+  url_launcher: ^6.2.5
 
       # thumbnailer: ^2.2.0
 
