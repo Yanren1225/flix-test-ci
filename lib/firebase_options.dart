@@ -65,10 +65,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyAzVd6HoALwV1_a9DMmFbwxYUG2V3NvKPM',
-    appId: '1:342559837177:ios:d0a43562df38ec9aeecb28',
+    appId: '1:342559837177:ios:829944bbca5d6cdbeecb28',
     messagingSenderId: '342559837177',
     projectId: 'flix-872e',
     storageBucket: 'flix-872e.appspot.com',
-    iosBundleId: 'com.ifreedomer.flix',
+    iosBundleId: 'com.ifreedomer.flix.mac',
   );
 }
