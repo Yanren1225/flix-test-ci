@@ -47,9 +47,11 @@ class _LargeTitleAdapter extends RenderSliverSingleBoxAdapter {
       return;
     }
 
-    if ((constraints.scrollOffset + constraints.overlap > hei)) {
+    if (constraints.scrollOffset > hei) {
       _setFolded(true);
       return;
+    } else if ((constraints.scrollOffset + constraints.overlap > hei)) {
+      _setFolded(true);
     } else {
       _setFolded(false);
     }

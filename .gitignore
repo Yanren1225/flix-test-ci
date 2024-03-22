@@ -45,3 +45,5 @@ app.*.map.json
 # Fvm
 .fvm/*
 !.fvm/fvm_config.json
+
+build.py
