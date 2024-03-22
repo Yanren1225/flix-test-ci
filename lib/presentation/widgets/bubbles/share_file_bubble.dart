@@ -167,7 +167,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
         builder: (context, constraints) {
           return ConstrainedBox(
             constraints:
-                BoxConstraints(maxWidth: max(constraints.maxWidth - 20, 200)),
+                BoxConstraints(maxWidth: min(constraints.maxWidth - 20, 400), minWidth: 200),
             child: Padding(
               padding: const EdgeInsets.only(
                   left: 10, top: 10, right: 10, bottom: 10),
