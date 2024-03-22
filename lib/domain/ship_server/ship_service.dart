@@ -51,15 +51,6 @@ class ShipService extends ApInterface {
     app.post('/file', _receiveFile);
     app.post('/pong', _receivePong);
 
-    try {
-      await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort);
-      talker.debug('Servering at http://0.0.0.0:${MultiCastUtil.defaultPort}');
-    } catch (e, stack) {
-      talker.error('start server at http://0.0.0.0:${MultiCastUtil.defaultPort} failed', e, stack);
-      await Future.delayed(Duration(seconds: 2));
-      await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort);
-    }
-
     // 尝试三次启动
     _startShipServer(app, 'first', () async {
       Future.delayed(const Duration(seconds: 1));
@@ -74,10 +65,10 @@ class ShipService extends ApInterface {
 
   Future<void> _startShipServer(Router app, String tag, Future<void> Function() onFailed) async {
     try {
-      await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort);
+      await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort, shared: true);
       talker.debug('Serving at http://0.0.0.0:${MultiCastUtil.defaultPort}');
     } catch (e, stack) {
-      talker.error('$tag start server at http://0.0.0.0:${MultiCastUtil.defaultPort} failed', e, stack);
+      talker.error('$tag start server at http://0.0.0.0:${MultiCastUtil.defaultPort} failed $e', e, stack);
       await onFailed();
     }
   }
