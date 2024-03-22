@@ -100,7 +100,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
           print('Failed to open download folder: $error'));
     } else {
       getDefaultDestinationDirectory()
-          .then((value) => OpenDir().openNativeDir(path: widget.filePath))
+          .then((value) => OpenDir().openNativeDir(path: Platform.isWindows ? File(widget.filePath).parent.path : widget.filePath))
           .catchError(
               (error) => print('Failed to open download folder: $error'));
     }
