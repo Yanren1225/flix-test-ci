@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flix/domain/database/database.dart';
+import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/utils/device/device_utils.dart';
@@ -22,10 +23,9 @@ class DeviceManager {
     return _instance;
   }
 
+  late ApInterface apInterface;
   /// 当前设备的id
   late String did;
-
-  late DeviceModal self;
 
   final deviceList = <DeviceModal>{};
   final history = <DeviceModal>{};
@@ -38,10 +38,14 @@ class DeviceManager {
   final deviceListChangeListeners = <OnDeviceListChanged>{};
   final historyChangeListeners = <OnDeviceListChanged>{};
 
-  void init() {
+  void init(ApInterface apInterface) {
+    this.apInterface = apInterface;
     _initDeviceId().then((value) {
       did = value;
       _watchHistory();
+      this.apInterface.listenPong((pong) {
+        _onDeviceDiscover(pong.from);
+      });
       startScan();
     });
   }
@@ -64,15 +68,20 @@ class DeviceManager {
         (deviceModal, needPong) {
       if (needPong) {
         multiCastApi.pong(deviceModal);
+        multiCastApi.getDeviceModal().then((value) => apInterface.pong(value, deviceModal));
       }
-      bool isConnect = isDeviceConnected(deviceModal);
-      if (!isConnect) {
-        _addDevice(deviceModal);
-      }
-      talker.debug("event data:$deviceModal  deviceList = $deviceList");
-      notifyDeviceListChanged();
+      _onDeviceDiscover(deviceModal);
     });
     unawaited(multiCastApi.ping());
+  }
+
+  void _onDeviceDiscover(DeviceModal deviceModal) {
+    bool isConnect = isDeviceConnected(deviceModal);
+    if (!isConnect) {
+      _addDevice(deviceModal);
+    }
+    talker.debug("event data:$deviceModal  deviceList = $deviceList");
+    notifyDeviceListChanged();
   }
 
   void clearDevices() {

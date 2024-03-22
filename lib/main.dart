@@ -68,7 +68,7 @@ Future<void> main() async {
 
   NotificationService.instance.init();
   ShipService.instance.startShipServer();
-  DeviceManager.instance.init();
+  DeviceManager.instance.init(ShipService.instance);
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(

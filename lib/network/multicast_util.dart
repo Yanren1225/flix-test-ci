@@ -148,6 +148,9 @@ class MultiCastUtil {
     }
   }
 
+  // 通过AP接口发送的multicast是不可靠的，
+  // 实测Android开启热点其他设备无法接收到AP设备的组播数据
+  // 见 https://forum.mikrotik.com/viewtopic.php?t=28756
   static Future<void> pong(DeviceModal to) async {
     // final sockets = await getSockets(defaultMulticastGroup);
     DeviceModal deviceModal = await getDeviceModal();

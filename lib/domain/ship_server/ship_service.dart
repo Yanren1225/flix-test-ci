@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flix/domain/bubble_pool.dart';
+import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/SettingsRepo.dart';
@@ -12,6 +12,8 @@ import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/network/multicast_util.dart';
+import 'package:flix/network/protocol/device_modal.dart';
+import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/utils/bubble_convert.dart';
 import 'package:flix/utils/stream_cancelable.dart';
 import 'package:flix/utils/stream_progress.dart';
@@ -25,7 +27,7 @@ import 'package:http/http.dart' as http;
 
 import '../../utils/file/file_helper.dart';
 
-class ShipService {
+class ShipService extends ApInterface {
   ShipService._privateConstruct();
 
   static final ShipService _instance = ShipService._privateConstruct();
@@ -33,6 +35,8 @@ class ShipService {
   static ShipService get instance => _instance;
 
   final _bubblePool = BubblePool.instance;
+
+  PongListener? _pongListener;
 
   // final Map<String, Cancelable> tasks = {};
 
@@ -45,6 +49,7 @@ class ShipService {
     app.post('/bubble', _receiveBubble);
     app.post('/intent', _receiveIntent);
     app.post('/file', _receiveFile);
+    app.post('/pong', _receivePong);
 
     var server = await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort);
 
@@ -189,6 +194,51 @@ class ShipService {
       return Response.badRequest();
     }
   }
+
+  Future<Response> _receivePong(Request request) async {
+    try {
+
+      final body = await request.readAsString();
+      final pong = Pong.fromJson(body);
+      talker.debug('receive tcp pong: $pong');
+      final ip = (request.context['shelf.io.connection_info'] as HttpConnectionInfo?)?.remoteAddress.address;
+      if (ip != null) {
+        pong.from.ip = ip;
+        _pongListener?.call(pong);
+      } else {
+        talker.error('receive tcp pong, but can\'t get ip');
+      }
+      return Response.ok('ok');
+    } on Exception catch (e, stack) {
+      talker.error('receive pong error: $e', e, stack);
+      return Response.badRequest();
+    }
+  }
+
+  @override
+  void listenPong(PongListener listener) {
+    this._pongListener = listener;
+  }
+
+  @override
+  Future<void> pong(DeviceModal from, DeviceModal to) async {
+    final message = Pong(from, to).toJson();
+    var uri = Uri.parse(
+        'http://${DeviceManager.instance.toNetAddress(to.ip, to.port)}/pong');
+    var response = await http.post(
+      uri,
+      body: message,
+      headers: {"Content-type": "application/json; charset=UTF-8"},
+    );
+
+    if (response.statusCode == 200) {
+      talker.debug('pong success: response: ${response.body}');
+    } else {
+      talker.debug('pong failed: status code: ${response.statusCode}, ${response.body}');
+    }
+  }
+
+
 
   Future<void> _send(PrimitiveBubble primitiveBubble) async {
     try {
@@ -394,4 +444,6 @@ class ShipService {
       talker.error('sendCancelMessage failed: $e', e);
     }
   }
+
+
 }
