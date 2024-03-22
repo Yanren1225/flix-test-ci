@@ -59,8 +59,8 @@ class ShareTextBubble extends StatelessWidget {
               sharedText.content,
               style: TextStyle(
                   color: contentColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400),
             ),
           ),
         ),

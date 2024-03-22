@@ -85,7 +85,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
       padding: EdgeInsets.all(10.0),
       child: Text('👋 你好，很高兴认识你！',
           style: TextStyle(
-              color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500)),
+              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400)),
     );
   }
 
@@ -106,7 +106,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
       padding: EdgeInsets.all(10.0),
       child: Text('这里是 Flix，一个快速简洁的多端互传软件，希望你能喜欢 😆',
           style: TextStyle(
-              color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500)),
+              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400)),
     );
   }
 
@@ -115,7 +115,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
       padding: EdgeInsets.only(left: 10, top: 10, right: 80, bottom: 10),
       child: Text('Flix 制作小组\n------\n✅设计：\nlemo\n\n✅开发：\nMovenLecker\nEava_wu',
           style: TextStyle(
-              color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500)),
+              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400)),
     );
   }
 
@@ -138,7 +138,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
             }),
           ],
           style: TextStyle(
-              color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500))),
+              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400))),
     );
   }
 
@@ -152,7 +152,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
             TextSpan(text: '，非常感谢你来支持我们的持续开发 🙏'),
           ],
           style: TextStyle(
-              color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500))),
+              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400))),
     );
   }
 
@@ -193,8 +193,8 @@ class AboutUSScreenState extends State<AboutUSScreen> {
             builder: (_, _version, child) => Text('当前软件版本：v$_version',
                 style: TextStyle(
                     color: Colors.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500)),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400)),
           ),
         ),
       ),
