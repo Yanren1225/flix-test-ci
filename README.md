@@ -42,7 +42,9 @@ samples, guidance on mobile development, and a full API reference.
 24. ~~在iPad上分享日志无法使用~~
 25. macos包名需要和ios包名区分
 26. 只有android ios支持heif图片格式
-27. macos上输入框高度错误
+27. ~~macos上输入框高度错误~~
+28. ~~AP设备无法被发现~~
+29. http服务可能启动失败
 
 ## 功能
 单击消息，打开文件

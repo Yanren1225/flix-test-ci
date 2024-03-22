@@ -44,17 +44,42 @@ class ShipService extends ApInterface {
     return 'http://${DeviceManager.instance.getNetAdressByDeviceId(deviceId)}/intent';
   }
 
-  Future<HttpServer> startShipServer() async {
+  Future<void> startShipServer() async {
     var app = Router();
     app.post('/bubble', _receiveBubble);
     app.post('/intent', _receiveIntent);
     app.post('/file', _receiveFile);
     app.post('/pong', _receivePong);
 
-    var server = await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort);
+    try {
+      await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort);
+      talker.debug('Servering at http://0.0.0.0:${MultiCastUtil.defaultPort}');
+    } catch (e, stack) {
+      talker.error('start server at http://0.0.0.0:${MultiCastUtil.defaultPort} failed', e, stack);
+      await Future.delayed(Duration(seconds: 2));
+      await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort);
+    }
 
-    talker.debug('Servering at http://0.0.0.0:${MultiCastUtil.defaultPort}');
-    return server;
+    // 尝试三次启动
+    _startShipServer(app, 'first', () async {
+      Future.delayed(const Duration(seconds: 1));
+      _startShipServer(app, 'second', () async {
+        Future.delayed(const Duration(seconds: 2));
+        _startShipServer(app, 'third', () async {
+
+        });
+      });
+    });
+  }
+
+  Future<void> _startShipServer(Router app, String tag, Future<void> Function() onFailed) async {
+    try {
+      await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort);
+      talker.debug('Serving at http://0.0.0.0:${MultiCastUtil.defaultPort}');
+    } catch (e, stack) {
+      talker.error('$tag start server at http://0.0.0.0:${MultiCastUtil.defaultPort} failed', e, stack);
+      await onFailed();
+    }
   }
 
   Future<Response> _receiveBubble(Request request) async {
