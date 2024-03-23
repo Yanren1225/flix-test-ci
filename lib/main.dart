@@ -32,6 +32,7 @@ import 'package:flutter_ume/flutter_ume.dart'; // UME framework
 import 'package:flutter_ume_kit_console/flutter_ume_kit_console.dart'; // Show debugPrint
 import 'package:flutter_ume_kit_ui/flutter_ume_kit_ui.dart'; // UI kits
 import 'package:modals/modals.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:share_handler/share_handler.dart';
 import 'package:window_manager/window_manager.dart';
@@ -86,6 +87,8 @@ Future<void> main() async {
 
   await _initNotification();
 
+  _logAppContext();
+
   if (kDebugMode) {
     PluginManager.instance // Register plugin kits
       ..register(const WidgetInfoInspector())
@@ -99,6 +102,11 @@ Future<void> main() async {
   } else {
     runApp(const MyApp());
   }
+}
+
+void _logAppContext() {
+  PackageInfo.fromPlatform().then((info) => talker.info(
+      'Platform: ${Platform.operatingSystem}, Version: ${Platform.operatingSystemVersion}, AppVersion: ${info.version}'));
 }
 
 Future<void> _initNotification() async {
@@ -204,6 +212,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
+
   // DeviceInfo? selectedDevice;
   bool isLeaved = false;
   Widget? thirdWidget;
@@ -254,7 +263,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Navigator.pushAndRemoveUntil(
             context,
-        CupertinoPageRoute<DeviceInfo?>(
+            CupertinoPageRoute<DeviceInfo?>(
                 builder: (context) =>
                     PickDeviceScreen(sharedMedia: sharedMedia)),
             ModalRoute.withName('/'))
@@ -415,13 +424,15 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         return SettingsScreen();
       case 2:
-        return HelpScreen(goVersionScreen: () {
-          Navigator.push(context, CupertinoPageRoute(builder: (context) => AboutUSScreen()));
-        },);
+        return HelpScreen(
+          goVersionScreen: () {
+            Navigator.push(context,
+                CupertinoPageRoute(builder: (context) => AboutUSScreen()));
+          },
+        );
       default:
         return Placeholder();
     }
-
   }
 
   Widget WideLayout() {
@@ -503,23 +514,30 @@ class _MyHomePageState extends State<MyHomePage> {
           onDeviceSelected: (deviceInfo, isHistory) {
             BadgeService.instance.clearBadgesFrom(deviceInfo.id);
             setState(() {
-              thirdWidget = ConcertScreen(deviceInfo: deviceInfo, showBackButton: false, playable: !isHistory,);
+              thirdWidget = ConcertScreen(
+                deviceInfo: deviceInfo,
+                showBackButton: false,
+                playable: !isHistory,
+              );
             });
           },
         );
       case 1:
         return SettingsScreen();
       case 2:
-        return HelpScreen(goVersionScreen: () {
-          setState(() {
-            thirdWidget = AboutUSScreen(showBack: false,);
-          });
-        },);
+        return HelpScreen(
+          goVersionScreen: () {
+            setState(() {
+              thirdWidget = AboutUSScreen(
+                showBack: false,
+              );
+            });
+          },
+        );
       default:
         return Placeholder();
     }
   }
-
 
   Widget thirdPart() {
     // final deviceInfo = selectedDevice;
