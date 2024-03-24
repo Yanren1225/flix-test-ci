@@ -1,8 +1,11 @@
+import 'dart:ffi';
+
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:cross_file/src/types/io.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
@@ -17,10 +20,12 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class Droper extends StatefulWidget {
-  const Droper({super.key, required this.deviceInfo, required this.child});
+  const Droper({super.key, required this.deviceInfo, required this.child, this.onDropEntered = null, this.onDropExited = null});
 
   final DeviceInfo deviceInfo;
   final Widget child;
+  final VoidCallback? onDropEntered;
+  final VoidCallback? onDropExited;
 
   @override
   State<StatefulWidget> createState() {
@@ -33,69 +38,25 @@ class DroperState extends State<Droper> {
 
   Widget get child => widget.child;
 
+
   @override
   Widget build(BuildContext context) {
-    final concertProvider =
-        Provider.of<ConcertProvider>(context, listen: false);
+    // final concertProvider =
+    //     Provider.of<ConcertProvider>(context, listen: false);
     return DropTarget(
       onDragEntered: (details) {
+        widget.onDropEntered?.call();
         print('onDragEnter');
       },
       onDragUpdated: (details) {
         print('onDragUpdate');
       },
       onDragExited: (details) {
+        widget.onDropExited?.call();
         print('onDragExit');
       },
       onDragDone: (details) async {
         print('onDragDone');
-        final fileSize = await details.files.firstOrNull?.length() ?? 0;
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   crossAxisAlignment: CrossAxisAlignment.center,
-        //   children: [
-        //     Container(
-        //       width: 44,
-        //       height: 44,
-        //       decoration: BoxDecoration(
-        //           borderRadius: BorderRadius.circular(6),
-        //           color:
-        //           const Color.fromRGBO(0, 122, 255, 1)),
-        //       alignment: Alignment.center,
-        //       child: SvgPicture.asset(
-        //           'assets/images/ic_file1.svg'),
-        //     ),
-        //     const SizedBox(
-        //       height: 10,
-        //     ),
-        //     Column(children: [
-        //       Text(
-        //         details.files?.firstOrNull?.name ?? '',
-        //         textAlign: TextAlign.center,
-        //         style: const TextStyle(
-        //           fontSize: 16,
-        //           fontWeight: FontWeight.w500,
-        //           letterSpacing: 0,
-        //           color: Colors.black,
-        //         ).useSystemChineseFont(),
-        //       ),
-        //       const SizedBox(
-        //         height: 6,
-        //       ),
-        //       Text(
-        //         fileSize.formateBinarySize(),
-        //         textAlign: TextAlign.center,
-        //         style: const TextStyle(
-        //           fontSize: 12,
-        //           fontWeight: FontWeight.w400,
-        //           letterSpacing: 0,
-        //           color: Color.fromRGBO(60, 60, 67, 0.6),
-        //         ).useSystemChineseFont(),
-        //       ),
-        //     ],)
-        //
-        //   ],
-        // )
         showCupertinoModalPopup(
             context: context,
             builder: (context) {
@@ -190,7 +151,7 @@ class DroperState extends State<Droper> {
                                   width: double.infinity,
                                   child: CupertinoButton(
                                     onPressed: () {
-                                      _sendFiles(concertProvider, details);
+                                      _sendFiles(details);
                                       Navigator.of(context).pop();
                                     },
                                     color: const Color.fromRGBO(0, 122, 255, 1),
@@ -221,12 +182,11 @@ class DroperState extends State<Droper> {
     );
   }
 
-  Future<void> _sendFiles(
-      ConcertProvider concertProvider, DropDoneDetails details) async {
+  Future<void> _sendFiles(DropDoneDetails details) async {
     final files = details.files;
     for (var file in files) {
       final meta = await file.toFileMeta();
-      concertProvider.send(UIBubble(
+      ShipService.instance.send(UIBubble(
           from: DeviceManager.instance.did,
           to: deviceInfo.id,
           type: BubbleType.File,

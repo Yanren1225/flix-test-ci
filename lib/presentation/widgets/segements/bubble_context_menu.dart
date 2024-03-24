@@ -8,6 +8,8 @@ import 'package:modals/modals.dart';
 
 void showBubbleContextMenu(
     BuildContext context,
+    String tag,
+    Offset clickPosition,
     String selfId,
     GlobalKey relativeWidgetKey,
     UIBubble bubble,
@@ -20,21 +22,27 @@ void showBubbleContextMenu(
     throw StateError('currentWidget or relativeWidget should not null');
   }
   final globalOffset =
-      currentWidget.localToGlobal(Offset.zero, ancestor: relativeWidget);
+      currentWidget.localToGlobal(clickPosition, ancestor: relativeWidget);
   final showTop;
-  if (globalOffset.dy > 70) {
+  if (globalOffset.dy > 100) {
     showTop = true;
   } else {
     showTop = false;
   }
-
   final showLeft;
 
-  if (bubble.isFromMe(selfId)) {
-    showLeft = true;
-  } else {
+  if (globalOffset.dx < relativeWidget.size.width - 100) {
     showLeft = false;
+  } else {
+    showLeft = true;
   }
+
+
+  // if (bubble.isFromMe(selfId)) {
+  //   showLeft = true;
+  // } else {
+  //   showLeft = false;
+  // }
   final modalAlignment;
   final anchorAlignment;
   if (showTop && showLeft) {
@@ -54,9 +62,10 @@ void showBubbleContextMenu(
   showModal(ModalEntry.anchored(
     context,
     tag: 'menu',
-    anchorTag: bubble.shareable.id,
+    anchorTag: tag,
     modalAlignment: modalAlignment,
-    anchorAlignment: anchorAlignment,
+    anchorAlignment: Alignment.topLeft,
+    offset: clickPosition,
     // barrierColor: const Color.fromRGBO(0, 0, 0, 0.45),
     removeOnPop: true,
     barrierDismissible: true,
@@ -156,7 +165,7 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 2, top: 6, right: 2, bottom: 6),
+                      left: 10, top: 6, right: 10, bottom: 6),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,

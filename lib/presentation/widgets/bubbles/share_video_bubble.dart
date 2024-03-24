@@ -212,6 +212,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
         ),
         Flexible(
           child: FileBubbleInteraction(
+            key: ValueKey(entity.shareable.id),
             bubble: entity,
             filePath: sharedVideo.content.path ?? '',
             clickable: clickable,

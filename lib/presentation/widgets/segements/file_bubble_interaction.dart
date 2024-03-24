@@ -15,19 +15,22 @@ import 'package:modals/modals.dart';
 import 'package:open_dir/open_dir.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class FileBubbleInteraction extends StatefulWidget {
   final UIBubble bubble;
   final String filePath;
   final Widget child;
   final bool clickable;
+  final contextMenuTag = Uuid().v4();
 
-  const FileBubbleInteraction(
+  FileBubbleInteraction(
       {super.key,
       required this.bubble,
       required this.filePath,
       required this.child,
       required this.clickable});
+
 
   @override
   State<StatefulWidget> createState() => FileBubbleIneractionState();
@@ -36,6 +39,7 @@ class FileBubbleInteraction extends StatefulWidget {
 class FileBubbleIneractionState extends State<FileBubbleInteraction>
     with TickerProviderStateMixin {
   var tapDownTime = 0;
+  Offset? tapDown = null;
 
   @override
   Widget build(BuildContext context) {
@@ -53,12 +57,13 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
       });
 
     return ModalAnchor(
-      tag: widget.bubble.shareable.id,
+      tag: widget.contextMenuTag,
       child: InkWell(
           radius: 10,
           borderRadius: BorderRadius.circular(10),
           onTapDown: (details) {
             if (!widget.clickable) return;
+            tapDown = details.localPosition;
             // 记下按下的时间
             tapDownTime = DateTime.now().millisecondsSinceEpoch;
             talker.debug('gesture details: ');
@@ -99,22 +104,25 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
               }
             });
           },
-          onSecondaryTap: () {
+          onSecondaryTapDown: (detials) {
             if (!widget.clickable) return;
-            _showBubbleContextMenu(context, andropContext, concertProvider);
+            _showBubbleContextMenu(context, detials.localPosition, andropContext, concertProvider);
           },
           onLongPress: () {
             if (!widget.clickable) return;
+            if (tapDown == null) {
+              return;
+            }
             HapticFeedback.mediumImpact();
-            _showBubbleContextMenu(context, andropContext, concertProvider);
+            _showBubbleContextMenu(context, tapDown! , andropContext, concertProvider);
           },
           child: ScaleTransition(scale: _animation, child: widget.child)),
     );
   }
 
-  void _showBubbleContextMenu(BuildContext context, AndropContext andropContext,
+  void _showBubbleContextMenu(BuildContext context, Offset clickPosition, AndropContext andropContext,
       ConcertProvider concertProvider) {
-    showBubbleContextMenu(context, andropContext.deviceId,
+    showBubbleContextMenu(context, widget.contextMenuTag, clickPosition, andropContext.deviceId,
         concertProvider.concertMainKey, widget.bubble, [
       // BubbleContextMenuItemType.Copy,
       BubbleContextMenuItemType.Location,

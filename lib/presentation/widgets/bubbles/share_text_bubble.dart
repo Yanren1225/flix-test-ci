@@ -8,11 +8,15 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/v4.dart';
 
 class ShareTextBubble extends StatelessWidget {
   final UIBubble entity;
+  Offset? tapDown ;
+  final contextMenuTag = Uuid().v4();
 
-  const ShareTextBubble({super.key, required this.entity});
+  ShareTextBubble({super.key, required this.entity});
 
   @override
   Widget build(BuildContext context) {
@@ -41,32 +45,40 @@ class ShareTextBubble extends StatelessWidget {
     }
     return Align(
       alignment: alignment,
-      child: Material(
-        color: backgroundColor,
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        child: InkWell(
+      child: LayoutBuilder(
+        builder: (_context, _) => Material(
+          color: backgroundColor,
           borderRadius: const BorderRadius.all(Radius.circular(10)),
-          onSecondaryTap: () {
-            _showBubbleContextMenu(context, andropContext, concertProvider);
-          },
-          onLongPress: () {
-            HapticFeedback.mediumImpact();
-            _showBubbleContextMenu(context, andropContext, concertProvider);
-          },
-          onTap: () {
-           _copyContentToClipboard();
-          },
-          child: ModalAnchor(
-            key: ValueKey(entity.shareable.id),
-            tag: entity.shareable.id,
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Text(
-                sharedText.content,
-                style: TextStyle(
-                    color: contentColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400),
+          child: InkWell(
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            onSecondaryTapDown: (TapDownDetails details) {
+              _showBubbleContextMenu(_context, details.localPosition, andropContext, concertProvider);
+            },
+            onTapDown: (TapDownDetails details) {
+              tapDown = details.localPosition;
+            },
+            onLongPress: () {
+              if (tapDown == null) {
+                return;
+              }
+              HapticFeedback.mediumImpact();
+              _showBubbleContextMenu(_context, tapDown!, andropContext, concertProvider);
+            },
+            onTap: () {
+             _copyContentToClipboard();
+            },
+            child: ModalAnchor(
+              key: ValueKey(entity.shareable.id),
+              tag: contextMenuTag,
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  sharedText.content,
+                  style: TextStyle(
+                      color: contentColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400),
+                ),
               ),
             ),
           ),
@@ -75,9 +87,9 @@ class ShareTextBubble extends StatelessWidget {
     );
   }
 
-  void _showBubbleContextMenu(BuildContext context, AndropContext andropContext,
+  void _showBubbleContextMenu(BuildContext context, Offset clickPosition, AndropContext andropContext,
       ConcertProvider concertProvider) {
-    return showBubbleContextMenu(context, andropContext.deviceId,
+    return showBubbleContextMenu(context, contextMenuTag, clickPosition , andropContext.deviceId,
         concertProvider.concertMainKey, entity, [
       BubbleContextMenuItemType.Copy,
       // BubbleContextMenuItemType.Location,

@@ -37,6 +37,7 @@ class ShipService extends ApInterface {
   final _bubblePool = BubblePool.instance;
 
   PongListener? _pongListener;
+  HttpServer? _server;
 
   // final Map<String, Cancelable> tasks = {};
 
@@ -52,24 +53,28 @@ class ShipService extends ApInterface {
     app.post('/pong', _receivePong);
 
     // 尝试三次启动
-    _startShipServer(app, 'first', () async {
+    _server =  await _startShipServer(app, 'first', () async {
       Future.delayed(const Duration(seconds: 1));
-      _startShipServer(app, 'second', () async {
+      return _startShipServer(app, 'second', () async {
         Future.delayed(const Duration(seconds: 2));
-        _startShipServer(app, 'third', () async {
-
+        return _startShipServer(app, 'third', () async {
         });
       });
     });
   }
 
-  Future<void> _startShipServer(Router app, String tag, Future<void> Function() onFailed) async {
+  // Future<void> restartShipServer() async {
+  //
+  // }
+
+  Future<HttpServer?> _startShipServer(Router app, String tag, Future<HttpServer?> Function() onFailed) async {
     try {
-      await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort, shared: true);
+      final server = await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort, shared: true);
       talker.debug('Serving at http://0.0.0.0:${MultiCastUtil.defaultPort}');
+      return server;
     } catch (e, stack) {
       talker.error('$tag start server at http://0.0.0.0:${MultiCastUtil.defaultPort} failed $e', e, stack);
-      await onFailed();
+      return await onFailed();
     }
   }
 
