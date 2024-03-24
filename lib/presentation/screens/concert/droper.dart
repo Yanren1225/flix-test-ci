@@ -1,3 +1,4 @@
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_manager.dart';
@@ -94,7 +95,7 @@ class DroperState extends State<Droper> {
                               fontSize: 24,
                               fontWeight: FontWeight.w500,
                               color: Colors.black,
-                            ),
+                            ).useSystemChineseFont(),
                           ),
                         ),
                         Padding(
@@ -106,7 +107,7 @@ class DroperState extends State<Droper> {
                               fontWeight: FontWeight.w400,
                               letterSpacing: 0,
                               color: Color.fromRGBO(60, 60, 67, 0.6),
-                            ),
+                            ).useSystemChineseFont(),
                           ),
                         ),
                         Padding(
@@ -140,7 +141,7 @@ class DroperState extends State<Droper> {
                                     fontWeight: FontWeight.w500,
                                     letterSpacing: 0,
                                     color: Colors.black,
-                                  ),
+                                  ).useSystemChineseFont(),
                                 ),
                                 const SizedBox(
                                   height: 6,
@@ -153,7 +154,7 @@ class DroperState extends State<Droper> {
                                     fontWeight: FontWeight.w400,
                                     letterSpacing: 0,
                                     color: Color.fromRGBO(60, 60, 67, 0.6),
-                                  ),
+                                  ).useSystemChineseFont(),
                                 ),
                               ],
                             ),
@@ -165,15 +166,6 @@ class DroperState extends State<Droper> {
                             child: SizedBox(
                               width: double.infinity,
                               child: CupertinoButton(
-                                child: const Text(
-                                  '发送',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: 0,
-                                    color: Colors.white,
-                                  ),
-                                ),
                                 onPressed: () {
                                   _sendFiles(concertProvider, details);
                                   Navigator.of(context).pop();
@@ -182,6 +174,15 @@ class DroperState extends State<Droper> {
                                 borderRadius: BorderRadius.circular(14),
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 24, vertical: 16),
+                                child: Text(
+                                  '发送',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    letterSpacing: 0,
+                                    color: Colors.white,
+                                  ).useSystemChineseFont(),
+                                ),
                               ),
                             )),
                       ],
