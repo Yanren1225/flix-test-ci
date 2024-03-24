@@ -90,6 +90,7 @@ dependencies:
   sliver_tools: ^0.2.12
   share_plus: ^8.0.2
   url_launcher: ^6.2.5
+  desktop_drop: ^0.4.4
 
       # thumbnailer: ^2.2.0
 

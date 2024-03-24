@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  desktop_drop
   downloadsfolder
   file_selector_linux
   open_dir_linux

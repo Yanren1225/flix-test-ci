@@ -45,6 +45,7 @@ samples, guidance on mobile development, and a full API reference.
 27. ~~macos上输入框高度错误~~
 28. ~~AP设备无法被发现~~
 29. http服务可能启动失败
+30. 切换wifi http服务器需要重新启动。
 
 ## 功能
 单击消息，打开文件

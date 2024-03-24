@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:desktop_drop/desktop_drop.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/notification/BadgeService.dart';
@@ -15,6 +17,7 @@ import 'package:flix/presentation/widgets/blur_appbar.dart';
 import 'package:flix/presentation/widgets/bubbles/bubble_widget.dart';
 import 'package:flix/presentation/widgets/pick_actions.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
+import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -22,6 +25,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+
+import 'droper.dart';
 
 class ConcertScreen extends StatelessWidget {
   final DeviceInfo deviceInfo;
@@ -42,7 +47,7 @@ class ConcertScreen extends StatelessWidget {
         create: (BuildContext context) {
           return ConcertProvider(deviceInfo: deviceInfo);
         },
-        child: NavigationScaffold(
+        child: Droper(deviceInfo: deviceInfo, child: NavigationScaffold(
           showBackButton: showBackButton,
           title: deviceInfo.name,
           builder: (padding) {
@@ -53,9 +58,12 @@ class ConcertScreen extends StatelessWidget {
               playable: playable,
             );
           },
-        ));
+        ), )
+    );
   }
 }
+
+
 
 class ShareConcertMainView extends StatefulWidget {
   final DeviceInfo deviceInfo;
