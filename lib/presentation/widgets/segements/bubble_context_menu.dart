@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -233,7 +234,7 @@ class BubbleContextMenuItem extends StatelessWidget {
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   color: Colors.black,
-                )),
+                ).useSystemChineseFont()),
           ],
         ),
       ),
