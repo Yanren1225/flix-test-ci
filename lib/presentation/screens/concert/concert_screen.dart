@@ -47,11 +47,18 @@ class ConcertScreen extends StatelessWidget {
       showBackButton: showBackButton,
       title: deviceInfo.name,
       builder: (padding) {
-        return ShareConcertMainView(
-          deviceInfo: deviceInfo,
-          padding: padding,
-          anchor: anchor,
-          playable: playable,
+        return LayoutBuilder(
+          builder: (_context, constraints) {
+            final concertProvider =
+                Provider.of<ConcertProvider>(_context, listen: false);
+            return ShareConcertMainView(
+              key: concertProvider.concertMainKey,
+              deviceInfo: deviceInfo,
+              padding: padding,
+              anchor: anchor,
+              playable: playable,
+            );
+          },
         );
       },
     );

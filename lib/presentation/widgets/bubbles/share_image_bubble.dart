@@ -253,6 +253,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
         // Flexible默认允许子元素占用尽可能的剩余空间
         Flexible(
           child: FileBubbleInteraction(
+            bubble: entity,
             filePath: sharedImage.content.path ?? '',
             clickable: clickable,
             child: ClipRRect(

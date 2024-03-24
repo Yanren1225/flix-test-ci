@@ -13,6 +13,8 @@ class ConcertProvider extends ChangeNotifier {
   final DeviceInfo deviceInfo;
   late ConcertService _concertService;
   List<UIBubble> bubbles = [];
+  final concertMainKey = GlobalKey();
+
 
   ConcertProvider({required this.deviceInfo}) {
     _concertService = ConcertService(collaboratorId: deviceInfo.id);
