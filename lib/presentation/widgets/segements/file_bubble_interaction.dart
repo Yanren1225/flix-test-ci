@@ -22,7 +22,6 @@ class FileBubbleInteraction extends StatefulWidget {
   final String filePath;
   final Widget child;
   final bool clickable;
-  final contextMenuTag = Uuid().v4();
 
   FileBubbleInteraction(
       {super.key,
@@ -40,6 +39,14 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
     with TickerProviderStateMixin {
   var tapDownTime = 0;
   Offset? tapDown = null;
+  late String contextMenuTag;
+
+
+  @override
+  void initState() {
+    super.initState();
+    contextMenuTag = Uuid().v4();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +64,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
       });
 
     return ModalAnchor(
-      tag: widget.contextMenuTag,
+      tag: contextMenuTag,
       child: InkWell(
           radius: 10,
           borderRadius: BorderRadius.circular(10),
@@ -122,7 +129,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
 
   void _showBubbleContextMenu(BuildContext context, Offset clickPosition, AndropContext andropContext,
       ConcertProvider concertProvider) {
-    showBubbleContextMenu(context, widget.contextMenuTag, clickPosition, andropContext.deviceId,
+    showBubbleContextMenu(context, contextMenuTag, clickPosition, andropContext.deviceId,
         concertProvider.concertMainKey, widget.bubble, [
       // BubbleContextMenuItemType.Copy,
       BubbleContextMenuItemType.Location,
