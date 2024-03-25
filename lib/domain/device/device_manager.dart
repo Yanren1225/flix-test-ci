@@ -5,6 +5,7 @@ import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/utils/device/device_utils.dart';
+import 'package:flix/utils/device_info_helper.dart' as deviceUtils;
 import 'package:flix/utils/iterable_extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -15,6 +16,8 @@ import '../../network/multicast_util.dart';
 import '../../network/protocol/device_modal.dart';
 
 class DeviceManager {
+  static const deviceNameKey = 'device_name_key';
+
   DeviceManager._privateConstructor() {}
 
   static final DeviceManager _instance = DeviceManager._privateConstructor();
@@ -24,8 +27,12 @@ class DeviceManager {
   }
 
   late ApInterface apInterface;
+
   /// 当前设备的id
   late String did;
+
+  String deviceName = '';
+  final deviceNameBroadcast = StreamController<String>.broadcast();
 
   final deviceList = <DeviceModal>{};
   final history = <DeviceModal>{};
@@ -38,19 +45,17 @@ class DeviceManager {
   final deviceListChangeListeners = <OnDeviceListChanged>{};
   final historyChangeListeners = <OnDeviceListChanged>{};
 
-  void init(ApInterface apInterface) {
+  Future<void> init(ApInterface apInterface) async {
     this.apInterface = apInterface;
-    _initDeviceId().then((value) {
-      did = value;
-      _watchHistory();
-      this.apInterface.listenPong((pong) {
-        _onDeviceDiscover(pong.from);
-      });
-      startScan();
+    await _initDeviceInfo();
+    _watchHistory();
+    this.apInterface.listenPong((pong) {
+      _onDeviceDiscover(pong.from);
     });
+    startScan();
   }
 
-  Future<String> _initDeviceId() async {
+  Future<void> _initDeviceInfo() async {
     var sharePreference = await SharedPreferences.getInstance();
     var deviceKey = "device_key";
     var saveDid = sharePreference.getString(deviceKey);
@@ -58,7 +63,35 @@ class DeviceManager {
       saveDid = const Uuid().v4();
       sharePreference.setString(deviceKey, saveDid);
     }
-    return saveDid;
+    did = saveDid;
+
+    final deviceInfo = await deviceUtils.getDeviceInfo();
+    var savedDeviceName = sharePreference.getString(deviceNameKey);
+    if (savedDeviceName == null || savedDeviceName.isEmpty) {
+      savedDeviceName = deviceInfo.alias ?? deviceInfo.deviceModel ?? '';
+      sharePreference.setString(deviceNameKey, savedDeviceName);
+    }
+
+    deviceName = savedDeviceName;
+  }
+
+  Future<bool> renameDevice(String name) async {
+    final sp = await SharedPreferences.getInstance();
+    final result = await sp.setString(deviceNameKey, name);
+    if (result) {
+      deviceName = name;
+      deviceNameBroadcast.add(name);
+    }
+    return result;
+  }
+
+  Future<deviceUtils.DeviceInfoResult> getDeviceInfo() async {
+    final deviceInfo = await deviceUtils.getDeviceInfo();
+    return deviceUtils.DeviceInfoResult(
+        alias: deviceName,
+        deviceType: deviceInfo.deviceType,
+        deviceModel: deviceInfo.deviceModel,
+        androidSdkInt: deviceInfo.androidSdkInt);
   }
 
   Future<void> startScan() async {
@@ -68,17 +101,30 @@ class DeviceManager {
         (deviceModal, needPong) {
       if (needPong) {
         multiCastApi.pong(deviceModal);
-        multiCastApi.getDeviceModal().then((value) => apInterface.pong(value, deviceModal));
+        multiCastApi
+            .getDeviceModal()
+            .then((value) => apInterface.pong(value, deviceModal));
       }
       _onDeviceDiscover(deviceModal);
     });
     unawaited(multiCastApi.ping());
   }
 
+
+  Future<void> ping() async {
+    await multiCastApi.ping();
+  }
+
   void _onDeviceDiscover(DeviceModal deviceModal) {
     bool isConnect = isDeviceConnected(deviceModal);
     if (!isConnect) {
       _addDevice(deviceModal);
+    } else {
+      bool isChanged = isDeviceInfoChanged(deviceModal);
+      if (isChanged) {
+        deviceList.removeWhere((element) => element.fingerprint == deviceModal.fingerprint);
+        _addDevice(deviceModal);
+      }
     }
     talker.debug("event data:$deviceModal  deviceList = $deviceList");
     notifyDeviceListChanged();
@@ -99,6 +145,18 @@ class DeviceManager {
       }
     }
     return isConnect;
+  }
+
+  bool isDeviceInfoChanged(DeviceModal event) {
+    var isChanged = false;
+    for (var element in deviceList) {
+      if (element.fingerprint == event.fingerprint) {
+        if (element.ip != event.ip || element.port != event.port || element.alias != event.alias || element.deviceModel != event.deviceModel || element.deviceType != event.deviceType) {
+          isChanged = true;
+        }
+      }
+    }
+    return isChanged;
   }
 
   void notifyDeviceListChanged() {

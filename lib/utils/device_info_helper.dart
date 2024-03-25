@@ -80,14 +80,14 @@ Future<DeviceInfoResult> getDeviceInfo() async {
       case TargetPlatform.iOS:
         final deviceInfo = await plugin.iosInfo;
         // 打印iosInfo
-        print('name: ${deviceInfo.name}');
-        print('systemName: ${deviceInfo.systemName}');
-        print('systemVersion: ${deviceInfo.systemVersion}');
-        print('model: ${deviceInfo.model}');
-        print('localizedModel: ${deviceInfo.localizedModel}');
-        print('identifierForVendor: ${deviceInfo.identifierForVendor}');
-        print('isPhysicalDevice: ${deviceInfo.isPhysicalDevice}');
-        print('utsname: ${deviceInfo.utsname}');
+        // print('name: ${deviceInfo.name}');
+        // print('systemName: ${deviceInfo.systemName}');
+        // print('systemVersion: ${deviceInfo.systemVersion}');
+        // print('model: ${deviceInfo.model}');
+        // print('localizedModel: ${deviceInfo.localizedModel}');
+        // print('identifierForVendor: ${deviceInfo.identifierForVendor}');
+        // print('isPhysicalDevice: ${deviceInfo.isPhysicalDevice}');
+        // print('utsname: ${deviceInfo.utsname}');
 
         alias = deviceType.name;
         deviceModel = deviceInfo.localizedModel;

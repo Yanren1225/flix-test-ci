@@ -175,7 +175,7 @@ class MultiCastUtil {
 
   static Future<DeviceModal> getDeviceModal() async {
     final deviceId = DeviceManager.instance.did;
-    var deviceInfo = await getDeviceInfo();
+    var deviceInfo = await DeviceManager.instance.getDeviceInfo();
     var deviceModal = DeviceModal(
         alias: deviceInfo.alias ?? '',
         deviceType: deviceInfo.deviceType,

@@ -36,31 +36,20 @@ class HelpScreenState extends State<HelpScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(
-                left: 16, top: 8, right: 16, bottom: 16),
-            child: InkWell(
-              onTap: widget.goVersionScreen,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14)),
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: ValueListenableBuilder<String>(
-                    valueListenable: version,
-                    builder: (BuildContext context, String value,
-                        Widget? child) {
-                      return ClickableItem(
-                          label: '关于我们', tail: 'v$value', onClick: () {});
-                    },
-                  ),
-                ),
-              ),
+            padding:
+                const EdgeInsets.only(left: 16, top: 8, right: 16, bottom: 16),
+            child: ValueListenableBuilder<String>(
+              valueListenable: version,
+              builder: (BuildContext context, String value, Widget? child) {
+                return ClickableItem(
+                    label: '关于我们',
+                    tail: 'v$value',
+                    onClick: widget.goVersionScreen);
+              },
             ),
           ),
           const Padding(
-            padding:
-            EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 4),
+            padding: EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 4),
             child: Text(
               '关于连接',
               style: TextStyle(
@@ -73,8 +62,7 @@ class HelpScreenState extends State<HelpScreen> {
             padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
             child: QA(
                 question: '列表里找不到设备？',
-                answer:
-                '请确认发送端和接收端设备处于同一个网络状态下。如：同一个WIFI，或者使用本机热点给其他设备连接使用。'),
+                answer: '请确认发送端和接收端设备处于同一个网络状态下。如：同一个WIFI，或者使用本机热点给其他设备连接使用。'),
           ),
           const Padding(
             padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),

@@ -21,7 +21,10 @@ class MultiCastClientProvider extends ChangeNotifier {
   StreamSubscription? connectivitySubscription;
 
   String? _selectedDeviceId = null;
+
   String? get selectedDeviceId => _selectedDeviceId;
+
+  var deviceName = DeviceManager.instance.deviceName;
 
   static MultiCastClientProvider of(BuildContext context,
       {bool listen = false}) {
@@ -35,6 +38,12 @@ class MultiCastClientProvider extends ChangeNotifier {
         Connectivity().onConnectivityChanged.listen((result) {
       talker.debug('connectivity changed: $result');
       startScan();
+    });
+    DeviceManager.instance.deviceNameBroadcast.stream.listen((event) {
+      if (deviceName != event) {
+        deviceName = event;
+        DeviceManager.instance.ping();
+      }
     });
   }
 
@@ -62,9 +71,6 @@ class MultiCastClientProvider extends ChangeNotifier {
     DeviceManager.instance.clearDevices();
   }
 
-  bool isDeviceConnected(DeviceModal event) {
-    return DeviceManager.instance.isDeviceConnected(event);
-  }
 
   void setSelectedDeviceId(String id) {
     _selectedDeviceId = id;
