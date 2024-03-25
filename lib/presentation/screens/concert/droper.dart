@@ -76,103 +76,99 @@ class DroperState extends State<Droper> {
                         child:
                             SvgPicture.asset('assets/images/ic_handler.svg')),
                   ),
-                  Material(
-                    type: MaterialType.transparency,
-                    child: Flexible(
-                      child: Container(
-                        margin: const EdgeInsets.only(left: 16, right: 16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          gradient: const LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color.fromRGBO(232, 243, 255, 1),
-                              Color.fromRGBO(255, 255, 255, 1),
-                              Color.fromRGBO(255, 255, 255, 1),
-                            ],
-                            stops: [0, 0.2043, 1],
-                          ),
+                  Flexible(
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        gradient: const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color.fromRGBO(232, 243, 255, 1),
+                            Color.fromRGBO(255, 255, 255, 1),
+                            Color.fromRGBO(255, 255, 255, 1),
+                          ],
+                          stops: [0, 0.2043, 1],
                         ),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: 400,
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
+                      ),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: 400,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 20, top: 28, right: 20),
+                              child: Text(
+                                '发送文件',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                  decoration: TextDecoration.none
+                                ).useSystemChineseFont(),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 20, right: 20),
+                              child: Text(
+                                '到${deviceInfo.name}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  letterSpacing: 0,
+                                  color: Color.fromRGBO(60, 60, 67, 0.6),
+                                    decoration: TextDecoration.none
+
+                                ).useSystemChineseFont(),
+                              ),
+                            ),
+                            Flexible(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 24),
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: details.files.length,
+                                    itemBuilder: (_context, index) {
+                                      final file = details.files[index];
+                                      return ReadSendFileItem(file: file);
+                                    }),
+                              ),
+                            ),
+                            Padding(
                                 padding: const EdgeInsets.only(
-                                    left: 20, top: 28, right: 20),
-                                child: Text(
-                                  '发送文件',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
-                                  ).useSystemChineseFont(),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20, right: 20),
-                                child: Text(
-                                  '到${deviceInfo.name}',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
-                                    letterSpacing: 0,
-                                    color: Color.fromRGBO(60, 60, 67, 0.6),
-                                  ).useSystemChineseFont(),
-                                ),
-                              ),
-                              Flexible(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 24),
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      minHeight: 62,
-                                      maxHeight: 400,
+                                    left: 28, right: 28, bottom: 28),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: CupertinoButton(
+                                    onPressed: () {
+                                      _sendFiles(details);
+                                      Navigator.of(context).pop();
+                                    },
+                                    color: const Color.fromRGBO(0, 122, 255, 1),
+                                    borderRadius: BorderRadius.circular(14),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 24, vertical: 16),
+                                    child: Text(
+                                      '发送',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                        letterSpacing: 0,
+                                        color: Colors.white,
+                                          decoration: TextDecoration.none
+
+                                      ).useSystemChineseFont(),
                                     ),
-                                    child: ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: details.files.length,
-                                        itemBuilder: (_context, index) {
-                                          final file = details.files[index];
-                                          return ReadSendFileItem(file: file);
-                                        }),
                                   ),
-                                ),
-                              ),
-                              Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 28, right: 28, bottom: 28),
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    child: CupertinoButton(
-                                      onPressed: () {
-                                        _sendFiles(details);
-                                        Navigator.of(context).pop();
-                                      },
-                                      color: const Color.fromRGBO(0, 122, 255, 1),
-                                      borderRadius: BorderRadius.circular(14),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 24, vertical: 16),
-                                      child: Text(
-                                        '发送',
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                          letterSpacing: 0,
-                                          color: Colors.white,
-                                        ).useSystemChineseFont(),
-                                      ),
-                                    ),
-                                  )),
-                            ],
-                          ),
+                                )),
+                          ],
                         ),
                       ),
                     ),
@@ -257,6 +253,7 @@ class ReadSendFileItemState extends State<ReadSendFileItem> {
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     color: Colors.black,
+                      decoration: TextDecoration.none
                   ).useSystemChineseFont(),
                 ),
                 const SizedBox(
@@ -270,6 +267,7 @@ class ReadSendFileItemState extends State<ReadSendFileItem> {
                     fontWeight: FontWeight.w400,
                     letterSpacing: 0,
                     color: Color.fromRGBO(60, 60, 67, 0.6),
+                      decoration: TextDecoration.none
                   ).useSystemChineseFont(),
                 ),
 
