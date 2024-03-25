@@ -7,6 +7,7 @@ import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:talker_flutter/talker_flutter.dart';
 
 import '../../model/ui_bubble/ui_bubble.dart';
 import 'concert_service.dart';
@@ -30,7 +31,7 @@ class ConcertProvider extends ChangeNotifier {
   }
 
   void _onDevicesChanged(Set<DeviceModal> devices) {
-    final current = devices.firstWhere((element) => element.fingerprint == deviceInfo.id)?.toDeviceInfo();
+    final current = devices.firstWhereOrNull((element) => element.fingerprint == deviceInfo.id)?.toDeviceInfo();
     if (current != null && current.name != deviceInfo.name) {
       deviceInfo.name = current.name;
       deviceName.value = current.name;
