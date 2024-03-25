@@ -95,10 +95,10 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
             if (!widget.clickable) return;
             _controller.reverse();
           },
-          onDoubleTap: () {
-            if (!widget.clickable) return;
-            _openDir();
-          },
+          // onDoubleTap: () {
+          //   if (!widget.clickable) return;
+          //   _openDir();
+          // },
           onTap: () {
             if (!widget.clickable) return;
             // _controller.forward().whenComplete(() => _controller.reverse());
