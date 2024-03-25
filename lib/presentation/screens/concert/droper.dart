@@ -2,7 +2,6 @@ import 'dart:ffi';
 
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:desktop_drop/desktop_drop.dart';
-import 'package:easy_refresh/easy_refresh.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';

@@ -1,28 +1,41 @@
 import 'dart:math';
 
+import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
+import 'package:flix/network/protocol/device_modal.dart';
+import 'package:flix/utils/device/device_utils.dart';
 import 'package:flutter/material.dart';
 
 import '../../model/ui_bubble/ui_bubble.dart';
 import 'concert_service.dart';
-import 'dart:developer' as dev;
 
 class ConcertProvider extends ChangeNotifier {
-  final DeviceInfo deviceInfo;
+  DeviceInfo deviceInfo;
+  late ValueNotifier<String> deviceName;
   late ConcertService _concertService;
   List<UIBubble> bubbles = [];
   final concertMainKey = GlobalKey();
 
-
   ConcertProvider({required this.deviceInfo}) {
+    deviceName = ValueNotifier(deviceInfo.name);
     _concertService = ConcertService(collaboratorId: deviceInfo.id);
     _concertService.listenBubbles((bubbles) {
       this.bubbles = bubbles;
       _logLastProgress();
       notifyListeners();
     });
+    DeviceManager.instance.addDeviceListChangeListener(_onDevicesChanged);
+  }
+
+  void _onDevicesChanged(Set<DeviceModal> devices) {
+    final current = devices.firstWhere((element) => element.fingerprint == deviceInfo.id)?.toDeviceInfo();
+    if (current != null && current.name != deviceInfo.name) {
+      deviceInfo.name = current.name;
+      deviceName.value = current.name;
+      notifyListeners();
+    }
   }
 
   Future<void> send(UIBubble uiBubble) async {
@@ -43,6 +56,7 @@ class ConcertProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    DeviceManager.instance.removeDeviceListChangeListener(_onDevicesChanged);
     _concertService.clear();
     super.dispose();
   }

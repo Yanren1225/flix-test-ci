@@ -43,22 +43,38 @@ class ConcertScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final main = NavigationScaffold(
-      showBackButton: showBackButton,
-      title: deviceInfo.name,
-      builder: (padding) {
-        return LayoutBuilder(
-          builder: (_context, constraints) {
-            final concertProvider =
-                Provider.of<ConcertProvider>(_context, listen: false);
-            return ShareConcertMainView(
-              key: concertProvider.concertMainKey,
-              deviceInfo: deviceInfo,
-              padding: padding,
-              anchor: anchor,
-              playable: playable,
-            );
+    final main = LayoutBuilder(
+      builder: (_context, constraints) {
+        final concertProvider =
+            Provider.of<ConcertProvider>(_context, listen: true);
+        return ValueListenableBuilder(
+          valueListenable: concertProvider.deviceName,
+          builder: (_context, value, child) {
+            return NavigationScaffold(
+                showBackButton: showBackButton,
+                title: value,
+                builder: (padding) {
+                  return ShareConcertMainView(
+                    key: concertProvider.concertMainKey,
+                    deviceInfo: concertProvider.deviceInfo,
+                    padding: padding,
+                    anchor: anchor,
+                    playable: playable,
+                  );
+                });
           },
+          // child: NavigationScaffold(
+          //     showBackButton: showBackButton,
+          //     title: concertProvider.deviceInfo.name,
+          //     builder: (padding) {
+          //       return ShareConcertMainView(
+          //         key: concertProvider.concertMainKey,
+          //         deviceInfo: concertProvider.deviceInfo,
+          //         padding: padding,
+          //         anchor: anchor,
+          //         playable: playable,
+          //       );
+          //     }),
         );
       },
     );
