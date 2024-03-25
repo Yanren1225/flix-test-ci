@@ -89,7 +89,7 @@ Future<DeviceInfoResult> getDeviceInfo() async {
         // print('isPhysicalDevice: ${deviceInfo.isPhysicalDevice}');
         // print('utsname: ${deviceInfo.utsname}');
 
-        alias = deviceType.name;
+        alias = deviceInfo.name;
         deviceModel = deviceInfo.localizedModel;
         break;
       case TargetPlatform.linux:
