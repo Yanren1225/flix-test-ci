@@ -13,6 +13,13 @@ class NameEditBottomSheet extends StatefulWidget {
 
 class NameEditBottomSheetState extends State<NameEditBottomSheet> {
   var name = DeviceManager.instance.deviceName;
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: name);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +32,7 @@ class NameEditBottomSheetState extends State<NameEditBottomSheet> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           child: CupertinoTextField(
             padding: EdgeInsets.only(left: 16, right: 16, top: 15, bottom: 15),
-            controller: TextEditingController(text: name),
+            controller: _controller,
             style: const TextStyle(
                     color: Colors.black,
                     fontSize: 16,

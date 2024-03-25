@@ -20,7 +20,7 @@ class SettingsLabel extends StatelessWidget {
           visible: des != null,
             child: Text(des ?? "",
                 style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: FontWeight.normal,
                     color: Color.fromRGBO(60, 60, 67, 0.6))))
       ],
