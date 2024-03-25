@@ -6,6 +6,7 @@ import 'package:slang/builder/utils/string_extensions.dart';
 
 
 class DeviceInfoResult {
+  final String? alias;
   final DeviceType deviceType;
   final String? deviceModel;
 
@@ -14,6 +15,7 @@ class DeviceInfoResult {
   final int? androidSdkInt;
 
   DeviceInfoResult({
+    required this.alias,
     required this.deviceType,
     required this.deviceModel,
     required this.androidSdkInt,
@@ -22,6 +24,7 @@ class DeviceInfoResult {
 
 Future<DeviceInfoResult> getDeviceInfo() async {
   final plugin = DeviceInfoPlugin();
+  String? alias = null;
   final DeviceType deviceType;
   final String? deviceModel;
   int? androidSdkInt;
@@ -47,20 +50,85 @@ Future<DeviceInfoResult> getDeviceInfo() async {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         final deviceInfo = await plugin.androidInfo;
-        deviceModel = deviceInfo.brand.toCase(CaseStyle.pascal);
+        // print('version: ${deviceInfo.version}');
+        // print('board: ${deviceInfo.board}');
+        // print('bootloader: ${deviceInfo.bootloader}');
+        // print('brand: ${deviceInfo.brand}');
+        // print('device: ${deviceInfo.device}');
+        // print('display: ${deviceInfo.display}');
+        // print('fingerprint: ${deviceInfo.fingerprint}');
+        // print('hardware: ${deviceInfo.hardware}');
+        // print('host: ${deviceInfo.host}');
+        // print('id: ${deviceInfo.id}');
+        // print('manufacturer: ${deviceInfo.manufacturer}');
+        // print('model: ${deviceInfo.model}');
+        // print('product: ${deviceInfo.product}');
+        // print('supported32BitAbis: ${deviceInfo.supported32BitAbis}');
+        // print('supported64BitAbis: ${deviceInfo.supported64BitAbis}');
+        // print('supportedAbis: ${deviceInfo.supportedAbis}');
+        // print('tags: ${deviceInfo.tags}');
+        // print('isPhysicalDevice: ${deviceInfo.isPhysicalDevice}');
+        // print('systemFeatures: ${deviceInfo.systemFeatures}');
+        // print('displayMetrics: ${deviceInfo.displayMetrics}');
+        // print('serialNumber: ${deviceInfo.serialNumber}');
+
+
+
+        deviceModel = '${deviceInfo.brand} ${deviceInfo.model}';
         androidSdkInt = deviceInfo.version.sdkInt;
         break;
       case TargetPlatform.iOS:
         final deviceInfo = await plugin.iosInfo;
+        // 打印iosInfo
+        print('name: ${deviceInfo.name}');
+        print('systemName: ${deviceInfo.systemName}');
+        print('systemVersion: ${deviceInfo.systemVersion}');
+        print('model: ${deviceInfo.model}');
+        print('localizedModel: ${deviceInfo.localizedModel}');
+        print('identifierForVendor: ${deviceInfo.identifierForVendor}');
+        print('isPhysicalDevice: ${deviceInfo.isPhysicalDevice}');
+        print('utsname: ${deviceInfo.utsname}');
+
+        alias = deviceType.name;
         deviceModel = deviceInfo.localizedModel;
         break;
       case TargetPlatform.linux:
-        deviceModel = 'Linux';
+        final deviceInfo = await plugin.linuxInfo;
+        // 打印linuxInfo
+        // print('id: ${deviceInfo.id}');
+        // print('idLike: ${deviceInfo.idLike}');
+        // print('name: ${deviceInfo.name}');
+        // print('prettyName: ${deviceInfo.prettyName}');
+        // print('version: ${deviceInfo.version}');
+        // print('versionId: ${deviceInfo.versionId}');
+        alias = deviceInfo.prettyName;
+        deviceModel = deviceInfo.name;
         break;
       case TargetPlatform.macOS:
-        deviceModel = 'macOS';
+        final deviceInfo = await plugin.macOsInfo;
+        // // 打印macosInfo
+        // print('computerName: ${deviceInfo.computerName}');
+        // print('hostName: ${deviceInfo.hostName}');
+        // print('arch: ${deviceInfo.arch}');
+        // print('model: ${deviceInfo.model}');
+        // print('kernelVersion: ${deviceInfo.kernelVersion}');
+        // print('osRelease: ${deviceInfo.osRelease}');
+        alias = deviceInfo.computerName;
+        deviceModel = deviceInfo.model;
         break;
       case TargetPlatform.windows:
+        final deviceInfo = await plugin.windowsInfo;
+        // 打印windowsInfo
+        // print('computerName: ${deviceInfo.computerName}');
+        // print('windowsEdition: ${deviceInfo.windowsEdition}');
+        // print('windowsVersion: ${deviceInfo.windowsVersion}');
+        // print('windowsVersionNumber: ${deviceInfo.windowsVersionNumber}');
+        // print('windowsBuildNumber: ${deviceInfo.windowsBuildNumber}');
+        // print('windowsUBR: ${deviceInfo.windowsUBR}');
+
+
+        alias = deviceInfo.computerName;
+        // deviceModel = deviceInfo.model;
         deviceModel = 'Windows';
         break;
       case TargetPlatform.fuchsia:
@@ -70,6 +138,7 @@ Future<DeviceInfoResult> getDeviceInfo() async {
   }
 
   return DeviceInfoResult(
+    alias: alias,
     deviceType: deviceType,
     deviceModel: deviceModel,
     androidSdkInt: androidSdkInt,

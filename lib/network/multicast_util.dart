@@ -177,7 +177,7 @@ class MultiCastUtil {
     final deviceId = DeviceManager.instance.did;
     var deviceInfo = await getDeviceInfo();
     var deviceModal = DeviceModal(
-        alias: '',
+        alias: deviceInfo.alias ?? '',
         deviceType: deviceInfo.deviceType,
         fingerprint: deviceId!,
         port: defaultPort,
