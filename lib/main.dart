@@ -163,7 +163,7 @@ class MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => AndropContext())
       ],
       child: MaterialApp(
-        title: 'Androp',
+        title: 'Flix',
         navigatorObservers: [modalsRouteObserver],
         theme: ThemeData(
           // This is the theme of your application.
