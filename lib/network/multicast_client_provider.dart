@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/multicast_util.dart';
 import 'package:flix/network/protocol/device_modal.dart';
@@ -37,6 +38,7 @@ class MultiCastClientProvider extends ChangeNotifier {
     connectivitySubscription =
         Connectivity().onConnectivityChanged.listen((result) {
       talker.debug('connectivity changed: $result');
+      ShipService.instance.startShipServer();
       startScan();
     });
     DeviceManager.instance.deviceNameBroadcast.stream.listen((event) {

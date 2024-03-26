@@ -89,6 +89,22 @@ Future<void> main() async {
 
   _logAppContext();
 
+  SystemChannels.lifecycle.setMessageHandler((msg) async {
+    talker.verbose('AppLifecycle $msg ${msg}');
+    // msg是个字符串，是下面的值
+    // AppLifecycleState.resumed
+    // AppLifecycleState.inactive
+    // AppLifecycleState.paused
+    // AppLifecycleState.detached
+
+    if (msg == 'AppLifecycleState.resumed') {
+      talker.verbose('App resumed');
+      ShipService.instance.startShipServer();
+      DeviceManager.instance.startScan();
+    }
+    return msg;
+  });
+
   if (kDebugMode) {
     PluginManager.instance // Register plugin kits
       ..register(const WidgetInfoInspector())
