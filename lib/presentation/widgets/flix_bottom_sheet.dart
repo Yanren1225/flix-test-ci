@@ -16,112 +16,115 @@ class FlixBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: 400),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 40,
-              height: 40,
-              child: CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child:
-                  SvgPicture.asset('assets/images/ic_handler.svg')),
-            ),
-            Flexible(
-              child: Container(
-                margin: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  gradient: const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color.fromRGBO(232, 243, 255, 1),
-                      Color.fromRGBO(255, 255, 255, 1),
-                      Color.fromRGBO(255, 255, 255, 1),
-                    ],
-                    stops: [0, 0.2043, 1],
-                  ),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 20, top: 28, right: 20),
-                      child: Text(
-                        title,
-                        style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                            decoration: TextDecoration.none
-                        ).useSystemChineseFont(),
-                      ),
+      child: Material(
+        type: MaterialType.transparency,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 400),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 40,
+                height: 40,
+                child: CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child:
+                    SvgPicture.asset('assets/images/ic_handler.svg')),
+              ),
+              Flexible(
+                child: Container(
+                  margin: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    gradient: const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color.fromRGBO(232, 243, 255, 1),
+                        Color.fromRGBO(255, 255, 255, 1),
+                        Color.fromRGBO(255, 255, 255, 1),
+                      ],
+                      stops: [0, 0.2043, 1],
                     ),
-                    Visibility(
-                      visible: subTitle != null,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20, right: 20),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20, top: 28, right: 20),
                         child: Text(
-                          subTitle ?? '',
+                          title,
                           style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              letterSpacing: 0,
-                              color: Color.fromRGBO(60, 60, 67, 0.6),
+                              fontSize: 24,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
                               decoration: TextDecoration.none
-      
                           ).useSystemChineseFont(),
                         ),
                       ),
-                    ),
-                    Flexible(
-                      child: child,
-                    ),
-                    Visibility(
-                      visible: buttonText != null,
-                      child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 28, right: 28, bottom: 28),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: CupertinoButton(
-                              onPressed: () {
-                                onClick?.call();
-                                Navigator.of(context).pop();
-                              },
-                              color: const Color.fromRGBO(0, 122, 255, 1),
-                              borderRadius: BorderRadius.circular(14),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 16),
-                              child: Text(
-                                buttonText ?? '',
-                                style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: 0,
-                                    color: Colors.white,
-                                    decoration: TextDecoration.none
-      
-                                ).useSystemChineseFont(),
+                      Visibility(
+                        visible: subTitle != null,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20, right: 20),
+                          child: Text(
+                            subTitle ?? '',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: 0,
+                                color: Color.fromRGBO(60, 60, 67, 0.6),
+                                decoration: TextDecoration.none
+
+                            ).useSystemChineseFont(),
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        child: child,
+                      ),
+                      Visibility(
+                        visible: buttonText != null,
+                        child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 28, right: 28, bottom: 28),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: CupertinoButton(
+                                onPressed: () {
+                                  onClick?.call();
+                                  Navigator.of(context).pop();
+                                },
+                                color: const Color.fromRGBO(0, 122, 255, 1),
+                                borderRadius: BorderRadius.circular(14),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24, vertical: 16),
+                                child: Text(
+                                  buttonText ?? '',
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                      letterSpacing: 0,
+                                      color: Colors.white,
+                                      decoration: TextDecoration.none
+
+                                  ).useSystemChineseFont(),
+                                ),
                               ),
-                            ),
-                          )),
-                    ),
-                  ],
+                            )),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

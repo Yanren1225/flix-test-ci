@@ -165,6 +165,11 @@ class MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'Flix',
         navigatorObservers: [modalsRouteObserver],
+        localizationsDelegates: <LocalizationsDelegate<dynamic>>[
+          DefaultMaterialLocalizations.delegate,
+          DefaultWidgetsLocalizations.delegate,
+          DefaultCupertinoLocalizations.delegate,
+        ],
         theme: ThemeData(
           // This is the theme of your application.
           //
