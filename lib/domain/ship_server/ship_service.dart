@@ -278,14 +278,14 @@ class ShipService extends ApInterface {
       } else {
         talker.debug('发送失败: status code: ${response.statusCode}, ${response.body}');
       }
-    } on CancelException catch (e) {
-      talker.warning('取消发送: $e', e);
+    } on CancelException catch (e, stackTrace) {
+      talker.warning('取消发送 bubble: $e', e, stackTrace);
     }
   }
 
   Future<void> send(UIBubble uiBubble) async {
     try {
-      await checkCancel(uiBubble.shareable.id);
+      // await checkCancel(uiBubble.shareable.id);
       switch (uiBubble.type) {
         case BubbleType.Text:
           final primitiveBubble = fromUIBubble(uiBubble);
@@ -301,8 +301,8 @@ class ShipService extends ApInterface {
         default:
           throw UnimplementedError();
       }
-    } on CancelException catch (e) {
-      talker.warning('取消发送: $e', e);
+    } on CancelException catch (e, stackTrace) {
+      talker.warning('outer 取消发送: $e', e, stackTrace);
     }
   }
 
@@ -316,10 +316,10 @@ class ShipService extends ApInterface {
       await _send(_fileBubble.copy(
           content: _fileBubble.content
               .copy(meta: _fileBubble.content.meta.copy(path: null))));
-    } on CancelException catch (e) {
-      talker.warning('取消发送: $e', e);
-    } catch (e) {
-      talker.error('发送异常: $e', e);
+    } on CancelException catch (e, stackTrace) {
+      talker.warning('取消发送文件: $e', e, stackTrace);
+    } catch (e, stackTrace) {
+      talker.error('发送异常: $e', e, stackTrace);
       _updateFileShareState(fileBubble.id, FileState.sendFailed);
     }
   }
@@ -399,7 +399,7 @@ class ShipService extends ApInterface {
         throw CancelException();
       }
     } else if (bubble == null) {
-      throw CancelException('bubble deleted');
+      throw CancelException('bubble: $bubbleId deleted');
     }
   }
 
