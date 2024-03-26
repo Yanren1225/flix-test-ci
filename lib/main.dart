@@ -100,6 +100,7 @@ Future<void> main() async {
     if (msg == 'AppLifecycleState.resumed') {
       talker.verbose('App resumed');
       ShipService.instance.isServerLiving().then((isServerLiving) {
+        talker.debug('isServerLiving: $isServerLiving');
         if (!isServerLiving) {
           ShipService.instance.restartShipServer();
         }
