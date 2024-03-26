@@ -9,6 +9,7 @@ import 'package:flix/presentation/widgets/bubbles/accept_media_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
 import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
+import 'package:flix/presentation/widgets/segements/preview_error_widget.dart';
 import 'package:flix/presentation/widgets/segements/resend_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -38,11 +39,11 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
     ConcertProvider concertProvider = context.watch();
     final sharedVideo = entity.shareable as SharedFile;
     final Color backgroundColor;
-    if (entity.isFromMe(andropContext.deviceId)) {
-      backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
-    } else {
+    // if (entity.isFromMe(andropContext.deviceId)) {
+    //   backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
+    // } else {
       backgroundColor = Colors.white;
-    }
+    // }
 
     var clickable = false;
     final MainAxisAlignment alignment;
@@ -184,7 +185,8 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
           content = const AspectRatio(
             aspectRatio: 1.333333,
             child: DecoratedBox(
-              decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+              decoration: BoxDecoration(color: Colors.white),
+              child: PreviewErrorWidget(),
             ),
           );
           stateIcon = SvgPicture.asset('assets/images/ic_trans_fail.svg');

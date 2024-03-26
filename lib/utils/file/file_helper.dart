@@ -166,25 +166,29 @@ String _getFileNameFromPath(String path) {
 
 Future<Size> getImgSize(Size size, String path) async {
   // TODO: 其他平台也优先使用getHeifImageSize2
-  if (Platform.isIOS) {
-    final _size = await getHeifImageSize2(path);
-    if (_size == null) {
-      talker.error('Failed to get size of image, path: ${path}');
-    } else {
-      size = _size;
-    }
-  } else {
-    try {
-      size = ImageSizeGetter.getSize(FileInput(File(path)));
-    } catch (e, stack) {
-      talker.error('Failed to get size of image, path: ${path}: $e, $stack', e, stack);
+  try {
+    if (Platform.isIOS) {
       final _size = await getHeifImageSize2(path);
       if (_size == null) {
-        talker.error('Failed to get size of heifImage, path: ${path}');
+        talker.error('Failed to get size of image, path: ${path}');
       } else {
         size = _size;
       }
+    } else {
+      try {
+        size = ImageSizeGetter.getSize(FileInput(File(path)));
+      } catch (e, stack) {
+        talker.error('inner: Failed to get size of image, path: ${path}: $e, $stack', e, stack);
+        final _size = await getHeifImageSize2(path);
+        if (_size == null) {
+          talker.error('Failed to get size of heifImage, path: ${path}');
+        } else {
+          size = _size;
+        }
+      }
     }
+  } catch (e, stacktrace) {
+    talker.error('outer: Failed to get image size, path: ${path}', e, stacktrace);
   }
 
   return size;

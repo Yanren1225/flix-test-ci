@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/presentation/widgets/segements/preview_error_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:video_player/video_player.dart';
@@ -79,13 +80,7 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
   @override
   Widget build(BuildContext context) {
     if (isError) {
-      return const Center(
-        child: Text('此视频无法预览',
-            style: TextStyle(
-                color: Color.fromRGBO(255, 59, 48, 1),
-                fontSize: 14,
-                fontWeight: FontWeight.normal)),
-      );
+      return const PreviewErrorWidget();
     } else if (initialized) {
       return IntrinsicHeight(
         child: Stack(

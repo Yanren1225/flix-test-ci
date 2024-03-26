@@ -4,12 +4,14 @@ import 'dart:math';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/widgets/bubbles/accept_media_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
 import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
+import 'package:flix/presentation/widgets/segements/preview_error_widget.dart';
 import 'package:flix/presentation/widgets/segements/resend_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -55,11 +57,11 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
     ConcertProvider concertProvider = context.watch();
     final sharedImage = entity.shareable as SharedFile;
     final Color backgroundColor;
-    if (entity.isFromMe(andropContext.deviceId)) {
-      backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
-    } else {
+    // if (entity.isFromMe(andropContext.deviceId)) {
+    //   backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
+    // } else {
       backgroundColor = Colors.white;
-    }
+    // }
 
     bool clickable = false;
     final MainAxisAlignment alignment;
@@ -222,7 +224,8 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
             aspectRatio: 1.333333,
             child: DecoratedBox(
               decoration:
-                  const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                  const BoxDecoration(color: Colors.white),
+              child: _imageErrorWidget(),
             ),
           );
           stateIcon = SvgPicture.asset('assets/images/ic_trans_fail.svg');
@@ -321,6 +324,15 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
 
   Widget _image(SharedFile sharedFile) {
     return Image.file(
-        key: _imageKey, File(sharedFile.content.path!!), fit: BoxFit.contain);
+        key: _imageKey, File(sharedFile.content.path!!), fit: BoxFit.contain, errorBuilder: (BuildContext context,
+        Object error,
+        StackTrace? stackTrace,) {
+          talker.error('failed to preview image: ${entity.shareable.id}', error, stackTrace);
+          return _imageErrorWidget();
+    },);
   }
+
+  Widget _imageErrorWidget() => PreviewErrorWidget();
 }
+
+
