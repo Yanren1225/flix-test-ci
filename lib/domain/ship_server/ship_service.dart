@@ -129,13 +129,13 @@ class ShipService extends ApInterface {
                 throw StateError('Bubble should be accept');
               }
               bubble = _bubble;
-              checkCancel(bubble.id);
+              await checkCancel(bubble.id);
               break;
             case 'file':
               if (bubble == null) {
                 throw StateError('Bubble should not null');
               }
-              checkCancel(bubble.id);
+              await checkCancel(bubble.id);
               try {
                 final String desDir = await getDefaultDestinationDirectory();
                 final String filePath = '$desDir/${formData.filename}';
@@ -149,7 +149,7 @@ class ShipService extends ApInterface {
                 final bubbleId = bubble.id;
                 await formData.part
                     .chain((Stream<List<int>> stream) async {
-                      checkCancel(bubbleId);
+                      await checkCancel(bubbleId);
                     })
                     .progress(bubbleId)
                     .pipe(out);
@@ -179,8 +179,8 @@ class ShipService extends ApInterface {
       } else {
         return Response.badRequest();
       }
-    } on CancelException catch (e) {
-      talker.warning('_receiveFile canceled: $e', e);
+    } on CancelException catch (e, stacktrace) {
+      talker.warning('_receiveFile canceled: $e', e, stacktrace);
       return Response.ok('canceled');
     }
   }
@@ -194,7 +194,7 @@ class ShipService extends ApInterface {
         return Response.notFound('bubble not found');
       }
 
-      checkCancel(bubble.id);
+      await checkCancel(bubble.id);
 
       switch (intent.action) {
         case TransAction.confirmReceive:
@@ -205,13 +205,13 @@ class ShipService extends ApInterface {
           break;
         case TransAction.cancel:
           await _updateFileShareState(intent.bubbleId, FileState.cancelled);
-          checkCancel(intent.bubbleId);
+          await checkCancel(intent.bubbleId);
           break;
       }
 
       return Response.ok('ok');
-    } on Exception catch (e) {
-      talker.error('receive intent error: $e', e);
+    } on Exception catch (e, stackTrace) {
+      talker.error('receive intent error: $e', e,stackTrace);
       return Response.badRequest();
     }
   }
@@ -263,7 +263,7 @@ class ShipService extends ApInterface {
 
   Future<void> _send(PrimitiveBubble primitiveBubble) async {
     try {
-      checkCancel(primitiveBubble.id);
+      await checkCancel(primitiveBubble.id);
       var uri = Uri.parse(
           'http://${DeviceManager.instance.getNetAdressByDeviceId(primitiveBubble.to)}/bubble');
 
@@ -285,7 +285,7 @@ class ShipService extends ApInterface {
 
   Future<void> send(UIBubble uiBubble) async {
     try {
-      checkCancel(uiBubble.shareable.id);
+      await checkCancel(uiBubble.shareable.id);
       switch (uiBubble.type) {
         case BubbleType.Text:
           final primitiveBubble = fromUIBubble(uiBubble);
@@ -308,7 +308,7 @@ class ShipService extends ApInterface {
 
   Future<void> _sendFileBubble(PrimitiveFileBubble fileBubble) async {
     try {
-      checkCancel(fileBubble.id);
+      await checkCancel(fileBubble.id);
       var _fileBubble = fileBubble.copy(
           content: fileBubble.content.copy(state: FileState.waitToAccepted));
       await _bubblePool.add(_fileBubble);
@@ -326,7 +326,7 @@ class ShipService extends ApInterface {
 
   Future<void> _sendFileReal(PrimitiveFileBubble fileBubble) async {
     try {
-      checkCancel(fileBubble.id);
+      await checkCancel(fileBubble.id);
       final shardFile = fileBubble.content.meta;
 
       var request = http.MultipartRequest(
@@ -356,10 +356,10 @@ class ShipService extends ApInterface {
           _updateFileShareState(fileBubble.id, FileState.sendFailed);
         }
       });
-    } on CancelException catch (e) {
-      talker.warning('发送取消: $e', e);
-    } catch (e) {
-      talker.error('发送异常: $e', e);
+    } on CancelException catch (e, stackTrace) {
+      talker.warning('发送取消: $e', e, stackTrace);
+    } catch (e, stackTrace) {
+      talker.error('发送异常: $e', e, stackTrace);
       _updateFileShareState(fileBubble.id, FileState.sendFailed);
     }
   }
@@ -398,14 +398,21 @@ class ShipService extends ApInterface {
         onCanceled?.call();
         throw CancelException();
       }
+    } else if (bubble == null) {
+      throw CancelException('bubble deleted');
     }
   }
 
-  Future<void> cancel(UIBubble uiBubble) async {
+  Future<void> cancelSend(UIBubble uiBubble) async {
     // tasks[bubbleId]?.cancel();
     final bubble = fromUIBubble(uiBubble) as PrimitiveFileBubble;
     await _updateFileShareState(bubble.id, FileState.cancelled, create: bubble);
     await sendCancelMessage(bubble.id, bubble.to);
+  }
+
+  Future<void> cancelReceive(UIBubble uiBubble) async {
+    final bubble = fromUIBubble(uiBubble) as PrimitiveFileBubble;
+    await _updateFileShareState(bubble.id, FileState.cancelled, create: bubble);
   }
 
   Future<void> resend(UIBubble uiBubble) async {

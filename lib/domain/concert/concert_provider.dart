@@ -47,8 +47,12 @@ class ConcertProvider extends ChangeNotifier {
     return await _concertService.confirmReceiveFile(uiBubble);
   }
 
-  Future<void> cancel(UIBubble uiBubble) async {
-    return await _concertService.cancel(uiBubble);
+  Future<void> cancelSend(UIBubble uiBubble) async {
+    return await _concertService.cancelSend(uiBubble);
+  }
+
+  Future<void> _cancelReceive(UIBubble uiBubble) async {
+    return await _concertService.cancelReceive(uiBubble);
   }
 
   Future<void> resend(UIBubble uiBubble) async {
@@ -67,6 +71,11 @@ class ConcertProvider extends ChangeNotifier {
     if (last != null && last.shareable is SharedFile) {
       talker.debug('progress: ${(last.shareable as SharedFile).progress}');
     }
+  }
+
+  Future<void> deleteBubble(UIBubble uiBubble) async {
+    await _cancelReceive(uiBubble);
+    await _concertService.deleteBubble(uiBubble);
   }
 
 }

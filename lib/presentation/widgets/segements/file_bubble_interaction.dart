@@ -6,8 +6,10 @@ import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/segements/bubble_context_menu.dart';
 import 'package:flix/utils/file/file_helper.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -30,7 +32,6 @@ class FileBubbleInteraction extends StatefulWidget {
       required this.child,
       required this.clickable});
 
-
   @override
   State<StatefulWidget> createState() => FileBubbleIneractionState();
 }
@@ -40,7 +41,6 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
   var tapDownTime = 0;
   Offset? tapDown = null;
   late String contextMenuTag;
-
 
   @override
   void initState() {
@@ -69,7 +69,6 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
           radius: 10,
           borderRadius: BorderRadius.circular(10),
           onTapDown: (details) {
-            if (!widget.clickable) return;
             tapDown = details.localPosition;
             // 记下按下的时间
             tapDownTime = DateTime.now().millisecondsSinceEpoch;
@@ -78,8 +77,6 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
             _controller.forward();
           },
           onTapUp: (_) {
-            if (!widget.clickable) return;
-
             final diff = DateTime.now().millisecondsSinceEpoch - tapDownTime;
             talker.debug('gesture time diff: $diff');
             if (DateTime.now().millisecondsSinceEpoch - tapDownTime < 60) {
@@ -92,7 +89,6 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
             tapDownTime = 0;
           },
           onTapCancel: () {
-            if (!widget.clickable) return;
             _controller.reverse();
           },
           // onDoubleTap: () {
@@ -112,34 +108,54 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
             });
           },
           onSecondaryTapDown: (detials) {
-            if (!widget.clickable) return;
-            _showBubbleContextMenu(context, detials.localPosition, andropContext, concertProvider);
+            _showBubbleContextMenu(context, detials.localPosition,
+                andropContext, concertProvider, !widget.clickable);
           },
           onLongPress: () {
-            if (!widget.clickable) return;
             if (tapDown == null) {
               return;
             }
             HapticFeedback.mediumImpact();
-            _showBubbleContextMenu(context, tapDown! , andropContext, concertProvider);
+            _showBubbleContextMenu(context, tapDown!, andropContext,
+                concertProvider, !widget.clickable);
           },
           child: ScaleTransition(scale: _animation, child: widget.child)),
     );
   }
 
-  void _showBubbleContextMenu(BuildContext context, Offset clickPosition, AndropContext andropContext,
-      ConcertProvider concertProvider) {
-    showBubbleContextMenu(context, contextMenuTag, clickPosition, andropContext.deviceId,
-        concertProvider.concertMainKey, widget.bubble, [
-      // BubbleContextMenuItemType.Copy,
-      BubbleContextMenuItemType.Location,
-    ], {
-      // BubbleContextMenuItemType.Copy: () {
-      //   _copyContentToClipboard();
-      // },
+  void _showBubbleContextMenu(
+      BuildContext context,
+      Offset clickPosition,
+      AndropContext andropContext,
+      ConcertProvider concertProvider,
+      bool onlyDelete) {
+    final List<BubbleContextMenuItemType> items;
+    if (onlyDelete) {
+      items = [BubbleContextMenuItemType.Delete];
+    } else {
+      items = [
+        BubbleContextMenuItemType.Location,
+        BubbleContextMenuItemType.Delete,
+      ];
+    }
+    showBubbleContextMenu(
+        context,
+        contextMenuTag,
+        clickPosition,
+        andropContext.deviceId,
+        concertProvider.concertMainKey,
+        widget.bubble,
+        items, {
       BubbleContextMenuItemType.Location: () {
         _openDir();
-      }
+      },
+      BubbleContextMenuItemType.Delete: () {
+        showCupertinoModalPopup(
+            context: context,
+            builder: (context) => DeleteMessageBottomSheet(onConfirm: () {
+                  concertProvider.deleteBubble(widget.bubble);
+                }));
+      },
     });
   }
 

@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
+import 'package:flix/model/ui_bubble/shareable.dart';
 import 'package:flix/utils/stream_progress.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -51,11 +52,24 @@ class ConcertService {
     return await ShipService.instance.confirmReceiveFile(uiBubble.from, uiBubble.shareable.id);
   }
 
-  Future<void> cancel(UIBubble uiBubble) async {
-    return await ShipService.instance.cancel(uiBubble);
+  Future<void> cancelSend(UIBubble uiBubble) async {
+    return await ShipService.instance.cancelSend(uiBubble);
+  }
+
+  Future<void> cancelReceive(UIBubble uiBubble) async {
+    return await ShipService.instance.cancelReceive(uiBubble);
   }
 
   Future<void> resend(UIBubble uiBubble) async {
     return await ShipService.instance.resend(uiBubble);
+  }
+
+  Future<void> deleteBubble(UIBubble uiBubble) async {
+    // if (uiBubble.shareable is SharedText) {
+      await BubblePool.instance.deleteBubble(uiBubble);
+    // } else {
+    //   await BubblePool.instance.deleteBubble(uiBubble);
+    //   // TODO 取消发送或者接收
+    // }
   }
 }

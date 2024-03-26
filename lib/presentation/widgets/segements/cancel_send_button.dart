@@ -56,7 +56,7 @@ class CancelSendButtonState extends State<CancelSendButton> {
                     child: InkWell(
                       onTap: () {
                         removeAllModals();
-                        concertProvider.cancel(widget.entity);
+                        concertProvider.cancelSend(widget.entity);
                       },
                       child: const Padding(
                         padding:

@@ -7,6 +7,7 @@ import 'package:flix/model/database/bubble_entity.dart';
 import 'package:flix/model/database/text_content.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
+import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:quiver/collection.dart';
 
 /// 承担bubble的传递、查找和缓存、订阅分发
@@ -57,5 +58,8 @@ class BubblePool {
     }
   }
 
+  Future<void> deleteBubble(UIBubble uiBubble) async {
+    return await appDatabase.bubblesDao.deleteBubbleById(uiBubble.shareable.id);
+  }
 
 }

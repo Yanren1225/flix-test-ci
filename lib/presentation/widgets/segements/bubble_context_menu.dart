@@ -32,7 +32,7 @@ void showBubbleContextMenu(
   }
   final showLeft;
 
-  if (globalOffset.dx < relativeWidget.size.width - 100) {
+  if (globalOffset.dx < relativeWidget.size.width - 180) {
     showLeft = false;
   } else {
     showLeft = true;
@@ -131,6 +131,7 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
           items.add(BubbleContextMenuItem(
             title: '删除',
             icon: 'assets/images/ic_delete.svg',
+            color: Color.fromRGBO(255, 59, 48, 1),
             onTap: onTap(type),
           ));
           break;
@@ -194,7 +195,7 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
   VoidCallback onTap(BubbleContextMenuItemType type) {
     return () {
       removeAllModals();
-      widget.itemActions[type]?.call();
+      Future.delayed(Duration.zero, () => widget.itemActions[type]?.call());
     };
   }
 
@@ -209,9 +210,10 @@ class BubbleContextMenuItem extends StatelessWidget {
   final String title;
   final String icon;
   final VoidCallback onTap;
+  final Color color;
 
   BubbleContextMenuItem(
-      {required this.title, required this.icon, required this.onTap});
+      {required this.title, required this.icon, this.color = Colors.black, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -225,15 +227,15 @@ class BubbleContextMenuItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SvgPicture.asset(icon),
+            SvgPicture.asset(icon, colorFilter: ColorFilter.mode(color, BlendMode.srcIn) ,),
             const SizedBox(
               height: 2,
             ),
             Text(title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  color: Colors.black,
+                  color: color,
                 ).useSystemChineseFont()),
           ],
         ),

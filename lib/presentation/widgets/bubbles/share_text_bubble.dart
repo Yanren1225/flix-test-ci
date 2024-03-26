@@ -2,7 +2,9 @@ import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/model/ui_bubble/shareable.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/segements/bubble_context_menu.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -92,11 +94,17 @@ class ShareTextBubble extends StatelessWidget {
     return showBubbleContextMenu(context, contextMenuTag, clickPosition , andropContext.deviceId,
         concertProvider.concertMainKey, entity, [
       BubbleContextMenuItemType.Copy,
+      BubbleContextMenuItemType.Delete,
       // BubbleContextMenuItemType.Location,
     ], {
       BubbleContextMenuItemType.Copy: () {
         _copyContentToClipboard();
-      }
+      },
+      BubbleContextMenuItemType.Delete: () {
+        showCupertinoModalPopup(context: context, builder: (context) => DeleteMessageBottomSheet(onConfirm: () {
+          concertProvider.deleteBubble(entity);
+        }));
+      },
     });
   }
 

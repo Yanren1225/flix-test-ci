@@ -14,4 +14,14 @@ class Cancelable {
   }
 }
 
-class CancelException implements Exception {}
+class CancelException implements Exception {
+  final String? message;
+  CancelException([this.message]);
+
+
+  String toString() {
+    Object? message = this.message;
+    if (message == null) return "Exception";
+    return "Exception: $message";
+  }
+}

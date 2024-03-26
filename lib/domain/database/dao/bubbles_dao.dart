@@ -7,6 +7,7 @@ import 'package:flix/model/database/file_content.dart';
 import 'package:flix/model/database/text_content.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:drift/drift.dart';
+import 'package:flix/model/ui_bubble/ui_bubble.dart';
 
 part 'bubbles_dao.g.dart';
 
@@ -147,5 +148,13 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
       default:
         throw UnimplementedError();
     }
+  }
+
+  Future<void> deleteBubbleById(String id) async {
+    return transaction(() async {
+      await (delete(bubbleEntities)..where((tbl) => tbl.id.equals(id))).go();
+      await (delete(textContents)..where((tbl) => tbl.id.equals(id))).go();
+      await (delete(fileContents)..where((tbl) => tbl.id.equals(id))).go();
+    });
   }
 }
