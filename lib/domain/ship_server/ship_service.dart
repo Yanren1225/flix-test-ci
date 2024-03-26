@@ -51,6 +51,7 @@ class ShipService extends ApInterface {
     app.post('/intent', _receiveIntent);
     app.post('/file', _receiveFile);
     app.post('/pong', _receivePong);
+    app.post('/heartbeat', _heartbeat);
 
     // 尝试三次启动
     _server =  await _startShipServer(app, 'first', () async {
@@ -63,9 +64,28 @@ class ShipService extends ApInterface {
     });
   }
 
-  // Future<void> restartShipServer() async {
-  //
-  // }
+  Future<bool> isServerLiving() async {
+    var uri = Uri.parse('http://127.0.0.1:${MultiCastUtil.defaultPort}/heartbeat');
+    var response = await http.post(
+      uri,
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      talker.debug('isServerLiving pong failed: status code: ${response.statusCode}, ${response.body}');
+      return false;
+    }
+
+  }
+
+  Future<void> restartShipServer() async {
+    try {
+      await _server?.close(force: true);
+      await startShipServer();
+    } catch(e, stacktrace) {
+      talker.error('restart server failed: $e', e, stacktrace);
+    }
+  }
 
   Future<HttpServer?> _startShipServer(Router app, String tag, Future<HttpServer?> Function() onFailed) async {
     try {
@@ -234,6 +254,10 @@ class ShipService extends ApInterface {
       talker.error('receive pong error: $e', e, stack);
       return Response.badRequest();
     }
+  }
+
+  Future<Response> _heartbeat(Request request) async {
+    return Response.ok('I\'m living');
   }
 
   @override

@@ -99,7 +99,12 @@ Future<void> main() async {
 
     if (msg == 'AppLifecycleState.resumed') {
       talker.verbose('App resumed');
-      ShipService.instance.startShipServer();
+      ShipService.instance.isServerLiving().then((isServerLiving) {
+        if (!isServerLiving) {
+          ShipService.instance.restartShipServer();
+        }
+      });
+      // ShipService.instance.startShipServer();
       DeviceManager.instance.startScan();
     }
     return msg;
