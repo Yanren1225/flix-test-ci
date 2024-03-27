@@ -221,10 +221,10 @@ class ShipService extends ApInterface {
 
       final body = await request.readAsString();
       final pong = Pong.fromJson(body);
-      talker.debug('receive tcp pong: $pong');
       final ip = (request.context['shelf.io.connection_info'] as HttpConnectionInfo?)?.remoteAddress.address;
       if (ip != null) {
         pong.from.ip = ip;
+        talker.debug('receive tcp pong: $pong');
         _pongListener?.call(pong);
       } else {
         talker.error('receive tcp pong, but can\'t get ip');
