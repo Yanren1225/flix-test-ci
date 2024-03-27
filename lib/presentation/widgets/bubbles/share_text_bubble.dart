@@ -13,12 +13,27 @@ import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-class ShareTextBubble extends StatelessWidget {
+class ShareTextBubble extends StatefulWidget {
   final UIBubble entity;
-  Offset? tapDown ;
-  final contextMenuTag = Uuid().v4();
 
   ShareTextBubble({super.key, required this.entity});
+
+  @override
+  State<StatefulWidget> createState() => ShareTextBubbleState();
+
+}
+
+class ShareTextBubbleState extends State<ShareTextBubble> {
+  UIBubble get entity => widget.entity;
+  Offset? tapDown;
+
+  late String contextMenuTag;
+
+  @override
+  void initState() {
+    super.initState();
+    contextMenuTag = Uuid().v4();
+  }
 
   @override
   Widget build(BuildContext context) {
