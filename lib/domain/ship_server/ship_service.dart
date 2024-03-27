@@ -308,10 +308,10 @@ class ShipService extends ApInterface {
 
   Future<void> _sendFileBubble(PrimitiveFileBubble fileBubble) async {
     try {
-      await checkCancel(fileBubble.id);
       var _fileBubble = fileBubble.copy(
           content: fileBubble.content.copy(state: FileState.waitToAccepted));
       await _bubblePool.add(_fileBubble);
+      await checkCancel(fileBubble.id);
       // send with no path
       await _send(_fileBubble.copy(
           content: _fileBubble.content
