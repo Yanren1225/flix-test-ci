@@ -131,10 +131,11 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
       bool onlyDelete) {
     final List<BubbleContextMenuItemType> items;
     if (onlyDelete) {
-      items = [BubbleContextMenuItemType.Delete];
+      items = [BubbleContextMenuItemType.MultiSelect, BubbleContextMenuItemType.Delete];
     } else {
       items = [
         BubbleContextMenuItemType.Location,
+        BubbleContextMenuItemType.MultiSelect,
         BubbleContextMenuItemType.Delete,
       ];
     }
@@ -148,6 +149,9 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
         items, {
       BubbleContextMenuItemType.Location: () {
         _openDir();
+      },
+      BubbleContextMenuItemType.MultiSelect: () {
+        concertProvider.enterEditing();
       },
       BubbleContextMenuItemType.Delete: () {
         showCupertinoModalPopup(

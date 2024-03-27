@@ -1,5 +1,6 @@
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shareable.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
@@ -11,7 +12,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
 
 class ShareTextBubble extends StatelessWidget {
   final UIBubble entity;
@@ -51,27 +51,29 @@ class ShareTextBubble extends StatelessWidget {
         builder: (_context, _) => Material(
           color: backgroundColor,
           borderRadius: const BorderRadius.all(Radius.circular(10)),
-          child: InkWell(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-            onSecondaryTapDown: (TapDownDetails details) {
-              _showBubbleContextMenu(_context, details.localPosition, andropContext, concertProvider);
-            },
-            onTapDown: (TapDownDetails details) {
-              tapDown = details.localPosition;
-            },
-            onLongPress: () {
-              if (tapDown == null) {
-                return;
-              }
-              HapticFeedback.mediumImpact();
-              _showBubbleContextMenu(_context, tapDown!, andropContext, concertProvider);
-            },
-            onTap: () {
-             _copyContentToClipboard();
-            },
-            child: ModalAnchor(
-              key: ValueKey(entity.shareable.id),
-              tag: contextMenuTag,
+          child: ModalAnchor(
+            key: ValueKey(entity.shareable.id),
+            tag: contextMenuTag,
+            child: InkWell(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              onSecondaryTapDown: (TapDownDetails details) {
+                _showBubbleContextMenu(_context, details.localPosition,
+                    andropContext, concertProvider);
+              },
+              onTapDown: (TapDownDetails details) {
+                tapDown = details.localPosition;
+              },
+              onLongPress: () {
+                if (tapDown == null) {
+                  return;
+                }
+                HapticFeedback.mediumImpact();
+                _showBubbleContextMenu(
+                    _context, tapDown!, andropContext, concertProvider);
+              },
+              onTap: () {
+                _copyContentToClipboard();
+              },
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Text(
@@ -89,27 +91,39 @@ class ShareTextBubble extends StatelessWidget {
     );
   }
 
-  void _showBubbleContextMenu(BuildContext context, Offset clickPosition, AndropContext andropContext,
-      ConcertProvider concertProvider) {
-    return showBubbleContextMenu(context, contextMenuTag, clickPosition , andropContext.deviceId,
-        concertProvider.concertMainKey, entity, [
-      BubbleContextMenuItemType.Copy,
-      BubbleContextMenuItemType.Delete,
-      // BubbleContextMenuItemType.Location,
-    ], {
-      BubbleContextMenuItemType.Copy: () {
-        _copyContentToClipboard();
-      },
-      BubbleContextMenuItemType.Delete: () {
-        showCupertinoModalPopup(context: context, builder: (context) => DeleteMessageBottomSheet(onConfirm: () {
-          concertProvider.deleteBubble(entity);
-        }));
-      },
+  void _showBubbleContextMenu(BuildContext context, Offset clickPosition,
+      AndropContext andropContext, ConcertProvider concertProvider) {
+    talker.debug('show anchor tag: $contextMenuTag, id: ${entity.shareable.id}');
+
+    Future.delayed(Duration.zero, () {
+      showBubbleContextMenu(context, contextMenuTag, clickPosition,
+          andropContext.deviceId, concertProvider.concertMainKey, entity, [
+            BubbleContextMenuItemType.Copy,
+            BubbleContextMenuItemType.MultiSelect,
+            BubbleContextMenuItemType.Delete,
+            // BubbleContextMenuItemType.Location,
+          ], {
+            BubbleContextMenuItemType.Copy: () {
+              _copyContentToClipboard();
+            },
+            BubbleContextMenuItemType.MultiSelect: () {
+              concertProvider.enterEditing();
+            },
+            BubbleContextMenuItemType.Delete: () {
+              showCupertinoModalPopup(
+                  context: context,
+                  builder: (context) => DeleteMessageBottomSheet(onConfirm: () {
+                    concertProvider.deleteBubble(entity);
+                  }));
+            },
+          });
     });
+
   }
 
   void _copyContentToClipboard() {
-    Clipboard.setData(ClipboardData(text: (entity.shareable as SharedText).content));
+    Clipboard.setData(
+        ClipboardData(text: (entity.shareable as SharedText).content));
     Fluttertoast.showToast(
         msg: "已复制到剪切板",
         toastLength: Toast.LENGTH_SHORT,

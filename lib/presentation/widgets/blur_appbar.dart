@@ -3,9 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class BlurAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final AppBar appBar;
+  final Widget appBar;
+  final cpreferredSize;
 
-  const BlurAppBar({super.key, required this.appBar});
+  const BlurAppBar({super.key, required this.appBar, required this.cpreferredSize});
 
   @override
   Widget build(BuildContext context) {
@@ -16,5 +17,5 @@ class BlurAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => appBar.preferredSize;
+  Size get preferredSize => cpreferredSize;
 }

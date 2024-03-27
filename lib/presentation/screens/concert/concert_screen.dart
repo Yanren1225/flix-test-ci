@@ -1,28 +1,23 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:desktop_drop/desktop_drop.dart';
-import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/notification/BadgeService.dart';
-import 'package:flix/model/ship/primitive_bubble.dart';
-import 'package:flix/model/ui_bubble/shared_file.dart';
-import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/pickable.dart';
+import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shareable.dart';
+import 'package:flix/model/ui_bubble/shared_file.dart';
+import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/screens/concert/bubble_list.dart';
-import 'package:flix/presentation/widgets/blur_appbar.dart';
-import 'package:flix/presentation/widgets/bubbles/bubble_widget.dart';
+import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
+import 'package:flix/presentation/widgets/bubble_context_menu/multi_select_actions.dart';
 import 'package:flix/presentation/widgets/pick_actions.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
-import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -53,6 +48,11 @@ class ConcertScreen extends StatelessWidget {
             return NavigationScaffold(
                 showBackButton: showBackButton,
                 title: value,
+                isEditing: concertProvider.isEditing,
+                editTitle: '退出多选',
+                onExitEditing: () {
+                  concertProvider.existEditing();
+                },
                 builder: (padding) {
                   return ShareConcertMainView(
                     key: concertProvider.concertMainKey,
@@ -63,18 +63,6 @@ class ConcertScreen extends StatelessWidget {
                   );
                 });
           },
-          // child: NavigationScaffold(
-          //     showBackButton: showBackButton,
-          //     title: concertProvider.deviceInfo.name,
-          //     builder: (padding) {
-          //       return ShareConcertMainView(
-          //         key: concertProvider.concertMainKey,
-          //         deviceInfo: concertProvider.deviceInfo,
-          //         padding: padding,
-          //         anchor: anchor,
-          //         playable: playable,
-          //       );
-          //     }),
         );
       },
     );
@@ -156,15 +144,38 @@ class ShareConcertMainViewState extends State<ShareConcertMainView> {
           reverse: true,
           shrinkWrap: true,
         ),
-        Visibility(
-          visible: widget.playable,
-          child: Align(
-            alignment: Alignment.bottomLeft,
-            child: InputArea(
-              // onSubmit: (content) => submit(content),
-              onSubmit: (shareable, type) {
-                submit(concertProvider, shareable, type);
-              },
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: SizedBox(
+            width: double.infinity,
+            child: AnimatedCrossFade(
+              crossFadeState: concertProvider.isEditing
+                  ? CrossFadeState.showSecond
+                  : CrossFadeState.showFirst,
+              firstChild: Visibility(
+                visible: widget.playable,
+                child: InputArea(
+                  // onSubmit: (content) => submit(content),
+                  onSubmit: (shareable, type) {
+                    submit(concertProvider, shareable, type);
+                  },
+                ),
+              ),
+              secondChild: MultiSelectActions(
+                onDelete: () {
+                  showCupertinoModalPopup(
+                      context: context,
+                      builder: (context) {
+                        return DeleteMessageBottomSheet(onConfirm: () {
+                          for (var uiBubble in concertProvider.selectedItems) {
+                            concertProvider.existEditing();
+                            concertProvider.deleteBubble(uiBubble);
+                          }
+                        });
+                      });
+                },
+              ),
+              duration: const Duration(milliseconds: 100),
             ),
           ),
         ),

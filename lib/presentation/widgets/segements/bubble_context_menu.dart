@@ -38,7 +38,6 @@ void showBubbleContextMenu(
     showLeft = true;
   }
 
-
   // if (bubble.isFromMe(selfId)) {
   //   showLeft = true;
   // } else {
@@ -78,7 +77,8 @@ class BubbleContextMenu extends StatefulWidget {
   final List<BubbleContextMenuItemType> itemTypes;
   final Map<BubbleContextMenuItemType, VoidCallback> itemActions;
 
-  const BubbleContextMenu({super.key, required this.itemTypes, required this.itemActions});
+  const BubbleContextMenu(
+      {super.key, required this.itemTypes, required this.itemActions});
 
   @override
   BubbleContextMenuState createState() => BubbleContextMenuState();
@@ -124,6 +124,13 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
           items.add(BubbleContextMenuItem(
             title: '文件位置',
             icon: 'assets/images/ic_location.svg',
+            onTap: onTap(type),
+          ));
+          break;
+        case BubbleContextMenuItemType.MultiSelect:
+          items.add(BubbleContextMenuItem(
+            title: '多选',
+            icon: 'assets/images/ic_multi_select.svg',
             onTap: onTap(type),
           ));
           break;
@@ -213,7 +220,10 @@ class BubbleContextMenuItem extends StatelessWidget {
   final Color color;
 
   BubbleContextMenuItem(
-      {required this.title, required this.icon, this.color = Colors.black, required this.onTap});
+      {required this.title,
+      required this.icon,
+      this.color = Colors.black,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +237,10 @@ class BubbleContextMenuItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SvgPicture.asset(icon, colorFilter: ColorFilter.mode(color, BlendMode.srcIn) ,),
+            SvgPicture.asset(
+              icon,
+              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+            ),
             const SizedBox(
               height: 2,
             ),
@@ -248,5 +261,6 @@ enum BubbleContextMenuItemType {
   Copy,
   Forward,
   Location,
+  MultiSelect,
   Delete,
 }

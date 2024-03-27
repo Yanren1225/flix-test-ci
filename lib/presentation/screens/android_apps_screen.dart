@@ -69,6 +69,7 @@ class AppsScreenState extends State<AppsScreen> {
         backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
         appBar: BlurAppBar(
           appBar: appBar,
+          cpreferredSize: appBar.preferredSize,
         ),
         body: ListView.builder(
             padding: EdgeInsets.only(top: appBarHeight),

@@ -6,6 +6,7 @@ import 'package:flix/model/device_info.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/utils/device/device_utils.dart';
+import 'package:flix/utils/iterable_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
@@ -18,6 +19,9 @@ class ConcertProvider extends ChangeNotifier {
   late ConcertService _concertService;
   List<UIBubble> bubbles = [];
   final concertMainKey = GlobalKey();
+  var _isEditing = false;
+  bool get isEditing => _isEditing;
+  Set<UIBubble> selectedItems = {};
 
   ConcertProvider({required this.deviceInfo}) {
     deviceName = ValueNotifier(deviceInfo.name);
@@ -74,8 +78,34 @@ class ConcertProvider extends ChangeNotifier {
   }
 
   Future<void> deleteBubble(UIBubble uiBubble) async {
-    await _cancelReceive(uiBubble);
+    if (uiBubble.shareable is SharedFile) {
+      await _cancelReceive(uiBubble);
+    }
     await _concertService.deleteBubble(uiBubble);
+  }
+
+  void enterEditing() {
+    _isEditing = true;
+    notifyListeners();
+  }
+
+  void existEditing() {
+    _isEditing = false;
+    notifyListeners();
+  }
+
+  void select(UIBubble uiBubble) {
+    selectedItems.add(uiBubble);
+    notifyListeners();
+  }
+
+  void unselect(UIBubble uiBubble) {
+    selectedItems.remove(uiBubble);
+    notifyListeners();
+  }
+
+  bool isSelected(UIBubble uiBubble) {
+    return selectedItems.find((e) => e.shareable.id == uiBubble.shareable.id) != null;
   }
 
 }
