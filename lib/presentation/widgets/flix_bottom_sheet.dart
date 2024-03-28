@@ -23,7 +23,7 @@ class FlixBottomSheet extends StatelessWidget {
         Color.fromRGBO(255, 255, 255, 1),
         Color.fromRGBO(255, 255, 255, 1),
       ],
-      this.buttonColor = const Color.fromRGBO(232, 243, 255, 1),
+      this.buttonColor = const Color.fromRGBO(0, 122, 255, 1),
       required this.child,
       this.onClick});
 

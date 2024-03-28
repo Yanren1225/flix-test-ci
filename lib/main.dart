@@ -39,6 +39,7 @@ import 'package:window_manager/window_manager.dart';
 
 import 'domain/notification/BadgeService.dart';
 import 'firebase_options.dart';
+import 'presentation/screens/base_screen.dart';
 
 // final demoSplitViewKey = GlobalKey<NavigatorState>();
 // final _leftKey = GlobalKey();
@@ -238,7 +239,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends BaseScreenState<MyHomePage> {
   var selectedIndex = 0;
 
   // DeviceInfo? selectedDevice;

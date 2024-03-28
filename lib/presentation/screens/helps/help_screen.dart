@@ -1,3 +1,4 @@
+import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
 import 'package:flix/presentation/widgets/helps/QA.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
@@ -14,7 +15,7 @@ class HelpScreen extends StatefulWidget {
   State<StatefulWidget> createState() => HelpScreenState();
 }
 
-class HelpScreenState extends State<HelpScreen> {
+class HelpScreenState extends BaseScreenState<HelpScreen> {
   ValueNotifier<String> version = ValueNotifier('');
 
   @override

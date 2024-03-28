@@ -130,17 +130,6 @@ class ShipService extends ApInterface {
   }
 
   Future<Response> _receiveFile(Request request) async {
-    if (Platform.isAndroid) {
-      var isGranted = await Permission.storage.isGranted;
-      if(!isGranted) {
-        var permissionStatus = await Permission.storage.request();
-        talker.debug('_receiveFile permission permissionStatus $permissionStatus');
-      }
-      isGranted = await Permission.storage.isGranted;
-      talker.debug('_receiveFile permission to $isGranted');
-    }
-
-
     try {
       if (!request.isMultipart) {
         return Response.badRequest();

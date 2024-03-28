@@ -10,6 +10,7 @@ import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shareable.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/screens/concert/bubble_list.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/multi_select_actions.dart';
@@ -99,7 +100,7 @@ class ShareConcertMainView extends StatefulWidget {
   }
 }
 
-class ShareConcertMainViewState extends State<ShareConcertMainView> {
+class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
   EdgeInsets get padding => widget.padding;
 
   String? get anchor => widget.anchor;
