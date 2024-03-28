@@ -42,7 +42,7 @@ class MultiSelectActions extends StatelessWidget {
                 ),
               ),
             ),
-            padding: const EdgeInsets.only(top: 6, bottom: 10),
+            padding: EdgeInsets.only(top: 6, bottom: 10 + MediaQuery.paddingOf(context).bottom),
             child: Align(
               heightFactor: 1,
               child: BubbleContextMenuItem(

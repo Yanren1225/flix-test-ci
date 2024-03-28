@@ -162,24 +162,22 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
                   },
                 ),
               ),
-              secondChild: SafeArea(
-                child: MultiSelectActions(
-                  onDelete: () {
-                    showCupertinoModalPopup(
-                        context: context,
-                        builder: (context) {
-                          return DeleteMessageBottomSheet(onConfirm: () {
-                            if (concertProvider.selectedItems.isEmpty) {
-                              return;
-                            }
-                            for (var uiBubble in concertProvider.selectedItems) {
-                              concertProvider.existEditing();
-                              concertProvider.deleteBubble(uiBubble);
-                            }
-                          });
+              secondChild: MultiSelectActions(
+                onDelete: () {
+                  showCupertinoModalPopup(
+                      context: context,
+                      builder: (context) {
+                        return DeleteMessageBottomSheet(onConfirm: () {
+                          if (concertProvider.selectedItems.isEmpty) {
+                            return;
+                          }
+                          for (var uiBubble in concertProvider.selectedItems) {
+                            concertProvider.existEditing();
+                            concertProvider.deleteBubble(uiBubble);
+                          }
                         });
-                  },
-                ),
+                      });
+                },
               ),
               duration: const Duration(milliseconds: 100),
             ),
