@@ -70,7 +70,7 @@ class ShipService extends ApInterface {
       var uri = Uri.parse('http://127.0.0.1:${MultiCastUtil.defaultPort}/heartbeat');
       var response = await http.post(
         uri,
-      ).timeout(const Duration(seconds: 2));
+      ).timeout(const Duration(seconds: 1));
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -79,6 +79,9 @@ class ShipService extends ApInterface {
       }
     } on TimeoutException catch (_) {
       talker.error('check server living timeout');
+      return false;
+    } catch(e, stackTrace) {
+      talker.error('check server living error: $e', e, stackTrace);
       return false;
     }
   }
@@ -207,10 +210,10 @@ class ShipService extends ApInterface {
         return Response.badRequest();
       }
     } on CancelException catch (e, stacktrace) {
-      talker.warning('_receiveFile canceled', e, stacktrace);
+      talker.warning('_receiveFile canceled, $e', e, stacktrace);
       return Response.ok('canceled');
     } catch (e, stackTrace) {
-      talker.error('_receiveFile failed', e, stackTrace);
+      talker.error('_receiveFile failed, $e', e, stackTrace);
       return Response.internalServerError();
     }
   }
