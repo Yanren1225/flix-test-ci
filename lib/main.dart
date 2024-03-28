@@ -72,20 +72,6 @@ Future<void> main() async {
   ShipService.instance.startShipServer();
   await DeviceManager.instance.init(ShipService.instance);
 
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        // 设置为透明
-        statusBarBrightness: Brightness.dark,
-        systemStatusBarContrastEnforced: false,
-        // 在状态栏上的图标和文字颜色为深色
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarContrastEnforced: false,
-        systemNavigationBarIconBrightness: Brightness.dark),
-  );
-
   await _initNotification();
 
   _logAppContext();
@@ -112,6 +98,20 @@ Future<void> main() async {
     }
     return msg;
   });
+
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        // 设置为透明
+        statusBarBrightness: Brightness.light,
+        systemStatusBarContrastEnforced: false,
+        // 在状态栏上的图标和文字颜色为深色
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarContrastEnforced: false,
+        systemNavigationBarIconBrightness: Brightness.dark),
+  );
 
   if (kDebugMode) {
     PluginManager.instance // Register plugin kits

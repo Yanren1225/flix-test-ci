@@ -55,11 +55,13 @@ class ShipService extends ApInterface {
     app.post('/heartbeat', _heartbeat);
 
     // 尝试三次启动
-    _server =  await _startShipServer(app, 'first', () async {
-      Future.delayed(const Duration(seconds: 1));
-      return _startShipServer(app, 'second', () async {
-        Future.delayed(const Duration(seconds: 2));
-        return _startShipServer(app, 'third', () async {
+    _server = await _startShipServer(app, 'first', () async {
+      return await Future.delayed(const Duration(seconds: 1), () async {
+        return await _startShipServer(app, 'second', () async {
+          return await Future.delayed(const Duration(seconds: 2), () async {
+            return await _startShipServer(app, 'third', () async {
+            });
+          });
         });
       });
     });
@@ -88,8 +90,9 @@ class ShipService extends ApInterface {
 
   Future<void> restartShipServer() async {
     try {
+      talker.debug('restart sever: $_server');
       await _server?.close(force: true);
-      await startShipServer();
+      Future.delayed(Duration(seconds: 2), () async => await startShipServer());
     } catch(e, stacktrace) {
       talker.error('restart server failed: $e', e, stacktrace);
     }
@@ -97,7 +100,7 @@ class ShipService extends ApInterface {
 
   Future<HttpServer?> _startShipServer(Router app, String tag, Future<HttpServer?> Function() onFailed) async {
     try {
-      final server = await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort, shared: true);
+      final server = await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort, shared: false);
       talker.debug('Serving at http://0.0.0.0:${MultiCastUtil.defaultPort}');
       return server;
     } catch (e, stack) {
