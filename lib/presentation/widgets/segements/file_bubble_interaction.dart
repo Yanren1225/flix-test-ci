@@ -13,6 +13,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_app_installer/flutter_app_installer.dart';
 import 'package:modals/modals.dart';
 import 'package:open_dir/open_dir.dart';
 import 'package:open_filex/open_filex.dart';
@@ -99,10 +100,8 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
             if (!widget.clickable) return;
             // _controller.forward().whenComplete(() => _controller.reverse());
             talker.debug('filePath: ${widget.filePath}');
-            OpenFilex.open(widget.filePath).then((value) {
-              if (value.type != ResultType.done) {
-                talker.error(
-                    'Failed open file: ${widget.filePath}, result: $value');
+            _openFile(widget.filePath).then((isSuccess) {
+              if (!isSuccess) {
                 _openDir();
               }
             });
@@ -131,7 +130,10 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
       bool onlyDelete) {
     final List<BubbleContextMenuItemType> items;
     if (onlyDelete) {
-      items = [BubbleContextMenuItemType.MultiSelect, BubbleContextMenuItemType.Delete];
+      items = [
+        BubbleContextMenuItemType.MultiSelect,
+        BubbleContextMenuItemType.Delete
+      ];
     } else {
       items = [
         BubbleContextMenuItemType.Location,
@@ -163,6 +165,20 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
     });
   }
 
+  Future<bool> _openFile(String filePath) async {
+    if (Platform.isAndroid && filePath.endsWith(".apk") || filePath.endsWith(".apk.1")) {
+      return await _installApk(filePath);
+    } else {
+      final result = await OpenFilex.open(filePath);
+      if (result.type == ResultType.done) {
+        return true;
+      } else {
+        talker.error('Failed open file: ${widget.filePath}, result: $result');
+        return false;
+      }
+    }
+  }
+
   void _openDir() {
     if (Platform.isIOS || Platform.isAndroid) {
       openDownloadFolder().then((value) {
@@ -181,6 +197,20 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
                   : widget.filePath))
           .catchError(
               (error) => print('Failed to open download folder: $error'));
+    }
+  }
+
+  Future<bool> _installApk(String apkPath) async {
+    try {
+      // 请求安装权限
+      final result = await FlutterAppInstaller().installApk(filePath: apkPath);
+      if (!result) {
+        talker.error('install apk failed');
+      }
+      return result;
+    } catch (e, stackTrace) {
+      talker.error('install apk failed: $e', e, stackTrace);
+      return false;
     }
   }
 }
