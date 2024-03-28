@@ -26,7 +26,7 @@ abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
     if (Platform.isAndroid) {
       DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
       final androidInfo = await deviceInfoPlugin.androidInfo;
-      // if (androidInfo.version.sdkInt <= 29) {
+      if (androidInfo.version.sdkInt <= 29) {
         subscription = BubblePool.instance.listen((bubble) async {
           if (mounted &&
               bubble.to == DeviceManager.instance.did &&
@@ -39,10 +39,9 @@ abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
             } else {
               talker.debug('isCheckingPermission, ignore this request');
             }
-
           }
         });
-      // }
+      }
     }
   }
 

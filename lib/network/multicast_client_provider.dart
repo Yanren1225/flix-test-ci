@@ -38,7 +38,13 @@ class MultiCastClientProvider extends ChangeNotifier {
     connectivitySubscription =
         Connectivity().onConnectivityChanged.listen((result) {
       talker.debug('connectivity changed: $result');
-      ShipService.instance.startShipServer();
+      ShipService.instance.isServerLiving().then((isServerLiving) {
+        talker.debug('isServerLiving: $isServerLiving');
+        if (!isServerLiving) {
+          ShipService.instance.restartShipServer();
+        }
+      }).catchError((error, stackTrace) =>
+          talker.error('isServerLiving error', error, stackTrace));
       startScan();
     });
     DeviceManager.instance.deviceNameBroadcast.stream.listen((event) {
@@ -72,7 +78,6 @@ class MultiCastClientProvider extends ChangeNotifier {
   void clearDevices() {
     DeviceManager.instance.clearDevices();
   }
-
 
   void setSelectedDeviceId(String id) {
     _selectedDeviceId = id;

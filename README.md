@@ -48,6 +48,7 @@ samples, guidance on mobile development, and a full API reference.
 30. 切换wifi http服务器需要重新启动。
 31. android开热点无法发送多播，实测Android原生代码可以发送
 32. iOS开热点无法发送和接收多播
+33. 设备页列表滚动不到底部
 
 ## 功能
 单击消息，打开文件

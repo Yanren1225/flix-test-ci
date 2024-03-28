@@ -55,7 +55,7 @@ class ShipService extends ApInterface {
     app.post('/heartbeat', _heartbeat);
 
     // 尝试三次启动
-    _server = await _startShipServer(app, 'first', () async {
+    final tmp = await _startShipServer(app, 'first', () async {
       return await Future.delayed(const Duration(seconds: 1), () async {
         return await _startShipServer(app, 'second', () async {
           return await Future.delayed(const Duration(seconds: 2), () async {
@@ -65,7 +65,13 @@ class ShipService extends ApInterface {
         });
       });
     });
+
+    if (tmp != null) {
+      _server = tmp;
+    }
   }
+
+
 
   Future<bool> isServerLiving() async {
     try {
@@ -92,7 +98,7 @@ class ShipService extends ApInterface {
     try {
       talker.debug('restart sever: $_server');
       await _server?.close(force: true);
-      Future.delayed(Duration(seconds: 2), () async => await startShipServer());
+      await startShipServer();
     } catch(e, stacktrace) {
       talker.error('restart server failed: $e', e, stacktrace);
     }
