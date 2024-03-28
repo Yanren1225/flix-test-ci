@@ -46,6 +46,8 @@ samples, guidance on mobile development, and a full API reference.
 28. ~~AP设备无法被发现~~
 29. http服务可能启动失败
 30. 切换wifi http服务器需要重新启动。
+31. android开热点无法发送多播，实测Android原生代码可以发送
+32. iOS开热点无法发送和接收多播
 
 ## 功能
 单击消息，打开文件

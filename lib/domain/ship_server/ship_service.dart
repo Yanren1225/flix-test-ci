@@ -64,10 +64,6 @@ class ShipService extends ApInterface {
     });
   }
 
-  // Future<void> restartShipServer() async {
-  //
-  // }
-
   Future<HttpServer?> _startShipServer(Router app, String tag, Future<HttpServer?> Function() onFailed) async {
     try {
       final server = await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort, shared: true);
@@ -106,13 +102,16 @@ class ShipService extends ApInterface {
   }
 
   Future<Response> _receiveFile(Request request) async {
-    var isGranted = await Permission.storage.isGranted;
-    if(!isGranted){
-      var permissionStatus = await Permission.storage.request();
-      talker.debug('_receiveFile permission permissionStatus $permissionStatus');
+    if (Platform.isAndroid) {
+      var isGranted = await Permission.storage.isGranted;
+      if(!isGranted) {
+        var permissionStatus = await Permission.storage.request();
+        talker.debug('_receiveFile permission permissionStatus $permissionStatus');
+      }
+      isGranted = await Permission.storage.isGranted;
+      talker.debug('_receiveFile permission to $isGranted');
     }
-    isGranted = await Permission.storage.isGranted;
-    talker.debug('_receiveFile permission to $isGranted');
+
 
     try {
       if (!request.isMultipart) {
@@ -153,9 +152,9 @@ class ShipService extends ApInterface {
                 if (!(await outFile.exists())) {
                   await outFile.create();
                 }
-                var fileExist = !(await outFile.exists());
-                talker.debug('writing file not exit $fileExist');
-                final out = outFile.openWrite(mode: FileMode.append);
+                var fileExists = await outFile.exists();
+                talker.debug('writing file exists $fileExists');
+                final out = outFile.openWrite(mode: FileMode.write);
 
                 final bubbleId = bubble.id;
                 await formData.part
@@ -191,8 +190,11 @@ class ShipService extends ApInterface {
         return Response.badRequest();
       }
     } on CancelException catch (e, stacktrace) {
-      talker.warning('_receiveFile canceled: $e', e, stacktrace);
+      talker.warning('_receiveFile canceled', e, stacktrace);
       return Response.ok('canceled');
+    } catch (e, stackTrace) {
+      talker.error('_receiveFile failed', e, stackTrace);
+      return Response.internalServerError();
     }
   }
 
