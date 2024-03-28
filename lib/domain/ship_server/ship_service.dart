@@ -18,6 +18,7 @@ import 'package:flix/utils/bubble_convert.dart';
 import 'package:flix/utils/stream_cancelable.dart';
 import 'package:flix/utils/stream_progress.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_multipart/form_data.dart';
@@ -105,6 +106,14 @@ class ShipService extends ApInterface {
   }
 
   Future<Response> _receiveFile(Request request) async {
+    var isGranted = await Permission.storage.isGranted;
+    if(!isGranted){
+      var permissionStatus = await Permission.storage.request();
+      talker.debug('_receiveFile permission permissionStatus $permissionStatus');
+    }
+    isGranted = await Permission.storage.isGranted;
+    talker.debug('_receiveFile permission to $isGranted');
+
     try {
       if (!request.isMultipart) {
         return Response.badRequest();
@@ -144,6 +153,8 @@ class ShipService extends ApInterface {
                 if (!(await outFile.exists())) {
                   await outFile.create();
                 }
+                var fileExist = !(await outFile.exists());
+                talker.debug('writing file not exit $fileExist');
                 final out = outFile.openWrite(mode: FileMode.append);
 
                 final bubbleId = bubble.id;

@@ -92,6 +92,7 @@ dependencies:
   url_launcher: ^6.2.5
   desktop_drop: ^0.4.4
   animated_visibility: ^0.0.4
+  permission_handler: ^11.3.1
 
       # thumbnailer: ^2.2.0
 
