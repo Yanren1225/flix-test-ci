@@ -459,17 +459,20 @@ class InputAreaState extends State<InputArea> {
   void _paste(
     DeviceInfo deviceInfo,
   ) async {
-    final filePaths = await Pasteboard.files();
-    if (filePaths?.isNotEmpty == true) {
-      final files = filePaths.map((e) => XFile(e)).toList();
-      showCupertinoModalPopup(
-          context: context,
-          builder: (_) {
-            return FilesConfirmBottomSheet(
-                deviceInfo: deviceInfo, files: files);
-          });
-      return;
+    if (!Platform.isAndroid) {
+      final filePaths = await Pasteboard.files();
+      if (filePaths?.isNotEmpty == true) {
+        final files = filePaths.map((e) => XFile(e)).toList();
+        showCupertinoModalPopup(
+            context: context,
+            builder: (_) {
+              return FilesConfirmBottomSheet(
+                  deviceInfo: deviceInfo, files: files);
+            });
+        return;
+      }
     }
+
 
     final text = await Pasteboard.text;
     if (text?.isNotEmpty == true) {
