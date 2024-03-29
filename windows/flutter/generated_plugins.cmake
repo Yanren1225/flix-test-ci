@@ -9,6 +9,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_windows
   firebase_core
   open_dir_windows
+  pasteboard
   permission_handler_windows
   screen_retriever
   share_plus

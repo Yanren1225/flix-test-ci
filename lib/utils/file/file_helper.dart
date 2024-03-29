@@ -213,3 +213,38 @@ Future<Size?> getHeifImageSize2(String filePath) async  {
   }
   return null;
 }
+
+
+String mimeIcon(String filePath) {
+  final mimeType = lookupMimeType(filePath) ?? "";
+  if (mimeType.startsWith('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
+    return 'assets/images/ic_excel.svg';
+  } else if (mimeType.startsWith('text')) {
+    return 'assets/images/ic_txt.svg';
+  } else if (mimeType.startsWith('application/zip')) {
+    return 'assets/images/ic_zip.svg';
+  } else if (mimeType.startsWith('audio')) {
+    return 'assets/images/ic_audio.svg';
+  } else if (mimeType.startsWith('application/vnd.android.package-archive')) {
+    return 'assets/images/ic_apk.svg';
+  } else {
+    return 'assets/images/ic_unknown_type.svg';
+  }
+}
+
+
+// 判断文件是图片、视频还是其他
+FileType getFileType(String filePath) {
+  final mimeType = lookupMimeType(filePath) ?? "";
+  if (mimeType.startsWith('image')) {
+    return FileType.image;
+  } else if (mimeType.startsWith('video')) {
+    return FileType.video;
+  } else {
+    return FileType.other;
+  }
+}
+
+enum FileType {
+  image, video, other;
+}

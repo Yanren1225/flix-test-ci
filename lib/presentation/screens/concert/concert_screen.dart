@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/notification/BadgeService.dart';
@@ -12,6 +13,7 @@ import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/screens/concert/bubble_list.dart';
+import 'package:flix/presentation/screens/concert/files_confirm_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/multi_select_actions.dart';
 import 'package:flix/presentation/widgets/pick_actions.dart';
@@ -19,6 +21,7 @@ import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pasteboard/pasteboard.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -263,6 +266,8 @@ class InputAreaState extends State<InputArea> {
 
   @override
   Widget build(BuildContext context) {
+    final concertProvider =
+        Provider.of<ConcertProvider>(context, listen: false);
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -301,7 +306,12 @@ class InputAreaState extends State<InputArea> {
                                       LogicalKeyboardKey.enter):
                                   const BreakLineIntent(),
                               LogicalKeySet(LogicalKeyboardKey.enter):
-                                  const SubmitIntent()
+                                  const SubmitIntent(),
+                              LogicalKeySet(
+                                  Platform.isMacOS
+                                      ? LogicalKeyboardKey.meta
+                                      : LogicalKeyboardKey.control,
+                                  LogicalKeyboardKey.keyV): const PasteIntent()
                             },
                             child: Actions(
                               actions: <Type, Action<Intent>>{
@@ -313,11 +323,51 @@ class InputAreaState extends State<InputArea> {
                                 ),
                                 SubmitIntent: CallbackAction<SubmitIntent>(
                                   onInvoke: (intent) {
-                                    trySubmitText(inputContent);
+                                    trySubmitText();
                                   },
                                 ),
+                                PasteIntent: CallbackAction<PasteIntent>(
+                                  onInvoke: (intent) async {
+                                    _paste(concertProvider.deviceInfo);
+                                  },
+                                )
                               },
                               child: TextField(
+                                contextMenuBuilder: (BuildContext context,
+                                    EditableTextState editableTextState) {
+                                  return AdaptiveTextSelectionToolbar.editable(
+                                    anchors:
+                                        editableTextState.contextMenuAnchors,
+                                    clipboardStatus: ClipboardStatus.pasteable,
+                                    // to apply the normal behavior when click on copy (copy in clipboard close toolbar)
+                                    // use an empty function `() {}` to hide this option from the toolbar
+                                    onCopy: () =>
+                                        editableTextState.copySelection(
+                                            SelectionChangedCause.toolbar),
+                                    // to apply the normal behavior when click on cut
+                                    onCut: () => editableTextState.cutSelection(
+                                        SelectionChangedCause.toolbar),
+                                    onPaste: () {
+                                      // editableTextState.pasteText(SelectionChangedCause.toolbar);
+                                      _paste(concertProvider.deviceInfo);
+                                      editableTextState.hideToolbar();
+                                    },
+                                    // to apply the normal behavior when click on select all
+                                    onSelectAll: () =>
+                                        editableTextState.selectAll(
+                                            SelectionChangedCause.toolbar),
+                                    onLookUp: () =>
+                                        editableTextState.lookUpSelection(
+                                            SelectionChangedCause.toolbar),
+                                    onSearchWeb: () =>
+                                        editableTextState.searchWebForSelection(
+                                            SelectionChangedCause.toolbar),
+                                    onShare: () =>
+                                        editableTextState.shareSelection(
+                                            SelectionChangedCause.toolbar),
+                                    onLiveTextInput: () {},
+                                  );
+                                },
                                 controller: textEditController,
                                 style: const TextStyle(
                                     color: Colors.black,
@@ -351,7 +401,7 @@ class InputAreaState extends State<InputArea> {
                                   input(value);
                                 },
                                 onSubmitted: (value) {
-                                  trySubmitText(value);
+                                  trySubmitText();
                                 },
                               ),
                             ),
@@ -367,7 +417,7 @@ class InputAreaState extends State<InputArea> {
                     child: IconButton(
                         onPressed: () {
                           FocusScope.of(context).unfocus();
-                          trySubmitText(inputContent);
+                          trySubmitText();
                         },
                         // padding: const EdgeInsets.all(9.0),
                         iconSize: 22,
@@ -398,12 +448,36 @@ class InputAreaState extends State<InputArea> {
     );
   }
 
-  void trySubmitText(String content) {
-    if (content.trim().isNotEmpty) {
+  void trySubmitText() {
+    if (textEditController.text.trim().isNotEmpty) {
+      submitText(textEditController.text);
       textEditController.clear();
-      submitText(content);
     }
     inputContent = '';
+  }
+
+  void _paste(
+    DeviceInfo deviceInfo,
+  ) async {
+    final filePaths = await Pasteboard.files();
+    if (filePaths?.isNotEmpty == true) {
+      final files = filePaths.map((e) => XFile(e)).toList();
+      showCupertinoModalPopup(
+          context: context,
+          builder: (_) {
+            return FilesConfirmBottomSheet(
+                deviceInfo: deviceInfo, files: files);
+          });
+      return;
+    }
+
+    final text = await Pasteboard.text;
+    if (text?.isNotEmpty == true) {
+      final selection = textEditController.selection;
+      // final offset = selection.baseOffset;
+      textEditController.value = textEditController.value.replaced(selection, text!);
+      return;
+    }
   }
 }
 
@@ -415,4 +489,8 @@ class BreakLineIntent extends Intent {
 
 class SubmitIntent extends Intent {
   const SubmitIntent();
+}
+
+class PasteIntent extends Intent {
+  const PasteIntent();
 }

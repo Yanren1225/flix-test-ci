@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   downloadsfolder
   file_selector_linux
   open_dir_linux
+  pasteboard
   screen_retriever
   sqlite3_flutter_libs
   url_launcher_linux
