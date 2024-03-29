@@ -134,7 +134,7 @@ class PickActionAreaState extends State<PickActionsArea> {
           talker.error("pick video failed, return null");
         }
       } catch (e) {
-        talker.error("pick video failed: $e", e);
+        talker.error("pick video failed: ", e);
         setState(() {
           _pickFileError = e;
         });

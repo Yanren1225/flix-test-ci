@@ -209,7 +209,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
       }
       return result;
     } catch (e, stackTrace) {
-      talker.error('install apk failed: $e', e, stackTrace);
+      talker.error('install apk failed: ', e, stackTrace);
       return false;
     }
   }

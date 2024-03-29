@@ -108,11 +108,11 @@ dependencies:
 dependency_overrides:
   web: ^0.5.1
   vm_service: ^9.4.0
-#  talker:
-#    git:
-#      url: "https://github.com/qwadrox/talker"
-#      ref: "450129ee9e085ddd0e5452e8cb5818ef19854f33"
-#      path: "packages/talker"
+  talker:
+    git:
+      url: "https://github.com/heiha100/talker"
+      ref: "0cafff0f60ec684b2d83b07ce86b5b578c044b2c"
+      path: "packages/talker"
   share_plus: ^8.0.2
 
 #  share_plus_platform_interface:

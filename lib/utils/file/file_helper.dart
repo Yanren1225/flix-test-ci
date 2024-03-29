@@ -154,7 +154,7 @@ Future<void> _deleteFilesInDir(Directory dir) async {
       try {
         entity.deleteSync();
       } catch (e) {
-        talker.error('delete ${entity.path} failed: $e', e);
+        talker.error('delete ${entity.path} failed: ', e);
       }
     }
   });

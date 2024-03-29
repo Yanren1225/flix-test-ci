@@ -89,7 +89,7 @@ class ShipService extends ApInterface {
       talker.error('check server living timeout');
       return false;
     } catch(e, stackTrace) {
-      talker.error('check server living error: $e', e, stackTrace);
+      talker.error('check server living error: ', e, stackTrace);
       return false;
     }
   }
@@ -100,7 +100,7 @@ class ShipService extends ApInterface {
       await _server?.close(force: true);
       await startShipServer();
     } catch(e, stacktrace) {
-      talker.error('restart server failed: $e', e, stacktrace);
+      talker.error('restart server failed: ', e, stacktrace);
     }
   }
 
@@ -110,35 +110,41 @@ class ShipService extends ApInterface {
       talker.debug('Serving at http://0.0.0.0:${MultiCastUtil.defaultPort}');
       return server;
     } catch (e, stack) {
-      talker.error('$tag start server at http://0.0.0.0:${MultiCastUtil.defaultPort} failed $e', e, stack);
+      talker.error('$tag start server at http://0.0.0.0:${MultiCastUtil.defaultPort} failed ', e, stack);
       return await onFailed();
     }
   }
 
   Future<Response> _receiveBubble(Request request) async {
-    var body = await request.readAsString();
-    var data = jsonDecode(body) as Map<String, dynamic>;
-    var bubble = PrimitiveBubble.fromJson(data);
-    if (await SettingsRepo.instance.getAutoReceiveAsync() && bubble is PrimitiveFileBubble) {
-      await _bubblePool.add(bubble);
-      await confirmReceiveFile(bubble.from, bubble.id);
-    } else if (bubble is PrimitiveFileBubble) {
-      final before = await _bubblePool.findLastById(bubble.id);
-      if (before is PrimitiveFileBubble) {
-        // 如果是重新发送，判断是否已经接收，已经接受直接确认接受，否则继续等待接受。
-        if (!before.content.waitingForAccept) {
-          await _bubblePool.add(bubble);
-          await confirmReceiveFile(bubble.from, bubble.id);
+    try {
+      var body = await request.readAsString();
+      var data = jsonDecode(body) as Map<String, dynamic>;
+      var bubble = PrimitiveBubble.fromJson(data);
+      if (await SettingsRepo.instance.getAutoReceiveAsync() && bubble is PrimitiveFileBubble) {
+        await _bubblePool.add(bubble);
+        await confirmReceiveFile(bubble.from, bubble.id);
+      } else if (bubble is PrimitiveFileBubble) {
+        final before = await _bubblePool.findLastById(bubble.id);
+        if (before is PrimitiveFileBubble) {
+          // 如果是重新发送，判断是否已经接收，已经接受直接确认接受，否则继续等待接受。
+          if (!before.content.waitingForAccept) {
+            await _bubblePool.add(bubble);
+            await confirmReceiveFile(bubble.from, bubble.id);
+          } else {
+            await _bubblePool.add(bubble.copy(content: bubble.content.copy(state: FileState.waitToAccepted)));
+          }
         } else {
-          await _bubblePool.add(bubble.copy(content: bubble.content.copy(state: FileState.waitToAccepted)));
+          await _bubblePool.add(bubble);
         }
       } else {
         await _bubblePool.add(bubble);
       }
-    } else {
-      await _bubblePool.add(bubble);
+      return Response.ok('received bubble');
+    } catch (e, stackTrace) {
+      talker.error('receive bubble failed', e, stackTrace);
+      return Response.internalServerError(body: 'receive bubble failed');
     }
-    return Response.ok('received bubble');
+
   }
 
   Future<Response> _receiveFile(Request request) async {
@@ -202,7 +208,7 @@ class ShipService extends ApInterface {
                 // removeBubbleById(updatedBubble.id);
                 await _bubblePool.add(updatedBubble);
               } on Error catch (e) {
-                talker.error('receive file error: $e', e);
+                talker.error('receive file error: ', e);
                 final updatedBubble = bubble.copy(
                     content: bubble.content
                         .copy(state: FileState.receiveFailed, progress: 1.0));
@@ -219,10 +225,10 @@ class ShipService extends ApInterface {
         return Response.badRequest();
       }
     } on CancelException catch (e, stacktrace) {
-      talker.warning('_receiveFile canceled, $e', e, stacktrace);
+      talker.warning('_receiveFile canceled, ', e, stacktrace);
       return Response.ok('canceled');
     } catch (e, stackTrace) {
-      talker.error('_receiveFile failed, $e', e, stackTrace);
+      talker.error('_receiveFile failed, ', e, stackTrace);
       return Response.internalServerError();
     }
   }
@@ -253,14 +259,13 @@ class ShipService extends ApInterface {
 
       return Response.ok('ok');
     } on Exception catch (e, stackTrace) {
-      talker.error('receive intent error: $e', e,stackTrace);
+      talker.error('receive intent error: ', e,stackTrace);
       return Response.badRequest();
     }
   }
 
   Future<Response> _receivePong(Request request) async {
     try {
-
       final body = await request.readAsString();
       final pong = Pong.fromJson(body);
       final ip = (request.context['shelf.io.connection_info'] as HttpConnectionInfo?)?.remoteAddress.address;
@@ -273,7 +278,7 @@ class ShipService extends ApInterface {
       }
       return Response.ok('ok');
     } on Exception catch (e, stack) {
-      talker.error('receive pong error: $e', e, stack);
+      talker.error('receive pong error: ', e, stack);
       return Response.badRequest();
     }
   }
@@ -289,20 +294,25 @@ class ShipService extends ApInterface {
 
   @override
   Future<void> pong(DeviceModal from, DeviceModal to) async {
-    final message = Pong(from, to).toJson();
-    var uri = Uri.parse(
-        'http://${DeviceManager.instance.toNetAddress(to.ip, to.port)}/pong');
-    var response = await http.post(
-      uri,
-      body: message,
-      headers: {"Content-type": "application/json; charset=UTF-8"},
-    );
+    try {
+      final message = Pong(from, to).toJson();
+      var uri = Uri.parse(
+          'http://${DeviceManager.instance.toNetAddress(to.ip, to.port)}/pong');
+      var response = await http.post(
+        uri,
+        body: message,
+        headers: {"Content-type": "application/json; charset=UTF-8"},
+      );
 
-    if (response.statusCode == 200) {
-      talker.debug('pong success: response: ${response.body}');
-    } else {
-      talker.debug('pong failed: status code: ${response.statusCode}, ${response.body}');
+      if (response.statusCode == 200) {
+        talker.debug('pong success: response: ${response.body}');
+      } else {
+        talker.debug('pong failed: status code: ${response.statusCode}, ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      talker.error('pong failed', e, stackTrace);
     }
+
   }
 
 
@@ -325,7 +335,9 @@ class ShipService extends ApInterface {
         talker.debug('发送失败: status code: ${response.statusCode}, ${response.body}');
       }
     } on CancelException catch (e, stackTrace) {
-      talker.warning('取消发送 bubble: $e', e, stackTrace);
+      talker.warning('取消发送 bubble: ', e, stackTrace);
+    } catch (e, stackTrace) {
+      talker.error('send bubble failed', e, stackTrace);
     }
   }
 
@@ -348,7 +360,9 @@ class ShipService extends ApInterface {
           throw UnimplementedError();
       }
     } on CancelException catch (e, stackTrace) {
-      talker.warning('outer 取消发送: $e', e, stackTrace);
+      talker.warning('outer 取消发送: ', e, stackTrace);
+    } catch (e, stackTrace) {
+      talker.error('outer send failed: ', e, stackTrace);
     }
   }
 
@@ -363,9 +377,9 @@ class ShipService extends ApInterface {
           content: _fileBubble.content
               .copy(meta: _fileBubble.content.meta.copy(path: null))));
     } on CancelException catch (e, stackTrace) {
-      talker.warning('取消发送文件: $e', e, stackTrace);
+      talker.warning('取消发送文件: ', e, stackTrace);
     } catch (e, stackTrace) {
-      talker.error('发送异常: $e', e, stackTrace);
+      talker.error('发送异常: ', e, stackTrace);
       _updateFileShareState(fileBubble.id, FileState.sendFailed);
     }
   }
@@ -403,9 +417,9 @@ class ShipService extends ApInterface {
         }
       });
     } on CancelException catch (e, stackTrace) {
-      talker.warning('发送取消: $e', e, stackTrace);
+      talker.warning('发送取消: ', e, stackTrace);
     } catch (e, stackTrace) {
-      talker.error('发送异常: $e', e, stackTrace);
+      talker.error('发送异常: ', e, stackTrace);
       _updateFileShareState(fileBubble.id, FileState.sendFailed);
     }
   }
@@ -489,8 +503,8 @@ class ShipService extends ApInterface {
       } else {
         talker.error('发送失败: status code: ${response.statusCode}, ${response.body}');
       }
-    } catch (e) {
-      talker.error('confirmReceiveFile failed: $e', e);
+    } catch (e, stackTrace) {
+      talker.error('confirmReceiveFile failed: ', e, stackTrace);
     }
   }
 
@@ -514,8 +528,8 @@ class ShipService extends ApInterface {
       } else {
         talker.error('sendCancelMessage发送失败: status code: ${response.statusCode}, ${response.body}');
       }
-    } catch (e) {
-      talker.error('sendCancelMessage failed: $e', e);
+    } catch (e, stackTrace) {
+      talker.error('sendCancelMessage failed: ', e, stackTrace);
     }
   }
 

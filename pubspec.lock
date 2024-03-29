@@ -1536,11 +1536,12 @@ packages:
   talker:
     dependency: "direct main"
     description:
-      name: talker
-      sha256: a6c826385c0dd1f35cf574b21427e980a76fe38f08ddae13974114824a11e957
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.1.0"
+      path: "packages/talker"
+      ref: "0cafff0f60ec684b2d83b07ce86b5b578c044b2c"
+      resolved-ref: "0cafff0f60ec684b2d83b07ce86b5b578c044b2c"
+      url: "https://github.com/heiha100/talker"
+    source: git
+    version: "4.0.3"
   talker_flutter:
     dependency: "direct main"
     description:
