@@ -126,7 +126,6 @@ class DeviceManager {
         _addDevice(deviceModal);
       }
     }
-    talker.debug("event data:$deviceModal  deviceList = $deviceList");
     notifyDeviceListChanged();
   }
 

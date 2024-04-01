@@ -181,15 +181,15 @@ class ShipService extends ApInterface {
               await checkCancel(bubble.id);
               try {
                 final String desDir = await getDefaultDestinationDirectory();
-                final String filePath = '$desDir/${formData.filename}';
-                final outFile = File(filePath);
-                talker.debug('writing file to ${outFile.path}');
-                if (!(await outFile.exists())) {
-                  await outFile.create();
+
+                if (formData.filename == null) {
+                  throw ArgumentError('filename can\'t be null');
                 }
-                var fileExists = await outFile.exists();
-                talker.debug('writing file exists $fileExists');
+                final outFile = await createFile(desDir, formData.filename ?? '');
                 final out = outFile.openWrite(mode: FileMode.write);
+
+                talker.debug('writing file to ${outFile.path}');
+
 
                 final bubbleId = bubble.id;
                 await formData.part
@@ -204,7 +204,7 @@ class ShipService extends ApInterface {
                     content: bubble.content.copy(
                         state: FileState.receiveCompleted,
                         progress: 1.0,
-                        meta: bubble.content.meta.copy(path: filePath)));
+                        meta: bubble.content.meta.copy(path: outFile.path)));
                 // removeBubbleById(updatedBubble.id);
                 await _bubblePool.add(updatedBubble);
               } on Error catch (e) {

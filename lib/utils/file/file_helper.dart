@@ -245,6 +245,38 @@ FileType getFileType(String filePath) {
   }
 }
 
+
+Future<File> createFile(String desDir, String fileName, {int copyIndex = 0}) async {
+  final dotIndex = fileName.lastIndexOf('.');
+  final String fileSuffix;
+  final String fileNameWithoutSuffix;
+  if (dotIndex == -1) {
+    fileSuffix = "";
+    fileNameWithoutSuffix = fileName;
+  } else {
+    fileSuffix = fileName.substring(dotIndex);
+    fileNameWithoutSuffix = fileName.substring(0, dotIndex);
+  }
+
+  final tag = copyIndex == 0 ? "" : "($copyIndex)";
+  String filePath = '$desDir/$fileNameWithoutSuffix$tag$fileSuffix';
+  final outFile = File(filePath);
+  if (await outFile.exists()) {
+    try {
+      await outFile.delete();
+    } catch (e, stackTrace) {
+      talker.warning('delete file failed: ', e, stackTrace);
+    }
+  }
+
+  if (!(await outFile.exists())) {
+    await outFile.create();
+    return outFile;
+  }
+
+  return await createFile(desDir, fileName, copyIndex: copyIndex + 1);
+}
+
 enum FileType {
   image, video, other;
 }
