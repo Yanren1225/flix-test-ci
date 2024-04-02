@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/SettingsRepo.dart';
+import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/device_name/name_edit_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/settings/clickable_item.dart';
@@ -15,6 +17,7 @@ import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -32,7 +35,8 @@ class SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    deviceNameSubscription = DeviceManager.instance.deviceNameBroadcast.stream.listen((event) {
+    deviceNameSubscription =
+        DeviceManager.instance.deviceNameBroadcast.stream.listen((event) {
       setState(() {
         deviceName = event;
       });
@@ -55,14 +59,21 @@ class SettingsScreenState extends State<SettingsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
-            child: ClickableItem(label: '本机名称', des: deviceName, onClick: () {
-              showCupertinoModalPopup(context: context, builder: (context) {
-                return NameEditBottomSheet();
-              });
-            }),
+            child: ClickableItem(
+                label: '本机名称',
+                des: deviceName,
+                onClick: () {
+                  showCupertinoModalPopup(
+                      context: context,
+                      builder: (context) {
+                        return NameEditBottomSheet();
+                      });
+                }),
           ),
           const Padding(
             padding: EdgeInsets.only(left: 20, top: 20, right: 20),
@@ -75,11 +86,13 @@ class SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           Padding(
-            padding:
-                const EdgeInsets.only(left: 16, top: 4, right: 16),
+            padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
             child: DecoratedBox(
               decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(14), topRight: Radius.circular(14))),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(14),
+                      topRight: Radius.circular(14))),
               child: Padding(
                 padding: const EdgeInsets.all(14),
                 child: StreamBuilder<bool>(
@@ -116,22 +129,47 @@ class SettingsScreenState extends State<SettingsScreen> {
               initialData: SettingsRepo.instance.savedDir,
               stream: SettingsRepo.instance.savedDirStream.stream,
               builder: (context, snapshot) {
-                return ClickableItem(label: '文件接收目录', des: snapshot.data, topRadius: false, bottomRadius: true, onClick: () async {
-                  final String initialDirectory;
-                  if (snapshot.data != null && await File(snapshot.data!).exists()) {
-                    initialDirectory = snapshot.data!;
-                  } else {
-                    initialDirectory = await getDefaultDestinationDirectory();
-                  }
-                  final newSavedPath = await FilePicker.platform.getDirectoryPath(initialDirectory: initialDirectory, lockParentWindow: true);
-                  if (newSavedPath != null) {
-                    // authPersistentAccess(newSavedPath);
-                    SettingsRepo.instance.setSavedDir(newSavedPath);
-                  }
-                  // showCupertinoModalPopup(context: context, builder: (context) {
-                  //   return NameEditBottomSheet();
-                  // });
-                });
+                return ClickableItem(
+                    label: '文件接收目录',
+                    des: snapshot.data,
+                    topRadius: false,
+                    bottomRadius: true,
+                    onClick: () async {
+                      DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+                      final androidInfo = await deviceInfoPlugin.androidInfo;
+                      if (Platform.isAndroid) {
+                        if (androidInfo.version.sdkInt >= 30) {
+                          if (await Permission.manageExternalStorage.isDenied) {
+                            await Permission.manageExternalStorage.request();
+                            return;
+                          }
+                        } else {
+                          if (!(await checkStoragePermission(context))) {
+                            return;
+                          }
+                        }
+                      }
+
+                      final String initialDirectory;
+                      if (snapshot.data != null &&
+                          await File(snapshot.data!).exists()) {
+                        initialDirectory = snapshot.data!;
+                      } else {
+                        initialDirectory =
+                            await getDefaultDestinationDirectory();
+                      }
+                      final newSavedPath = await FilePicker.platform
+                          .getDirectoryPath(
+                              initialDirectory: initialDirectory,
+                              lockParentWindow: true);
+                      if (newSavedPath != null) {
+                        // authPersistentAccess(newSavedPath);
+                        SettingsRepo.instance.setSavedDir(newSavedPath);
+                      }
+                      // showCupertinoModalPopup(context: context, builder: (context) {
+                      //   return NameEditBottomSheet();
+                      // });
+                    });
               },
             ),
           ),

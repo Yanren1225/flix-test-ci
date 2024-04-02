@@ -180,7 +180,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
   }
 
   void _openDir() {
-    if (Platform.isIOS || Platform.isAndroid) {
+    if (Platform.isIOS) {
       openDownloadFolder().then((value) {
         if (value) {
           print('Download folder opened successfully');

@@ -34,7 +34,7 @@ abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
               bubble.content.state == FileState.waitToAccepted) {
             if (!isCheckingPermission) {
               isCheckingPermission = true;
-              await checkStoragePermission(context, bubble);
+              await checkStoragePermission(context);
               isCheckingPermission = false;
             } else {
               talker.debug('isCheckingPermission, ignore this request');
@@ -52,13 +52,13 @@ abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
   }
 }
 
-Future<void> checkStoragePermission(
-    BuildContext context, PrimitiveBubble<dynamic> bubble) async {
+Future<bool> checkStoragePermission(
+    BuildContext context) async {
   if (Platform.isAndroid) {
     var isGranted = await Permission.storage.isGranted;
 
     if (isGranted) {
-      return;
+      return true;
     }
 
     final isPermanentlyDenied = await Permission.storage.isPermanentlyDenied;
@@ -83,5 +83,8 @@ Future<void> checkStoragePermission(
             return PermissionBottomSheet();
           });
     }
+    return false;
   }
+
+  return true;
 }
