@@ -5,8 +5,17 @@
 #include "flutter_window.h"
 #include "utils.h"
 
+BOOL isRunAsAdmin();
+void runAsAdmin();
+
 int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
                       _In_ wchar_t *command_line, _In_ int show_command) {
+
+    if (!isRunAsAdmin()) {
+        runAsAdmin();
+        exit(0);
+    }
+
   // Attach to console when present (e.g., 'flutter run') or create a
   // new console when running with a debugger.
   if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
@@ -41,3 +50,39 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   ::CoUninitialize();
   return EXIT_SUCCESS;
 }
+
+
+BOOL isRunAsAdmin() {
+    BOOL isRunAsAdmin = FALSE;
+    HANDLE hToken = NULL;
+    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken))
+    {
+        return FALSE;
+    }
+    TOKEN_ELEVATION tokenEle;
+    DWORD dwRetLen = 0;
+    if (GetTokenInformation(hToken, TokenElevation, &tokenEle, sizeof(tokenEle), &dwRetLen))
+    {
+        if (dwRetLen == sizeof(tokenEle))
+        {
+            isRunAsAdmin = tokenEle.TokenIsElevated;
+        }
+    }
+    CloseHandle(hToken);
+    return isRunAsAdmin;
+}
+
+void runAsAdmin() {
+    WCHAR czFileName[1024] = { 0 };
+    GetModuleFileName(NULL, czFileName, _countof(czFileName) - 1);
+    SHELLEXECUTEINFO  EI;
+    memset(&EI, 0, sizeof(EI));
+    EI.cbSize = sizeof(SHELLEXECUTEINFO);
+    EI.lpVerb = TEXT("runas");
+    EI.fMask = 0x00000040;
+    EI.lpFile = czFileName;
+    EI.nShow = SW_SHOW;
+    ShellExecuteEx(&EI);
+}
+
+
