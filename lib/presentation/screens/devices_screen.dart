@@ -46,22 +46,22 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
       decoration:
           const BoxDecoration(color: Color.fromARGB(255, 247, 247, 247)),
       child: Stack(
+        fit: StackFit.expand,
         children: [
           InkWell(
             onTap: () => deviceProvider.startScan(),
             child: CupertinoNavigationScaffold(
-              title: '附近设备',
-              isSliverChild: false,
-              padding: 16,
-              enableRefresh: true,
-              child: DeviceList(
-                devices: devices,
-                onDeviceSelected: widget.onDeviceSelected,
-                showHistory: true,
-                history: history,
-                badges: _badges,
-              ),
-            ),
+                title: '附近设备',
+                isSliverChild: false,
+                padding: 16,
+                enableRefresh: false,
+                child: DeviceList(
+                  devices: devices,
+                  onDeviceSelected: widget.onDeviceSelected,
+                  showHistory: true,
+                  history: history,
+                  badges: _badges,
+                )),
           ),
           ClipRect(
             child: SizedBox(
@@ -103,7 +103,8 @@ class HistoryItem extends StatelessWidget {
   final DeviceInfo historyItemInfo;
   final VoidCallback onTap;
 
-  const HistoryItem({Key? key, required this.historyItemInfo, required this.onTap})
+  const HistoryItem(
+      {Key? key, required this.historyItemInfo, required this.onTap})
       : super(key: key);
 
   @override

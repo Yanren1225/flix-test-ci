@@ -43,7 +43,7 @@ class _DeviceListState extends State<DeviceList> {
   @override
   Widget build(BuildContext context) {
     final deviceProvider = MultiCastClientProvider.of(context, listen: true);
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    return Column( crossAxisAlignment: CrossAxisAlignment.start, children: [
       ...List.generate(devices.length, (index) {
         var deviceInfo = devices[index];
         return Padding(
