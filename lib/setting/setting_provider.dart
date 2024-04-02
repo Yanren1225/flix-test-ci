@@ -21,4 +21,6 @@ class SettingProvider extends ChangeNotifier {
     }
     return sharePreference.getString(deviceKey);
   }
+
+
 }

@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/SettingsRepo.dart';
@@ -8,6 +10,7 @@ import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffol
 import 'package:flix/presentation/widgets/settings/clickable_item.dart';
 import 'package:flix/presentation/widgets/settings/switchable_item.dart';
 import 'package:flix/presentation/widgets/super_title.dart';
+import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -73,14 +76,14 @@ class SettingsScreenState extends State<SettingsScreen> {
           ),
           Padding(
             padding:
-                const EdgeInsets.only(left: 16, top: 4, right: 16, bottom: 16),
+                const EdgeInsets.only(left: 16, top: 4, right: 16),
             child: DecoratedBox(
               decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(14)),
+                  color: Colors.white, borderRadius: BorderRadius.only(topLeft: Radius.circular(14), topRight: Radius.circular(14))),
               child: Padding(
                 padding: const EdgeInsets.all(14),
                 child: StreamBuilder<bool>(
-                  initialData: SettingsRepo.instance.getAutoReceive(),
+                  initialData: SettingsRepo.instance.autoReceive,
                   stream: SettingsRepo.instance.autoReceiveStream.stream,
                   builder:
                       (BuildContext context, AsyncSnapshot<bool> snapshot) {
@@ -91,7 +94,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                       onChanged: (value) {
                         setState(() {
                           if (value != null) {
-                            SettingsRepo.instance.autoReceive(value);
+                            SettingsRepo.instance.setAutoReceive(value);
                           }
                         });
                       },
@@ -99,6 +102,37 @@ class SettingsScreenState extends State<SettingsScreen> {
                   },
                 ),
               ),
+            ),
+          ),
+          // 高度1pt的分割线
+          Container(
+            margin: const EdgeInsets.only(left: 30, right: 16),
+            height: 1,
+            color: const Color.fromRGBO(0, 0, 0, 0.08),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: StreamBuilder<String>(
+              initialData: SettingsRepo.instance.savedDir,
+              stream: SettingsRepo.instance.savedDirStream.stream,
+              builder: (context, snapshot) {
+                return ClickableItem(label: '文件接收目录', des: snapshot.data, topRadius: false, bottomRadius: true, onClick: () async {
+                  final String initialDirectory;
+                  if (snapshot.data != null && await File(snapshot.data!).exists()) {
+                    initialDirectory = snapshot.data!;
+                  } else {
+                    initialDirectory = await getDefaultDestinationDirectory();
+                  }
+                  final newSavedPath = await FilePicker.platform.getDirectoryPath(initialDirectory: initialDirectory, lockParentWindow: true);
+                  if (newSavedPath != null) {
+                    // authPersistentAccess(newSavedPath);
+                    SettingsRepo.instance.setSavedDir(newSavedPath);
+                  }
+                  // showCupertinoModalPopup(context: context, builder: (context) {
+                  //   return NameEditBottomSheet();
+                  // });
+                });
+              },
             ),
           ),
           Visibility(
@@ -144,7 +178,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(14),
                         child: StreamBuilder<bool>(
-                          initialData: SettingsRepo.instance.getAutoReceive(),
+                          initialData: SettingsRepo.instance.autoReceive,
                           stream:
                               SettingsRepo.instance.autoReceiveStream.stream,
                           builder: (BuildContext context,

@@ -9,24 +9,7 @@ mixin DrawinFileSecurityExtension {
 
   Future<void> resolvePath(Future<void> Function(String path) callback) async {
     final fileMeta = this as FileMeta;
-    if (Platform.isMacOS) {
-      final secureBookmarks = SecureBookmarks();
-      var sharePreference = await SharedPreferences.getInstance();
-      var bookmark = sharePreference.getString(fileMeta.path!);
-      if (bookmark == null) {
-        bookmark = await secureBookmarks.bookmark(File(fileMeta.path!));
-        sharePreference.setString(fileMeta.path!, bookmark);
-        await callback.call(fileMeta.path!);
-      } else {
-        final resolvedFile = await secureBookmarks.resolveBookmark(bookmark);
-        await secureBookmarks
-            .startAccessingSecurityScopedResource(resolvedFile);
-        await callback.call(fileMeta.path!);
-        await secureBookmarks.stopAccessingSecurityScopedResource(resolvedFile);
-      }
-    } else {
-      await callback.call(fileMeta.path!);
-    }
+    await fileMeta.path!.resolvePath(callback);
   }
 
   Future<void> startAccessPath() async {
@@ -62,6 +45,32 @@ mixin DrawinFileSecurityExtension {
     }
   }
 }
+
+extension FilePathAuthorExtension on String {
+  Future<void> resolvePath(Future<void> Function(String path) callback) async {
+    if (Platform.isMacOS) {
+      final secureBookmarks = SecureBookmarks();
+      var sharePreference = await SharedPreferences.getInstance();
+      var bookmark = sharePreference.getString(this);
+      if (bookmark == null) {
+        bookmark = await secureBookmarks.bookmark(File(this));
+        sharePreference.setString(this, bookmark);
+        await callback.call(this);
+      } else {
+        final resolvedFile = await secureBookmarks.resolveBookmark(bookmark);
+        await secureBookmarks
+            .startAccessingSecurityScopedResource(resolvedFile);
+        await callback.call(this);
+        await secureBookmarks.stopAccessingSecurityScopedResource(resolvedFile);
+      }
+    } else {
+      await callback.call(this);
+    }
+  }
+
+}
+
+
 
 Future<void> authPersistentAccess(String path) async {
   if (Platform.isMacOS) {

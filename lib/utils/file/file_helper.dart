@@ -270,7 +270,7 @@ Future<File> createFile(String desDir, String fileName, {int copyIndex = 0}) asy
   }
 
   if (!(await outFile.exists())) {
-    await outFile.create();
+    await outFile.create(recursive: true);
     return outFile;
   }
 

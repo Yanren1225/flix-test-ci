@@ -23,7 +23,17 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSDownloadsFolderUsageDescription</key>
-	<string>我们需要访问您的下载文件夹来储存和读取文件。</string>
+	<string>我们需要访问您的下载目录来储存和读取文件。</string>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>我们需要访问您的桌面来储存和读取文件。</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>我们需要访问您的文档目录来储存和读取文件。</string>
+	<key>NSFileProviderDomainUsageDescription</key>
+	<string>我们需要访问您的磁盘目录来储存和读取文件。</string>
+	<key>NSNetworkVolumesUsageDescription</key>
+	<string>我们需要访问您的网络磁盘目录来储存和读取文件。</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>我们需要访问您的移动磁盘目录来储存和读取文件。</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSMainNibFile</key>
