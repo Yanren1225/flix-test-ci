@@ -12,13 +12,10 @@ import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffol
 import 'package:flix/presentation/widgets/settings/clickable_item.dart';
 import 'package:flix/presentation/widgets/settings/settings_item_wrapper.dart';
 import 'package:flix/presentation/widgets/settings/switchable_item.dart';
-import 'package:flix/presentation/widgets/super_title.dart';
-import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
