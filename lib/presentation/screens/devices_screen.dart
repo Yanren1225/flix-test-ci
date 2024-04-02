@@ -46,7 +46,6 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
       decoration:
           const BoxDecoration(color: Color.fromARGB(255, 247, 247, 247)),
       child: Stack(
-        fit: StackFit.expand,
         children: [
           InkWell(
             onTap: () => deviceProvider.startScan(),
@@ -54,7 +53,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
                 title: '附近设备',
                 isSliverChild: false,
                 padding: 16,
-                enableRefresh: false,
+                enableRefresh: true,
                 child: DeviceList(
                   devices: devices,
                   onDeviceSelected: widget.onDeviceSelected,
