@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:drift/drift.dart';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_manager.dart';
@@ -18,6 +19,7 @@ import 'package:flix/utils/bubble_convert.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/stream_cancelable.dart';
 import 'package:flix/utils/stream_progress.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shelf/shelf.dart';
@@ -194,30 +196,11 @@ class ShipService extends ApInterface {
                   throw ArgumentError('filename can\'t be null');
                 }
 
-                // await desDir.resolvePath((_) async {
-                  final outFile =
-                      await createFile(desDir, formData.filename ?? '');
-
-                  final out = outFile.openWrite(mode: FileMode.write);
-
-                  talker.debug('writing file to ${outFile.path}');
-
-                  final bubbleId = bubble!.id;
-                  await formData.part
-                      .chain((Stream<List<int>> stream) async {
-                        await checkCancel(bubbleId);
-                      })
-                      .progress(bubbleId)
-                      .pipe(out);
-
-                  // await Future.delayed(Duration(seconds: 5));
-                  final updatedBubble = bubble.copy(
-                      content: bubble.content.copy(
-                          state: FileState.receiveCompleted,
-                          progress: 1.0,
-                          meta: bubble.content.meta.copy(path: outFile.path)));
-                  // removeBubbleById(updatedBubble.id);
-                  await _bubblePool.add(updatedBubble);
+                await Permission.storage.onGrantedCallback(() async {
+                  await saveFileAndAddBubble(desDir, formData, bubble!);
+                }).onDeniedCallback(() {
+                  talker.debug("_receiveFile storage permission denied");
+                }).request();
                 // });
               } on Error catch (e) {
                 talker.error('receive file error: ', e);
@@ -243,6 +226,37 @@ class ShipService extends ApInterface {
       talker.error('_receiveFile failed, ', e, stackTrace);
       return Response.internalServerError();
     }
+  }
+
+  Future<void> saveFileAndAddBubble(
+      String desDir, FormData formData, PrimitiveFileBubble bubble) async {
+    File outFile = await saveFile(desDir, formData, bubble);
+    // await Future.delayed(Duration(seconds: 5));
+    final updatedBubble = bubble.copy(
+        content: bubble.content.copy(
+            state: FileState.receiveCompleted,
+            progress: 1.0,
+            meta: bubble.content.meta.copy(path: outFile.path)));
+    // removeBubbleById(updatedBubble.id);
+    await _bubblePool.add(updatedBubble);
+  }
+
+  Future<File> saveFile(
+      String desDir, FormData formData, PrimitiveFileBubble bubble) async {
+    final outFile = await createFile(desDir, formData.filename ?? '');
+
+    final out = outFile.openWrite(mode: FileMode.write);
+
+    talker.debug('writing file to ${outFile.path}');
+
+    final bubbleId = bubble!.id;
+    await formData.part
+        .chain((Stream<List<int>> stream) async {
+          await checkCancel(bubbleId);
+        })
+        .progress(bubbleId)
+        .pipe(out);
+    return outFile;
   }
 
   Future<Response> _receiveIntent(Request request) async {
@@ -519,10 +533,10 @@ class ShipService extends ApInterface {
       );
 
       if (response.statusCode == 200) {
-        talker.debug('发送成功: response: ${response.body}');
+        talker.debug('接收成功: response: ${response.body}');
       } else {
         talker.error(
-            '发送失败: status code: ${response.statusCode}, ${response.body}');
+            '接收失败: status code: ${response.statusCode}, ${response.body}');
       }
     } catch (e, stackTrace) {
       talker.error('confirmReceiveFile failed: ', e, stackTrace);
