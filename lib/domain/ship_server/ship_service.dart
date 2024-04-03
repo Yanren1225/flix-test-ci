@@ -12,6 +12,7 @@ import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/network/multicast_util.dart';
+import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/utils/bubble_convert.dart';
@@ -74,7 +75,7 @@ class ShipService extends ApInterface {
   Future<bool> isServerLiving() async {
     try {
       var uri =
-          Uri.parse('http://127.0.0.1:${MultiCastUtil.defaultPort}/heartbeat');
+          Uri.parse('http://127.0.0.1:${defaultPort}/heartbeat');
       var response = await http
           .post(
             uri,
@@ -109,13 +110,13 @@ class ShipService extends ApInterface {
   Future<HttpServer?> _startShipServer(
       Router app, String tag, Future<HttpServer?> Function() onFailed) async {
     try {
-      final server = await io.serve(app, '0.0.0.0', MultiCastUtil.defaultPort,
+      final server = await io.serve(app, '0.0.0.0', defaultPort,
           shared: false);
-      talker.debug('Serving at http://0.0.0.0:${MultiCastUtil.defaultPort}');
+      talker.debug('Serving at http://0.0.0.0:${defaultPort}');
       return server;
     } catch (e, stack) {
       talker.error(
-          '$tag start server at http://0.0.0.0:${MultiCastUtil.defaultPort} failed ',
+          '$tag start server at http://0.0.0.0:${defaultPort} failed ',
           e,
           stack);
       return await onFailed();

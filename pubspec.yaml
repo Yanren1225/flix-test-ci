@@ -96,6 +96,7 @@ dependencies:
   android_intent: ^2.0.2
   flutter_app_installer: ^1.0.0
   pasteboard: ^0.2.0
+  bonsoir: ^5.1.9
 
       # thumbnailer: ^2.2.0
 
@@ -115,6 +116,12 @@ dependency_overrides:
       ref: "0cafff0f60ec684b2d83b07ce86b5b578c044b2c"
       path: "packages/talker"
   share_plus: ^8.0.2
+  image_picker_ios:
+     git:
+       url: "https://github.com/heiha100/packages"
+       ref: "fd4226f343a75586545cd6ab09902e3409383ad8"
+       path: "packages/image_picker/image_picker_ios"
+
 
 #  share_plus_platform_interface:
 

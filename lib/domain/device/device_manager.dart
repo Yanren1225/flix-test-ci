@@ -4,6 +4,8 @@ import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/device_info.dart';
+import 'package:flix/network/bonjour_impl.dart';
+import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/device_info_helper.dart' as deviceUtils;
 import 'package:flix/utils/iterable_extension.dart';
@@ -40,7 +42,7 @@ class DeviceManager {
   final _deviceId2NetAddress = <String, String>{};
 
   final multiCastApi = MultiCastImpl();
-  var state = MultiState.idle;
+  final bonjourApi = BonjourImpl();
 
   final deviceListChangeListeners = <OnDeviceListChanged>{};
   final historyChangeListeners = <OnDeviceListChanged>{};
@@ -94,25 +96,44 @@ class DeviceManager {
         androidSdkInt: deviceInfo.androidSdkInt);
   }
 
+  Future<DeviceModal> getDeviceModal() async {
+    var deviceInfo = await DeviceManager.instance.getDeviceInfo();
+    var deviceModal = DeviceModal(
+        alias: deviceInfo.alias ?? '',
+        deviceType: deviceInfo.deviceType,
+        fingerprint: did,
+        port: defaultPort,
+        deviceModel: deviceInfo.deviceModel);
+    return deviceModal;
+  }
+
   Future<void> startScan() async {
-    state = MultiState.idle;
-    await multiCastApi.startScan(
-        MultiCastUtil.defaultMulticastGroup, MultiCastUtil.defaultPort,
-        (deviceModal, needPong) {
-      if (needPong) {
-        multiCastApi.pong(deviceModal);
-        multiCastApi
-            .getDeviceModal()
-            .then((value) => apInterface.pong(value, deviceModal));
-      }
+    // await multiCastApi.startScan(
+    //     MultiCastUtil.defaultMulticastGroup, MultiCastUtil.defaultPort,
+    //     (deviceModal, needPong) {
+    //   if (needPong) {
+    //     multiCastApi.pong(deviceModal);
+    //     getDeviceModal()
+    //         .then((value) => apInterface.pong(value, deviceModal));
+    //   }
+    //   _onDeviceDiscover(deviceModal);
+    // });
+    // unawaited(multiCastApi.ping());
+    unawaited(bonjourApi.startScan("", 0, (DeviceModal deviceModal, bool needPong) {
       _onDeviceDiscover(deviceModal);
-    });
-    unawaited(multiCastApi.ping());
+    }));
+    unawaited(bonjourApi.ping());
+  }
+
+  Future<void> stop() async {
+    // multiCastApi.stop();
+    bonjourApi.stop();
   }
 
 
   Future<void> ping() async {
-    await multiCastApi.ping();
+    // await multiCastApi.ping();
+    unawaited(bonjourApi.ping());
   }
 
   void _onDeviceDiscover(DeviceModal deviceModal) {
@@ -213,7 +234,7 @@ class DeviceManager {
   }
 
   String toNetAddress(String ip, int? port) {
-    return '$ip:${port ?? MultiCastUtil.defaultPort}';
+    return '$ip:${port ?? defaultPort}';
   }
 
   void _watchHistory() {
