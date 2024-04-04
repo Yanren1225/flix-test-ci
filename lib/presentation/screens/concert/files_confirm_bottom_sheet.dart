@@ -70,6 +70,7 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
               ? BubbleType.Video
               : BubbleType.File;
       ShipService.instance.send(UIBubble(
+          time: DateTime.now().millisecondsSinceEpoch,
           from: DeviceManager.instance.did,
           to: deviceInfo.id,
           type: bubbleType,

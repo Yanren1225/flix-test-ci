@@ -97,10 +97,11 @@ dependencies:
   flutter_app_installer: ^1.0.0
   pasteboard: ^0.2.0
   wechat_assets_picker: ^9.0.2
-  bonsoir: ^5.1.9
   flutter_localizations:
     sdk: flutter
   mutex: ^3.1.0
+  bonsoir: ^5.1.9
+  intl: ^0.18.1
 
       # thumbnailer: ^2.2.0
 

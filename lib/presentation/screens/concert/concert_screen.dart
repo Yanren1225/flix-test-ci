@@ -143,6 +143,7 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
     _scrollController.animateTo(_scrollController.position.minScrollExtent,
         duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
     await concertProvider.send(UIBubble(
+        time: DateTime.now().millisecondsSinceEpoch,
         from: DeviceManager.instance.did,
         to: Provider.of<ConcertProvider>(context, listen: false).deviceInfo.id,
         type: type,

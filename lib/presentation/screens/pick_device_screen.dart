@@ -94,6 +94,7 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
               state: FileState.picked,
               content: await attachment.toFileMeta());
           bubbles.add(UIBubble(
+              time: DateTime.now().millisecondsSinceEpoch,
               from: self,
               to: deviceInfo.id,
               type: _sharedType2BubbleType(attachment.type),
@@ -102,6 +103,7 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
       }
     } else if (widget.sharedMedia.content?.isNotEmpty == true) {
       bubbles.add(UIBubble(
+          time: DateTime.now().millisecondsSinceEpoch,
           from: self,
           to: deviceInfo.id,
           type: BubbleType.Text,

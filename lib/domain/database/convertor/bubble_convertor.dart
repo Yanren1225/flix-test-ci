@@ -6,6 +6,7 @@ PrimitiveBubble fromDBEntity(BubbleEntity bubbleEntity, dynamic content) {
   switch (BubbleType.values[bubbleEntity.type]) {
     case BubbleType.Text:
       return PrimitiveTextBubble(
+          time: bubbleEntity.time,
           id: bubbleEntity.id,
           from: bubbleEntity.fromDevice,
           to: bubbleEntity.toDevice,
@@ -16,6 +17,7 @@ PrimitiveBubble fromDBEntity(BubbleEntity bubbleEntity, dynamic content) {
     case BubbleType.Video:
     case BubbleType.App:
       return PrimitiveFileBubble(
+          time: bubbleEntity.time,
           id: bubbleEntity.id,
           from: bubbleEntity.fromDevice,
           to: bubbleEntity.toDevice,

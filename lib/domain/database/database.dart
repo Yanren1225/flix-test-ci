@@ -24,6 +24,8 @@ part 'database.g.dart'; // the generated code will be there
 @DriftDatabase(tables: [BubbleEntities, TextContents, FileContents, PersistenceDevices], daos: [BubblesDao, DevicesDao])
 class AppDatabase extends _$AppDatabase {
 
+
+
   AppDatabase(): super(_openConnection());
 
   @override
@@ -67,6 +69,7 @@ class AppDatabase extends _$AppDatabase {
       onUpgrade: (m, from, to) async {
         if (from < 2) {
           await m.addColumn(fileContents, fileContents.resourceId);
+          await m.addColumn(bubbleEntities, bubbleEntities.time);
         }
       },
     );

@@ -31,8 +31,13 @@ class $BubbleEntitiesTable extends BubbleEntities
   late final GeneratedColumn<int> type = GeneratedColumn<int>(
       'type', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _timeMeta = const VerificationMeta('time');
   @override
-  List<GeneratedColumn> get $columns => [id, fromDevice, toDevice, type];
+  late final GeneratedColumn<int> time = GeneratedColumn<int>(
+      'time', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, fromDevice, toDevice, type, time];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -68,6 +73,12 @@ class $BubbleEntitiesTable extends BubbleEntities
     } else if (isInserting) {
       context.missing(_typeMeta);
     }
+    if (data.containsKey('time')) {
+      context.handle(
+          _timeMeta, time.isAcceptableOrUnknown(data['time']!, _timeMeta));
+    } else if (isInserting) {
+      context.missing(_timeMeta);
+    }
     return context;
   }
 
@@ -85,6 +96,8 @@ class $BubbleEntitiesTable extends BubbleEntities
           .read(DriftSqlType.string, data['${effectivePrefix}to_device'])!,
       type: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}type'])!,
+      time: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}time'])!,
     );
   }
 
@@ -99,11 +112,13 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
   final String fromDevice;
   final String toDevice;
   final int type;
+  final int time;
   const BubbleEntity(
       {required this.id,
       required this.fromDevice,
       required this.toDevice,
-      required this.type});
+      required this.type,
+      required this.time});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -111,6 +126,7 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
     map['from_device'] = Variable<String>(fromDevice);
     map['to_device'] = Variable<String>(toDevice);
     map['type'] = Variable<int>(type);
+    map['time'] = Variable<int>(time);
     return map;
   }
 
@@ -120,6 +136,7 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
       fromDevice: Value(fromDevice),
       toDevice: Value(toDevice),
       type: Value(type),
+      time: Value(time),
     );
   }
 
@@ -131,6 +148,7 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
       fromDevice: serializer.fromJson<String>(json['fromDevice']),
       toDevice: serializer.fromJson<String>(json['toDevice']),
       type: serializer.fromJson<int>(json['type']),
+      time: serializer.fromJson<int>(json['time']),
     );
   }
   @override
@@ -141,16 +159,22 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
       'fromDevice': serializer.toJson<String>(fromDevice),
       'toDevice': serializer.toJson<String>(toDevice),
       'type': serializer.toJson<int>(type),
+      'time': serializer.toJson<int>(time),
     };
   }
 
   BubbleEntity copyWith(
-          {String? id, String? fromDevice, String? toDevice, int? type}) =>
+          {String? id,
+          String? fromDevice,
+          String? toDevice,
+          int? type,
+          int? time}) =>
       BubbleEntity(
         id: id ?? this.id,
         fromDevice: fromDevice ?? this.fromDevice,
         toDevice: toDevice ?? this.toDevice,
         type: type ?? this.type,
+        time: time ?? this.time,
       );
   @override
   String toString() {
@@ -158,13 +182,14 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
           ..write('id: $id, ')
           ..write('fromDevice: $fromDevice, ')
           ..write('toDevice: $toDevice, ')
-          ..write('type: $type')
+          ..write('type: $type, ')
+          ..write('time: $time')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, fromDevice, toDevice, type);
+  int get hashCode => Object.hash(id, fromDevice, toDevice, type, time);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -172,7 +197,8 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
           other.id == this.id &&
           other.fromDevice == this.fromDevice &&
           other.toDevice == this.toDevice &&
-          other.type == this.type);
+          other.type == this.type &&
+          other.time == this.time);
 }
 
 class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
@@ -180,12 +206,14 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
   final Value<String> fromDevice;
   final Value<String> toDevice;
   final Value<int> type;
+  final Value<int> time;
   final Value<int> rowid;
   const BubbleEntitiesCompanion({
     this.id = const Value.absent(),
     this.fromDevice = const Value.absent(),
     this.toDevice = const Value.absent(),
     this.type = const Value.absent(),
+    this.time = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   BubbleEntitiesCompanion.insert({
@@ -193,16 +221,19 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
     required String fromDevice,
     required String toDevice,
     required int type,
+    required int time,
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         fromDevice = Value(fromDevice),
         toDevice = Value(toDevice),
-        type = Value(type);
+        type = Value(type),
+        time = Value(time);
   static Insertable<BubbleEntity> custom({
     Expression<String>? id,
     Expression<String>? fromDevice,
     Expression<String>? toDevice,
     Expression<int>? type,
+    Expression<int>? time,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -210,6 +241,7 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
       if (fromDevice != null) 'from_device': fromDevice,
       if (toDevice != null) 'to_device': toDevice,
       if (type != null) 'type': type,
+      if (time != null) 'time': time,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -219,12 +251,14 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
       Value<String>? fromDevice,
       Value<String>? toDevice,
       Value<int>? type,
+      Value<int>? time,
       Value<int>? rowid}) {
     return BubbleEntitiesCompanion(
       id: id ?? this.id,
       fromDevice: fromDevice ?? this.fromDevice,
       toDevice: toDevice ?? this.toDevice,
       type: type ?? this.type,
+      time: time ?? this.time,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -244,6 +278,9 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
     if (type.present) {
       map['type'] = Variable<int>(type.value);
     }
+    if (time.present) {
+      map['time'] = Variable<int>(time.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -257,6 +294,7 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
           ..write('fromDevice: $fromDevice, ')
           ..write('toDevice: $toDevice, ')
           ..write('type: $type, ')
+          ..write('time: $time, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

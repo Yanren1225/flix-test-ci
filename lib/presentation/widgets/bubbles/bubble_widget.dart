@@ -13,6 +13,7 @@ import 'package:flix/presentation/widgets/bubbles/share_file_bubble.dart';
 import 'package:flix/presentation/widgets/bubbles/share_image_bubble.dart';
 import 'package:flix/presentation/widgets/bubbles/share_text_bubble.dart';
 import 'package:flix/presentation/widgets/bubbles/share_video_bubble.dart';
+import 'package:flix/presentation/widgets/bubbles/share_time_bubble.dart';
 import 'package:flix/utils/file/size_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -42,6 +43,8 @@ class BubbleWidget extends StatelessWidget {
       case BubbleType.App:
         // return ShareAppBubble(entity: uiBubble);
         return ShareFileBubble(key: ValueKey<String>(uiBubble.shareable.id), entity: uiBubble);
+      case BubbleType.Time:
+        return ShareTimeBubble(key: ValueKey<String>(uiBubble.shareable.id), entity: uiBubble);
     }
   }
 }

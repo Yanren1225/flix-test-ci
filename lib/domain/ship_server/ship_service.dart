@@ -129,7 +129,9 @@ class ShipService extends ApInterface {
     try {
       var body = await request.readAsString();
       var data = jsonDecode(body) as Map<String, dynamic>;
+      talker.debug("_receiveBubble===>",data);
       var bubble = PrimitiveBubble.fromJson(data);
+      talker.debug("_receiveBubble result===>",data);
       if (await SettingsRepo.instance.getAutoReceiveAsync() &&
           bubble is PrimitiveFileBubble) {
         await _bubblePool.add(bubble);
