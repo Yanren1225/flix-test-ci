@@ -166,7 +166,8 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
   }
 
   Future<bool> _openFile(String filePath) async {
-    if (Platform.isAndroid && filePath.endsWith(".apk") || filePath.endsWith(".apk.1")) {
+    if (Platform.isAndroid && filePath.endsWith(".apk") ||
+        filePath.endsWith(".apk.1")) {
       return await _installApk(filePath);
     } else {
       final result = await OpenFilex.open(filePath);
@@ -180,24 +181,29 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
   }
 
   void _openDir() {
-    if (Platform.isIOS) {
-      openDownloadFolder().then((value) {
-        if (value) {
-          print('Download folder opened successfully');
-        } else {
-          print('Failed to open download folder');
-        }
-      }).catchError((error, stackTrace) =>
-          print('Failed to open download folder: $error'));
-    } else {
-      getDefaultDestinationDirectory()
-          .then((value) => OpenDir().openNativeDir(
+    // fixme 打开android目录
+    if (Platform.isIOS || Platform.isAndroid) {
+      _openDownloadDir();
+    }  else {
+      OpenDir()
+          .openNativeDir(
               path: Platform.isWindows
                   ? File(widget.filePath).parent.path
-                  : widget.filePath))
+                  : widget.filePath)
           .catchError(
               (error) => print('Failed to open download folder: $error'));
     }
+  }
+
+  void _openDownloadDir() {
+    openDownloadFolder().then((value) {
+      if (value) {
+        print('Download folder opened successfully');
+      } else {
+        print('Failed to open download folder');
+      }
+    }).catchError((error, stackTrace) =>
+        print('Failed to open download folder: $error'));
   }
 
   Future<bool> _installApk(String apkPath) async {
