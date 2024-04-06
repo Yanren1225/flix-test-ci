@@ -60,7 +60,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
     // if (entity.isFromMe(andropContext.deviceId)) {
     //   backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
     // } else {
-      backgroundColor = Colors.white;
+    backgroundColor = Colors.white;
     // }
 
     bool clickable = false;
@@ -75,20 +75,20 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
       width: 20,
       height: 20,
     );
-    final Widget content;
+    final Widget Function(int? cacheWidth, int? cacheHeight) content;
     if (entity.isFromMe(andropContext.deviceId)) {
       // 发送
       switch (sharedImage.state) {
         case FileState.picked:
           clickable = true;
-          content = _image(sharedImage);
+          content = (cacheWidth, cacheHeight) => _image(sharedImage, cacheWidth: cacheWidth, cacheHeight: cacheHeight);
           stateIcon =
               CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.waitToAccepted:
           clickable = false;
 
-          content = Stack(
+          content = (_w, _h) => Stack(
             fit: StackFit.passthrough,
             children: [
               _image(sharedImage),
@@ -111,7 +111,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
         case FileState.inTransit:
           clickable = false;
 
-          content = Stack(
+          content = (_w, _h) => Stack(
             fit: StackFit.passthrough,
             children: [
               _image(sharedImage),
@@ -158,14 +158,14 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
         case FileState.receiveCompleted:
         case FileState.completed:
           clickable = true;
-          content = _image(sharedImage);
+          content = (cacheWidth, cacheHeight) => _image(sharedImage, cacheWidth: cacheWidth, cacheHeight: cacheHeight);
           break;
         case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
           clickable = true;
-          content = _image(sharedImage);
+          content = (cacheWidth, cacheHeight) => _image(sharedImage, cacheWidth: cacheWidth, cacheHeight: cacheHeight);
           stateIcon =
               stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
@@ -176,7 +176,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
       // 接收
       switch (sharedImage.state) {
         case FileState.waitToAccepted:
-          content = InkWell(
+          content = (_w, _h) => InkWell(
             onTap: () {
               concertProvider.confirmReceive(entity);
             },
@@ -184,7 +184,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
           );
         case FileState.inTransit:
         case FileState.sendCompleted:
-          content = AspectRatio(
+          content = (_w, _h) => AspectRatio(
             aspectRatio: 1.333333,
             child: DecoratedBox(
               decoration:
@@ -214,17 +214,16 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
         case FileState.receiveCompleted:
         case FileState.completed:
           clickable = true;
-          content = _image(sharedImage);
+          content = (cacheWidth, cacheHeight) => _image(sharedImage, cacheWidth: cacheWidth, cacheHeight: cacheHeight);
           break;
         case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
-          content = AspectRatio(
+          content = (_w, _h) => AspectRatio(
             aspectRatio: 1.333333,
             child: DecoratedBox(
-              decoration:
-                  const BoxDecoration(color: Colors.white),
+              decoration: const BoxDecoration(color: Colors.white),
               child: _imageErrorWidget(),
             ),
           );
@@ -265,44 +264,50 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                       color: backgroundColor,
-                      borderRadius: const BorderRadius.all(Radius.circular(10))),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(10))),
                   child: LayoutBuilder(builder:
                       (BuildContext context, BoxConstraints constraints) {
-                        final maxPhysicalSize = Platform.isAndroid || Platform.isIOS ? 250.0 : 300.0;
+                    final maxPhysicalSize =
+                        Platform.isAndroid || Platform.isIOS ? 250.0 : 300.0;
 
-                        if (sharedImage.content.width == 0 || sharedImage.content.height == 0) {
-
+                    if (sharedImage.content.width == 0 ||
+                        sharedImage.content.height == 0) {
                       return ConstrainedBox(
                           constraints: BoxConstraints(
                               minWidth: 100,
-                              maxWidth:
-                                  max(100, min(constraints.maxWidth - 60, maxPhysicalSize)),
+                              maxWidth: max(
+                                  100,
+                                  min(constraints.maxWidth - 60,
+                                      maxPhysicalSize)),
                               minHeight: 100),
-                          child: IntrinsicHeight(child: content));
+                          child: IntrinsicHeight(child: content(null, null)));
                     } else {
-                      final width;
-                      final height;
+                      double width;
+                      double height;
 
                       const minSize = 100;
-                      final maxSize = max(minSize, min(maxPhysicalSize, constraints.maxWidth - 60));
+                      final maxSize = max(minSize,
+                          min(maxPhysicalSize, constraints.maxWidth - 60));
 
                       final dpi = MediaQuery.of(context).devicePixelRatio;
                       final imageOriginWidth = sharedImage.content.width / dpi;
-                      final imageOriginHeight = sharedImage.content.height / dpi;
+                      final imageOriginHeight =
+                          sharedImage.content.height / dpi;
                       if (imageOriginWidth >= imageOriginHeight) {
                         if (imageOriginWidth > maxSize) {
-                          width = maxSize;
+                          width = maxSize * 1.0;
                         } else if (imageOriginWidth < minSize) {
-                          width = minSize;
+                          width = minSize * 1.0;
                         } else {
                           width = imageOriginWidth;
                         }
                         height = width / imageOriginWidth * imageOriginHeight;
                       } else {
                         if (imageOriginHeight > maxSize) {
-                          height = maxSize;
+                          height = maxSize * 1.0;
                         } else if (imageOriginHeight < minSize) {
-                          height = minSize;
+                          height = minSize * 1.0;
                         } else {
                           height = imageOriginHeight;
                         }
@@ -312,7 +317,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
                       return SizedBox(
                           width: width * 1.0,
                           height: height * 1.0,
-                          child: content);
+                          child: content((width * dpi).toInt(), (height * dpi).toInt()));
                     }
                   }),
                 )),
@@ -335,18 +340,24 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
     );
   }
 
-  Widget _image(SharedFile sharedFile) {
-
+  Widget _image(SharedFile sharedFile, {int? cacheWidth, int? cacheHeight}) {
     return Image.file(
-        key: _imageKey, File(sharedFile.content.path!!), fit: BoxFit.contain, errorBuilder: (BuildContext context,
+      key: _imageKey,
+      cacheWidth: cacheWidth,
+      cacheHeight: cacheHeight,
+      File(sharedFile.content.path!!),
+      fit: BoxFit.contain,
+      errorBuilder: (
+        BuildContext context,
         Object error,
-        StackTrace? stackTrace,) {
-          talker.error('failed to preview image: ${entity.shareable.id}', error, stackTrace);
-          return _imageErrorWidget();
-    },);
+        StackTrace? stackTrace,
+      ) {
+        talker.error('failed to preview image: ${entity.shareable.id}', error,
+            stackTrace);
+        return _imageErrorWidget();
+      },
+    );
   }
 
   Widget _imageErrorWidget() => PreviewErrorWidget();
 }
-
-
