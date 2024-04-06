@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flix/domain/androp_context.dart';
@@ -42,7 +43,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
     // if (entity.isFromMe(andropContext.deviceId)) {
     //   backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
     // } else {
-      backgroundColor = Colors.white;
+    backgroundColor = Colors.white;
     // }
 
     var clickable = false;
@@ -224,24 +225,37 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
                   borderRadius: const BorderRadius.all(Radius.circular(10))),
               child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
+                final maxPhysicalSize =
+                    Platform.isAndroid || Platform.isIOS ? 250 : 300;
+
                 final width;
-                if (sharedVideo.content.width >
-                    max(150, min(300, constraints.maxWidth - 60))) {
-                  width = max(150, min(300, constraints.maxWidth - 60));
-                } else if (sharedVideo.content.width < 150) {
-                  width = 150;
-                } else {
-                  width = sharedVideo.content.width;
-                }
                 final height;
 
-                if (sharedVideo.content.width == 0) {
-                  height = width;
+                const minSize = 100;
+                final maxSize = max(
+                    minSize, min(maxPhysicalSize, constraints.maxWidth - 60));
+
+                final dpi = MediaQuery.of(context).devicePixelRatio;
+                final imageOriginWidth = sharedVideo.content.width / dpi;
+                final imageOriginHeight = sharedVideo.content.height / dpi;
+                if (imageOriginWidth >= imageOriginHeight) {
+                  if (imageOriginWidth > maxSize) {
+                    width = maxSize;
+                  } else if (imageOriginWidth < minSize) {
+                    width = minSize;
+                  } else {
+                    width = imageOriginWidth;
+                  }
+                  height = width / imageOriginWidth * imageOriginHeight;
                 } else {
-                  height = sharedVideo.content.height *
-                      1.0 /
-                      sharedVideo.content.width *
-                      width;
+                  if (imageOriginHeight > maxSize) {
+                    height = maxSize;
+                  } else if (imageOriginHeight < minSize) {
+                    height = minSize;
+                  } else {
+                    height = imageOriginHeight;
+                  }
+                  width = height / imageOriginHeight * imageOriginWidth;
                 }
                 return SizedBox(
                   width: width * 1.0,
@@ -271,9 +285,7 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
     );
   }
 
-  Widget _buildInlineVideoPlayer(
-      String videoUri, bool preview) {
-
+  Widget _buildInlineVideoPlayer(String videoUri, bool preview) {
     return AspectRatioVideo(
         key: _videoWidget, videoPath: videoUri, preview: preview);
   }

@@ -268,34 +268,47 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
                       borderRadius: const BorderRadius.all(Radius.circular(10))),
                   child: LayoutBuilder(builder:
                       (BuildContext context, BoxConstraints constraints) {
-                    if (sharedImage.content.width == 0) {
+                        final maxPhysicalSize = Platform.isAndroid || Platform.isIOS ? 250.0 : 300.0;
+
+                        if (sharedImage.content.width == 0 || sharedImage.content.height == 0) {
+
                       return ConstrainedBox(
                           constraints: BoxConstraints(
-                              minWidth: 150,
+                              minWidth: 100,
                               maxWidth:
-                                  max(150, min(constraints.maxWidth - 60, 300)),
-                              minHeight: 150),
+                                  max(100, min(constraints.maxWidth - 60, maxPhysicalSize)),
+                              minHeight: 100),
                           child: IntrinsicHeight(child: content));
                     } else {
                       final width;
-                      if (sharedImage.content.width >
-                          max(150, min(300, constraints.maxWidth - 60))) {
-                        width = max(150, min(300, constraints.maxWidth - 60));
-                      } else if (sharedImage.content.width < 150) {
-                        width = 150;
-                      } else {
-                        width = sharedImage.content.width;
-                      }
                       final height;
 
-                      if (sharedImage.content.width == 0) {
-                        height = width;
+                      const minSize = 100;
+                      final maxSize = max(minSize, min(maxPhysicalSize, constraints.maxWidth - 60));
+
+                      final dpi = MediaQuery.of(context).devicePixelRatio;
+                      final imageOriginWidth = sharedImage.content.width / dpi;
+                      final imageOriginHeight = sharedImage.content.height / dpi;
+                      if (imageOriginWidth >= imageOriginHeight) {
+                        if (imageOriginWidth > maxSize) {
+                          width = maxSize;
+                        } else if (imageOriginWidth < minSize) {
+                          width = minSize;
+                        } else {
+                          width = imageOriginWidth;
+                        }
+                        height = width / imageOriginWidth * imageOriginHeight;
                       } else {
-                        height = sharedImage.content.height *
-                            1.0 /
-                            sharedImage.content.width *
-                            width;
+                        if (imageOriginHeight > maxSize) {
+                          height = maxSize;
+                        } else if (imageOriginHeight < minSize) {
+                          height = minSize;
+                        } else {
+                          height = imageOriginHeight;
+                        }
+                        width = height / imageOriginHeight * imageOriginWidth;
                       }
+
                       return SizedBox(
                           width: width * 1.0,
                           height: height * 1.0,
@@ -323,6 +336,7 @@ class ShareImageBubbleState extends State<ShareImageBubble> {
   }
 
   Widget _image(SharedFile sharedFile) {
+
     return Image.file(
         key: _imageKey, File(sharedFile.content.path!!), fit: BoxFit.contain, errorBuilder: (BuildContext context,
         Object error,
