@@ -1,21 +1,18 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
+
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
-import 'package:flix/setting/setting_provider.dart';
-import 'package:flix/utils/device_info_helper.dart';
 import 'package:flix/utils/sleep.dart';
 import 'package:flutter/services.dart';
 
+import 'nearby_service_info.dart';
+
 class MultiCastUtil {
-  /// The default http server port and
-  /// and multicast port.
-  static const defaultPort = 8891;
 
   /// The default multicast group should be 224.0.0.0/24
   /// because on some Android devices this is the only IP range
@@ -126,9 +123,8 @@ class MultiCastUtil {
   }
 
   /// Sends an announcement which triggers a response on every LocalSend member of the network.
-  static Future<void> ping() async {
+  static Future<void> ping(DeviceModal deviceModal) async {
     // final sockets = await getSockets(defaultMulticastGroup);
-    DeviceModal deviceModal = await getDeviceModal();
     final message = jsonEncode(Ping(deviceModal).toJson());
     if (Platform.isIOS) {
       pingOnIOS(message);
@@ -151,10 +147,9 @@ class MultiCastUtil {
   // 通过AP接口发送的multicast是不可靠的，
   // 实测Android开启热点其他设备无法接收到AP设备的组播数据
   // 见 https://forum.mikrotik.com/viewtopic.php?t=28756
-  static Future<void> pong(DeviceModal to) async {
+  static Future<void> pong(DeviceModal from, DeviceModal to) async {
     // final sockets = await getSockets(defaultMulticastGroup);
-    DeviceModal deviceModal = await getDeviceModal();
-    final message = jsonEncode(Pong(deviceModal, to).toJson());
+    final message = jsonEncode(Pong(from, to).toJson());
     if (Platform.isIOS) {
       pongOnIOS(message);
     } else {
@@ -173,17 +168,17 @@ class MultiCastUtil {
     }
   }
 
-  static Future<DeviceModal> getDeviceModal() async {
-    final deviceId = DeviceManager.instance.did;
-    var deviceInfo = await DeviceManager.instance.getDeviceInfo();
-    var deviceModal = DeviceModal(
-        alias: deviceInfo.alias ?? '',
-        deviceType: deviceInfo.deviceType,
-        fingerprint: deviceId!,
-        port: defaultPort,
-        deviceModel: deviceInfo.deviceModel);
-    return deviceModal;
-  }
+  // static Future<DeviceModal> getDeviceModal() async {
+  //   final deviceId = DeviceManager.instance.did;
+  //   var deviceInfo = await DeviceManager.instance.getDeviceInfo();
+  //   var deviceModal = DeviceModal(
+  //       alias: deviceInfo.alias ?? '',
+  //       deviceType: deviceInfo.deviceType,
+  //       fingerprint: deviceId!,
+  //       port: defaultPort,
+  //       deviceModel: deviceInfo.deviceModel);
+  //   return deviceModal;
+  // }
 
   static const MULTICAST_LOCK_CHANNEL =
       MethodChannel('com.ifreedomer.flix/multicast-lock');

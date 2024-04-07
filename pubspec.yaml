@@ -97,6 +97,7 @@ dependencies:
   flutter_app_installer: ^1.0.0
   pasteboard: ^0.2.0
   wechat_assets_picker: ^9.0.2
+  bonsoir: ^5.1.9
 
       # thumbnailer: ^2.2.0
 

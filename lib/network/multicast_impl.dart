@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/network/multicast_api.dart';
 import 'package:flix/network/multicast_util.dart';
 import 'package:flix/network/protocol/device_modal.dart';
@@ -17,20 +18,20 @@ class MultiCastImpl extends MultiCastApi {
   }
 
   @override
-  void disconnect() {}
+  Future<void> stop() async {}
 
   @override
   Future<void> ping() async {
-    await MultiCastUtil.ping();
+    await MultiCastUtil.ping(await DeviceManager.instance.getDeviceModal());
   }
 
   @override
   Future<void> pong(DeviceModal to) async {
-    await MultiCastUtil.pong(to);
+    await MultiCastUtil.pong(await DeviceManager.instance.getDeviceModal(), to);
   }
 
-  @override
-  Future<DeviceModal> getDeviceModal() async {
-    return await MultiCastUtil.getDeviceModal();
-  }
+  // @override
+  // Future<DeviceModal> getDeviceModal() async {
+  //   return await MultiCastUtil.getDeviceModal();
+  // }
 }
