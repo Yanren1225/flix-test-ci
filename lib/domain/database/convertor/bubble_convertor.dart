@@ -35,6 +35,7 @@ FileTransfer fromFileContent(FileContent fileContent) {
       state: FileState.values[fileContent.state],
       progress: fileContent.progress,
       meta: FileMeta(
+          resourceId: fileContent.resourceId,
           name: fileContent.name,
           mimeType: fileContent.mimeType,
           nameWithSuffix: fileContent.nameWithSuffix,

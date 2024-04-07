@@ -36,6 +36,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
           return await into(fileContents).insertOnConflictUpdate(
               FileContentsCompanion.insert(
                   id: fileBubble.id,
+                  resourceId: Value(fileBubble.content.meta.resourceId),
                   name: fileBubble.content.meta.name,
                   nameWithSuffix: fileBubble.content.meta.nameWithSuffix,
                   mimeType: fileBubble.content.meta.mimeType,
@@ -68,8 +69,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
         if (BubbleType.values[bubbleEntity.type] == BubbleType.File ||
             BubbleType.values[bubbleEntity.type] == BubbleType.Video ||
             BubbleType.values[bubbleEntity.type] == BubbleType.Image ||
-            BubbleType.values[bubbleEntity.type] == BubbleType.App
-        ) {
+            BubbleType.values[bubbleEntity.type] == BubbleType.App) {
           contentType = BubbleType.File.index;
         } else {
           contentType = BubbleType.Text.index;

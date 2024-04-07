@@ -22,17 +22,20 @@ class SharedFile extends Shareable<FileMeta> {
 }
 
 class FileMeta with DrawinFileSecurityExtension {
+  final String resourceId;
   final String name;
   final String mimeType;
   final String nameWithSuffix;
   final int size;
-  final String? path;
+  String? path;
+
   // 图片和视频文件的款高度
   final int width;
   final int height;
 
   FileMeta(
-      {required this.name,
+      {required this.resourceId,
+      required this.name,
       required this.mimeType,
       required this.nameWithSuffix,
       required this.size,
@@ -41,7 +44,8 @@ class FileMeta with DrawinFileSecurityExtension {
       this.height = 0});
 
   FileMeta.fromJson(Map<String, dynamic> json)
-      : name = json['name'],
+      : resourceId = json['resourceId'] ?? '',
+        name = json['name'],
         mimeType = json['mimeType'],
         nameWithSuffix = json['nameWithSuffix'],
         size = json['size'],
@@ -51,6 +55,7 @@ class FileMeta with DrawinFileSecurityExtension {
 
   Map<String, dynamic> toJson() {
     return {
+      'resourceId': resourceId,
       'name': name,
       'mimeType': mimeType,
       'nameWithSuffix': nameWithSuffix,
@@ -61,7 +66,8 @@ class FileMeta with DrawinFileSecurityExtension {
   }
 
   FileMeta copy(
-      {String? name,
+      {String? resourceId,
+      String? name,
       String? mimeType,
       String? nameWithSuffix,
       int? size,
@@ -69,6 +75,7 @@ class FileMeta with DrawinFileSecurityExtension {
       int? width,
       int? height}) {
     return FileMeta(
+        resourceId: resourceId ?? this.resourceId,
         name: name ?? this.name,
         mimeType: mimeType ?? this.mimeType,
         nameWithSuffix: nameWithSuffix ?? this.nameWithSuffix,
@@ -80,7 +87,7 @@ class FileMeta with DrawinFileSecurityExtension {
 
   @override
   String toString() {
-    return 'name: $name, mimeType: $mimeType, nameWithSuffix: $nameWithSuffix, size: $size, path: $path, width: $width, height: $height';
+    return 'resourceId: $resourceId, name: $name, mimeType: $mimeType, nameWithSuffix: $nameWithSuffix, size: $size, path: $path, width: $width, height: $height';
   }
 }
 

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/device_info.dart';
@@ -106,6 +104,10 @@ class ConcertProvider extends ChangeNotifier {
 
   bool isSelected(UIBubble uiBubble) {
     return selectedItems.find((e) => e.shareable.id == uiBubble.shareable.id) != null;
+  }
+
+  Future<void> updateFilePath(UIBubble uiBubble, String path) async {
+    await _concertService.updateFilePath(uiBubble, path);
   }
 
 }

@@ -96,6 +96,7 @@ dependencies:
   android_intent: ^2.0.2
   flutter_app_installer: ^1.0.0
   pasteboard: ^0.2.0
+  wechat_assets_picker: ^9.0.2
 
       # thumbnailer: ^2.2.0
 

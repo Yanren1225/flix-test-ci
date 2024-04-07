@@ -10,6 +10,7 @@ import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_size_getter/file_input.dart';
@@ -20,7 +21,7 @@ import 'package:share_handler/share_handler.dart';
 import 'package:shared_storage/shared_storage.dart' as shared_storage;
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:video_player/video_player.dart';
-
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 Future<String> getDefaultDestinationDirectory() async {
   switch (defaultTargetPlatform) {
@@ -66,6 +67,7 @@ extension XFileConvert on XFile {
     }
 
     return FileMeta(
+        resourceId: '',
         name: this.name,
         path: this.path,
         mimeType: this.mimeType ?? 'application/octet-stream',
@@ -74,10 +76,6 @@ extension XFileConvert on XFile {
         width: size.width,
         height: size.height);
   }
-
-
-
-
 }
 
 extension AttachmentConvert on SharedAttachment {
@@ -94,6 +92,7 @@ extension AttachmentConvert on SharedAttachment {
     final fileName = _getFileNameFromPath(this.path);
 
     return FileMeta(
+        resourceId: '',
         name: _getFileNameFromPath(this.path),
         path: this.path,
         mimeType: lookupMimeType(this.path) ?? 'application/octet-stream',
@@ -110,6 +109,7 @@ extension PlatformFileConvert on PlatformFile {
       throw UnsupportedError('PlatformFile.path must not be null');
     }
     return FileMeta(
+        resourceId: this.identifier ?? '',
         name: this.name,
         path: this.path,
         mimeType: lookupMimeType(this.name) ?? 'application/octet-stream',
@@ -124,6 +124,7 @@ extension ApplicationConvert on Application {
       throw UnsupportedError('PlatformFile.path must not be null');
     }
     return FileMeta(
+        resourceId: '',
         name: '$packageName.apk',
         path: apkFilePath,
         mimeType: 'application/vnd.android.package-archive',
@@ -132,24 +133,46 @@ extension ApplicationConvert on Application {
   }
 }
 
+extension AssetEntityExtension on AssetEntity {
+  Future<FileMeta> toFileMeta() async {
+    final title = await this.titleAsync ?? '';
+    final file = await this.originFile;
+
+    return FileMeta(
+        resourceId: this.id,
+        name: title,
+        path: file?.path ?? '',
+        mimeType: await this.mimeTypeAsync ?? 'application/octet-stream',
+        nameWithSuffix: title,
+        size: await file?.length() ?? 0,
+        width: this.width,
+        height: this.height);
+  }
+}
+
 Future deleteAppFiles() async {
   // ...
   // _deleteFilesInDir(await getApplicationSupportDirectory());
 
   // 删除数据库文件
-  // TODO getApplicationDocumentsDirectory返回的是用户的documents目录
-  _deleteFilesInDir(await getApplicationDocumentsDirectory());
+  // _deleteFilesInDir(await getApplicationDocumentsDirectory());
 
-  // // 删除临时文件
-  // _deleteFilesInDir(await getTemporaryDirectory());
-  //
-  // // 删除缓存文件
-  // _deleteFilesInDir(await getApplicationCacheDirectory());
+  // final tmpDir = await getTemporaryDirectory();
+  final Directory directory = await getApplicationDocumentsDirectory();
+  String tmpPath = "${directory.parent.path}/tmp/";
+  final tmpDir = Directory(tmpPath);
+  talker.debug('clean tmp dir: ${tmpDir.path}');
+  // 删除临时文件
+  _deleteFilesInDir(tmpDir);
+
+  //  删除缓存文件
+  final cacheDir = await getApplicationCacheDirectory();
+  talker.debug('clean cache dir: ${cacheDir.path}');
+  _deleteFilesInDir(cacheDir);
 }
 
 Future<void> _deleteFilesInDir(Directory dir) async {
-  dir.listSync(recursive: true)
-      .forEach((entity) {
+  dir.listSync(recursive: true).forEach((entity) {
     if (entity is File) {
       try {
         entity.deleteSync();
@@ -178,7 +201,10 @@ Future<Size> getImgSize(Size size, String path) async {
       try {
         size = ImageSizeGetter.getSize(FileInput(File(path)));
       } catch (e, stack) {
-        talker.error('inner: Failed to get size of image, path: ${path}: $e, $stack', e, stack);
+        talker.error(
+            'inner: Failed to get size of image, path: ${path}: $e, $stack',
+            e,
+            stack);
         final _size = await getHeifImageSize2(path);
         if (_size == null) {
           talker.error('Failed to get size of heifImage, path: ${path}');
@@ -188,7 +214,8 @@ Future<Size> getImgSize(Size size, String path) async {
       }
     }
   } catch (e, stacktrace) {
-    talker.error('outer: Failed to get image size, path: ${path}', e, stacktrace);
+    talker.error(
+        'outer: Failed to get image size, path: ${path}', e, stacktrace);
   }
 
   return size;
@@ -198,15 +225,17 @@ Future<Size> getVideoSize(Size size, String path) async {
   try {
     VideoPlayerController _controller = VideoPlayerController.file(File(path));
     await _controller.initialize();
-    size = Size(_controller.value?.size?.width?.toInt() ?? 0, _controller.value?.size?.height?.toInt() ?? 0);
+    size = Size(_controller.value?.size?.width?.toInt() ?? 0,
+        _controller.value?.size?.height?.toInt() ?? 0);
     _controller.dispose();
   } catch (e, stack) {
-    talker.error('Failed to get size of video, path: ${path}: $e, $stack', e, stack);
+    talker.error(
+        'Failed to get size of video, path: ${path}: $e, $stack', e, stack);
   }
   return size;
 }
 
-Future<Size?> getHeifImageSize2(String filePath) async  {
+Future<Size?> getHeifImageSize2(String filePath) async {
   final properties = await FlutterNativeImage.getImageProperties(filePath);
   if (properties.width != 0 && properties.height != 0) {
     return Size(properties.width!, properties.height!);
@@ -214,10 +243,10 @@ Future<Size?> getHeifImageSize2(String filePath) async  {
   return null;
 }
 
-
 String mimeIcon(String filePath) {
   final mimeType = lookupMimeType(filePath) ?? "";
-  if (mimeType.startsWith('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
+  if (mimeType.startsWith(
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
     return 'assets/images/ic_excel.svg';
   } else if (mimeType.startsWith('text')) {
     return 'assets/images/ic_txt.svg';
@@ -232,7 +261,6 @@ String mimeIcon(String filePath) {
   }
 }
 
-
 // 判断文件是图片、视频还是其他
 FileType getFileType(String filePath) {
   final mimeType = lookupMimeType(filePath) ?? "";
@@ -245,8 +273,8 @@ FileType getFileType(String filePath) {
   }
 }
 
-
-Future<File> createFile(String desDir, String fileName, {int copyIndex = 0}) async {
+Future<File> createFile(String desDir, String fileName,
+    {int copyIndex = 0}) async {
   final dotIndex = fileName.lastIndexOf('.');
   final String fileSuffix;
   final String fileNameWithoutSuffix;
@@ -278,5 +306,7 @@ Future<File> createFile(String desDir, String fileName, {int copyIndex = 0}) asy
 }
 
 enum FileType {
-  image, video, other;
+  image,
+  video,
+  other;
 }

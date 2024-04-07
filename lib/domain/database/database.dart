@@ -27,7 +27,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(): super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   static LazyDatabase _openConnection() {
     // the LazyDatabase util lets us find the right location for the file async.
@@ -59,6 +59,17 @@ class AppDatabase extends _$AppDatabase {
 
       return NativeDatabase.createInBackground(file);
     });
+  }
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onUpgrade: (m, from, to) async {
+        if (from < 2) {
+          await m.addColumn(fileContents, fileContents.resourceId);
+        }
+      },
+    );
   }
 
 

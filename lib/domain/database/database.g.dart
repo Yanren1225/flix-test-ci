@@ -457,6 +457,14 @@ class $FileContentsTable extends FileContents
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
       'id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _resourceIdMeta =
+      const VerificationMeta('resourceId');
+  @override
+  late final GeneratedColumn<String> resourceId = GeneratedColumn<String>(
+      'resource_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -518,6 +526,7 @@ class $FileContentsTable extends FileContents
   @override
   List<GeneratedColumn> get $columns => [
         id,
+        resourceId,
         name,
         mimeType,
         nameWithSuffix,
@@ -543,6 +552,12 @@ class $FileContentsTable extends FileContents
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
+    }
+    if (data.containsKey('resource_id')) {
+      context.handle(
+          _resourceIdMeta,
+          resourceId.isAcceptableOrUnknown(
+              data['resource_id']!, _resourceIdMeta));
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -615,6 +630,8 @@ class $FileContentsTable extends FileContents
     return FileContent(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      resourceId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}resource_id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       mimeType: attachedDatabase.typeMapping
@@ -646,6 +663,7 @@ class $FileContentsTable extends FileContents
 
 class FileContent extends DataClass implements Insertable<FileContent> {
   final String id;
+  final String resourceId;
   final String name;
   final String mimeType;
   final String nameWithSuffix;
@@ -658,6 +676,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
   final bool waitingForAccept;
   const FileContent(
       {required this.id,
+      required this.resourceId,
       required this.name,
       required this.mimeType,
       required this.nameWithSuffix,
@@ -672,6 +691,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['resource_id'] = Variable<String>(resourceId);
     map['name'] = Variable<String>(name);
     map['mime_type'] = Variable<String>(mimeType);
     map['name_with_suffix'] = Variable<String>(nameWithSuffix);
@@ -690,6 +710,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
   FileContentsCompanion toCompanion(bool nullToAbsent) {
     return FileContentsCompanion(
       id: Value(id),
+      resourceId: Value(resourceId),
       name: Value(name),
       mimeType: Value(mimeType),
       nameWithSuffix: Value(nameWithSuffix),
@@ -708,6 +729,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return FileContent(
       id: serializer.fromJson<String>(json['id']),
+      resourceId: serializer.fromJson<String>(json['resourceId']),
       name: serializer.fromJson<String>(json['name']),
       mimeType: serializer.fromJson<String>(json['mimeType']),
       nameWithSuffix: serializer.fromJson<String>(json['nameWithSuffix']),
@@ -725,6 +747,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'resourceId': serializer.toJson<String>(resourceId),
       'name': serializer.toJson<String>(name),
       'mimeType': serializer.toJson<String>(mimeType),
       'nameWithSuffix': serializer.toJson<String>(nameWithSuffix),
@@ -740,6 +763,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
 
   FileContent copyWith(
           {String? id,
+          String? resourceId,
           String? name,
           String? mimeType,
           String? nameWithSuffix,
@@ -752,6 +776,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
           bool? waitingForAccept}) =>
       FileContent(
         id: id ?? this.id,
+        resourceId: resourceId ?? this.resourceId,
         name: name ?? this.name,
         mimeType: mimeType ?? this.mimeType,
         nameWithSuffix: nameWithSuffix ?? this.nameWithSuffix,
@@ -767,6 +792,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
   String toString() {
     return (StringBuffer('FileContent(')
           ..write('id: $id, ')
+          ..write('resourceId: $resourceId, ')
           ..write('name: $name, ')
           ..write('mimeType: $mimeType, ')
           ..write('nameWithSuffix: $nameWithSuffix, ')
@@ -782,13 +808,25 @@ class FileContent extends DataClass implements Insertable<FileContent> {
   }
 
   @override
-  int get hashCode => Object.hash(id, name, mimeType, nameWithSuffix, size,
-      path, state, progress, width, height, waitingForAccept);
+  int get hashCode => Object.hash(
+      id,
+      resourceId,
+      name,
+      mimeType,
+      nameWithSuffix,
+      size,
+      path,
+      state,
+      progress,
+      width,
+      height,
+      waitingForAccept);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is FileContent &&
           other.id == this.id &&
+          other.resourceId == this.resourceId &&
           other.name == this.name &&
           other.mimeType == this.mimeType &&
           other.nameWithSuffix == this.nameWithSuffix &&
@@ -803,6 +841,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
 
 class FileContentsCompanion extends UpdateCompanion<FileContent> {
   final Value<String> id;
+  final Value<String> resourceId;
   final Value<String> name;
   final Value<String> mimeType;
   final Value<String> nameWithSuffix;
@@ -816,6 +855,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
   final Value<int> rowid;
   const FileContentsCompanion({
     this.id = const Value.absent(),
+    this.resourceId = const Value.absent(),
     this.name = const Value.absent(),
     this.mimeType = const Value.absent(),
     this.nameWithSuffix = const Value.absent(),
@@ -830,6 +870,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
   });
   FileContentsCompanion.insert({
     required String id,
+    this.resourceId = const Value.absent(),
     required String name,
     required String mimeType,
     required String nameWithSuffix,
@@ -852,6 +893,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
         height = Value(height);
   static Insertable<FileContent> custom({
     Expression<String>? id,
+    Expression<String>? resourceId,
     Expression<String>? name,
     Expression<String>? mimeType,
     Expression<String>? nameWithSuffix,
@@ -866,6 +908,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (resourceId != null) 'resource_id': resourceId,
       if (name != null) 'name': name,
       if (mimeType != null) 'mime_type': mimeType,
       if (nameWithSuffix != null) 'name_with_suffix': nameWithSuffix,
@@ -882,6 +925,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
 
   FileContentsCompanion copyWith(
       {Value<String>? id,
+      Value<String>? resourceId,
       Value<String>? name,
       Value<String>? mimeType,
       Value<String>? nameWithSuffix,
@@ -895,6 +939,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
       Value<int>? rowid}) {
     return FileContentsCompanion(
       id: id ?? this.id,
+      resourceId: resourceId ?? this.resourceId,
       name: name ?? this.name,
       mimeType: mimeType ?? this.mimeType,
       nameWithSuffix: nameWithSuffix ?? this.nameWithSuffix,
@@ -914,6 +959,9 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
+    }
+    if (resourceId.present) {
+      map['resource_id'] = Variable<String>(resourceId.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -955,6 +1003,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
   String toString() {
     return (StringBuffer('FileContentsCompanion(')
           ..write('id: $id, ')
+          ..write('resourceId: $resourceId, ')
           ..write('name: $name, ')
           ..write('mimeType: $mimeType, ')
           ..write('nameWithSuffix: $nameWithSuffix, ')

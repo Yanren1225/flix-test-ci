@@ -72,4 +72,9 @@ class ConcertService {
     //   // TODO 取消发送或者接收
     // }
   }
+
+  Future<void> updateFilePath(UIBubble uiBubble, String path) async {
+    final bubble = fromUIBubble(uiBubble) as PrimitiveFileBubble;
+    await BubblePool.instance.add(bubble.copy(content: bubble.content.copy(meta: bubble.content.meta.copy(path: path))));
+  }
 }
