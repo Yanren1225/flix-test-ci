@@ -6,6 +6,7 @@ import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/segements/bubble_context_menu.dart';
 import 'package:flix/utils/file/file_helper.dart';
@@ -96,10 +97,9 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
           //   if (!widget.clickable) return;
           //   _openDir();
           // },
-          onTap: () {
+          onTap: () async {
             if (!widget.clickable) return;
             // _controller.forward().whenComplete(() => _controller.reverse());
-            talker.debug('filePath: ${widget.filePath}');
             _openFile(widget.filePath).then((isSuccess) {
               if (!isSuccess) {
                 _openDir();
@@ -184,7 +184,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
     // fixme 打开android目录
     if (Platform.isIOS || Platform.isAndroid) {
       _openDownloadDir();
-    }  else {
+    } else {
       OpenDir()
           .openNativeDir(
               path: Platform.isWindows
@@ -202,8 +202,8 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
       } else {
         print('Failed to open download folder');
       }
-    }).catchError((error, stackTrace) =>
-        print('Failed to open download folder: $error'));
+    }).catchError(
+        (error, stackTrace) => print('Failed to open download folder: $error'));
   }
 
   Future<bool> _installApk(String apkPath) async {

@@ -1,19 +1,18 @@
-import 'dart:developer';
 import 'dart:io';
-import 'dart:math' hide log;
 
-import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/model/pickable.dart';
-import 'package:flix/presentation/screens/android_apps_screen.dart';
-import 'package:flix/presentation/widgets/segements/mask_loading.dart';
-import 'package:flix/utils/file/file_helper.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
+import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/model/pickable.dart';
+import 'package:flix/presentation/screens/android_apps_screen.dart';
+import 'package:flix/presentation/screens/base_screen.dart';
+import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 class PickActionsArea extends StatefulWidget {
   final OnPicked onPicked;
@@ -43,7 +42,8 @@ class PickActionAreaState extends State<PickActionsArea> {
           onPressed: () {
             _onAppButtonPressed();
           },
-          icon: SvgPicture.asset('assets/images/ic_app.svg',  width: 22, height: 22),
+          icon: SvgPicture.asset('assets/images/ic_app.svg',
+              width: 22, height: 22),
         ),
       );
     } else {
@@ -63,7 +63,8 @@ class PickActionAreaState extends State<PickActionsArea> {
                 onPressed: () {
                   _onImageButtonPressed(context: context);
                 },
-                icon: SvgPicture.asset('assets/images/ic_image.svg',  width: 22, height: 22)),
+                icon: SvgPicture.asset('assets/images/ic_image.svg',
+                    width: 22, height: 22)),
           ),
           SizedBox(
             width: 50,
@@ -74,7 +75,8 @@ class PickActionAreaState extends State<PickActionsArea> {
                 onPressed: () {
                   _onVideoButtonPressed(context: context);
                 },
-                icon: SvgPicture.asset('assets/images/ic_video.svg',  width: 22, height: 22)),
+                icon: SvgPicture.asset('assets/images/ic_video.svg',
+                    width: 22, height: 22)),
           ),
           pickAppButton,
           SizedBox(
@@ -86,7 +88,11 @@ class PickActionAreaState extends State<PickActionsArea> {
               onPressed: () {
                 _onFileButtonPressed();
               },
-              icon: SvgPicture.asset('assets/images/ic_file.svg', width: 22, height: 22,),
+              icon: SvgPicture.asset(
+                'assets/images/ic_file.svg',
+                width: 22,
+                height: 22,
+              ),
             ),
           ),
         ],
@@ -98,19 +104,36 @@ class PickActionAreaState extends State<PickActionsArea> {
     required BuildContext context,
   }) async {
     if (context.mounted) {
-      try {
-        final List<XFile> pickedFileList =
-            await _picker.pickMultiImage(requestFullMetadata: true);
-        onPicked([
-          for (final f in pickedFileList)
-            PickableFile(
-                type: PickedFileType.Image, content: await f.toFileMeta(isImg: true))
-        ]);
-      } catch (e, stack) {
-        talker.error("pick images failed: $e, $stack", e, stack);
-        setState(() {
-          _pickFileError = e;
-        });
+      if (await checkPhotosPermission(context)) {
+        try {
+          if (Platform.isAndroid || Platform.isIOS) {
+            final List<AssetEntity>? result = await AssetPicker.pickAssets(
+              context,
+              pickerConfig:
+                  const AssetPickerConfig(requestType: RequestType.image, maxAssets: 100),
+            );
+
+            onPicked([
+              for (final f in (result ?? <AssetEntity>[]))
+                PickableFile(
+                    type: PickedFileType.Image, content: await f.toFileMeta())
+            ]);
+          } else {
+            final List<XFile> pickedFileList =
+                await _picker.pickMultiImage(requestFullMetadata: true);
+            onPicked([
+              for (final f in pickedFileList)
+                PickableFile(
+                    type: PickedFileType.Image,
+                    content: await f.toFileMeta(isImg: true))
+            ]);
+          }
+        } catch (e, stack) {
+          talker.error("pick images failed: $e, $stack", e, stack);
+          setState(() {
+            _pickFileError = e;
+          });
+        }
       }
     }
   }
@@ -119,27 +142,43 @@ class PickActionAreaState extends State<PickActionsArea> {
     required BuildContext context,
   }) async {
     if (context.mounted) {
-      showMaskLoading(context);
-      try {
-        final XFile? pickedFile =
-            await _picker.pickVideo(source: ImageSource.gallery);
-        talker.debug('video selected: ${pickedFile?.path}');
-        if (pickedFile != null) {
-          onPicked([
-            PickableFile(
-                type: PickedFileType.Video,
-                content: await pickedFile.toFileMeta(isVideo: true))
-          ]);
-        } else {
-          talker.error("pick video failed, return null");
+      if (await checkVideosPermission(context)) {
+        // showMaskLoading(context);
+        try {
+          if (Platform.isAndroid || Platform.isIOS) {
+            final List<AssetEntity>? result = await AssetPicker.pickAssets(
+              context,
+              pickerConfig:
+                   AssetPickerConfig(requestType: RequestType.video, maxAssets: 100, filterOptions: FilterOptionGroup(containsLivePhotos: false)),
+            );
+
+            onPicked([
+              for (final f in (result ?? <AssetEntity>[]))
+                PickableFile(
+                    type: PickedFileType.Video, content: await f.toFileMeta())
+            ]);
+          } else {
+            final XFile? pickedFile =
+                await _picker.pickVideo(source: ImageSource.gallery);
+            talker.debug('video selected: ${pickedFile?.path}');
+            if (pickedFile != null) {
+              onPicked([
+                PickableFile(
+                    type: PickedFileType.Video,
+                    content: await pickedFile.toFileMeta(isVideo: true))
+              ]);
+            } else {
+              talker.error("pick video failed, return null");
+            }
+          }
+        } catch (e) {
+          talker.error("pick video failed: ", e);
+          setState(() {
+            _pickFileError = e;
+          });
+        } finally {
+          // dismissMaskLoading();
         }
-      } catch (e) {
-        talker.error("pick video failed: ", e);
-        setState(() {
-          _pickFileError = e;
-        });
-      } finally {
-        dismissMaskLoading();
       }
     }
   }
