@@ -202,6 +202,8 @@ class ShipService extends ApInterface {
                   }).onDeniedCallback(() {
                     talker.debug("_receiveFile storage permission denied");
                   }).request();
+                } else {
+                  await saveFileAndAddBubble(desDir, formData, bubble!);
                 }
 
                 // });

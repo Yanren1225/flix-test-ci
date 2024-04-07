@@ -150,7 +150,7 @@ extension AssetEntityExtension on AssetEntity {
   }
 }
 
-Future deleteAppFiles() async {
+Future deleteCache() async {
   // ...
   // _deleteFilesInDir(await getApplicationSupportDirectory());
 
@@ -158,12 +158,14 @@ Future deleteAppFiles() async {
   // _deleteFilesInDir(await getApplicationDocumentsDirectory());
 
   // final tmpDir = await getTemporaryDirectory();
-  final Directory directory = await getApplicationDocumentsDirectory();
-  String tmpPath = "${directory.parent.path}/tmp/";
-  final tmpDir = Directory(tmpPath);
-  talker.debug('clean tmp dir: ${tmpDir.path}');
-  // 删除临时文件
-  _deleteFilesInDir(tmpDir);
+  if (Platform.isIOS) {
+    final Directory directory = await getApplicationDocumentsDirectory();
+    String tmpPath = "${directory.parent.path}/tmp/";
+    final tmpDir = Directory(tmpPath);
+    talker.debug('clean tmp dir: ${tmpDir.path}');
+    // 删除临时文件
+    _deleteFilesInDir(tmpDir);
+  }
 
   //  删除缓存文件
   final cacheDir = await getApplicationCacheDirectory();

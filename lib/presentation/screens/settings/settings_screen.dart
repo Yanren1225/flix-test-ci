@@ -7,6 +7,7 @@ import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/SettingsRepo.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
+import 'package:flix/presentation/screens/settings/confirm_clean_cache_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/device_name/name_edit_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/settings/clickable_item.dart';
@@ -170,6 +171,61 @@ class SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             Visibility(
+              visible: Platform.isIOS || Platform.isAndroid,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 20, top: 20, right: 20),
+                    child: Text(
+                      '其他',
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.normal,
+                          color: Color.fromRGBO(60, 60, 67, 0.6)),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16, top: 4, right: 16, bottom: 16),
+                    child: InkWell(
+                      onTap: () {
+                        showConfirmDeleteCacheBottomSheet();
+                      },
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                            color: Color.fromRGBO(255, 59, 48, 1),
+                            borderRadius: BorderRadius.circular(14)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: StreamBuilder<bool>(
+                            initialData: SettingsRepo.instance.autoReceive,
+                            stream:
+                            SettingsRepo.instance.autoReceiveStream.stream,
+                            builder: (BuildContext context,
+                                AsyncSnapshot<bool> snapshot) {
+                              return const SizedBox(
+                                width: double.infinity,
+                                child: const Text(
+                                  textAlign: TextAlign.center,
+                                  '清除缓存',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Visibility(
               visible: !kReleaseMode,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,42 +254,6 @@ class SettingsScreenState extends State<SettingsScreen> {
                               ));
                         }),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 16, top: 4, right: 16, bottom: 16),
-                    child: InkWell(
-                      onTap: () {
-                        deleteAppFiles();
-                      },
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                            color: Color.fromRGBO(255, 59, 48, 1),
-                            borderRadius: BorderRadius.circular(14)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(14),
-                          child: StreamBuilder<bool>(
-                            initialData: SettingsRepo.instance.autoReceive,
-                            stream:
-                                SettingsRepo.instance.autoReceiveStream.stream,
-                            builder: (BuildContext context,
-                                AsyncSnapshot<bool> snapshot) {
-                              return const SizedBox(
-                                width: double.infinity,
-                                child: const Text(
-                                  textAlign: TextAlign.center,
-                                  '清除缓存',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.normal),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -241,5 +261,17 @@ class SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
     );
+  }
+
+  void showConfirmDeleteCacheBottomSheet() {
+    showCupertinoModalPopup(
+        context: context,
+        builder: (context) {
+          return ConfirmCleanCacheBottomSheet(
+            onConfirm: () {
+              deleteCache();
+            },
+          );
+        });
   }
 }
