@@ -4,6 +4,8 @@ import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/presentation/screens/base_screen.dart';
+import 'package:flix/presentation/widgets/bubbles/base_file_bubble.dart';
 import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/receive_button.dart';
@@ -13,18 +15,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
-class ShareFileBubble extends StatefulWidget {
-  final UIBubble entity;
+class ShareFileBubble extends BaseFileBubble {
 
-  const ShareFileBubble({super.key, required this.entity});
+  const ShareFileBubble({super.key, required super.entity});
 
 
   @override
   State<StatefulWidget> createState() => ShareFileBubbleState();
 }
 
-class ShareFileBubbleState extends State<ShareFileBubble> {
-  UIBubble get entity => widget.entity;
+class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
 
   final _cancelSendButtonKey = GlobalKey();
   final _resendButtonKey = GlobalKey();
@@ -245,7 +245,7 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
         sharedFile.state == FileState.waitToAccepted) {
       innerBubble = InkWell(
         onTap: () {
-          concertProvider.confirmReceive(entity);
+          _confirmReceive(concertProvider);
         },
         child: _innerBubble,
       );
@@ -286,6 +286,12 @@ class ShareFileBubbleState extends State<ShareFileBubble> {
             )),
       ],
     );
+  }
+
+  void _confirmReceive(ConcertProvider concertProvider) async {
+    if (await checkStoragePermission(context)) {
+      concertProvider.confirmReceive(entity);
+    }
   }
 
 }

@@ -3,10 +3,12 @@ import 'dart:math';
 
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/widgets/aspect_ratio_video.dart';
 import 'package:flix/presentation/widgets/bubbles/accept_media_widget.dart';
+import 'package:flix/presentation/widgets/bubbles/base_file_bubble.dart';
 import 'package:flix/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
 import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
@@ -17,17 +19,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
-class ShareVideoBubble extends StatefulWidget {
-  final UIBubble entity;
+class ShareVideoBubble extends BaseFileBubble {
 
-  const ShareVideoBubble({super.key, required this.entity});
+  const ShareVideoBubble({super.key, required super.entity});
 
   @override
   State<StatefulWidget> createState() => ShareVideoBubbleState();
 }
 
-class ShareVideoBubbleState extends State<ShareVideoBubble> {
-  UIBubble get entity => widget.entity;
+class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
   VideoPlayerController? controller;
 
   final _cancelButtonKey = GlobalKey();
@@ -39,6 +39,8 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
     AndropContext andropContext = context.watch();
     ConcertProvider concertProvider = context.watch();
     final sharedVideo = entity.shareable as SharedFile;
+    talker.debug('video with path: ${sharedVideo.content.path}');
+
     final Color backgroundColor;
     // if (entity.isFromMe(andropContext.deviceId)) {
     //   backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
@@ -226,44 +228,61 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
               child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
                 final maxPhysicalSize =
-                    Platform.isAndroid || Platform.isIOS ? 250 : 300;
+                    Platform.isAndroid || Platform.isIOS ? 250.0 : 300.0;
 
-                final width;
-                final height;
-
-                const minSize = 100;
-                final maxSize = max(
-                    minSize, min(maxPhysicalSize, constraints.maxWidth - 60));
-
-                final dpi = MediaQuery.of(context).devicePixelRatio;
-                final imageOriginWidth = sharedVideo.content.width / dpi;
-                final imageOriginHeight = sharedVideo.content.height / dpi;
-                if (imageOriginWidth >= imageOriginHeight) {
-                  if (imageOriginWidth > maxSize) {
-                    width = maxSize;
-                  } else if (imageOriginWidth < minSize) {
-                    width = minSize;
-                  } else {
-                    width = imageOriginWidth;
-                  }
-                  height = width / imageOriginWidth * imageOriginHeight;
+                if (sharedVideo.content.width == 0 ||
+                    sharedVideo.content.height == 0) {
+                  return ConstrainedBox(
+                      constraints: BoxConstraints(
+                          minWidth: 100,
+                          maxWidth: max(
+                              100,
+                              min(constraints.maxWidth - 60,
+                                  maxPhysicalSize)),
+                          minHeight: 100),
+                      child: IntrinsicHeight(child: content));
                 } else {
-                  if (imageOriginHeight > maxSize) {
-                    height = maxSize;
-                  } else if (imageOriginHeight < minSize) {
-                    height = minSize;
+                  final width;
+                  final height;
+
+                  const minSize = 100;
+                  final maxSize = max(
+                      minSize, min(maxPhysicalSize, constraints.maxWidth - 60));
+
+                  final dpi = MediaQuery
+                      .of(context)
+                      .devicePixelRatio;
+                  final imageOriginWidth = sharedVideo.content.width / dpi;
+                  final imageOriginHeight = sharedVideo.content.height / dpi;
+                  if (imageOriginWidth >= imageOriginHeight) {
+                    if (imageOriginWidth > maxSize) {
+                      width = maxSize;
+                    } else if (imageOriginWidth < minSize) {
+                      width = minSize;
+                    } else {
+                      width = imageOriginWidth;
+                    }
+                    height = width / imageOriginWidth * imageOriginHeight;
                   } else {
-                    height = imageOriginHeight;
+                    if (imageOriginHeight > maxSize) {
+                      height = maxSize;
+                    } else if (imageOriginHeight < minSize) {
+                      height = minSize;
+                    } else {
+                      height = imageOriginHeight;
+                    }
+                    width = height / imageOriginHeight * imageOriginWidth;
                   }
-                  width = height / imageOriginHeight * imageOriginWidth;
+
+                  return SizedBox(
+                    width: width * 1.0,
+                    height: height * 1.0,
+                    child: ClipRRect(
+                        borderRadius: const BorderRadius.all(Radius.circular(
+                            10)),
+                        child: content),
+                  );
                 }
-                return SizedBox(
-                  width: width * 1.0,
-                  height: height * 1.0,
-                  child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                      child: content),
-                );
               }),
             ),
           ),
@@ -287,6 +306,6 @@ class ShareVideoBubbleState extends State<ShareVideoBubble> {
 
   Widget _buildInlineVideoPlayer(String videoUri, bool preview) {
     return AspectRatioVideo(
-        key: _videoWidget, videoPath: videoUri, preview: preview);
+        key: ValueKey(videoUri), videoPath: videoUri, preview: preview);
   }
 }
