@@ -856,13 +856,12 @@ packages:
     source: hosted
     version: "3.0.3"
   image_picker_ios:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "packages/image_picker/image_picker_ios"
-      ref: fd4226f343a75586545cd6ab09902e3409383ad8
-      resolved-ref: fd4226f343a75586545cd6ab09902e3409383ad8
-      url: "https://github.com/heiha100/packages"
-    source: git
+      name: image_picker_ios
+      sha256: "917a5cadd67d052554cfb258595e54217de53fac5b52939426e26319a02e6297"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.8.9+2"
   image_picker_linux:
     dependency: transitive

@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/domain/settings/SettingsRepo.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/bonjour_impl.dart';
 import 'package:flix/network/nearby_service_info.dart';
+import 'package:flix/presentation/widgets/settings/settings_item_wrapper.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/device_info_helper.dart' as deviceUtils;
 import 'package:flix/utils/iterable_extension.dart';
@@ -53,6 +55,13 @@ class DeviceManager {
     _watchHistory();
     this.apInterface.listenPong((pong) {
       _onDeviceDiscover(pong.from);
+    });
+    SettingsRepo.instance.enableMdnsStream.stream.listen((enableMdns) {
+      if (enableMdns) {
+        startBonjourScanService();
+      } else {
+        bonjourApi.stop();
+      }
     });
     startScan();
   }
@@ -108,32 +117,43 @@ class DeviceManager {
   }
 
   Future<void> startScan() async {
-    // await multiCastApi.startScan(
-    //     MultiCastUtil.defaultMulticastGroup, MultiCastUtil.defaultPort,
-    //     (deviceModal, needPong) {
-    //   if (needPong) {
-    //     multiCastApi.pong(deviceModal);
-    //     getDeviceModal()
-    //         .then((value) => apInterface.pong(value, deviceModal));
-    //   }
-    //   _onDeviceDiscover(deviceModal);
-    // });
-    // unawaited(multiCastApi.ping());
-    unawaited(bonjourApi.startScan("", 0, (DeviceModal deviceModal, bool needPong) {
+    await multiCastApi.startScan(
+        MultiCastUtil.defaultMulticastGroup, defaultPort,
+        (deviceModal, needPong) {
+      if (needPong) {
+        multiCastApi.pong(deviceModal);
+        getDeviceModal()
+            .then((value) => apInterface.pong(value, deviceModal));
+      }
       _onDeviceDiscover(deviceModal);
-    }));
+    });
+    unawaited(multiCastApi.ping());
+
+    if (await SettingsRepo.instance.getEnableMdnsAsync()) {
+      await startBonjourScanService();
+    }
+
+  }
+
+  Future<void> startBonjourScanService() async {
+     await bonjourApi.startScan("", 0, (DeviceModal deviceModal, bool needPong) {
+      _onDeviceDiscover(deviceModal);
+    });
     unawaited(bonjourApi.ping());
   }
 
   Future<void> stop() async {
-    // multiCastApi.stop();
+    multiCastApi.stop();
+    // always stop bonjour service
     bonjourApi.stop();
   }
 
 
   Future<void> ping() async {
-    // await multiCastApi.ping();
-    unawaited(bonjourApi.ping());
+    multiCastApi.ping();
+    if (await SettingsRepo.instance.getEnableMdnsAsync()) {
+      bonjourApi.ping();
+    }
   }
 
   void _onDeviceDiscover(DeviceModal deviceModal) {

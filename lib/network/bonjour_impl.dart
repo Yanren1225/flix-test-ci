@@ -41,6 +41,10 @@ class BonjourImpl extends MultiCastApi {
 
   @override
   Future<void> stop() async {
+    if (isStart) {
+      await discovery?.stop();
+      isStart = false;
+    }
     if (isPing) {
       await broadcast?.stop();
       isPing = false;
@@ -83,12 +87,12 @@ class BonjourImpl extends MultiCastApi {
     discovery?.eventStream!.listen((event) {
       // `eventStream` is not null as the discovery instance is "ready" !
       if (event.type == BonsoirDiscoveryEventType.discoveryServiceFound) {
-        talker.debug('===+++ Service found : ${event.service?.toJson()}');
+        talker.debug('mDns Service found : ${event.service?.toJson()}');
         event.service!.resolve(discovery!
             .serviceResolver); // Should be called when the user wants to connect to this service.
       } else if (event.type ==
           BonsoirDiscoveryEventType.discoveryServiceResolved) {
-        talker.debug('===+++ Service resolved : ${event.service?.toJson()}');
+        talker.debug('mDns Service resolved : ${event.service?.toJson()}');
         final remoteService = event.service as ResolvedBonsoirService;
         if (remoteService != null) {
           // final alias = remoteService.name;
@@ -116,7 +120,7 @@ class BonjourImpl extends MultiCastApi {
           }
         }
       } else if (event.type == BonsoirDiscoveryEventType.discoveryServiceLost) {
-        talker.debug('===+++ Service lost : ${event.service?.toJson()}');
+        talker.debug('mDns Service lost : ${event.service?.toJson()}');
       }
     });
 

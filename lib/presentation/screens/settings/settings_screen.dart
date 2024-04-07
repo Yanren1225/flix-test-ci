@@ -170,6 +170,42 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
+            const Padding(
+              padding: EdgeInsets.only(left: 20, top: 20, right: 20),
+              child: Text(
+                '实验模式',
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.normal,
+                    color: Color.fromRGBO(60, 60, 67, 0.6)),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
+              child: SettingsItemWrapper(
+                topRadius: true,
+                bottomRadius: !showCustomSaveDir,
+                child: StreamBuilder<bool>(
+                  initialData: SettingsRepo.instance.enableMdns,
+                  stream: SettingsRepo.instance.enableMdnsStream.stream,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                    return SwitchableItem(
+                      label: '启用新的设备发现方式',
+                      des: '开启后可解决开热点后无法发现设备的问题。若遇到兼容问题，请尝试关闭此开关，并反馈给我们❤️',
+                      checked: snapshot.data ?? false,
+                      onChanged: (value) {
+                        setState(() {
+                          if (value != null) {
+                            SettingsRepo.instance.setEnableMdns(value);
+                          }
+                        });
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
             Visibility(
               visible: Platform.isIOS || Platform.isAndroid,
               child: Column(

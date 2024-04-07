@@ -95,6 +95,8 @@ Future<void> main() async {
           talker.error('isServerLiving error', error, stackTrace));
       // ShipService.instance.startShipServer();
       DeviceManager.instance.startScan();
+    } else if (msg == 'AppLifecycleState.paused') {
+      DeviceManager.instance.stop();
     }
     return msg;
   });
