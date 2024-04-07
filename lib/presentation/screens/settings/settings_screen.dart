@@ -221,7 +221,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                                 width: double.infinity,
                                 child: const Text(
                                   textAlign: TextAlign.center,
-                                  '删除所有数据',
+                                  '清除缓存',
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
