@@ -196,11 +196,14 @@ class ShipService extends ApInterface {
                   throw ArgumentError('filename can\'t be null');
                 }
 
-                await Permission.storage.onGrantedCallback(() async {
-                  await saveFileAndAddBubble(desDir, formData, bubble!);
-                }).onDeniedCallback(() {
-                  talker.debug("_receiveFile storage permission denied");
-                }).request();
+                if (Platform.isAndroid) {
+                  await Permission.storage.onGrantedCallback(() async {
+                    await saveFileAndAddBubble(desDir, formData, bubble!);
+                  }).onDeniedCallback(() {
+                    talker.debug("_receiveFile storage permission denied");
+                  }).request();
+                }
+
                 // });
               } on Error catch (e) {
                 talker.error('receive file error: ', e);
