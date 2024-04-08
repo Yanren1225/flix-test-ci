@@ -84,7 +84,7 @@ class BonjourImpl extends MultiCastApi {
     await discovery?.ready;
 
 // If you want to listen to the discovery :
-    discovery?.eventStream!.listen((event) {
+    discovery?.eventStream?.listen((event) {
       // `eventStream` is not null as the discovery instance is "ready" !
       if (event.type == BonsoirDiscoveryEventType.discoveryServiceFound) {
         talker.debug('mDns Service found : ${event.service?.toJson()}');
@@ -125,7 +125,7 @@ class BonjourImpl extends MultiCastApi {
     });
 
 // Start the discovery **after** listening to discovery events :
-    discovery?.start();
+    await discovery?.start();
 
 // ...
 

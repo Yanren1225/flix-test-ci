@@ -52,83 +52,89 @@ final receptionNotificationStream = StreamController<MessageNotification>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isMacOS || Platform.isIOS || Platform.isAndroid) {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-    PlatformDispatcher.instance.onError = (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack,
-          fatal: true, information: ['asynchronous errors']);
-      return true;
-    };
-  }
-
-  if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
-    await windowManager.ensureInitialized();
-    windowManager.setMinimumSize(const Size(400, 400));
-  }
-
-  NotificationService.instance.init();
-  ShipService.instance.startShipServer();
-  await DeviceManager.instance.init(ShipService.instance);
-
-  await _initNotification();
-
-  _logAppContext();
-
-  SystemChannels.lifecycle.setMessageHandler((msg) async {
-    talker.verbose('AppLifecycle $msg ${msg}');
-    // msg是个字符串，是下面的值
-    // AppLifecycleState.resumed
-    // AppLifecycleState.inactive
-    // AppLifecycleState.paused
-    // AppLifecycleState.detached
-
-    if (msg == 'AppLifecycleState.resumed') {
-      talker.verbose('App resumed');
-      ShipService.instance.isServerLiving().then((isServerLiving) {
-        talker.debug('isServerLiving: $isServerLiving');
-        if (!isServerLiving) {
-          ShipService.instance.restartShipServer();
-        }
-      }).catchError((error, stackTrace) =>
-          talker.error('isServerLiving error', error, stackTrace));
-      // ShipService.instance.startShipServer();
-      DeviceManager.instance.startScan();
-    } else if (msg == 'AppLifecycleState.paused') {
-      DeviceManager.instance.stop();
+  try {
+    if (Platform.isMacOS || Platform.isIOS || Platform.isAndroid) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+      PlatformDispatcher.instance.onError = (error, stack) {
+        FirebaseCrashlytics.instance.recordError(error, stack,
+            fatal: true, information: ['asynchronous errors']);
+        return true;
+      };
     }
-    return msg;
-  });
 
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        // 设置为透明
-        statusBarBrightness: Brightness.light,
-        systemStatusBarContrastEnforced: false,
-        // 在状态栏上的图标和文字颜色为深色
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarContrastEnforced: false,
-        systemNavigationBarIconBrightness: Brightness.dark),
-  );
+    if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
+      await windowManager.ensureInitialized();
+      windowManager.setMinimumSize(const Size(400, 400));
+    }
 
-  if (kDebugMode) {
-    PluginManager.instance // Register plugin kits
-      ..register(const WidgetInfoInspector())
-      ..register(const ColorSucker())
-      ..register(AlignRuler())
+    NotificationService.instance.init();
+    ShipService.instance.startShipServer();
+    await DeviceManager.instance.init(ShipService.instance);
+
+    await _initNotification();
+
+    _logAppContext();
+
+    SystemChannels.lifecycle.setMessageHandler((msg) async {
+      talker.verbose('AppLifecycle $msg ${msg}');
+      // msg是个字符串，是下面的值
+      // AppLifecycleState.resumed
+      // AppLifecycleState.inactive
+      // AppLifecycleState.paused
+      // AppLifecycleState.detached
+
+      if (msg == 'AppLifecycleState.resumed') {
+        talker.verbose('App resumed');
+        ShipService.instance.isServerLiving().then((isServerLiving) {
+          talker.debug('isServerLiving: $isServerLiving');
+          if (!isServerLiving) {
+            ShipService.instance.restartShipServer();
+          }
+        }).catchError((error, stackTrace) =>
+            talker.error('isServerLiving error', error, stackTrace));
+        // ShipService.instance.startShipServer();
+        DeviceManager.instance.startScan();
+      } else if (msg == 'AppLifecycleState.paused') {
+        DeviceManager.instance.stop();
+      }
+      return msg;
+    });
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          // 设置为透明
+          statusBarBrightness: Brightness.light,
+          systemStatusBarContrastEnforced: false,
+          // 在状态栏上的图标和文字颜色为深色
+          statusBarIconBrightness: Brightness.dark,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarContrastEnforced: false,
+          systemNavigationBarIconBrightness: Brightness.dark),
+    );
+
+    if (kDebugMode) {
+      PluginManager.instance // Register plugin kits
+        ..register(const WidgetInfoInspector())
+        ..register(const ColorSucker())
+        ..register(AlignRuler())
       // ..register(const ColorPicker())                            // New feature
-      ..register(const TouchIndicator())
-      ..register(Console()); // Pass in your Dio instance
-    // After flutter_ume 0.3.0
-    runApp(const UMEWidget(child: const MyApp(), enable: true));
-  } else {
-    runApp(const MyApp());
+        ..register(const TouchIndicator())
+        ..register(Console()); // Pass in your Dio instance
+      // After flutter_ume 0.3.0
+      runApp(const UMEWidget(child: const MyApp(), enable: true));
+    } else {
+      runApp(const MyApp());
+    }
+  } catch (e, stackTrace) {
+    talker.error('launch error', e, stackTrace);
+    runApp(const Placeholder());
   }
+
 }
 
 void _logAppContext() {
