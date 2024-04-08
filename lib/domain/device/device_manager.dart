@@ -60,7 +60,7 @@ class DeviceManager {
       if (enableMdns) {
         await startBonjourScanService();
       } else {
-        await bonjourApi.stop();
+        await bonjourApi.forceStop();
         clearDevices();
         await startScan();
       }

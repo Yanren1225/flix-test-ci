@@ -46,23 +46,33 @@ class BonjourImpl extends MultiCastApi {
   @override
   Future<void> stop() async {
     if (!Platform.isWindows) {
+      await forceStop();
+    }
+  }
+
+  Future<void> forceStop() async {
+    await m.protect(() async {
       try {
-        await m.protect(() async {
-          if (isStart) {
-            await discovery?.stop();
-            isStart = false;
-          }
-          if (isPing) {
-            await broadcast?.stop();
-            isPing = false;
-          }
-        });
+        if (isStart) {
+          await discovery?.stop();
+          isStart = false;
+        }
       } catch (e, stackTrace) {
         talker.error('mDns stop failed', e, stackTrace);
       }
-    }
+      try {
+        if (isPing) {
+          await broadcast?.stop();
+          isPing = false;
+        }
+      } catch (e, stackTrace) {
+        talker.error('mDns stop failed', e, stackTrace);
+      }
+    });
 
   }
+
+
 
   @override
   Future<void> ping() async {
