@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bonsoir/bonsoir.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -8,6 +10,7 @@ import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/utils/iterable_extension.dart';
 import 'package:mutex/mutex.dart';
 
+// Windows反复启动mdns会crash
 class BonjourImpl extends MultiCastApi {
   static const SERVICE_TYPE = "_flix-trans._tcp";
 
@@ -42,20 +45,23 @@ class BonjourImpl extends MultiCastApi {
 
   @override
   Future<void> stop() async {
-    try {
-      await m.protect(() async {
-        if (isStart) {
-          await discovery?.stop();
-          isStart = false;
-        }
-        if (isPing) {
-          await broadcast?.stop();
-          isPing = false;
-        }
-      });
-    } catch (e, stackTrace) {
-      talker.error('mDns stop failed', e, stackTrace);
+    if (!Platform.isWindows) {
+      try {
+        await m.protect(() async {
+          if (isStart) {
+            await discovery?.stop();
+            isStart = false;
+          }
+          if (isPing) {
+            await broadcast?.stop();
+            isPing = false;
+          }
+        });
+      } catch (e, stackTrace) {
+        talker.error('mDns stop failed', e, stackTrace);
+      }
     }
+
   }
 
   @override
@@ -63,6 +69,7 @@ class BonjourImpl extends MultiCastApi {
     try {
       m.protect(() async {
         if (isPing) {
+          if (Platform.isWindows) return;
           await broadcast?.stop();
           isPing = false;
         }
@@ -88,6 +95,7 @@ class BonjourImpl extends MultiCastApi {
     try {
       m.protect(() async {
         if (isStart) {
+          if (Platform.isWindows) return;
           await discovery?.stop();
           isStart = false;
         }
