@@ -145,8 +145,8 @@ extension AssetEntityExtension on AssetEntity {
         mimeType: await this.mimeTypeAsync ?? 'application/octet-stream',
         nameWithSuffix: title,
         size: await file?.length() ?? 0,
-        width: this.width,
-        height: this.height);
+        width: this.orientatedWidth,
+        height: this.orientatedHeight);
   }
 }
 
