@@ -49,23 +49,38 @@ class ConcertScreen extends StatelessWidget {
         return ValueListenableBuilder(
           valueListenable: concertProvider.deviceName,
           builder: (_context, value, child) {
-            return NavigationScaffold(
-                showBackButton: showBackButton,
-                title: value,
-                isEditing: concertProvider.isEditing,
-                editTitle: '退出多选',
-                onExitEditing: () {
-                  concertProvider.existEditing();
-                },
-                builder: (padding) {
-                  return ShareConcertMainView(
-                    key: concertProvider.concertMainKey,
-                    deviceInfo: concertProvider.deviceInfo,
-                    padding: padding,
-                    anchor: anchor,
-                    playable: playable,
-                  );
-                });
+            return PopScope(
+              canPop: false,
+              onPopInvoked: (didPop) {
+                if (!didPop) {
+                  Future.delayed(Duration.zero, () {
+                    if (concertProvider.isEditing) {
+                      concertProvider.existEditing();
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  });
+                }
+                // Navigator.pop(context);
+              },
+              child: NavigationScaffold(
+                  showBackButton: showBackButton,
+                  title: value,
+                  isEditing: concertProvider.isEditing,
+                  editTitle: '退出多选',
+                  onExitEditing: () {
+                    concertProvider.existEditing();
+                  },
+                  builder: (padding) {
+                    return ShareConcertMainView(
+                      key: concertProvider.concertMainKey,
+                      deviceInfo: concertProvider.deviceInfo,
+                      padding: padding,
+                      anchor: anchor,
+                      playable: playable,
+                    );
+                  }),
+            );
           },
         );
       },
