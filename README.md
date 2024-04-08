@@ -51,7 +51,7 @@ samples, guidance on mobile development, and a full API reference.
 33. 设备页列表滚动不到底部
 34. 测试mdns
 35. ~~帮助大标题折叠效果和文字太大被裁剪~~
-36. 多选返回
+36. ~~多选返回~~
 37. 不可预览的文件发送完毕删除文件缓存
 
 ## 功能

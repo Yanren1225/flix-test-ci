@@ -445,6 +445,7 @@ class ShipService extends ApInterface {
         if (response.statusCode == 200) {
           talker.debug('发送成功 ${await response.stream.bytesToString()}');
           _updateFileShareState(fileBubble.id, FileState.sendCompleted);
+          _deleteCachedFile(fileBubble, path);
         } else {
           talker.error(
               '发送失败: status code: ${response.statusCode}, ${await response.stream.bytesToString()}');
@@ -456,6 +457,18 @@ class ShipService extends ApInterface {
     } catch (e, stackTrace) {
       talker.error('发送异常: ', e, stackTrace);
       _updateFileShareState(fileBubble.id, FileState.sendFailed);
+    }
+  }
+
+  Future<void> _deleteCachedFile(PrimitiveFileBubble fileBubble, String path) async {
+    try {
+      if (fileBubble.type == BubbleType.File && await isInCacheDir(path)) {
+        talker.info('delete cached file: $path');
+        await File(path).delete();
+        talker.info('delete cached file successfully: $path');
+      }
+    } catch (e, stackTrace) {
+      talker.error('delete cached file failed', e, stackTrace);
     }
   }
 

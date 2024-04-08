@@ -306,6 +306,6 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
 
   Widget _buildInlineVideoPlayer(String videoUri, bool preview) {
     return AspectRatioVideo(
-        key: ValueKey(videoUri), videoPath: videoUri, preview: preview);
+        key: _videoWidget, videoPath: videoUri, preview: preview);
   }
 }
