@@ -109,8 +109,8 @@ class PickActionAreaState extends State<PickActionsArea> {
           if (Platform.isAndroid || Platform.isIOS) {
             final List<AssetEntity>? result = await AssetPicker.pickAssets(
               context,
-              pickerConfig:
-                  const AssetPickerConfig(requestType: RequestType.image, maxAssets: 100),
+              pickerConfig: const AssetPickerConfig(
+                  requestType: RequestType.image, maxAssets: 100),
             );
 
             onPicked([
@@ -148,8 +148,10 @@ class PickActionAreaState extends State<PickActionsArea> {
           if (Platform.isAndroid || Platform.isIOS) {
             final List<AssetEntity>? result = await AssetPicker.pickAssets(
               context,
-              pickerConfig:
-                   AssetPickerConfig(requestType: RequestType.video, maxAssets: 100, filterOptions: FilterOptionGroup(containsLivePhotos: false)),
+              pickerConfig: AssetPickerConfig(
+                  requestType: RequestType.video,
+                  maxAssets: 100,
+                  filterOptions: FilterOptionGroup(containsLivePhotos: false)),
             );
 
             onPicked([

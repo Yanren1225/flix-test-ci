@@ -27,6 +27,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_ume/flutter_ume.dart'; // UME framework
 import 'package:flutter_ume_kit_console/flutter_ume_kit_console.dart'; // Show debugPrint
@@ -192,9 +193,12 @@ class MyAppState extends State<MyApp> {
         title: 'Flix',
         navigatorObservers: [modalsRouteObserver],
         localizationsDelegates: <LocalizationsDelegate<dynamic>>[
-          DefaultMaterialLocalizations.delegate,
-          DefaultWidgetsLocalizations.delegate,
-          DefaultCupertinoLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+          Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN'),
         ],
         theme: ThemeData(
           // This is the theme of your application.

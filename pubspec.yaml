@@ -98,6 +98,8 @@ dependencies:
   pasteboard: ^0.2.0
   wechat_assets_picker: ^9.0.2
   bonsoir: ^5.1.9
+  flutter_localizations:
+    sdk: flutter
 
       # thumbnailer: ^2.2.0
 
