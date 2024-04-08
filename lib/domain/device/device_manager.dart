@@ -56,11 +56,13 @@ class DeviceManager {
     this.apInterface.listenPong((pong) {
       _onDeviceDiscover(pong.from);
     });
-    SettingsRepo.instance.enableMdnsStream.stream.listen((enableMdns) {
+    SettingsRepo.instance.enableMdnsStream.stream.listen((enableMdns) async {
       if (enableMdns) {
-        startBonjourScanService();
+        await startBonjourScanService();
       } else {
-        bonjourApi.stop();
+        await bonjourApi.stop();
+        clearDevices();
+        await startScan();
       }
     });
     startScan();
