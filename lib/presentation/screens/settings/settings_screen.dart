@@ -203,59 +203,56 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-            Visibility(
-              visible: Platform.isIOS || Platform.isAndroid,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 20, top: 20, right: 20),
-                    child: Text(
-                      '其他',
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.normal,
-                          color: Color.fromRGBO(60, 60, 67, 0.6)),
-                    ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 20, top: 20, right: 20),
+                  child: Text(
+                    '其他',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal,
+                        color: Color.fromRGBO(60, 60, 67, 0.6)),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 16, top: 4, right: 16, bottom: 16),
-                    child: InkWell(
-                      onTap: () {
-                        showConfirmDeleteCacheBottomSheet();
-                      },
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                            color: Color.fromRGBO(255, 59, 48, 1),
-                            borderRadius: BorderRadius.circular(14)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(14),
-                          child: StreamBuilder<bool>(
-                            initialData: SettingsRepo.instance.autoReceive,
-                            stream:
-                            SettingsRepo.instance.autoReceiveStream.stream,
-                            builder: (BuildContext context,
-                                AsyncSnapshot<bool> snapshot) {
-                              return const SizedBox(
-                                width: double.infinity,
-                                child: const Text(
-                                  textAlign: TextAlign.center,
-                                  '清除缓存',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.normal),
-                                ),
-                              );
-                            },
-                          ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 16, top: 4, right: 16, bottom: 16),
+                  child: InkWell(
+                    onTap: () {
+                      showConfirmDeleteCacheBottomSheet();
+                    },
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                          color: Color.fromRGBO(255, 59, 48, 1),
+                          borderRadius: BorderRadius.circular(14)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: StreamBuilder<bool>(
+                          initialData: SettingsRepo.instance.autoReceive,
+                          stream:
+                          SettingsRepo.instance.autoReceiveStream.stream,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<bool> snapshot) {
+                            return const SizedBox(
+                              width: double.infinity,
+                              child: const Text(
+                                textAlign: TextAlign.center,
+                                '清除缓存',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
 
             Visibility(

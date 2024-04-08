@@ -52,7 +52,8 @@ samples, guidance on mobile development, and a full API reference.
 34. 测试mdns
 35. ~~帮助大标题折叠效果和文字太大被裁剪~~
 36. ~~多选返回~~
-37. 不可预览的文件发送完毕删除文件缓存
+37. ~~不可预览的文件发送完毕删除文件缓存~~
+38. 图片预览宽高错误
 
 ## 功能
 单击消息，打开文件
