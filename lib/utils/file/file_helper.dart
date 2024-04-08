@@ -173,7 +173,7 @@ Future deleteCache() async {
   _deleteFilesInDir(cacheDir);
 }
 
-Future<bool> isInCacheDir(String path) async {
+Future<bool> isInCacheOrTmpDir(String path) async {
   if (Platform.isIOS) {
     final Directory directory = await getApplicationDocumentsDirectory();
     String tmpPath = "${directory.parent.path}/tmp/";
@@ -184,6 +184,10 @@ Future<bool> isInCacheDir(String path) async {
 
   final cacheDir = await getApplicationCacheDirectory();
   return path.toLowerCase().startsWith(cacheDir.path.toLowerCase());
+}
+
+Future<String> getCachePath() async {
+  return (await getApplicationCacheDirectory()).path;
 }
 
 Future<void> _deleteFilesInDir(Directory dir) async {

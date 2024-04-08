@@ -462,7 +462,7 @@ class ShipService extends ApInterface {
 
   Future<void> _deleteCachedFile(PrimitiveFileBubble fileBubble, String path) async {
     try {
-      if (fileBubble.type == BubbleType.File && await isInCacheDir(path)) {
+      if (fileBubble.type == BubbleType.File && await isInCacheOrTmpDir(path)) {
         talker.info('delete cached file: $path');
         await File(path).delete();
         talker.info('delete cached file successfully: $path');

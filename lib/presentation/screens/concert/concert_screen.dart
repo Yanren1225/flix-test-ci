@@ -18,6 +18,7 @@ import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bot
 import 'package:flix/presentation/widgets/bubble_context_menu/multi_select_actions.dart';
 import 'package:flix/presentation/widgets/pick_actions.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
+import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -486,7 +487,23 @@ class InputAreaState extends State<InputArea> {
             });
         return;
       }
+      final imageBytes = await Pasteboard.image;
+      if (imageBytes != null) {
+        final cachePath = await getCachePath();
+        final imageFile = await createFile(cachePath, '$cachePath/${Uuid().v4()}.jpg');
+        await imageFile.writeAsBytes(imageBytes);
+        showCupertinoModalPopup(
+            context: context,
+            builder: (_) {
+              return FilesConfirmBottomSheet(
+                  deviceInfo: deviceInfo, files: [XFile(imageFile.path)]);
+            });
+        return;
+      }
+ 
     }
+    
+    
 
 
     final text = await Pasteboard.text;
