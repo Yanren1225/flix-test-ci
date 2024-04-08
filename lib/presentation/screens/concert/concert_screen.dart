@@ -490,7 +490,7 @@ class InputAreaState extends State<InputArea> {
       final imageBytes = await Pasteboard.image;
       if (imageBytes != null) {
         final cachePath = await getCachePath();
-        final imageFile = await createFile(cachePath, '$cachePath/${Uuid().v4()}.jpg');
+        final imageFile = await createFile(cachePath, '${Uuid().v4()}.jpg');
         await imageFile.writeAsBytes(imageBytes);
         showCupertinoModalPopup(
             context: context,
