@@ -30,10 +30,12 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
   Widget build(BuildContext context) {
     return CupertinoNavigationScaffold(
       title: '软件帮助',
-      isSliverChild: false,
+      isSliverChild: true,
       padding: 10,
       enableRefresh: false,
-      child: Column(
+      child: SliverList.builder(
+        itemCount: 1,
+        itemBuilder: (context, index) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -70,7 +72,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
             child: QA(question: '传输文件会消耗流量吗？', answer: '不会。'),
           ),
         ],
-      ),
+      )),
     );
   }
 }

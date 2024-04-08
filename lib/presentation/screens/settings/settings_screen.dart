@@ -64,9 +64,6 @@ class SettingsScreenState extends State<SettingsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 20,
-            ),
             Padding(
               padding: const EdgeInsets.only(left: 16, right: 16),
               child: ClickableItem(

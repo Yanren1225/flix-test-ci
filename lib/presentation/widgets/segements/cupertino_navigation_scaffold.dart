@@ -80,6 +80,7 @@ class CupertinoNavigationScalffoldState
           padding: const EdgeInsets.only(top: 32, left: 20),
           child: SuperTitle(title: title),
         ),
+        height: 40 + MediaQuery.of(context).textScaler.scale(36),
         onFolded: (_isFolded) {
           if (_isFolded != isFolded.value) {
             isFolded.value = _isFolded;

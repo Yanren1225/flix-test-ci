@@ -6,15 +6,17 @@ import 'package:flutter/rendering.dart';
 
 class CustomSliverHeader extends StatelessWidget {
   final Widget lagerTitle;
+  final double height;
   final Function(bool isFolded) onFolded;
 
   const CustomSliverHeader(
-      {super.key, required this.lagerTitle, required this.onFolded});
+      {super.key, required this.lagerTitle, required this.height, required this.onFolded});
 
   @override
   Widget build(BuildContext context) {
     return _LargeTitle(
       child: lagerTitle,
+      height: height,
       onFolded: onFolded,
     );
   }
@@ -22,35 +24,37 @@ class CustomSliverHeader extends StatelessWidget {
 
 class _LargeTitle extends SingleChildRenderObjectWidget {
   final Function(bool isFolded) onFolded;
+  final double height;
 
-  _LargeTitle({super.key, required super.child, required this.onFolded});
+  _LargeTitle({super.key, required super.child, required this.height, required this.onFolded});
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return _LargeTitleAdapter(onFolded);
+    return _LargeTitleAdapter(height: height, onFolded: onFolded);
   }
 }
 
 class _LargeTitleAdapter extends RenderSliverSingleBoxAdapter {
-  final hei = 76.0;
+  final double height;
   var _isFolded = false;
   final Function(bool isFolded) onFolded;
 
-  _LargeTitleAdapter(this.onFolded);
+  _LargeTitleAdapter({required this.height, required this.onFolded});
 
   @override
   void performLayout() {
+
     // 滑动距离大于_visibleExtent时则表示子节点已经在屏幕之外了
     if (child == null) {
       _setFolded(true);
-      geometry = SliverGeometry(scrollExtent: hei);
+      geometry = SliverGeometry(scrollExtent: height);
       return;
     }
 
-    if (constraints.scrollOffset > hei) {
+    if (constraints.scrollOffset > height) {
       _setFolded(true);
       return;
-    } else if ((constraints.scrollOffset + constraints.overlap > hei)) {
+    } else if ((constraints.scrollOffset + constraints.overlap > height)) {
       _setFolded(true);
     } else {
       _setFolded(false);
@@ -60,33 +64,33 @@ class _LargeTitleAdapter extends RenderSliverSingleBoxAdapter {
     //     'scrollOffset ${constraints.scrollOffset}, ${constraints.overlap}');
 
     if (constraints.scrollOffset < 0 || constraints.overlap < 0) {
-      child?.layout(constraints.asBoxConstraints(maxExtent: hei),
+      child?.layout(constraints.asBoxConstraints(maxExtent: height),
           parentUsesSize: false);
       geometry = SliverGeometry(
-        scrollExtent: hei,
+        scrollExtent: height,
         paintOrigin: constraints.overlap,
-        paintExtent: hei,
-        maxPaintExtent: hei,
-        layoutExtent: hei,
+        paintExtent: height,
+        maxPaintExtent: height,
+        layoutExtent: height,
       );
     } else {
-      double paintExtent = hei - constraints.scrollOffset;
+      double paintExtent = height - constraints.scrollOffset;
       // paintExtent = min(paintExtent, constraints.remainingPaintExtent);
 
       child!.layout(
-        constraints.asBoxConstraints(maxExtent: hei),
+        constraints.asBoxConstraints(maxExtent: height),
         parentUsesSize: false,
       );
 
       //最大为_visibleExtent，最小为 0
-      double layoutExtent = min(hei, paintExtent);
+      double layoutExtent = min(height, paintExtent);
 
       //设置geometry，Viewport 在布局时会用到
       geometry = SliverGeometry(
-          scrollExtent: hei,
+          scrollExtent: height,
           paintOrigin: -constraints.scrollOffset,
           paintExtent: paintExtent,
-          maxPaintExtent: hei,
+          maxPaintExtent: height,
           layoutExtent: layoutExtent,
           hasVisualOverflow: true);
     }
