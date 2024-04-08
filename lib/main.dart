@@ -70,11 +70,12 @@ Future<void> main() async {
       windowManager.setMinimumSize(const Size(400, 400));
     }
 
+    await _initNotification();
+
+
     NotificationService.instance.init();
     ShipService.instance.startShipServer();
     await DeviceManager.instance.init(ShipService.instance);
-
-    await _initNotification();
 
     _logAppContext();
 
