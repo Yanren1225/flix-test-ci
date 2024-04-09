@@ -1,5 +1,6 @@
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/BadgeService.dart';
 import 'package:flix/model/notification/reception_notification.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
@@ -46,6 +47,8 @@ class NotificationService {
           if (granted) {
             callback();
           }
+        }).catchError((error) {
+          talker.error('requestNotificationPermissions error', error);
         });
       }
     });

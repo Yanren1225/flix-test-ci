@@ -36,7 +36,7 @@ abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
               bubble.content.state == FileState.waitToAccepted) {
             if (!isCheckingPermission) {
               isCheckingPermission = true;
-              await checkStoragePermission(context);
+              await checkStoragePermissionOnOldPlatform(context);
               isCheckingPermission = false;
             } else {
               talker.debug('isCheckingPermission, ignore this request');
@@ -54,7 +54,29 @@ abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
   }
 }
 
-Future<bool> checkStoragePermission(BuildContext context) async {
+Future<bool> checkStoragePermission(BuildContext? context, {bool manageExternalStorage = false}) async {
+  if (Platform.isAndroid) {
+    DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    final androidInfo = await deviceInfoPlugin.androidInfo;
+    if (androidInfo.version.sdkInt >= 30) {
+      if (manageExternalStorage) {
+        if (await Permission.manageExternalStorage.isDenied) {
+          await Permission.manageExternalStorage.request();
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return true;
+      }
+    } else {
+      return await checkStoragePermissionOnOldPlatform(context);
+    }
+  }
+  return true;
+}
+
+Future<bool> checkStoragePermissionOnOldPlatform(BuildContext? context) async {
   return await checkPermission(context, [Permission.storage], '存储权限', '接收文件需要设备的存储权限');
 }
 
@@ -66,54 +88,60 @@ Future<bool> checkVideosPermission(BuildContext context) async {
   return await checkPermission(context, [Permission.videos], '访问视频权限', '选择视频需要获取设备的访问视频权限');
 }
 
-Future<bool> checkPermission(BuildContext context, List<Permission> permissions, String title, String subTitle) async {
+Future<bool> checkPermission(BuildContext? context, List<Permission> permissions, String title, String subTitle) async {
   return await _checkPermission(context, permissions, title, subTitle);
 }
 
-Future<bool> _checkPermission(BuildContext context, List<Permission> permissions, String title, String subTitle, {int requestCount = 0}) async {
+Future<bool> _checkPermission(BuildContext? context, List<Permission> permissions, String title, String subTitle, {int requestCount = 0}) async {
   if (Platform.isAndroid) {
+    try {
+      bool isGranted = await isAllGranted(permissions);
 
-    bool isGranted = await isAllGranted(permissions);
+      if (isGranted) {
+        return true;
+      }
 
-    if (isGranted) {
+      bool isPermanentlyDenied = await isAnyPermanentlyDenied(permissions);
+
+      // 无权限，但未禁止申请，直接申请
+      if (!isGranted && !isPermanentlyDenied) {
+        isGranted = await requestAllPermissions(permissions);
+      }
+
+      // isGranted = await isAllGranted(permissions);
+      // talker.debug('storage permission to $isGranted');
+
+      if (!isGranted) {
+        talker.error('$permissions permission permanently denied');
+        if (context != null) {
+          await showCupertinoModalPopup(
+              context: context,
+              builder: (_context) {
+                return PermissionBottomSheet(title: title, subTitle: subTitle, onConfirm: () async {
+                  if (requestCount >= 2 || await isAnyPermanentlyDenied(permissions)) {
+                    await _openAppSettings();
+                  } else {
+                    await _checkPermission(context, permissions, title, subTitle, requestCount: ++requestCount);
+                  }
+                });
+              });
+        }
+
+        return false;
+      }
       return true;
-    }
-
-    bool isPermanentlyDenied = await isAnyPermanentlyDenied(permissions);
-
-    // 无权限，但未禁止申请，直接申请
-    if (!isGranted && !isPermanentlyDenied) {
-      isGranted = await requestAllPermissions(permissions);
-    }
-
-    // isGranted = await isAllGranted(permissions);
-    // talker.debug('storage permission to $isGranted');
-
-    if (!isGranted) {
-      talker.error('$permissions permission permanently denied');
-      await showCupertinoModalPopup(
-          context: context,
-          builder: (_context) {
-            return PermissionBottomSheet(title: title, subTitle: subTitle, onConfirm: () async {
-              if (requestCount >= 2 || await isAnyPermanentlyDenied(permissions)) {
-                await _openAppSettings();
-              } else {
-                await _checkPermission(context, permissions, title, subTitle, requestCount: ++requestCount);
-              }
-            });
-          });
+    } catch (e, stackTrace) {
+      talker.error('request permission: $permissions failed', e, stackTrace);
       return false;
     }
-    return true;
   }
-
   return true;
 }
 
 Future<bool> requestAllPermissions(List<Permission> permissions) async {
   for (var permission in permissions) {
     var permissionStatus = await permission.request();
-    if (!permissionStatus.isGranted) return  false;
+    if (!permissionStatus.isGranted) return false;
     talker.debug(
         'permission permissionStatus $permissionStatus');
   }

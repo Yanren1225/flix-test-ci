@@ -54,6 +54,7 @@ samples, guidance on mobile development, and a full API reference.
 36. ~~多选返回~~
 37. ~~不可预览的文件发送完毕删除文件缓存~~
 38. 图片预览宽高错误
+39. iOS dsym没有正确上传到firebase
 
 ## 功能
 单击消息，打开文件

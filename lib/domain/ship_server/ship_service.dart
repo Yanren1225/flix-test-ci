@@ -16,6 +16,7 @@ import 'package:flix/network/multicast_util.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
+import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/utils/bubble_convert.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/stream_cancelable.dart';
@@ -200,16 +201,14 @@ class ShipService extends ApInterface {
                 }
 
                 if (Platform.isAndroid) {
-                  await Permission.storage.onGrantedCallback(() async {
+                  if (await checkStoragePermission(null)) {
                     await saveFileAndAddBubble(desDir, formData, bubble!);
-                  }).onDeniedCallback(() {
+                  } else {
                     talker.debug("_receiveFile storage permission denied");
-                  }).request();
+                  }
                 } else {
                   await saveFileAndAddBubble(desDir, formData, bubble!);
                 }
-
-                // });
               } on Error catch (e) {
                 talker.error('receive file error: ', e);
                 final updatedBubble = bubble.copy(

@@ -128,19 +128,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                         topRadius: false,
                         bottomRadius: true,
                         onClick: () async {
-                          if (Platform.isAndroid) {
-                            DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-                            final androidInfo = await deviceInfoPlugin.androidInfo;
-                            if (androidInfo.version.sdkInt >= 30) {
-                              if (await Permission.manageExternalStorage.isDenied) {
-                                await Permission.manageExternalStorage.request();
-                                return;
-                              }
-                            } else {
-                              if (!(await checkStoragePermission(context))) {
-                                return;
-                              }
-                            }
+                          if (!(await checkStoragePermission(context, manageExternalStorage: true))) {
+                            return;
                           }
 
                           final String initialDirectory;

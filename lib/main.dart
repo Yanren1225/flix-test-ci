@@ -57,10 +57,20 @@ Future<void> main() async {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+      FlutterError.onError = (FlutterErrorDetails details) async {
+        if (kReleaseMode) {
+          await FirebaseCrashlytics.instance.recordFlutterFatalError;
+        } else {
+          talker.critical(details);
+        }
+      };
       PlatformDispatcher.instance.onError = (error, stack) {
-        FirebaseCrashlytics.instance.recordError(error, stack,
-            fatal: true, information: ['asynchronous errors']);
+        if (kReleaseMode) {
+          FirebaseCrashlytics.instance.recordError(error, stack,
+              fatal: true, information: ['platform errors']);
+        } else {
+          talker.critical('platform errors', error, stack);
+        }
         return true;
       };
     }

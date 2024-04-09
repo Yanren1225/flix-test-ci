@@ -77,7 +77,7 @@ class BonjourImpl extends MultiCastApi {
   @override
   Future<void> ping() async {
     try {
-      m.protect(() async {
+      await m.protect(() async {
         if (isPing) {
           if (Platform.isWindows) return;
           await broadcast?.stop();
@@ -103,7 +103,7 @@ class BonjourImpl extends MultiCastApi {
   Future<void> startScan(String multiGroup, int port,
       DeviceScanCallback deviceScanCallback) async {
     try {
-      m.protect(() async {
+      await m.protect(() async {
         if (isStart) {
           if (Platform.isWindows) return;
           await discovery?.stop();

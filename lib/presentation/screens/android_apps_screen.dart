@@ -106,9 +106,11 @@ class AppsScreenState extends State<AppsScreen> {
     super.initState();
     getInstalledApps().then((apps) {
       talker.debug('loaded apps size: ${apps.length}');
-      setState(() {
-        this.apps = apps;
-      });
+      if (context.mounted) {
+        setState(() {
+          this.apps = apps;
+        });
+      }
     });
   }
 }

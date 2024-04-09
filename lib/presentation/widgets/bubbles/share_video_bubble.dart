@@ -6,6 +6,7 @@ import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/aspect_ratio_video.dart';
 import 'package:flix/presentation/widgets/bubbles/accept_media_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/base_file_bubble.dart';
@@ -152,7 +153,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
         case FileState.waitToAccepted:
           content = InkWell(
             onTap: () {
-              concertProvider.confirmReceive(entity);
+              _confirmReceive(concertProvider);
             },
             child: AcceptMediaWidget(),
           );
@@ -302,6 +303,12 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
         ),
       ],
     );
+  }
+
+  void _confirmReceive(ConcertProvider concertProvider) async {
+    if (await checkStoragePermission(context)) {
+      concertProvider.confirmReceive(entity);
+    }
   }
 
   Widget _buildInlineVideoPlayer(String videoUri, bool preview) {
