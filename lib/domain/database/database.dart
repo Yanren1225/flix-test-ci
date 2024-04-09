@@ -62,12 +62,10 @@ class AppDatabase extends _$AppDatabase {
   MigrationStrategy get migration {
     return MigrationStrategy(
       onUpgrade: (m, from, to) async {
-        if (from == 1 && to == 2) {
-          await migration1_2(m);
-        } else if (from == 1 && to == 3) {
-          await migration1_2(m);
-          await migration2_3(m);
-        } else if (from == 2 && to == 3) {
+        if (from < 2) {
+          migration1_2(m);
+        }
+        if (from < 3) {
           await migration2_3(m);
         }
       },
