@@ -50,7 +50,7 @@
     <string>发现附近的设备</string>
     <key>NSBonjourServices</key>
     <array>
-        <string>_yourApp._tcp</string>
+        <string>_flix-trans._tcp</string>
     </array>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>我们需要访问你的照片库，以便你可以选择图片进行分享。</string>
