@@ -140,7 +140,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
       for (var i = 0; i < primitiveBubbles.length - 1; i++) {
         timeBubbleSource = primitiveBubbles[i + 1];
         if (primitiveBubbles[i + 1]!.time - primitiveBubbles[i]!.time >=
-            5 * 60 ) {
+            3 * 60 * 1000 ) {
           timeBubble = PrimitiveTimeBubble(
               id: timeBubbleSource!.id,
               from: timeBubbleSource.from,
