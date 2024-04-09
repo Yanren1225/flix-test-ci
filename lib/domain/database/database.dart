@@ -16,20 +16,16 @@ import 'package:drift/native.dart';
 
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 
-
-
 part 'database.g.dart'; // the generated code will be there
 
-
-@DriftDatabase(tables: [BubbleEntities, TextContents, FileContents, PersistenceDevices], daos: [BubblesDao, DevicesDao])
+@DriftDatabase(
+    tables: [BubbleEntities, TextContents, FileContents, PersistenceDevices],
+    daos: [BubblesDao, DevicesDao])
 class AppDatabase extends _$AppDatabase {
-
-
-
-  AppDatabase(): super(_openConnection());
+  AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   static LazyDatabase _openConnection() {
     // the LazyDatabase util lets us find the right location for the file async.
@@ -41,11 +37,10 @@ class AppDatabase extends _$AppDatabase {
       //   // TODO 方便测试，上线后修改
       //   file = File(p.join('/data/user/0/com.ifreedomer.flix/databases', 'db.sqlite'));
       // } else {
-        final dbFolder = await getApplicationSupportDirectory();
-        talker.verbose('create db in folder: $dbFolder');
-        file = File(p.join(dbFolder.path, 'db.sqlite'));
+      final dbFolder = await getApplicationSupportDirectory();
+      talker.verbose('create db in folder: $dbFolder');
+      file = File(p.join(dbFolder.path, 'db.sqlite'));
       // }
-
 
       // Also work around limitations on old Android versions
       if (Platform.isAndroid) {
@@ -67,16 +62,25 @@ class AppDatabase extends _$AppDatabase {
   MigrationStrategy get migration {
     return MigrationStrategy(
       onUpgrade: (m, from, to) async {
-        if (from < 2) {
-          await m.addColumn(fileContents, fileContents.resourceId);
-          await m.addColumn(bubbleEntities, bubbleEntities.time);
+        if (from == 1 && to == 2) {
+          await migration1_2(m);
+        } else if (from == 1 && to == 3) {
+          await migration1_2(m);
+          await migration2_3(m);
+        } else if (from == 2 && to == 3) {
+          await migration2_3(m);
         }
       },
     );
   }
 
+  Future<void> migration2_3(Migrator m) async {
+    await m.addColumn(bubbleEntities, bubbleEntities.time);
+  }
 
+  Future<void> migration1_2(Migrator m) async {
+    await m.addColumn(fileContents, fileContents.resourceId);
+  }
 }
-
 
 AppDatabase appDatabase = AppDatabase();
