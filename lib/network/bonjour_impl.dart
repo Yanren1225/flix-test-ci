@@ -8,6 +8,7 @@ import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/utils/iterable_extension.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mutex/mutex.dart';
 
 // Windows反复启动mdns会crash
@@ -137,7 +138,7 @@ class BonjourImpl extends MultiCastApi {
                 final deviceType = serviceAttributes['deviceType']!;
                 final deviceModel = serviceAttributes['deviceModal']!;
                 final fingerprint = serviceAttributes['fingerprint']!;
-                if (fingerprint == DeviceManager.instance.did) {
+                if (_isFromSelf(fingerprint)) {
                   return;
                 }
                 deviceScanCallback(
@@ -169,5 +170,10 @@ class BonjourImpl extends MultiCastApi {
     } catch (e, stackTrace) {
       talker.error('mDns startScan failed', e, stackTrace);
     }
+  }
+
+  bool _isFromSelf(String fingerprint) {
+    if (kDebugMode) return false;
+    return fingerprint == DeviceManager.instance.did;
   }
 }

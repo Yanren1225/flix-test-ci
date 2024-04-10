@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/ap_interface.dart';
@@ -11,6 +12,7 @@ import 'package:flix/presentation/widgets/settings/settings_item_wrapper.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/device_info_helper.dart' as deviceUtils;
 import 'package:flix/utils/iterable_extension.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 

@@ -81,11 +81,31 @@ Future<bool> checkStoragePermissionOnOldPlatform(BuildContext? context) async {
 }
 
 Future<bool> checkPhotosPermission(BuildContext context) async {
-  return await checkPermission(context, [Permission.photos], '访问照片权限', '选择照片需要获取设备的访问照片权限');
+  if (Platform.isAndroid) {
+    DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    final androidInfo = await deviceInfoPlugin.androidInfo;
+    if (androidInfo.version.sdkInt >= 33) {
+      return await checkPermission(context, [Permission.photos], '访问照片权限', '选择照片需要获取设备的访问照片权限');
+    } else {
+      return await checkStoragePermissionOnOldPlatform(context);
+    }
+  } else {
+    return true;
+  }
 }
 
 Future<bool> checkVideosPermission(BuildContext context) async {
-  return await checkPermission(context, [Permission.videos], '访问视频权限', '选择视频需要获取设备的访问视频权限');
+  if (Platform.isAndroid) {
+    DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    final androidInfo = await deviceInfoPlugin.androidInfo;
+    if (androidInfo.version.sdkInt >= 33) {
+      return await checkPermission(context, [Permission.videos], '访问视频权限', '选择视频需要获取设备的访问视频权限');
+    } else {
+      return await checkStoragePermissionOnOldPlatform(context);
+    }
+  } else {
+    return true;
+  }
 }
 
 Future<bool> checkPermission(BuildContext? context, List<Permission> permissions, String title, String subTitle) async {

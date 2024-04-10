@@ -8,6 +8,7 @@ import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/utils/sleep.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'nearby_service_info.dart';
@@ -196,6 +197,8 @@ class MultiCastUtil {
   }
 
   static bool isFromSelf(String from) {
+    // ⚠️debug模式下用自己作为测试设备⚠️
+    if (kDebugMode) return false;
     if (from == DeviceManager.instance.did) {
       talker.debug('receive self datagram');
       return true;
