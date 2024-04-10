@@ -121,6 +121,11 @@ dependency_overrides:
       ref: "0cafff0f60ec684b2d83b07ce86b5b578c044b2c"
       path: "packages/talker"
   share_plus: ^8.0.2
+  bonsoir_darwin:
+    git:
+      url: "https://github.com/foxik0169/Bonsoir"
+      ref: "323d53763bd3d6fd42d889d1a0f0a4df8d03d0f1"
+      path: "packages/bonsoir_darwin"
 
 #  share_plus_platform_interface:
 

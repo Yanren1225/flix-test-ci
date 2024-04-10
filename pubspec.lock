@@ -106,12 +106,13 @@ packages:
     source: hosted
     version: "5.1.4"
   bonsoir_darwin:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: bonsoir_darwin
-      sha256: "985c4c38b4cbfa57ed5870e724a7e17aa080ee7f49d03b43e6d08781511505c6"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/bonsoir_darwin"
+      ref: "323d53763bd3d6fd42d889d1a0f0a4df8d03d0f1"
+      resolved-ref: "323d53763bd3d6fd42d889d1a0f0a4df8d03d0f1"
+      url: "https://github.com/foxik0169/Bonsoir"
+    source: git
     version: "5.1.2"
   bonsoir_linux:
     dependency: transitive

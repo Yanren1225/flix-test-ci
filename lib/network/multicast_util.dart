@@ -27,7 +27,7 @@ class MultiCastUtil {
     for (final interface in interfaces) {
       try {
         final socket =
-        await RawDatagramSocket.bind(InternetAddress.anyIPv4, port ?? 0);
+            await RawDatagramSocket.bind(InternetAddress.anyIPv4, port ?? 0);
         // 不允许接收自己发送的消息
         // socket.multicastLoopback = false;
         socket.joinMulticast(InternetAddress(multicastGroup), interface);
@@ -37,9 +37,7 @@ class MultiCastUtil {
         talker.debug('$socket $interface');
       } catch (e) {
         talker.error(
-            'Could not bind UDP multicast port (ip: ${interface.addresses.map((
-                a) => a.address)
-                .toList()}, group: $multicastGroup, port: $port)',
+            'Could not bind UDP multicast port (ip: ${interface.addresses.map((a) => a.address).toList()}, group: $multicastGroup, port: $port)',
             e);
       }
     }
@@ -166,8 +164,6 @@ class MultiCastUtil {
     }
   }
 
-}
-
 // static Future<DeviceModal> getDeviceModal() async {
 //   final deviceId = DeviceManager.instance.did;
 //   var deviceInfo = await DeviceManager.instance.getDeviceInfo();
@@ -180,75 +176,70 @@ class MultiCastUtil {
 //   return deviceModal;
 // }
 
-static const MULTICAST_LOCK_CHANNEL =
-MethodChannel('com.ifreedomer.flix/multicast-lock');
-static const MULTICAST_IOS_CHANNEL =
-MethodChannel("com.ifreedomer.flix/multicast");
+  static const MULTICAST_LOCK_CHANNEL =
+      MethodChannel('com.ifreedomer.flix/multicast-lock');
+  static const MULTICAST_IOS_CHANNEL =
+      MethodChannel("com.ifreedomer.flix/multicast");
 
-static Future aquireMulticastLock
+  static Future aquireMulticastLock() async {
+    if (Platform.isAndroid) {
+      talker.debug("locking multicast lock");
+      MULTICAST_LOCK_CHANNEL.invokeMethod('aquire');
+    }
+  }
 
-() async
-{
-if
-(
-Platform.isAndroid) {
-talker.debug("locking multicast lock");
-MULTICAST_LOCK_CHANNEL.invokeMethod('aquire');
-}
-}
+  static Future releaseMulticastLock() async {
+    if (Platform.isAndroid) {
+      talker.debug("releasing multicast lock");
+      MULTICAST_LOCK_CHANNEL.invokeMethod('release');
+    }
+  }
 
-static Future releaseMulticastLock() async {
-if (Platform.isAndroid) {
-talker.debug("releasing multicast lock");
-MULTICAST_LOCK_CHANNEL.invokeMethod('release');
-}
-}
+  static bool isFromSelf(String from) {
+    if (from == DeviceManager.instance.did) {
+      talker.debug('receive self datagram');
+      return true;
+    }
+    return false;
+  }
 
-static bool isFromSelf(String from) {
-if (from == DeviceManager.instance.did) {
-talker.debug('receive self datagram');
-return true;
-}
-return false;
-}
-
-static Future<void> startScanOnIOS(String multiGroup, int port,
-DeviceScanCallback deviceScanCallback) async {
-MULTICAST_IOS_CHANNEL.setMethodCallHandler((call) async {
-try {
-if (call.method == "receiveMulticastMessage") {
-final args = call.arguments as Map;
-await onReceiveMessageOnIOS(args["fromIp"] as String,
-jsonDecode(args["message"] as String), deviceScanCallback);
-}
-} catch (e) {
-talker.debug('receive message on iOS failed: ', e);
-}
-});
+  static Future<void> startScanOnIOS(String multiGroup, int port,
+      DeviceScanCallback deviceScanCallback) async {
+    MULTICAST_IOS_CHANNEL.setMethodCallHandler((call) async {
+      try {
+        if (call.method == "receiveMulticastMessage") {
+          final args = call.arguments as Map;
+          await onReceiveMessageOnIOS(args["fromIp"] as String,
+              jsonDecode(args["message"] as String), deviceScanCallback);
+        }
+      } catch (e) {
+        talker.debug('receive message on iOS failed: ', e);
+      }
+    });
 
 // await MULTICAST_IOS_CHANNEL
 //     .invokeMethod('startMulticast', {"host": multiGroup, "port": port});
-return await MULTICAST_IOS_CHANNEL
-    .invokeMethod('scan', {"host": multiGroup, "port": port});
-}
+    return await MULTICAST_IOS_CHANNEL
+        .invokeMethod('scan', {"host": multiGroup, "port": port});
+  }
 
-static Future<void> pingOnIOS(String content) async {
-return await MULTICAST_IOS_CHANNEL.invokeMethod('ping', content);
-}
+  static Future<void> pingOnIOS(String content) async {
+    return await MULTICAST_IOS_CHANNEL.invokeMethod('ping', content);
+  }
 
-static Future<void> pongOnIOS(String content) async {
-return await MULTICAST_IOS_CHANNEL.invokeMethod('pong', content);
-}
+  static Future<void> pongOnIOS(String content) async {
+    return await MULTICAST_IOS_CHANNEL.invokeMethod('pong', content);
+  }
 
-static Future<void> onReceiveMessageOnIOS(String fromIp, String message,
-DeviceScanCallback deviceScanCallback) async {
-await _receiveMessage(fromIp, message, deviceScanCallback);
-}
+  static Future<void> onReceiveMessageOnIOS(String fromIp, String message,
+      DeviceScanCallback deviceScanCallback) async {
+    await _receiveMessage(fromIp, message, deviceScanCallback);
+  }
 }
 
 class SocketResult {
-final NetworkInterface interface;
-final RawDatagramSocket socket;
+  final NetworkInterface interface;
+  final RawDatagramSocket socket;
 
-SocketResult(this.interface, this.socket);
+  SocketResult(this.interface, this.socket);
 }
