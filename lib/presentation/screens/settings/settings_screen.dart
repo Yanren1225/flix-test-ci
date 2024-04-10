@@ -142,7 +142,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                           }
                           final newSavedPath = await FilePicker.platform
                               .getDirectoryPath(
-                                  initialDirectory: initialDirectory,
+                                  initialDirectory: Platform.isWindows ? null : initialDirectory,
                                   lockParentWindow: true);
                           if (newSavedPath != null) {
                             // authPersistentAccess(newSavedPath);
