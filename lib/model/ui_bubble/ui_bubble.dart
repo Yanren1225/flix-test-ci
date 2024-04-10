@@ -7,8 +7,9 @@ class UIBubble {
   int time;
   BubbleType type;
   Shareable shareable;
+  bool selectable;
 
-  UIBubble({required this.from, required this.to, required this.type, required this.shareable,required this.time});
+  UIBubble({required this.from, required this.to, required this.type, required this.shareable,required this.time, this.selectable = true});
 
   bool isFromMe(String deviceId) {
     return from == deviceId;

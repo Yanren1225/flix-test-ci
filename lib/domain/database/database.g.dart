@@ -35,7 +35,9 @@ class $BubbleEntitiesTable extends BubbleEntities
   @override
   late final GeneratedColumn<int> time = GeneratedColumn<int>(
       'time', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0x7FFFFFFFFFFFFFFF));
   @override
   List<GeneratedColumn> get $columns => [id, fromDevice, toDevice, type, time];
   @override
@@ -76,8 +78,6 @@ class $BubbleEntitiesTable extends BubbleEntities
     if (data.containsKey('time')) {
       context.handle(
           _timeMeta, time.isAcceptableOrUnknown(data['time']!, _timeMeta));
-    } else if (isInserting) {
-      context.missing(_timeMeta);
     }
     return context;
   }
@@ -221,13 +221,12 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
     required String fromDevice,
     required String toDevice,
     required int type,
-    required int time,
+    this.time = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         fromDevice = Value(fromDevice),
         toDevice = Value(toDevice),
-        type = Value(type),
-        time = Value(time);
+        type = Value(type);
   static Insertable<BubbleEntity> custom({
     Expression<String>? id,
     Expression<String>? fromDevice,

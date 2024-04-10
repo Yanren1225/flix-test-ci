@@ -60,7 +60,7 @@ class BubbleListState extends State<BubbleList> {
               uiBubble: item,
             ),
           );
-          if (concertProvider.isEditing) {
+          if (concertProvider.isEditing && item.selectable) {
             return InkWell(
               onTap: () {
                 final isChecked = !concertProvider.isSelected(item);

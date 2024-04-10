@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:drift/drift.dart';
 import 'package:flix/domain/database/convertor/bubble_convertor.dart';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -7,9 +8,6 @@ import 'package:flix/model/database/bubble_entity.dart';
 import 'package:flix/model/database/file_content.dart';
 import 'package:flix/model/database/text_content.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
-import 'package:drift/drift.dart';
-import 'package:flix/model/ui_bubble/ui_bubble.dart';
-import 'package:flix/presentation/widgets/bubbles/share_text_bubble.dart';
 
 part 'bubbles_dao.g.dart';
 
@@ -25,7 +23,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
               fromDevice: bubble.from,
               toDevice: bubble.to,
               type: bubble.type.index,
-              time: bubble.time));
+              time: Value(bubble.time)));
       switch (bubble.type) {
         case BubbleType.Text:
           return await into(textContents).insertOnConflictUpdate(
@@ -126,22 +124,26 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
         return primitiveBubbles.nonNulls.toList();
       }
 
+      final timeGap = 3 * 60 * 1000;
       var timeBubbleSource = primitiveBubbles[0];
-      var timeBubble = PrimitiveTimeBubble(
-          id: timeBubbleSource!.id,
-          from: timeBubbleSource.from,
-          to: timeBubbleSource.to,
-          type: BubbleType.Time,
-          time: timeBubbleSource.time,
-          content: "");
-      bubblesResult.add(timeBubble);
+      if (DateTime.now().millisecondsSinceEpoch - timeBubbleSource!.time >= timeGap) {
+        final timeBubble = PrimitiveTimeBubble(
+            id: timeBubbleSource!.id,
+            from: timeBubbleSource.from,
+            to: timeBubbleSource.to,
+            type: BubbleType.Time,
+            time: timeBubbleSource.time,
+            content: "");
+        bubblesResult.add(timeBubble);
+      }
+
       bubblesResult.add(timeBubbleSource);
 
       for (var i = 0; i < primitiveBubbles.length - 1; i++) {
         timeBubbleSource = primitiveBubbles[i + 1];
         if (primitiveBubbles[i + 1]!.time - primitiveBubbles[i]!.time >=
-            3 * 60 * 1000 ) {
-          timeBubble = PrimitiveTimeBubble(
+            timeGap) {
+          final timeBubble = PrimitiveTimeBubble(
               id: timeBubbleSource!.id,
               from: timeBubbleSource.from,
               to: timeBubbleSource.to,

@@ -37,6 +37,15 @@ PrimitiveBubble fromUIBubble(UIBubble bubbleEntity) {
 UIBubble toUIBubble(PrimitiveBubble bubble) {
   switch (bubble.type) {
     case BubbleType.Time:
+      var currentBubble = UIBubble(
+          from: bubble.from,
+          to: bubble.to,
+          type: bubble.type,
+          time: bubble.time,
+          shareable: SharedText(
+              id: bubble.id, content: ''), selectable: false);
+      currentBubble.time = bubble.time;
+      return currentBubble;
     case BubbleType.Text:
       var currentBubble = UIBubble(
           from: bubble.from,

@@ -18,10 +18,10 @@ PODS:
   - Firebase/Crashlytics (10.22.0):
     - Firebase/CoreOnly
     - FirebaseCrashlytics (~> 10.22.0)
-  - firebase_core (2.27.1):
+  - firebase_core (2.29.0):
     - Firebase/CoreOnly (~> 10.22.0)
     - FlutterMacOS
-  - firebase_crashlytics (3.4.19):
+  - firebase_crashlytics (3.5.1):
     - Firebase/CoreOnly (~> 10.22.0)
     - Firebase/Crashlytics (~> 10.22.0)
     - firebase_core
@@ -225,8 +225,8 @@ SPEC CHECKSUMS:
   downloadsfolder: f8c4d35588cc58b607898ebbbdbeb5c0e7f04a46
   file_selector_macos: 468fb6b81fac7c0e88d71317f3eec34c3b008ff9
   Firebase: 797fd7297b7e1be954432743a0b3f90038e45a71
-  firebase_core: cb81862138b1b98a890bcf3ee59ec820dad075b9
-  firebase_crashlytics: 2ced0bb21a3dbd7fc210225b5371e7050bbd9d32
+  firebase_core: 6745c546d07fc9e954f20fdde793e1d1727ae679
+  firebase_crashlytics: b928da85e604a0ae074951eaa89f91e6158de765
   FirebaseCore: 0326ec9b05fbed8f8716cddbf0e36894a13837f7
   FirebaseCoreExtension: 6394c00b887d0bebadbc7049c464aa0cbddc5d41
   FirebaseCoreInternal: bca337352024b18424a61e478460547d46c4c753

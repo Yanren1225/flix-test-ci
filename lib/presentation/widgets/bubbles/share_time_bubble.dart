@@ -26,7 +26,7 @@ class ShareTimeBubbleState extends State<ShareTimeBubble> {
         alignment: Alignment.center,
         child: Text(
             formatTime(DateTime.fromMillisecondsSinceEpoch(entity.time!)),
-            style: const TextStyle(fontSize: 12)));
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Color.fromRGBO(60, 60, 67, 0.6))));
   }
 
   String formatTime(DateTime dateTime) {

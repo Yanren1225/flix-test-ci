@@ -5,7 +5,7 @@ class BubbleEntities extends Table {
   TextColumn get fromDevice => text()();
   TextColumn get toDevice => text()();
   IntColumn get type => integer()();
-  IntColumn get time => integer()();
+  IntColumn get time => integer().withDefault(const Constant(0x7FFFFFFFFFFFFFFF))();
   @override
   Set<Column> get primaryKey => {id};
 }
