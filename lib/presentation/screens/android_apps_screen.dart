@@ -55,7 +55,7 @@ class AppsScreenState extends State<AppsScreen> {
         appBar.preferredSize.height + MediaQuery.paddingOf(context).top;
 
     return PopScope(
-      canPop: false,
+      canPop: true,
       onPopInvoked: (didPop) {
         if (!didPop) {
           Future.delayed(Duration.zero, () {

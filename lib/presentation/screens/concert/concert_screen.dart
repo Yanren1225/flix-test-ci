@@ -51,7 +51,7 @@ class ConcertScreen extends StatelessWidget {
           valueListenable: concertProvider.deviceName,
           builder: (_context, value, child) {
             return PopScope(
-              canPop: false,
+              canPop: true,
               onPopInvoked: (didPop) {
                 if (!didPop) {
                   Future.delayed(Duration.zero, () {
