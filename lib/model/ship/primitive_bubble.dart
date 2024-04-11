@@ -67,7 +67,7 @@ class PrimitiveTextBubble extends PrimitiveBubble<String> {
     final type = BubbleType.values[typeOrdinal];
     this.type = type;
     content = json['content'] as String;
-    time = json['time'];
+    time = json['time'] ?? 0x7FFFFFFFFFFFFFFF;
   }
 
   @override
@@ -122,7 +122,7 @@ class PrimitiveFileBubble extends PrimitiveBubble<FileTransfer> {
     final typeOrdinal = json['type'] as int;
     final type = BubbleType.values[typeOrdinal];
     this.type = type;
-    time = json['time'];
+    time = json['time'] ?? 0x7FFFFFFFFFFFFFFF;
     content = FileTransfer.fromJson(json['content'] as Map<String, dynamic>);
   }
 
@@ -250,7 +250,7 @@ class UpdateFileStateBubble extends InVisibleBubble<FileState> {
     final type = BubbleType.values[typeOrdinal];
     this.type = type;
     content = FileState.values[json['content'] as int];
-    time = json['time'];
+    time = json['time'] ?? 0x7FFFFFFFFFFFFFFF;
   }
 
   @override
