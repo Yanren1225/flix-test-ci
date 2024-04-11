@@ -23,6 +23,7 @@ import 'package:flix/utils/stream_cancelable.dart';
 import 'package:flix/utils/stream_progress.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:mutex/mutex.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
@@ -43,7 +44,10 @@ class ShipService extends ApInterface {
   final _bubblePool = BubblePool.instance;
 
   PongListener? _pongListener;
-  HttpServer? _server;
+  List<HttpServer> _sharedServers = [];
+  // HttpServer? _server;
+
+  final lock = Mutex();
 
   // final Map<String, Cancelable> tasks = {};
 
@@ -51,7 +55,19 @@ class ShipService extends ApInterface {
     return 'http://${DeviceManager.instance.getNetAdressByDeviceId(deviceId)}/intent';
   }
 
-  Future<void> startShipServer() async {
+  Future<bool> startShipServer() async {
+    try {
+      return await lock.protect(() async {
+        return await _startShipServer();
+      });
+    } catch (e, stackTrace) {
+      talker.error('start ship server failed', e, stackTrace);
+      return false;
+    }
+
+  }
+
+  Future<bool> _startShipServer() async {
     var app = Router();
     app.post('/bubble', _receiveBubble);
     app.post('/intent', _receiveIntent);
@@ -60,19 +76,22 @@ class ShipService extends ApInterface {
     app.post('/heartbeat', _heartbeat);
 
     // 尝试三次启动
-    final tmp = await _startShipServer(app, 'first', () async {
+    final tmp = await _startShipServerInner(app, 'first', () async {
       return await Future.delayed(const Duration(seconds: 1), () async {
-        return await _startShipServer(app, 'second', () async {
+        return await _startShipServerInner(app, 'second', () async {
           return await Future.delayed(const Duration(seconds: 2), () async {
-            return await _startShipServer(app, 'third', () async {});
+            return await _startShipServerInner(app, 'third', () async {});
           });
         });
       });
     });
 
     if (tmp != null) {
-      _server = tmp;
+      _sharedServers.add(tmp);
+      // _server = tmp;
+      return true;
     }
+    return false;
   }
 
   Future<bool> isServerLiving() async {
@@ -102,19 +121,23 @@ class ShipService extends ApInterface {
 
   Future<void> restartShipServer() async {
     try {
-      talker.debug('restart sever: $_server');
-      await _server?.close(force: true);
-      await startShipServer();
+      await lock.protect(() async {
+        talker.debug('restart sever: $_sharedServers');
+        for (final _server in _sharedServers) {
+          await _server.close(force: true);
+        }
+        await _startShipServer();
+      });
     } catch (e, stacktrace) {
       talker.error('restart server failed: ', e, stacktrace);
     }
   }
 
-  Future<HttpServer?> _startShipServer(
+  Future<HttpServer?> _startShipServerInner(
       Router app, String tag, Future<HttpServer?> Function() onFailed) async {
     try {
       final server = await io.serve(app, '0.0.0.0', defaultPort,
-          shared: false);
+          shared: true);
       talker.debug('Serving at http://0.0.0.0:${defaultPort}');
       return server;
     } catch (e, stack) {

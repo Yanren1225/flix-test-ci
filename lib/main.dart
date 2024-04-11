@@ -99,6 +99,8 @@ Future<void> main() async {
 
       if (msg == 'AppLifecycleState.resumed') {
         talker.verbose('App resumed');
+        // iOS在省电模式下，app切入后台一段时间后ship server会挂掉。
+        // 等app返回前台时检测server状态，若server dead，则重新启动
         ShipService.instance.isServerLiving().then((isServerLiving) {
           talker.debug('isServerLiving: $isServerLiving');
           if (!isServerLiving) {
