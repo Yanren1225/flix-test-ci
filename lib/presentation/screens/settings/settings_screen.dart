@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/device/device_profile_repo.dart';
+
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/SettingsRepo.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
@@ -29,14 +31,14 @@ class SettingsScreen extends StatefulWidget {
 
 class SettingsScreenState extends State<SettingsScreen> {
   var isAutoSave = false;
-  var deviceName = DeviceManager.instance.deviceName;
+  var deviceName = DeviceProfileRepo.instance.deviceName;
   StreamSubscription<String>? deviceNameSubscription = null;
 
   @override
   void initState() {
     super.initState();
     deviceNameSubscription =
-        DeviceManager.instance.deviceNameBroadcast.stream.listen((event) {
+        DeviceProfileRepo.instance.deviceNameBroadcast.stream.listen((event) {
       setState(() {
         deviceName = event;
       });

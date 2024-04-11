@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/device/device_profile_repo.dart';
+
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';

@@ -1,5 +1,6 @@
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/BadgeService.dart';
 import 'package:flix/model/notification/reception_notification.dart';
@@ -24,7 +25,7 @@ class NotificationService {
     _bubblePool.listen((bubble) {
       final notification =
           MessageNotification(from: bubble.from, bubbleId: bubble.id);
-      if (bubble.to == DeviceManager.instance.did) {
+      if (bubble.to == DeviceProfileRepo.instance.did) {
         if (bubble is PrimitiveTextBubble) {
           notified(notification);
           requestPermission(() => showTextNotification(bubble, notification));

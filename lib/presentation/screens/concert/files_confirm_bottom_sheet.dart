@@ -1,6 +1,8 @@
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/device/device_profile_repo.dart';
+
 import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
@@ -72,7 +74,7 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
               : BubbleType.File;
       ShipService.instance.send(UIBubble(
           time: DateTime.now().millisecondsSinceEpoch,
-          from: DeviceManager.instance.did,
+          from: DeviceProfileRepo.instance.did,
           to: deviceInfo.id,
           type: bubbleType,
           shareable: SharedFile(

@@ -1,5 +1,7 @@
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/device/device_profile_repo.dart';
+
 import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +14,7 @@ class NameEditBottomSheet extends StatefulWidget {
 }
 
 class NameEditBottomSheetState extends State<NameEditBottomSheet> {
-  var name = DeviceManager.instance.deviceName;
+  var name = DeviceProfileRepo.instance.deviceName;
   late TextEditingController _controller;
 
   @override
@@ -64,6 +66,6 @@ class NameEditBottomSheetState extends State<NameEditBottomSheet> {
   }
 
   void _rename(String name) {
-    DeviceManager.instance.renameDevice(name);
+    DeviceProfileRepo.instance.renameDevice(name);
   }
 }

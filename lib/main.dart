@@ -5,7 +5,10 @@ import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flix/domain/androp_context.dart';
+import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/device/device_profile_repo.dart';
+
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
@@ -84,8 +87,13 @@ Future<void> main() async {
 
 
     NotificationService.instance.init();
-    ShipService.instance.startShipServer();
-    await DeviceManager.instance.init(ShipService.instance);
+    await DeviceProfileRepo.instance.initDeviceInfo();
+    DeviceManager.instance.init();
+    ShipService.instance.startShipServer().then((isSuccess) async {
+      if (isSuccess) {
+        DeviceDiscover.instance.start(ShipService.instance, ShipService.instance.port);
+      }
+    });
 
     _logAppContext();
 
@@ -101,17 +109,20 @@ Future<void> main() async {
         talker.verbose('App resumed');
         // iOS在省电模式下，app切入后台一段时间后ship server会挂掉。
         // 等app返回前台时检测server状态，若server dead，则重新启动
-        ShipService.instance.isServerLiving().then((isServerLiving) {
+        ShipService.instance.isServerLiving().then((isServerLiving) async {
           talker.debug('isServerLiving: $isServerLiving');
           if (!isServerLiving) {
-            ShipService.instance.restartShipServer();
+            if (await ShipService.instance.restartShipServer()) {
+              DeviceDiscover.instance.startScan(ShipService.instance.port);
+            }
+          } else {
+            DeviceDiscover.instance.startScan(ShipService.instance.port);
           }
         }).catchError((error, stackTrace) =>
             talker.error('isServerLiving error', error, stackTrace));
         // ShipService.instance.startShipServer();
-        DeviceManager.instance.startScan();
       } else if (msg == 'AppLifecycleState.paused') {
-        DeviceManager.instance.stop();
+        DeviceDiscover.instance.stop();
       }
       return msg;
     });

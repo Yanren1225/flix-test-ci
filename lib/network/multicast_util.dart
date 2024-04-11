@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/device/device_profile_repo.dart';
+
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/protocol/device_modal.dart';
@@ -110,7 +112,7 @@ class MultiCastUtil {
       if (MultiCastUtil.isFromSelf(pong.from.fingerprint)) {
         return;
       }
-      if (pong.to.fingerprint == DeviceManager.instance.did) {
+      if (pong.to.fingerprint == DeviceProfileRepo.instance.did) {
         deviceModal = pong.from;
         needPong == false;
       } else {
@@ -166,7 +168,7 @@ class MultiCastUtil {
   }
 
 // static Future<DeviceModal> getDeviceModal() async {
-//   final deviceId = DeviceManager.instance.did;
+//   final deviceId = DeviceProfileRepo.instance.did;
 //   var deviceInfo = await DeviceManager.instance.getDeviceInfo();
 //   var deviceModal = DeviceModal(
 //       alias: deviceInfo.alias ?? '',
@@ -199,7 +201,7 @@ class MultiCastUtil {
   static bool isFromSelf(String from) {
     // ⚠️debug模式下用自己作为测试设备⚠️
     if (kDebugMode) return false;
-    if (from == DeviceManager.instance.did) {
+    if (from == DeviceProfileRepo.instance.did) {
       talker.debug('receive self datagram');
       return true;
     }

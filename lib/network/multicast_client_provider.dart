@@ -1,13 +1,14 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
-import 'package:flix/network/multicast_impl.dart';
-import 'package:flix/network/multicast_util.dart';
+import 'package:flix/model/device_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
+import 'package:flix/utils/net/net_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,7 +26,7 @@ class MultiCastClientProvider extends ChangeNotifier {
 
   String? get selectedDeviceId => _selectedDeviceId;
 
-  var deviceName = DeviceManager.instance.deviceName;
+  var deviceName = DeviceProfileRepo.instance.deviceName;
 
   static MultiCastClientProvider of(BuildContext context,
       {bool listen = false}) {
@@ -47,10 +48,10 @@ class MultiCastClientProvider extends ChangeNotifier {
           talker.error('isServerLiving error', error, stackTrace));
       startScan();
     });
-    DeviceManager.instance.deviceNameBroadcast.stream.listen((event) {
+    DeviceProfileRepo.instance.deviceNameBroadcast.stream.listen((event) {
       if (deviceName != event) {
         deviceName = event;
-        DeviceManager.instance.ping();
+        DeviceDiscover.instance.ping(ShipService.instance.port);
       }
     });
   }
@@ -72,7 +73,7 @@ class MultiCastClientProvider extends ChangeNotifier {
   }
 
   Future<void> startScan() async {
-    DeviceManager.instance.startScan();
+    DeviceDiscover.instance.startScan(ShipService.instance.port);
   }
 
   void clearDevices() {

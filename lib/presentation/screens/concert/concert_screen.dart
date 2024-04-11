@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/device/device_profile_repo.dart';
+
 import 'package:flix/domain/notification/BadgeService.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/pickable.dart';
@@ -142,7 +144,7 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
       BubbleType type) async {
     await concertProvider.send(UIBubble(
         time: DateTime.now().millisecondsSinceEpoch,
-        from: DeviceManager.instance.did,
+        from: DeviceProfileRepo.instance.did,
         to: Provider.of<ConcertProvider>(context, listen: false).deviceInfo.id,
         type: type,
         shareable: shareable));

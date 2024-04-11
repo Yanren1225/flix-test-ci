@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:android_intent/android_intent.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flix/domain/bubble_pool.dart';
-import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
@@ -31,7 +31,7 @@ abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
       if (androidInfo.version.sdkInt <= 29) {
         subscription = BubblePool.instance.listen((bubble) async {
           if (mounted &&
-              bubble.to == DeviceManager.instance.did &&
+              bubble.to == DeviceProfileRepo.instance.did &&
               bubble is PrimitiveFileBubble &&
               bubble.content.state == FileState.waitToAccepted) {
             if (!isCheckingPermission) {

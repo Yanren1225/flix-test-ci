@@ -2,35 +2,32 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:drift/drift.dart';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/SettingsRepo.dart';
 import 'package:flix/model/intent/trans_intent.dart';
-import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
+import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
-import 'package:flix/network/multicast_util.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/utils/bubble_convert.dart';
-import 'package:flix/utils/drawin_file_security_extension.dart';
+import 'package:flix/utils/net/net_utils.dart';
 import 'package:flix/utils/stream_cancelable.dart';
 import 'package:flix/utils/stream_progress.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mutex/mutex.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_multipart/form_data.dart';
 import 'package:shelf_multipart/multipart.dart';
 import 'package:shelf_router/shelf_router.dart';
-import 'package:http/http.dart' as http;
 
 import '../../utils/file/file_helper.dart';
 
@@ -43,9 +40,9 @@ class ShipService extends ApInterface {
 
   final _bubblePool = BubblePool.instance;
 
+  int port = defaultPort;
   PongListener? _pongListener;
-  List<HttpServer> _sharedServers = [];
-  // HttpServer? _server;
+  HttpServer? _server;
 
   final lock = Mutex();
 
@@ -76,19 +73,18 @@ class ShipService extends ApInterface {
     app.post('/heartbeat', _heartbeat);
 
     // 尝试三次启动
-    final tmp = await _startShipServerInner(app, 'first', () async {
+    final tmp = await _startShipServerInner(app, defaultPort, 'first', () async {
       return await Future.delayed(const Duration(seconds: 1), () async {
-        return await _startShipServerInner(app, 'second', () async {
+        return await _startShipServerInner(app, defaultPort + 1, 'second', () async {
           return await Future.delayed(const Duration(seconds: 2), () async {
-            return await _startShipServerInner(app, 'third', () async {});
+            return await _startShipServerInner(app, defaultPort + 2, 'third', () async {});
           });
         });
       });
     });
 
     if (tmp != null) {
-      _sharedServers.add(tmp);
-      // _server = tmp;
+      _server = tmp;
       return true;
     }
     return false;
@@ -97,7 +93,7 @@ class ShipService extends ApInterface {
   Future<bool> isServerLiving() async {
     try {
       var uri =
-          Uri.parse('http://127.0.0.1:${defaultPort}/heartbeat');
+          Uri.parse('http://127.0.0.1:${port}/heartbeat');
       var response = await http
           .post(
             uri,
@@ -119,30 +115,30 @@ class ShipService extends ApInterface {
     }
   }
 
-  Future<void> restartShipServer() async {
+  Future<bool> restartShipServer() async {
     try {
       await lock.protect(() async {
-        talker.debug('restart sever: $_sharedServers');
-        for (final _server in _sharedServers) {
-          await _server.close(force: true);
-        }
-        await _startShipServer();
+        talker.debug('restart sever: $_server');
+        await _server?.close(force: true);
+        return await _startShipServer();
       });
     } catch (e, stacktrace) {
       talker.error('restart server failed: ', e, stacktrace);
     }
+    return false;
   }
 
   Future<HttpServer?> _startShipServerInner(
-      Router app, String tag, Future<HttpServer?> Function() onFailed) async {
+      Router app, int serverPort, String tag, Future<HttpServer?> Function() onFailed) async {
     try {
-      final server = await io.serve(app, '0.0.0.0', defaultPort,
-          shared: true);
-      talker.debug('Serving at http://0.0.0.0:${defaultPort}');
+      final server = await io.serve(app, '0.0.0.0', serverPort,
+          shared: false);
+      talker.debug('Serving at http://0.0.0.0:${serverPort}');
+      port = serverPort;
       return server;
     } catch (e, stack) {
       talker.error(
-          '$tag start server at http://0.0.0.0:${defaultPort} failed ',
+          '$tag start server at http://0.0.0.0:${serverPort} failed ',
           e,
           stack);
       return await onFailed();
@@ -356,7 +352,7 @@ class ShipService extends ApInterface {
     try {
       final message = Pong(from, to).toJson();
       var uri = Uri.parse(
-          'http://${DeviceManager.instance.toNetAddress(to.ip, to.port)}/pong');
+          'http://${toNetAddress(to.ip, to.port)}/pong');
       var response = await http.post(
         uri,
         body: message,
@@ -568,7 +564,7 @@ class ShipService extends ApInterface {
       var response = await http.post(
         uri,
         body: TransIntent(
-                deviceId: DeviceManager.instance.did,
+                deviceId: DeviceProfileRepo.instance.did,
                 bubbleId: bubbleId,
                 action: TransAction.confirmReceive)
             .toJson(),
@@ -594,7 +590,7 @@ class ShipService extends ApInterface {
       var response = await http.post(
         uri,
         body: TransIntent(
-                deviceId: DeviceManager.instance.did,
+                deviceId: DeviceProfileRepo.instance.did,
                 bubbleId: bubbleId,
                 action: TransAction.cancel)
             .toJson(),

@@ -1,11 +1,10 @@
 import 'dart:io';
 
 import 'package:bonsoir/bonsoir.dart';
-import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/network/multicast_api.dart';
 import 'package:flix/network/multicast_impl.dart';
-import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/utils/iterable_extension.dart';
 import 'package:flutter/foundation.dart';
@@ -22,16 +21,21 @@ class BonjourImpl extends MultiCastApi {
   BonsoirService? _service;
   final m = Mutex();
 
-  Future<BonsoirService> makesureServiceInit() async {
-    final deviceModal = await DeviceManager.instance.getDeviceModal();
+  final DeviceProfileRepo deviceProfileRepo;
 
-    if (_service == null) {
+  BonjourImpl({required this.deviceProfileRepo});
+
+  Future<BonsoirService> makesureServiceInit(int port) async {
+    final deviceModal = await deviceProfileRepo.getDeviceModal(port);
+
+    // TODO: always return new BonsoirService, test it
+    // if (_service == null || _service?.port != port || ) {
       _service = BonsoirService(
           name: deviceModal.alias,
           // Put your service name here.
           type: SERVICE_TYPE,
           // Put your service type here. Syntax : _ServiceType._TransportProtocolName. (see http://wiki.ros.org/zeroconf/Tutorials/Understanding%20Zeroconf%20Service%20Types).
-          port: defaultPort,
+          port: port,
           // Put your service port here.
           attributes: {
             "alias": deviceModal.alias,
@@ -39,7 +43,7 @@ class BonjourImpl extends MultiCastApi {
             "deviceType": (deviceModal.deviceType ?? DeviceType.mobile).name,
             "fingerprint": deviceModal.fingerprint,
           });
-    }
+    // }
 
     return _service!;
   }
@@ -76,7 +80,7 @@ class BonjourImpl extends MultiCastApi {
 
 
   @override
-  Future<void> ping() async {
+  Future<void> ping(int port) async {
     try {
       await m.protect(() async {
         if (isPing) {
@@ -88,7 +92,7 @@ class BonjourImpl extends MultiCastApi {
         // Let's create our service !
 
 // And now we can broadcast it :
-        broadcast = BonsoirBroadcast(service: await makesureServiceInit());
+        broadcast = BonsoirBroadcast(service: await makesureServiceInit(port));
         await broadcast?.ready;
         await broadcast?.start();
       });
@@ -98,7 +102,7 @@ class BonjourImpl extends MultiCastApi {
   }
 
   @override
-  Future<void> pong(DeviceModal to) async {}
+  Future<void> pong(int port, DeviceModal to) async {}
 
   @override
   Future<void> startScan(String multiGroup, int port,
@@ -174,6 +178,6 @@ class BonjourImpl extends MultiCastApi {
 
   bool _isFromSelf(String fingerprint) {
     if (kDebugMode) return false;
-    return fingerprint == DeviceManager.instance.did;
+    return fingerprint == DeviceProfileRepo.instance.did;
   }
 }

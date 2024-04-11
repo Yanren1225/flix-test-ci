@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flix/domain/concert/concert_provider.dart';
-import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
@@ -23,7 +23,7 @@ abstract class BaseFileBubbleState<T extends BaseFileBubble> extends State<T> {
   void initState() {
     super.initState();
     final sharedFile = entity.shareable as SharedFile;
-    if (entity.isFromMe(DeviceManager.instance.did)) {
+    if (entity.isFromMe(DeviceProfileRepo.instance.did)) {
       if (Platform.isMacOS) {
         sharedFile.content.startAccessPath();
       } else if (Platform.isIOS) {
@@ -49,7 +49,7 @@ abstract class BaseFileBubbleState<T extends BaseFileBubble> extends State<T> {
   @override
   void dispose() {
     final sharedFile = entity.shareable as SharedFile;
-    if (entity.isFromMe(DeviceManager.instance.did) && Platform.isMacOS) {
+    if (entity.isFromMe(DeviceProfileRepo.instance.did) && Platform.isMacOS) {
       sharedFile.content.stopAccessPath();
     }
     super.dispose();

@@ -6,8 +6,8 @@ abstract class MultiCastApi {
 
   Future<void> stop();
 
-  Future<void> ping();
+  Future<void> ping(int port);
 
-  Future<void> pong(DeviceModal to);
+  Future<void> pong(int port, DeviceModal to);
 
 }
