@@ -12,6 +12,7 @@ import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
+import 'package:flix/domain/window/FlixWindowManager.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/notification/reception_notification.dart';
 import 'package:flix/network/multicast_client_provider.dart';
@@ -78,10 +79,8 @@ Future<void> main() async {
       };
     }
 
-    if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
-      await windowManager.ensureInitialized();
-      windowManager.setMinimumSize(const Size(400, 400));
-    }
+    await flixWindowsManager.init();
+    flixWindowsManager.restoreWindow();
 
     await _initNotification();
 

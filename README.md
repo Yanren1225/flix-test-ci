@@ -84,3 +84,52 @@ samples, guidance on mobile development, and a full API reference.
 5. 帮助页-关于我们，在pad上是全屏展示的，能不能做到右半屏；
 
 6. 聊天页面，无论是点击图片，文字还是文件，都没有明显的反馈效果（尤其是图片单击预览还需要跳转到其他应用，中间有明显的延迟像是卡住了），前期可以简单地做压暗效果。
+
+### iOS获取可用的网络接口
+获取当前设备上的网络接口列表，您需要使用 NWPathMonitor 类。
+
+以下是一个示例代码，演示了如何使用 NWPathMonitor 来获取设备上的网络接口列表：
+
+```swift
+import Network
+
+// 创建一个路径监视器
+let monitor = NWPathMonitor()
+
+// 开始监视网络路径更改
+monitor.start(queue: DispatchQueue.global()) { path in
+// 检查路径状态
+if path.status == .satisfied {
+// 获取可用接口
+let availableInterfaces = path.availableInterfaces
+for interface in availableInterfaces {
+// 打印接口的名称和类型
+print("Interface name: \(interface.name), type: \(interface.type)")
+
+            // 检查接口是否支持 IPv4
+            if interface.type == .wifi || interface.type == .cellular {
+                print("IPv4 addresses:")
+                // 获取并打印接口的 IPv4 地址
+                for address in interface.ipv4Addresses ?? [] {
+                    print(address)
+                }
+            }
+            
+            // 检查接口是否支持 IPv6
+            if interface.type == .wifi || interface.type == .cellular {
+                print("IPv6 addresses:")
+                // 获取并打印接口的 IPv6 地址
+                for address in interface.ipv6Addresses ?? [] {
+                    print(address)
+                }
+            }
+            
+            print("-----------------------------------")
+        }
+    }
+}
+
+// 在适当的时候停止监视器
+// monitor.cancel()
+```
+在此示例中，我们首先创建了一个 NWPathMonitor 对象，并使用 start(queue:) 方法开始监视网络路径更改。当路径状态为满足（即网络连接可用）时，我们通过 path.availableInterfaces 获取可用的网络接口列表。然后，我们对每个接口进行迭代，并打印出接口的名称和类型。最后，我们检查每个接口是否支持 IPv4 和 IPv6，并打印出相应的地址。
