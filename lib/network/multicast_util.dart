@@ -16,21 +16,17 @@ import 'package:flutter/services.dart';
 import 'nearby_service_info.dart';
 
 class MultiCastUtil {
-  /// The default multicast group should be 224.0.0.0/24
-  /// because on some Android devices this is the only IP range
-  /// that can receive UDP multicast messages.
-  static const defaultMulticastGroup = '224.0.0.168';
 
   static final List<SocketResult> _sockets = [];
 
   static Future<List<SocketResult>> getSockets(String multicastGroup,
-      [int? port]) async {
+      int multicastPort) async {
     final interfaces = await NetworkInterface.list();
     final sockets = <SocketResult>[];
     for (final interface in interfaces) {
       try {
         final socket =
-            await RawDatagramSocket.bind(InternetAddress.anyIPv4, port ?? 0);
+            await RawDatagramSocket.bind(InternetAddress.anyIPv4, multicastPort);
         // 不允许接收自己发送的消息
         // socket.multicastLoopback = false;
         socket.joinMulticast(InternetAddress(multicastGroup), interface);
@@ -40,15 +36,15 @@ class MultiCastUtil {
         talker.debug('$socket $interface');
       } catch (e) {
         talker.error(
-            'Could not bind UDP multicast port (ip: ${interface.addresses.map((a) => a.address).toList()}, group: $multicastGroup, port: $port)',
+            'Could not bind UDP multicast port (ip: ${interface.addresses.map((a) => a.address).toList()}, group: $multicastGroup, port: $multicastPort)',
             e);
       }
     }
     return sockets;
   }
 
-  static Future<void> startScan(String multiGroup, int port,
-      DeviceScanCallback deviceScanCallback) async {
+
+  static Future<void> startScan(String group, int port, DeviceScanCallback deviceScanCallback) async {
     // if (_listening) {
     //   Logger.log('Already listening to multicast');
     //   return;
@@ -56,7 +52,7 @@ class MultiCastUtil {
     // _listening = true;
 
     if (Platform.isIOS) {
-      await startScanOnIOS(multiGroup, port, deviceScanCallback);
+      await startScanOnIOS(group, port, deviceScanCallback);
     } else {
       await MultiCastUtil.releaseMulticastLock();
       await MultiCastUtil.aquireMulticastLock();
@@ -64,7 +60,7 @@ class MultiCastUtil {
         socket.socket.close();
       }
       _sockets.clear();
-      final sockets = await MultiCastUtil.getSockets(multiGroup, port);
+      final sockets = await MultiCastUtil.getSockets(group, port);
       _sockets.addAll(sockets);
       for (final socket in sockets) {
         socket.socket.listen((event) {
@@ -125,7 +121,7 @@ class MultiCastUtil {
   }
 
   /// Sends an announcement which triggers a response on every LocalSend member of the network.
-  static Future<void> ping(DeviceModal deviceModal) async {
+  static Future<void> ping(String group, int port, DeviceModal deviceModal) async {
     // final sockets = await getSockets(defaultMulticastGroup);
     final message = jsonEncode(Ping(deviceModal).toJson());
     if (Platform.isIOS) {
@@ -136,7 +132,7 @@ class MultiCastUtil {
         for (final socket in _sockets) {
           try {
             socket.socket.send(utf8.encode(message),
-                InternetAddress(defaultMulticastGroup), defaultPort);
+                InternetAddress(group), port);
             // socket.socket.close();
           } catch (e, stackTrace) {
             talker.error('ping failed', e, stackTrace);
@@ -149,7 +145,7 @@ class MultiCastUtil {
   // 通过AP接口发送的multicast是不可靠的，
   // 实测Android开启热点其他设备无法接收到AP设备的组播数据
   // 见 https://forum.mikrotik.com/viewtopic.php?t=28756
-  static Future<void> pong(DeviceModal from, DeviceModal to) async {
+  static Future<void> pong(String group, int port, DeviceModal from, DeviceModal to) async {
     // final sockets = await getSockets(defaultMulticastGroup);
     final message = jsonEncode(Pong(from, to).toJson());
     if (Platform.isIOS) {
@@ -158,7 +154,7 @@ class MultiCastUtil {
       for (final socket in _sockets) {
         try {
           socket.socket.send(utf8.encode(message),
-              InternetAddress(defaultMulticastGroup), defaultPort);
+              InternetAddress(group), port);
           // socket.socket.close();
         } catch (e, stackTrace) {
           talker.error('pong failed', e, stackTrace);
@@ -166,18 +162,6 @@ class MultiCastUtil {
       }
     }
   }
-
-// static Future<DeviceModal> getDeviceModal() async {
-//   final deviceId = DeviceProfileRepo.instance.did;
-//   var deviceInfo = await DeviceManager.instance.getDeviceInfo();
-//   var deviceModal = DeviceModal(
-//       alias: deviceInfo.alias ?? '',
-//       deviceType: deviceInfo.deviceType,
-//       fingerprint: deviceId!,
-//       port: defaultPort,
-//       deviceModel: deviceInfo.deviceModel);
-//   return deviceModal;
-// }
 
   static const MULTICAST_LOCK_CHANNEL =
       MethodChannel('com.ifreedomer.flix/multicast-lock');

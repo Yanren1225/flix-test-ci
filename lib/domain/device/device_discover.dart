@@ -8,6 +8,7 @@ import 'package:flix/model/device_info.dart';
 import 'package:flix/network/bonjour_impl.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/multicast_util.dart';
+import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/net/net_utils.dart';
@@ -30,7 +31,7 @@ class DeviceDiscover {
   final _deviceId2NetAddress = <String, String>{};
   final deviceListChangeListeners = <OnDeviceListChanged>{};
 
-  late MultiCastImpl multiCastApi = MultiCastImpl(deviceProfileRepo: deviceProfileRepo);
+  late MultiCastImpl multiCastApi = MultiCastImpl(multicastGroup: defaultMulticastGroup, multicastPort: defaultMulticastPort , deviceProfileRepo: deviceProfileRepo);
   late BonjourImpl bonjourApi = BonjourImpl(deviceProfileRepo: deviceProfileRepo);
 
   Future<void> start(ApInterface apInterface, int port) async {
@@ -53,7 +54,6 @@ class DeviceDiscover {
 
   Future<void> startScan(port) async {
     await multiCastApi.startScan(
-        MultiCastUtil.defaultMulticastGroup, port,
             (deviceModal, needPong) {
           if (needPong) {
             multiCastApi.pong(port, deviceModal);
@@ -71,7 +71,7 @@ class DeviceDiscover {
   }
 
   Future<void> startBonjourScanService(int port) async {
-    await bonjourApi.startScan("", 0, (DeviceModal deviceModal, bool needPong) {
+    await bonjourApi.startScan((DeviceModal deviceModal, bool needPong) {
       _onDeviceDiscover(deviceModal);
     });
     unawaited(bonjourApi.ping(port));

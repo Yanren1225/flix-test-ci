@@ -28,9 +28,6 @@ class DeviceManager {
   final deviceList = <DeviceModal>{};
   final history = <DeviceModal>{};
 
-  late MultiCastImpl multiCastApi = MultiCastImpl(deviceProfileRepo: deviceProfileRepo);
-  late BonjourImpl bonjourApi = BonjourImpl(deviceProfileRepo: deviceProfileRepo);
-
   final deviceListChangeListeners = <OnDeviceListChanged>{};
   final historyChangeListeners = <OnDeviceListChanged>{};
 

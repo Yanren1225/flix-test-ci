@@ -105,8 +105,7 @@ class BonjourImpl extends MultiCastApi {
   Future<void> pong(int port, DeviceModal to) async {}
 
   @override
-  Future<void> startScan(String multiGroup, int port,
-      DeviceScanCallback deviceScanCallback) async {
+  Future<void> startScan(DeviceScanCallback deviceScanCallback) async {
     try {
       await m.protect(() async {
         if (isStart) {

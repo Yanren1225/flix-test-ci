@@ -11,14 +11,15 @@ class MultiCastImpl extends MultiCastApi {
   // var _listening = false;
   // final List<SocketResult> _sockets = [];
   final DeviceProfileRepo deviceProfileRepo;
+  final String multicastGroup;
+  final int multicastPort;
 
-  MultiCastImpl({required this.deviceProfileRepo});
+  MultiCastImpl({required this.deviceProfileRepo, required this.multicastGroup, required this.multicastPort});
 
 
   @override
-  Future<void> startScan(String multiGroup, int port,
-      DeviceScanCallback deviceScanCallback) async {
-      await MultiCastUtil.startScan(multiGroup, port, deviceScanCallback);
+  Future<void> startScan(DeviceScanCallback deviceScanCallback) async {
+      await MultiCastUtil.startScan(multicastGroup, multicastPort, deviceScanCallback);
   }
 
   @override
@@ -26,16 +27,11 @@ class MultiCastImpl extends MultiCastApi {
 
   @override
   Future<void> ping(int port) async {
-    await MultiCastUtil.ping(await deviceProfileRepo.getDeviceModal(port));
+    await MultiCastUtil.ping(multicastGroup, multicastPort, await deviceProfileRepo.getDeviceModal(port));
   }
 
   @override
   Future<void> pong(int port, DeviceModal to) async {
-    await MultiCastUtil.pong(await deviceProfileRepo.getDeviceModal(port), to);
+    await MultiCastUtil.pong(multicastGroup, multicastPort, await deviceProfileRepo.getDeviceModal(port), to);
   }
-
-  // @override
-  // Future<DeviceModal> getDeviceModal() async {
-  //   return await MultiCastUtil.getDeviceModal();
-  // }
 }

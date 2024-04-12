@@ -55,6 +55,8 @@ samples, guidance on mobile development, and a full API reference.
 37. ~~不可预览的文件发送完毕删除文件缓存~~
 38. 图片预览宽高错误
 39. iOS dsym没有正确上传到firebase
+40. 偶现一次macos上刷新，搜索不到Android设备，Android端也看不到macos设备，但是Android端刷新后两端正常
+41. 小米手机偶现无法被发现
 
 ## 功能
 单击消息，打开文件
