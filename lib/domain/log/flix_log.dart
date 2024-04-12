@@ -11,6 +11,11 @@ final talker = TalkerFlutter.init(
     maxHistoryItems: 10000,
     /// You can enable/disable console logs
     useConsoleLogs: true,
+    colors: {
+      TalkerLogType.verbose: AnsiPen()..gray(),
+      TalkerLogType.info: AnsiPen()..blue(),
+      TalkerLogType.debug: AnsiPen()..black(),
+    }
   ),
   /// Setup your implementation of logger
   logger: TalkerLogger(),
