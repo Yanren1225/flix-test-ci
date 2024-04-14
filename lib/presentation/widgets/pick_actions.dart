@@ -91,12 +91,11 @@ class PickActionAreaState extends State<PickActionsArea> {
                   requestType: RequestType.image, maxAssets: 100),
             );
             _isImageLoading = true;
+            for (final f in (result ?? <AssetEntity>[])) {
+              onPicked([PickableFile(
+                  type: PickedFileType.Image, content: await f.toFileMeta())]);
+            }
 
-            onPicked([
-              for (final f in (result ?? <AssetEntity>[]))
-                PickableFile(
-                    type: PickedFileType.Image, content: await f.toFileMeta())
-            ]);
             _isImageLoading = false;
           } else {
             final List<XFile> pickedFileList =
@@ -134,11 +133,12 @@ class PickActionAreaState extends State<PickActionsArea> {
                   filterOptions: FilterOptionGroup(containsLivePhotos: false)),
             );
             _isVideoLoading = true;
-            onPicked([
-              for (final f in (result ?? <AssetEntity>[]))
+            for (final f in (result ?? <AssetEntity>[])) {
+              onPicked([
                 PickableFile(
                     type: PickedFileType.Video, content: await f.toFileMeta())
-            ]);
+              ]);
+            }
             _isVideoLoading = false;
           } else {
             final XFile? pickedFile =
