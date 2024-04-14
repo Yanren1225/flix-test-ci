@@ -7,6 +7,8 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/pickable.dart';
 import 'package:flix/presentation/screens/android_apps_screen.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
+import 'package:flix/presentation/widgets/actions/progress_action.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,9 @@ class PickActionAreaState extends State<PickActionsArea> {
 
   dynamic _pickFileError;
   final ImagePicker _picker = ImagePicker();
+  bool _isImageLoading = false;
+  bool _isVideoLoading = false;
+  bool _isFileLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,46 +59,19 @@ class PickActionAreaState extends State<PickActionsArea> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 50,
-            height: 50,
-            child: IconButton(
-                padding: const EdgeInsets.all(0),
-                iconSize: 22,
-                onPressed: () {
-                  _onImageButtonPressed(context: context);
-                },
-                icon: SvgPicture.asset('assets/images/ic_image.svg',
-                    width: 22, height: 22)),
-          ),
-          SizedBox(
-            width: 50,
-            height: 50,
-            child: IconButton(
-                padding: const EdgeInsets.all(0),
-                iconSize: 22,
-                onPressed: () {
-                  _onVideoButtonPressed(context: context);
-                },
-                icon: SvgPicture.asset('assets/images/ic_video.svg',
-                    width: 22, height: 22)),
-          ),
+          ProgressAction(
+              showProgress: _isImageLoading,
+              icon: 'assets/images/ic_image.svg',
+              onTap: () => _onImageButtonPressed(context: context)),
+          ProgressAction(
+              showProgress: _isVideoLoading,
+              icon: 'assets/images/ic_video.svg',
+              onTap: () => _onVideoButtonPressed(context: context)),
           pickAppButton,
-          SizedBox(
-            width: 50,
-            height: 50,
-            child: IconButton(
-              padding: const EdgeInsets.all(0),
-              iconSize: 22,
-              onPressed: () {
-                _onFileButtonPressed();
-              },
-              icon: SvgPicture.asset(
-                'assets/images/ic_file.svg',
-                width: 22,
-                height: 22,
-              ),
-            ),
+          ProgressAction(
+            showProgress: _isFileLoading,
+            icon: 'assets/images/ic_file.svg',
+            onTap: _onFileButtonPressed,
           ),
         ],
       ),
@@ -112,12 +90,14 @@ class PickActionAreaState extends State<PickActionsArea> {
               pickerConfig: const AssetPickerConfig(
                   requestType: RequestType.image, maxAssets: 100),
             );
+            _isImageLoading = true;
 
             onPicked([
               for (final f in (result ?? <AssetEntity>[]))
                 PickableFile(
                     type: PickedFileType.Image, content: await f.toFileMeta())
             ]);
+            _isImageLoading = false;
           } else {
             final List<XFile> pickedFileList =
                 await _picker.pickMultiImage(requestFullMetadata: true);
@@ -153,12 +133,13 @@ class PickActionAreaState extends State<PickActionsArea> {
                   maxAssets: 100,
                   filterOptions: FilterOptionGroup(containsLivePhotos: false)),
             );
-
+            _isVideoLoading = true;
             onPicked([
               for (final f in (result ?? <AssetEntity>[]))
                 PickableFile(
                     type: PickedFileType.Video, content: await f.toFileMeta())
             ]);
+            _isVideoLoading = false;
           } else {
             final XFile? pickedFile =
                 await _picker.pickVideo(source: ImageSource.gallery);
@@ -204,37 +185,50 @@ class PickActionAreaState extends State<PickActionsArea> {
     // 且通过XFile在Android平台拿不到真实的文件名称
     try {
       if (context.mounted) {
-        if (await checkStoragePermission(context, manageExternalStorage: false)) {
-          if (Platform.isAndroid) {
-            final result = await FilePicker.platform.pickFiles(allowMultiple: true);
-            if (result != null) {
-              onPicked([
-                for (final file in result.files)
-                  PickableFile(
-                      type: PickedFileType.File, content: await file.toFileMeta())
-              ]);
-            }
-          } else {
-            final typeGroup = const XTypeGroup(label: 'all');
-            final files = await openFiles(acceptedTypeGroups: [typeGroup]);
-
-            if (files.isNotEmpty) {
-              onPicked([
-                for (final file in files)
-                  PickableFile(
-                      type: PickedFileType.File, content: await file.toFileMeta())
-              ]);
-            }
+        if (await checkStoragePermission(context,
+            manageExternalStorage: false)) {
+          // if (Platform.isAndroid) {
+          final result = await FilePicker.platform.pickFiles(
+              allowMultiple: true,
+              onFileLoading: (FilePickerStatus pickerStatus) {
+                switch (pickerStatus) {
+                  case FilePickerStatus.picking:
+                    setState(() {
+                      _isFileLoading = true;
+                    });
+                    break;
+                  case FilePickerStatus.done:
+                    setState(() {
+                      _isFileLoading = false;
+                    });
+                    break;
+                }
+              });
+          if (result != null) {
+            onPicked([
+              for (final file in result.files)
+                PickableFile(
+                    type: PickedFileType.File, content: await file.toFileMeta())
+            ]);
+            // }
+            // } else {
+            //   final typeGroup = const XTypeGroup(label: 'all');
+            //   final files = await openFiles(acceptedTypeGroups: [typeGroup]);
+            //
+            //   if (files.isNotEmpty) {
+            //     onPicked([
+            //       for (final file in files)
+            //         PickableFile(
+            //             type: PickedFileType.File, content: await file.toFileMeta())
+            //     ]);
           }
+          // }
         }
       }
-
-
     } catch (e, stackTrace) {
       talker.error('pick file failed', e, stackTrace);
     }
   }
-
 }
 
 typedef OnPicked = void Function(List<Pickable> pickables);

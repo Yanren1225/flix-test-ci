@@ -12,7 +12,7 @@ extension StreamProgress on Stream<List<int>> {
       byteCount += data.length;
 
       final current = DateTime.now().millisecondsSinceEpoch;
-      if (current - lastTime > 20) {
+      if (current - lastTime > 500) {
         lastTime = current;
         final bubble = await BubblePool.instance.findLastById(bubbleId)
         as PrimitiveFileBubble;

@@ -41,3 +41,15 @@ class PickableApp extends Pickable<Application> {
     return 'PickableFile{type: $type, app: $content}';
   }
 }
+
+class Picking extends Pickable<FileMeta?> {
+  @override
+  PickedFileType type;
+
+  // 存放预览的文件
+  @override
+  FileMeta? content;
+
+
+  Picking({required this.type, required this.content});
+}

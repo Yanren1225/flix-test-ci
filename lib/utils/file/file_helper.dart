@@ -108,6 +108,7 @@ extension PlatformFileConvert on PlatformFile {
     if (this.path == null) {
       throw UnsupportedError('PlatformFile.path must not be null');
     }
+    await authPersistentAccess(this.path!);
     return FileMeta(
         resourceId: this.identifier ?? '',
         name: this.name,

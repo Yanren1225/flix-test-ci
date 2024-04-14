@@ -22,6 +22,7 @@ import 'package:flix/presentation/screens/helps/about_us.dart';
 import 'package:flix/presentation/screens/helps/help_screen.dart';
 import 'package:flix/presentation/screens/pick_device_screen.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/setting/setting_provider.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/iterable_extension.dart';
@@ -36,6 +37,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_ume/flutter_ume.dart'; // UME framework
 import 'package:flutter_ume_kit_console/flutter_ume_kit_console.dart'; // Show debugPrint
 import 'package:flutter_ume_kit_ui/flutter_ume_kit_ui.dart'; // UI kits
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modals/modals.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -53,6 +55,9 @@ int id = 1;
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 final receptionNotificationStream = StreamController<MessageNotification>();
+
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -221,6 +226,7 @@ class MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'Flix',
         navigatorObservers: [modalsRouteObserver],
+        navigatorKey: navigatorKey,
         localizationsDelegates: <LocalizationsDelegate<dynamic>>[
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
@@ -250,6 +256,7 @@ class MyAppState extends State<MyApp> {
           useMaterial3: true,
         ).useSystemChineseFont(Brightness.light),
         // initialRoute: 'home',
+        builder: FToastBuilder(),
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
     );
@@ -349,6 +356,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    flixToast.init(navigatorKey.currentContext!);
     initPlatformState();
     receptionNotificationStream.stream.listen((receptionNotification) {
       final deviceModal = DeviceManager.instance.deviceList
