@@ -12,20 +12,20 @@ extension StreamProgress on Stream<List<int>> {
       byteCount += data.length;
 
       final current = DateTime.now().millisecondsSinceEpoch;
-      if (current - lastTime > 500) {
+      if (current - lastTime > 1000) {
         lastTime = current;
         final bubble = await BubblePool.instance.findLastById(bubbleId)
-        as PrimitiveFileBubble;
+            as PrimitiveFileBubble;
         final updatedBubble = bubble.copy(
           content: bubble.content
               .copy(progress: byteCount.toDouble() / bubble.content.meta.size),
         );
-        talker.debug("file transfer, byteCount: $byteCount, size: ${bubble.content.meta.size}");
+        talker.debug(
+            "file transfer, byteCount: $byteCount, size: ${bubble.content.meta.size}");
 
         // 异步插入，减少对发送和接收的阻塞
         BubblePool.instance.add(updatedBubble);
       }
-
 
       return data;
     });

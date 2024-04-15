@@ -3,12 +3,9 @@ import 'dart:math';
 
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
-import 'package:flix/domain/device/device_manager.dart';
-import 'package:flix/domain/device/device_profile_repo.dart';
-
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
-import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/presentation/basic/flix_thumbnail_provider.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/bubbles/accept_media_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/base_file_bubble.dart';
@@ -17,6 +14,7 @@ import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/preview_error_widget.dart';
 import 'package:flix/presentation/widgets/segements/resend_button.dart';
+import 'package:flix/utils/platform_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -66,15 +64,17 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
       switch (sharedImage.state) {
         case FileState.picked:
           clickable = true;
-          content = (cacheWidth, cacheHeight) => _image(sharedImage,
-              cacheWidth: cacheWidth, cacheHeight: cacheHeight);
+          content = (cacheWidth, cacheHeight) =>
+              _image(sharedImage,
+                  cacheWidth: cacheWidth, cacheHeight: cacheHeight);
           stateIcon =
               CancelSendButton(key: _cancelSendButtonKey, entity: entity);
           break;
         case FileState.waitToAccepted:
           clickable = false;
 
-          content = (_w, _h) => Stack(
+          content = (_w, _h) =>
+              Stack(
                 fit: StackFit.passthrough,
                 children: [
                   _image(sharedImage),
@@ -97,7 +97,8 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
         case FileState.inTransit:
           clickable = false;
 
-          content = (_w, _h) => Stack(
+          content = (_w, _h) =>
+              Stack(
                 fit: StackFit.passthrough,
                 children: [
                   _image(sharedImage),
@@ -144,16 +145,18 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
         case FileState.receiveCompleted:
         case FileState.completed:
           clickable = true;
-          content = (cacheWidth, cacheHeight) => _image(sharedImage,
-              cacheWidth: cacheWidth, cacheHeight: cacheHeight);
+          content = (cacheWidth, cacheHeight) =>
+              _image(sharedImage,
+                  cacheWidth: cacheWidth, cacheHeight: cacheHeight);
           break;
         case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
           clickable = true;
-          content = (cacheWidth, cacheHeight) => _image(sharedImage,
-              cacheWidth: cacheWidth, cacheHeight: cacheHeight);
+          content = (cacheWidth, cacheHeight) =>
+              _image(sharedImage,
+                  cacheWidth: cacheWidth, cacheHeight: cacheHeight);
           stateIcon =
               stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
@@ -164,7 +167,8 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
       // 接收
       switch (sharedImage.state) {
         case FileState.waitToAccepted:
-          content = (_w, _h) => InkWell(
+          content = (_w, _h) =>
+              InkWell(
                 onTap: () {
                   _confirmReceive(concertProvider);
                 },
@@ -172,11 +176,12 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
               );
         case FileState.inTransit:
         case FileState.sendCompleted:
-          content = (_w, _h) => AspectRatio(
+          content = (_w, _h) =>
+              AspectRatio(
                 aspectRatio: 1.333333,
                 child: DecoratedBox(
                   decoration:
-                      const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+                  const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -202,14 +207,16 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
         case FileState.receiveCompleted:
         case FileState.completed:
           clickable = true;
-          content = (cacheWidth, cacheHeight) => _image(sharedImage,
-              cacheWidth: cacheWidth, cacheHeight: cacheHeight);
+          content = (cacheWidth, cacheHeight) =>
+              _image(sharedImage,
+                  cacheWidth: cacheWidth, cacheHeight: cacheHeight);
           break;
         case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
-          content = (_w, _h) => AspectRatio(
+          content = (_w, _h) =>
+              AspectRatio(
                 aspectRatio: 1.333333,
                 child: DecoratedBox(
                   decoration: const BoxDecoration(color: Colors.white),
@@ -231,9 +238,9 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
           visible: alignment == MainAxisAlignment.end,
           replacement: alignment == MainAxisAlignment.end
               ? const SizedBox(
-                  width: 20 + 18,
-                  height: 20,
-                )
+            width: 20 + 18,
+            height: 20,
+          )
               : SizedBox.shrink(),
           child: Padding(
             padding: const EdgeInsets.only(right: 18.0),
@@ -254,11 +261,11 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
                   decoration: BoxDecoration(
                       color: backgroundColor,
                       borderRadius:
-                          const BorderRadius.all(Radius.circular(10))),
+                      const BorderRadius.all(Radius.circular(10))),
                   child: LayoutBuilder(builder:
                       (BuildContext context, BoxConstraints constraints) {
                     final maxPhysicalSize =
-                        Platform.isAndroid || Platform.isIOS ? 250.0 : 300.0;
+                    Platform.isAndroid || Platform.isIOS ? 250.0 : 300.0;
 
                     if (sharedImage.content.width == 0 ||
                         sharedImage.content.height == 0) {
@@ -279,7 +286,9 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
                       final maxSize = max(minSize,
                           min(maxPhysicalSize, constraints.maxWidth - 60));
 
-                      final dpi = MediaQuery.of(context).devicePixelRatio;
+                      final dpi = MediaQuery
+                          .of(context)
+                          .devicePixelRatio;
                       final imageOriginWidth = sharedImage.content.width / dpi;
                       final imageOriginHeight =
                           sharedImage.content.height / dpi;
@@ -317,9 +326,9 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
           visible: alignment == MainAxisAlignment.start,
           replacement: alignment == MainAxisAlignment.start
               ? SizedBox(
-                  width: 20 + 18,
-                  height: 20,
-                )
+            width: 20 + 18,
+            height: 20,
+          )
               : SizedBox.shrink(),
           child: Padding(
             padding: const EdgeInsets.only(left: 18.0),
@@ -336,24 +345,31 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
     }
   }
 
+
   Widget _image(SharedFile sharedFile, {int? cacheWidth, int? cacheHeight}) {
-    return Image.file(
-      key: _imageKey,
-      cacheWidth: cacheWidth,
-      cacheHeight: cacheHeight,
-      File(sharedFile.content.path!!),
-      fit: BoxFit.contain,
-      errorBuilder: (
-        BuildContext context,
-        Object error,
-        StackTrace? stackTrace,
-      ) {
-        talker.error('failed to preview image: ${entity.shareable.id}', error,
-            stackTrace);
-        return _imageErrorWidget();
-      },
-    );
+    final resourceId = sharedFile.content.resourceId;
+    if (resourceId.isEmpty || isDesktop()) {
+      return Image.file(
+        key: _imageKey,
+        cacheWidth: cacheWidth,
+        cacheHeight: cacheHeight,
+        File(sharedFile.content.path!!),
+        fit: BoxFit.contain,
+        errorBuilder: (BuildContext context,
+            Object error,
+            StackTrace? stackTrace,) {
+          talker.error('failed to preview image: ${entity.shareable.id}', error,
+              stackTrace);
+          return _imageErrorWidget();
+        },
+      );
+    } else {
+      return Image(key: _imageKey,
+          image: FlixThumbnailProvider(resourceId: sharedFile.content.resourceId));
+    }
   }
 
   Widget _imageErrorWidget() => PreviewErrorWidget();
 }
+
+

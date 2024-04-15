@@ -290,6 +290,8 @@ class SettingsScreenState extends State<SettingsScreen> {
         builder: (context) {
           return ConfirmCleanCacheBottomSheet(
             onConfirm: () {
+              // PaintingBinding.instance.imageCache?.clear();
+              // PaintingBinding.instance.imageCache?.clearLiveImages();
               deleteCache();
             },
           );

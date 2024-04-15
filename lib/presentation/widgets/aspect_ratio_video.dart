@@ -48,6 +48,7 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
     super.initState();
     isError = false;
     controller = VideoPlayerController.file(File(widget.videoPath));
+    controller?.setVolume(0);
     controller!.addListener(_onVideoControllerUpdate);
     controller?.initialize().catchError((e) {
       talker.error('init video player error: ', e);

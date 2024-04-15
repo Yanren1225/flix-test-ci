@@ -6,6 +6,7 @@ import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/presentation/basic/flix_thumbnail_provider.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/aspect_ratio_video.dart';
 import 'package:flix/presentation/widgets/bubbles/accept_media_widget.dart';
@@ -15,6 +16,7 @@ import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/preview_error_widget.dart';
 import 'package:flix/presentation/widgets/segements/resend_button.dart';
+import 'package:flix/utils/platform_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +66,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
       switch (sharedVideo.state) {
         case FileState.picked:
           clickable = true;
-          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
+          content = _buildInlineVideoPlayer(sharedVideo, false);
           stateIcon = CancelSendButton(key: _cancelButtonKey, entity: entity);
           break;
         case FileState.waitToAccepted:
@@ -72,7 +74,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
           content = Stack(
             fit: StackFit.passthrough,
             children: [
-              _buildInlineVideoPlayer(sharedVideo.content.path!, true),
+              _buildInlineVideoPlayer(sharedVideo, true),
               Container(
                 decoration:
                     const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
@@ -93,7 +95,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
           content = Stack(
             fit: StackFit.passthrough,
             children: [
-              _buildInlineVideoPlayer(sharedVideo.content.path!, true),
+              _buildInlineVideoPlayer(sharedVideo, true),
               Container(
                 decoration: BoxDecoration(color: Colors.black.withOpacity(0.5)),
                 width: double.infinity,
@@ -134,14 +136,14 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
         case FileState.receiveCompleted:
         case FileState.completed:
           clickable = true;
-          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
+          content = _buildInlineVideoPlayer(sharedVideo, false);
           break;
         case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
           clickable = true;
-          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
+          content = _buildInlineVideoPlayer(sharedVideo, false);
           stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
         default:
@@ -181,7 +183,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
         case FileState.receiveCompleted:
         case FileState.completed:
           clickable = true;
-          content = _buildInlineVideoPlayer(sharedVideo.content.path!, false);
+          content = _buildInlineVideoPlayer(sharedVideo, false);
         case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
@@ -311,8 +313,30 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
     }
   }
 
-  Widget _buildInlineVideoPlayer(String videoUri, bool preview) {
-    return AspectRatioVideo(
-        key: _videoWidget, videoPath: videoUri, preview: preview);
+  Widget _buildInlineVideoPlayer(SharedFile videoEntity, bool preview) {
+    final previewWidget;
+    if (videoEntity.content.resourceId.isEmpty || isDesktop()) {
+      previewWidget = AspectRatioVideo(
+          key: _videoWidget, videoPath: videoEntity.content.path!, preview: false);
+    } else {
+      previewWidget = Image(key: _videoWidget, image: FlixThumbnailProvider(resourceId: videoEntity.content.resourceId));
+    }
+
+    return IntrinsicHeight(
+      child: Stack(
+        fit: StackFit.passthrough,
+        children: [
+          previewWidget,
+          Align(
+            alignment: Alignment.center,
+            child: Visibility(
+              visible: !preview,
+              child: SvgPicture.asset('assets/images/ic_play.svg'),
+            ),
+          )
+        ],
+      ),
+    );
+
   }
 }

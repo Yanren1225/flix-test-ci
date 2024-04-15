@@ -1,25 +1,21 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
+import 'package:device_apps/device_apps.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
-import 'package:device_apps/device_apps.dart';
-import 'package:drift/drift.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_size_getter/file_input.dart';
 import 'package:image_size_getter/image_size_getter.dart';
 import 'package:mime/mime.dart';
+import 'package:path_provider/path_provider.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_handler/share_handler.dart';
 import 'package:shared_storage/shared_storage.dart' as shared_storage;
-import 'package:path_provider/path_provider.dart' as path;
 import 'package:video_player/video_player.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
