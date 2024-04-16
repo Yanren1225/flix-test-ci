@@ -389,8 +389,10 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
   }
 
   Future<void> initWindowClose() async {
-    windowManager.setPreventClose(true);
-    windowManager.addListener(this);
+    if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
+      windowManager.setPreventClose(true);
+      windowManager.addListener(this);
+    }
   }
 
   @override
