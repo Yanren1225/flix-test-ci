@@ -126,6 +126,7 @@ Future<void> main() async {
             talker.error('isServerLiving error', error, stackTrace));
         // ShipService.instance.startShipServer();
       } else if (msg == 'AppLifecycleState.paused') {
+        talker.verbose('App paused');
         DeviceDiscover.instance.stop();
       }
       return msg;

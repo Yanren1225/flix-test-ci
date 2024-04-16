@@ -7,7 +7,9 @@ import 'package:flix/presentation/widgets/app_icon.dart';
 import 'package:flix/presentation/widgets/check_state_box.dart';
 import 'package:flix/utils/app/apk_utils.dart';
 import 'package:device_apps/device_apps.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pinyin/pinyin.dart';
 
 import '../widgets/blur_appbar.dart';
 
@@ -19,7 +21,9 @@ class AppsScreen extends StatefulWidget {
 }
 
 class AppsScreenState extends State<AppsScreen> {
-  List<Application> apps = List.empty();
+  // List<Application> apps = List.empty();
+  List<String> sortedPackageNames = List.empty();
+  Map<String, Application> package2AppMap = {};
 
   ValueNotifier<Set<Application>> selectedApps = ValueNotifier({});
 
@@ -40,7 +44,8 @@ class AppsScreenState extends State<AppsScreen> {
       ),
       title: const Text('选择本机应用'),
       titleTextStyle: const TextStyle(
-          color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500).useSystemChineseFont(),
+              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500)
+          .useSystemChineseFont(),
       actions: [
         ValueListenableBuilder(
             valueListenable: selectedApps,
@@ -73,9 +78,10 @@ class AppsScreenState extends State<AppsScreen> {
         ),
         body: ListView.builder(
             padding: EdgeInsets.only(top: appBarHeight),
-            itemCount: apps.length,
+            itemCount: sortedPackageNames.length,
             itemBuilder: (context, index) {
-              final Application app = apps[index];
+              final packageName = sortedPackageNames[index]!;
+              final Application app = package2AppMap[packageName]!;
               return AppItem(
                   application: app,
                   onChecked: (checked) {
@@ -104,11 +110,30 @@ class AppsScreenState extends State<AppsScreen> {
   @override
   void initState() {
     super.initState();
-    getInstalledApps().then((apps) {
+    getInstalledApps().then((apps) async {
       talker.debug('loaded apps size: ${apps.length}');
+      final _sortedPackageName = await compute((_appNames) {
+        final letters = _appNames.map((e) {
+          var letter = PinyinHelper.getPinyinE(e.value).toLowerCase();
+          if (letter.isEmpty) {
+            letter = e.value.toLowerCase();
+          }
+          // talker.debug('name: ${e.value}, letter: $letter');
+          return letter;
+        }).toList();
+        return (_appNames.asMap().entries.toList()
+              ..sort((MapEntry<int, MapEntry<String, String>> a,
+                      MapEntry<int, MapEntry<String, String>> b) =>
+                  letters[a.key]!.compareTo(letters[b.key]!)))
+            .map((e) => e.value.key)
+            .toList();
+      }, apps.map((e) => MapEntry(e.packageName, e.appName)).toList());
       if (context.mounted) {
         setState(() {
-          this.apps = apps;
+          this.sortedPackageNames = _sortedPackageName;
+          this.package2AppMap = apps
+              .asMap()
+              .map((key, value) => MapEntry(value.packageName, value));
         });
       }
     });
@@ -130,6 +155,7 @@ class AppItem extends StatefulWidget {
 
 class AppItemState extends State<AppItem> {
   Application get application => widget.application;
+
   OnChecked get onChecked => widget.onChecked;
 
   final ValueNotifier<bool> _checked = ValueNotifier<bool>(false);

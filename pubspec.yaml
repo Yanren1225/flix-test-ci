@@ -102,6 +102,7 @@ dependencies:
   mutex: ^3.1.0
   bonsoir: ^5.1.9
   intl: ^0.18.1
+  pinyin: ^3.2.0
 
       # thumbnailer: ^2.2.0
 
