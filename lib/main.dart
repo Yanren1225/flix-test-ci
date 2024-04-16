@@ -193,7 +193,12 @@ Future<void> initSystemManager() async {
   // We first init the systray menu
   await systemTray.initSystemTray(
     iconPath: Platform.isWindows ? _iconPathWin : _iconPathOther,
+    isTemplate: Platform.isMacOS,
   );
+
+  // if (Platform.isMacOS) {
+  //   await systemTray.setImage(_iconPathOther, isTemplate: true);
+  // }
 
   // create context menu
   final Menu menu = Menu();
@@ -225,6 +230,7 @@ Future<void> initBootStartUp() async {
   launchAtStartup.setup(
     appName: packageInfo.appName,
     appPath: Platform.resolvedExecutable,
+
   );
   bool isEnabled = await launchAtStartup.isEnabled();
 }
@@ -398,16 +404,17 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
 
   @override
   Future<void> onWindowClose() async {
-    var isMinimized = await SettingsRepo.instance.isMinimizedMode();
-    if (isMinimized) {
+    // var isMinimized = await SettingsRepo.instance.isMinimizedMode();
+    // if (isMinimized) {
+    //   windowManager.hide();
       windowManager.minimize();
-      return;
-    }
+    //   return;
+    // }
 
-    bool isPreventClose = await windowManager.isPreventClose();
-    if (isPreventClose) {
-      showCupertinoModalPopup(context: context, builder: (_context) => ConfirmExitAppBottomSheet());
-    }
+    // bool isPreventClose = await windowManager.isPreventClose();
+    // if (isPreventClose) {
+    //   showCupertinoModalPopup(context: context, builder: (_context) => ConfirmExitAppBottomSheet());
+    // }
   }
 
   void _tryGoPickDeviceScreen(SharedMedia? sharedMedia) {

@@ -93,36 +93,35 @@ class SettingsScreenState extends State<SettingsScreen> {
             ),
 
             // 高度1pt的分割线
-            Visibility(
-              visible: showAppLaunchConfig,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16),
-                child: SettingsItemWrapper(
-                  topRadius: false,
-                  bottomRadius: false,
-                  child: StreamBuilder<bool>(
-                    initialData: SettingsRepo.instance.isMinimized,
-                    stream: SettingsRepo.instance.isMinimizedStream.stream,
-                    builder:
-                        (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                      return SwitchableItem(
-                        label: '关闭窗口后，保留在系统托盘区域',
-                        checked: snapshot.data ?? false,
-                        onChanged: (value) async {
-                          talker.debug("isMinimized value = $value");
-                          SettingsRepo.instance.setMinimizedMode(value!);
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
+            // Visibility(
+            //   visible: showAppLaunchConfig,
+            //   child: Padding(
+            //     padding: const EdgeInsets.only(left: 16, right: 16),
+            //     child: SettingsItemWrapper(
+            //       topRadius: false,
+            //       bottomRadius: false,
+            //       child: StreamBuilder<bool>(
+            //         initialData: SettingsRepo.instance.isMinimized,
+            //         stream: SettingsRepo.instance.isMinimizedStream.stream,
+            //         builder:
+            //             (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            //           return SwitchableItem(
+            //             label: '关闭窗口后，保留在系统托盘区域',
+            //             checked: snapshot.data ?? false,
+            //             onChanged: (value) async {
+            //               talker.debug("isMinimized value = $value");
+            //               SettingsRepo.instance.setMinimizedMode(value!);
+            //             },
+            //           );
+            //         },
+            //       ),
+            //     ),
+            //   ),
+            // ),
 
             // 高度1pt的分割线
             Visibility(
-              visible:
-                  Platform.isMacOS || Platform.isWindows || Platform.isLinux,
+              visible: showAppLaunchConfig,
               child: Padding(
                 padding: const EdgeInsets.only(left: 16, right: 16),
                 child: SettingsItemWrapper(
@@ -130,7 +129,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   bottomRadius: true,
                   child: SwitchableItem(
                     label: '开机时自动启动',
-                    des: '软件会在后台静默启动，不会弹窗打扰',
+                    // des: '软件会在后台静默启动，不会弹窗打扰',
                     checked: isStartUpEnabled,
                     onChanged: (value) async {
                       print("startup value = $value");
