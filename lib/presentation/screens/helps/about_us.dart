@@ -47,7 +47,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
         builder: (padding) {
           final widgets = <Widget>[
             niceToMeetU(),
-            logo(),
+            // logo(),
             brief(),
             participate(),
             feedbackGuide(),

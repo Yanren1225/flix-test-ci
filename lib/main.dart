@@ -185,8 +185,8 @@ Future<void> initSystemManager() async {
   if (!(Platform.isMacOS || Platform.isWindows || Platform.isLinux)) {
     return;
   }
-  const String _iconPathWin = 'assets/images/logo.ico';
-  const String _iconPathOther = 'assets/images/logo_no_color.png';
+  const String _iconPathWin = 'assets/images/tray_logo.ico';
+  const String _iconPathOther = 'assets/images/tray_logo_no_color.png';
   final AppWindow appWindow = AppWindow();
   final SystemTray systemTray = SystemTray();
 
