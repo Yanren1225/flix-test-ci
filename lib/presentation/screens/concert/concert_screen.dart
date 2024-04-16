@@ -149,7 +149,7 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
         type: type,
         shareable: shareable));
     Future.delayed(const Duration(milliseconds: 500), () {
-      if (context.mounted) {
+      if (mounted) {
         _scrollController.animateTo(_scrollController.position.minScrollExtent,
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut);

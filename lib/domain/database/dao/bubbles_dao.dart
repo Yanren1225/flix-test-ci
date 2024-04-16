@@ -141,10 +141,20 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
 
       for (var i = 0; i < primitiveBubbles.length - 1; i++) {
         timeBubbleSource = primitiveBubbles[i + 1];
-        if (primitiveBubbles[i + 1]!.time - primitiveBubbles[i]!.time >=
+        final beforeItem = primitiveBubbles[i];
+        if (timeBubbleSource == null) {
+          talker.error('missing bubble: ${bubbleEntities[i + 1]}');
+          continue;
+        }
+        if (beforeItem == null) {
+          talker.error('missing bubble: ${bubbleEntities[i]}');
+          continue;
+        }
+
+        if (timeBubbleSource.time - beforeItem.time >=
             timeGap) {
           final timeBubble = PrimitiveTimeBubble(
-              id: timeBubbleSource!.id,
+              id: timeBubbleSource.id,
               from: timeBubbleSource.from,
               to: timeBubbleSource.to,
               type: BubbleType.Time,

@@ -83,37 +83,43 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
 
   Future<List<UIBubble>> _createUIBubbleFromSharedMedia(
       DeviceInfo deviceInfo) async {
-    final self = Provider.of<AndropContext>(context, listen: false).deviceId;
-    final bubbles = <UIBubble>[];
-    if (widget.sharedMedia.attachments?.isNotEmpty == true) {
-      for (final SharedAttachment? attachment
-          in widget.sharedMedia.attachments ?? []) {
-        if (attachment != null) {
-          final shareable = SharedFile(
-              id: const Uuid().v4(),
-              state: FileState.picked,
-              content: await attachment.toFileMeta());
-          bubbles.add(UIBubble(
-              time: DateTime.now().millisecondsSinceEpoch,
-              from: self,
-              to: deviceInfo.id,
-              type: _sharedType2BubbleType(attachment.type),
-              shareable: shareable));
+    try {
+      final self = Provider.of<AndropContext>(context, listen: false).deviceId;
+      final bubbles = <UIBubble>[];
+      if (widget.sharedMedia.attachments?.isNotEmpty == true) {
+        for (final SharedAttachment? attachment
+        in widget.sharedMedia.attachments ?? []) {
+          if (attachment != null) {
+            final shareable = SharedFile(
+                id: const Uuid().v4(),
+                state: FileState.picked,
+                content: await attachment.toFileMeta());
+            bubbles.add(UIBubble(
+                time: DateTime.now().millisecondsSinceEpoch,
+                from: self,
+                to: deviceInfo.id,
+                type: _sharedType2BubbleType(attachment.type),
+                shareable: shareable));
+          }
         }
+      } else if (widget.sharedMedia.content?.isNotEmpty == true) {
+        bubbles.add(UIBubble(
+            time: DateTime.now().millisecondsSinceEpoch,
+            from: self,
+            to: deviceInfo.id,
+            type: BubbleType.Text,
+            shareable: SharedText(
+                id: const Uuid().v4(), content: widget.sharedMedia.content!)));
+      } else {
+        talker.error('无法创建UIBubble，分享内容为空');
       }
-    } else if (widget.sharedMedia.content?.isNotEmpty == true) {
-      bubbles.add(UIBubble(
-          time: DateTime.now().millisecondsSinceEpoch,
-          from: self,
-          to: deviceInfo.id,
-          type: BubbleType.Text,
-          shareable: SharedText(
-              id: const Uuid().v4(), content: widget.sharedMedia.content!)));
-    } else {
-      talker.error('无法创建UIBubble，分享内容为空');
+
+      return bubbles;
+    } catch (e, stackTrace) {
+      talker.error('failed to _createUIBubbleFromSharedMedia', e, stackTrace);
     }
 
-    return bubbles;
+    return List.empty();
   }
 
   BubbleType _sharedType2BubbleType(SharedAttachmentType type) {

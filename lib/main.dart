@@ -415,8 +415,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
       talker.error('shareMedia is null');
       return;
     }
-    if (!context.mounted) {
-      talker.warning('context has unmounted');
+    if (!mounted) {
+      talker.warning('widget not unmounted');
       return;
     }
 

@@ -128,7 +128,7 @@ class AppsScreenState extends State<AppsScreen> {
             .map((e) => e.value.key)
             .toList();
       }, apps.map((e) => MapEntry(e.packageName, e.appName)).toList());
-      if (context.mounted) {
+      if (mounted) {
         setState(() {
           this.sortedPackageNames = _sortedPackageName;
           this.package2AppMap = apps

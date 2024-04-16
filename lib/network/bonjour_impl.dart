@@ -160,6 +160,8 @@ class BonjourImpl extends MultiCastApi {
               BonsoirDiscoveryEventType.discoveryServiceLost) {
             talker.debug('mDns Service lost : ${event.service?.toJson()}');
           }
+        }, onError: (e) {
+          talker.error('mDns discover error: $e');
         });
 
 // Start the discovery **after** listening to discovery events :
