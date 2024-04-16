@@ -17,6 +17,7 @@ import 'package:flix/domain/window/FlixWindowManager.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/notification/reception_notification.dart';
 import 'package:flix/network/multicast_client_provider.dart';
+import 'package:flix/presentation/dialog/confirm_exit_app_bottomsheet.dart';
 import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
@@ -404,32 +405,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
       return;
     }
 
-    var text = '确定要关闭Flix吗？';
     bool isPreventClose = await windowManager.isPreventClose();
     if (isPreventClose) {
-      showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            title: Text(text),
-            actions: [
-              TextButton(
-                child: const Text('No'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                child: const Text('Yes'),
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  await windowManager.destroy();
-                },
-              ),
-            ],
-          );
-        },
-      );
+      showCupertinoModalPopup(context: context, builder: (_context) => ConfirmExitAppBottomSheet());
     }
   }
 
