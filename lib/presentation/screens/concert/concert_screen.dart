@@ -142,14 +142,19 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
 
   void submit(ConcertProvider concertProvider, Shareable shareable,
       BubbleType type) async {
-    await concertProvider.send(UIBubble(
+    concertProvider.send(UIBubble(
         time: DateTime.now().millisecondsSinceEpoch,
         from: DeviceProfileRepo.instance.did,
         to: Provider.of<ConcertProvider>(context, listen: false).deviceInfo.id,
         type: type,
         shareable: shareable));
-    _scrollController.animateTo(_scrollController.position.minScrollExtent,
-        duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (context.mounted) {
+        _scrollController.animateTo(_scrollController.position.minScrollExtent,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut);
+      }
+    });
   }
 
   @override
@@ -503,17 +508,14 @@ class InputAreaState extends State<InputArea> {
             });
         return;
       }
- 
     }
-    
-    
-
 
     final text = await Pasteboard.text;
     if (text?.isNotEmpty == true) {
       final selection = textEditController.selection;
       // final offset = selection.baseOffset;
-      textEditController.value = textEditController.value.replaced(selection, text!);
+      textEditController.value =
+          textEditController.value.replaced(selection, text!);
       return;
     }
   }

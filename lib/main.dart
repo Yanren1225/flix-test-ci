@@ -179,6 +179,7 @@ Future<void> initFireBase() async {
     }
 }
 
+// linux需要前置安装其他库： https://pub.dev/packages/system_tray
 Future<void> initSystemManager() async {
   if (!(Platform.isMacOS || Platform.isWindows || Platform.isLinux)) {
     return;
