@@ -184,14 +184,15 @@ Future<void> initSystemManager() async {
   if (!(Platform.isMacOS || Platform.isWindows || Platform.isLinux)) {
     return;
   }
-  const String _iconPathWin = 'assets/images/logo.jpg.ico';
+  const String _iconPathWin = 'assets/images/logo.ico';
   const String _iconPathOther = 'assets/images/logo.jpg';
   final AppWindow appWindow = AppWindow();
   final SystemTray systemTray = SystemTray();
 
   // We first init the systray menu
   await systemTray.initSystemTray(
-    iconPath: _iconPathOther,
+    title: 'flix',
+    iconPath: Platform.isWindows ? _iconPathWin : _iconPathOther,
   );
 
   // create context menu
