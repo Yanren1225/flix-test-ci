@@ -186,13 +186,12 @@ Future<void> initSystemManager() async {
     return;
   }
   const String _iconPathWin = 'assets/images/logo.ico';
-  const String _iconPathOther = 'assets/images/logo.png';
+  const String _iconPathOther = 'assets/images/logo_no_color.png';
   final AppWindow appWindow = AppWindow();
   final SystemTray systemTray = SystemTray();
 
   // We first init the systray menu
   await systemTray.initSystemTray(
-    title: 'flix',
     iconPath: Platform.isWindows ? _iconPathWin : _iconPathOther,
   );
 
