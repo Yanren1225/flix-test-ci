@@ -185,7 +185,7 @@ Future<void> initSystemManager() async {
     return;
   }
   const String _iconPathWin = 'assets/images/logo.ico';
-  const String _iconPathOther = 'assets/images/logo.jpg';
+  const String _iconPathOther = 'assets/images/logo.png';
   final AppWindow appWindow = AppWindow();
   final SystemTray systemTray = SystemTray();
 
