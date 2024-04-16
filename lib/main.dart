@@ -63,6 +63,8 @@ final receptionNotificationStream = StreamController<MessageNotification>();
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+bool needExitApp = false;
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -205,7 +207,10 @@ Future<void> initSystemManager() async {
   await menu.buildFrom([
     MenuItemLabel(label: 'Show', onClicked: (menuItem) => appWindow.show()),
     MenuItemLabel(label: 'Hide', onClicked: (menuItem) => appWindow.hide()),
-    MenuItemLabel(label: 'Exit', onClicked: (menuItem) => appWindow.close()),
+    MenuItemLabel(label: 'Exit', onClicked: (menuItem) {
+      needExitApp = true;
+      appWindow.close();
+  }),
   ]);
 
   // set context menu
@@ -406,8 +411,16 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
   Future<void> onWindowClose() async {
     // var isMinimized = await SettingsRepo.instance.isMinimizedMode();
     // if (isMinimized) {
-    //   windowManager.hide();
+    if (Platform.isWindows) {
+      if (needExitApp) {
+        Navigator.of(context).pop();
+        await windowManager.destroy();
+      } else {
+        windowManager.hide();
+      }
+    } else {
       windowManager.minimize();
+    }
     //   return;
     // }
 

@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Flix"
-#define MyAppVersion "beta.v0.1.6"
+#define MyAppVersion "beta.v0.1.7"
 #define MyAppPublisher "Flix co."
 #define MyAppExeName "flix.exe"
 
