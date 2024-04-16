@@ -16,6 +16,7 @@ import 'package:flix/presentation/widgets/settings/clickable_item.dart';
 import 'package:flix/presentation/widgets/settings/settings_item_wrapper.dart';
 import 'package:flix/presentation/widgets/settings/switchable_item.dart';
 import 'package:flix/utils/file/file_helper.dart';
+import 'package:flix/utils/platform_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -62,6 +63,7 @@ class SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final bool showCustomSaveDir = !Platform.isIOS;
+    final bool showAppLaunchConfig = isDesktop();
 
     return CupertinoNavigationScaffold(
       title: '软件设置',
@@ -78,7 +80,7 @@ class SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.only(left: 16, right: 16),
               child: ClickableItem(
                   topRadius: true,
-                  bottomRadius: false,
+                  bottomRadius: !showAppLaunchConfig,
                   label: '本机名称',
                   des: deviceName,
                   onClick: () {
@@ -92,13 +94,12 @@ class SettingsScreenState extends State<SettingsScreen> {
 
             // 高度1pt的分割线
             Visibility(
-              visible:
-                  Platform.isMacOS || Platform.isWindows || Platform.isLinux,
+              visible: showAppLaunchConfig,
               child: Padding(
                 padding: const EdgeInsets.only(left: 16, right: 16),
                 child: SettingsItemWrapper(
                   topRadius: false,
-                  bottomRadius: true,
+                  bottomRadius: false,
                   child: StreamBuilder<bool>(
                     initialData: SettingsRepo.instance.isMinimized,
                     stream: SettingsRepo.instance.isMinimizedStream.stream,
@@ -108,7 +109,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                         label: '关闭窗口后，保留在系统托盘区域',
                         checked: snapshot.data ?? false,
                         onChanged: (value) async {
-                          print("isMinimized value = $value");
+                          talker.debug("isMinimized value = $value");
                           SettingsRepo.instance.setMinimizedMode(value!);
                         },
                       );
@@ -127,30 +128,23 @@ class SettingsScreenState extends State<SettingsScreen> {
                 child: SettingsItemWrapper(
                   topRadius: false,
                   bottomRadius: true,
-                  child: StreamBuilder<bool>(
-                    initialData: SettingsRepo.instance.autoReceive,
-                    stream: SettingsRepo.instance.autoReceiveStream.stream,
-                    builder:
-                        (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                      return SwitchableItem(
-                        label: '开机时自动启动',
-                        des: '软件会在后台静默启动，不会弹窗打扰',
-                        checked: isStartUpEnabled,
-                        onChanged: (value) async {
-                          print("startup value = $value");
-                          var success = false;
-                          if (value == true) {
-                            success = await launchAtStartup.enable();
-                          } else {
-                            success = await launchAtStartup.disable();
-                          }
-                          setState(() {
-                            if (success) {
-                              isStartUpEnabled = value!;
-                            }
-                          });
-                        },
-                      );
+                  child: SwitchableItem(
+                    label: '开机时自动启动',
+                    des: '软件会在后台静默启动，不会弹窗打扰',
+                    checked: isStartUpEnabled,
+                    onChanged: (value) async {
+                      print("startup value = $value");
+                      var success = false;
+                      if (value == true) {
+                        success = await launchAtStartup.enable();
+                      } else {
+                        success = await launchAtStartup.disable();
+                      }
+                      setState(() {
+                        if (success) {
+                          isStartUpEnabled = value!;
+                        }
+                      });
                     },
                   ),
                 ),
@@ -170,7 +164,7 @@ class SettingsScreenState extends State<SettingsScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
               child: SettingsItemWrapper(
-                topRadius: false,
+                topRadius: true,
                 bottomRadius: false,
                 child: StreamBuilder<bool>(
                   initialData: SettingsRepo.instance.autoReceive,
@@ -237,49 +231,13 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(left: 20, top: 20, right: 20),
-              child: Text(
-                '实验模式',
-                style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.normal,
-                    color: Color.fromRGBO(60, 60, 67, 0.6)),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
-              child: SettingsItemWrapper(
-                topRadius: true,
-                bottomRadius: !showCustomSaveDir,
-                child: StreamBuilder<bool>(
-                  initialData: SettingsRepo.instance.enableMdns,
-                  stream: SettingsRepo.instance.enableMdnsStream.stream,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                    return SwitchableItem(
-                      label: '启用新的设备发现方式',
-                      des: '开启后可解决开热点后无法发现设备的问题。若遇到兼容问题，请尝试关闭此开关，并反馈给我们❤️',
-                      checked: snapshot.data ?? false,
-                      onChanged: (value) {
-                        setState(() {
-                          if (value != null) {
-                            SettingsRepo.instance.setEnableMdns(value);
-                          }
-                        });
-                      },
-                    );
-                  },
-                ),
-              ),
-            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Padding(
                   padding: EdgeInsets.only(left: 20, top: 20, right: 20),
                   child: Text(
-                    '其他',
+                    '更多',
                     style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.normal,
@@ -287,40 +245,37 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 16, top: 4, right: 16, bottom: 16),
-                  child: InkWell(
-                    onTap: () {
-                      showConfirmDeleteCacheBottomSheet();
-                    },
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                          color: Color.fromRGBO(255, 59, 48, 1),
-                          borderRadius: BorderRadius.circular(14)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: StreamBuilder<bool>(
-                          initialData: SettingsRepo.instance.autoReceive,
-                          stream:
-                              SettingsRepo.instance.autoReceiveStream.stream,
-                          builder: (BuildContext context,
-                              AsyncSnapshot<bool> snapshot) {
-                            return const SizedBox(
-                              width: double.infinity,
-                              child: const Text(
-                                textAlign: TextAlign.center,
-                                '清除缓存',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.normal),
-                              ),
-                            );
+                  padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
+                  child: SettingsItemWrapper(
+                    topRadius: true,
+                    bottomRadius: false,
+                    child: StreamBuilder<bool>(
+                      initialData: SettingsRepo.instance.enableMdns,
+                      stream: SettingsRepo.instance.enableMdnsStream.stream,
+                      builder:
+                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                        return SwitchableItem(
+                          label: '启用新的设备发现方式',
+                          des: '开启后可解决开热点后无法发现设备的问题。若遇到兼容问题，请尝试关闭此开关，并反馈给我们❤️',
+                          checked: snapshot.data ?? false,
+                          onChanged: (value) {
+                            setState(() {
+                              if (value != null) {
+                                SettingsRepo.instance.setEnableMdns(value);
+                              }
+                            });
                           },
-                        ),
-                      ),
+                        );
+                      },
                     ),
                   ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 16, right: 16, bottom: 16),
+                  child: ClickableItem(label: '清除缓存', topRadius: false, bottomRadius: true, onClick: () {
+                    showConfirmDeleteCacheBottomSheet();
+                  },),
                 ),
               ],
             ),

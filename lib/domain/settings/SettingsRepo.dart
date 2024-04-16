@@ -41,12 +41,10 @@ class SettingsRepo {
   StreamController<bool> autoReceiveStream = StreamController.broadcast();
 
   String _savedDir = "";
-
   String get savedDir => _savedDir;
   StreamController<String> savedDirStream = StreamController.broadcast();
 
   bool _enableMdns = true;
-
   bool get enableMdns => _enableMdns;
   StreamController<bool> enableMdnsStream = StreamController.broadcast();
 
