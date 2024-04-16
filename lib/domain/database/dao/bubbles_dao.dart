@@ -155,7 +155,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
         }
         bubblesResult.add(timeBubbleSource);
       }
-      talker.debug("watchBubblesByCid====>", "$bubblesResult");
+      // talker.debug("watchBubblesByCid====>", "$bubblesResult");
       return bubblesResult.nonNulls.toList();
     });
   }

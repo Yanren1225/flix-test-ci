@@ -53,10 +53,11 @@ samples, guidance on mobile development, and a full API reference.
 35. ~~帮助大标题折叠效果和文字太大被裁剪~~
 36. ~~多选返回~~
 37. ~~不可预览的文件发送完毕删除文件缓存~~
-38. 图片预览宽高错误
+38. ~~图片预览宽高错误~~
 39. iOS dsym没有正确上传到firebase
 40. 偶现一次macos上刷新，搜索不到Android设备，Android端也看不到macos设备，但是Android端刷新后两端正常
 41. 小米手机偶现无法被发现
+42. 重新发送没有重新获取ios缓存路径
 
 ## 功能
 单击消息，打开文件

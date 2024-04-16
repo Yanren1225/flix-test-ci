@@ -348,6 +348,13 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
 
   Widget _image(SharedFile sharedFile, {int? cacheWidth, int? cacheHeight}) {
     final resourceId = sharedFile.content.resourceId;
+    final errorBuilder = (BuildContext context,
+        Object error,
+        StackTrace? stackTrace,) {
+      talker.error('failed to preview image: ${entity.shareable.id}', error,
+          stackTrace);
+      return _imageErrorWidget();
+    };
     if (resourceId.isEmpty || isDesktop()) {
       return Image.file(
         key: _imageKey,
@@ -355,17 +362,11 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
         cacheHeight: cacheHeight,
         File(sharedFile.content.path!!),
         fit: BoxFit.contain,
-        errorBuilder: (BuildContext context,
-            Object error,
-            StackTrace? stackTrace,) {
-          talker.error('failed to preview image: ${entity.shareable.id}', error,
-              stackTrace);
-          return _imageErrorWidget();
-        },
+        errorBuilder: errorBuilder,
       );
     } else {
       return Image(key: _imageKey,
-          image: FlixThumbnailProvider(resourceId: sharedFile.content.resourceId));
+          image: FlixThumbnailProvider(resourceId: sharedFile.content.resourceId), fit: BoxFit.contain, errorBuilder: errorBuilder,);
     }
   }
 

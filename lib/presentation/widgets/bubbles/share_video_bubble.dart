@@ -23,7 +23,6 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class ShareVideoBubble extends BaseFileBubble {
-
   const ShareVideoBubble({super.key, required super.entity});
 
   @override
@@ -238,10 +237,8 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
                   return ConstrainedBox(
                       constraints: BoxConstraints(
                           minWidth: 100,
-                          maxWidth: max(
-                              100,
-                              min(constraints.maxWidth - 60,
-                                  maxPhysicalSize)),
+                          maxWidth: max(100,
+                              min(constraints.maxWidth - 60, maxPhysicalSize)),
                           minHeight: 100),
                       child: IntrinsicHeight(child: content));
                 } else {
@@ -252,9 +249,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
                   final maxSize = max(
                       minSize, min(maxPhysicalSize, constraints.maxWidth - 60));
 
-                  final dpi = MediaQuery
-                      .of(context)
-                      .devicePixelRatio;
+                  final dpi = MediaQuery.of(context).devicePixelRatio;
                   final imageOriginWidth = sharedVideo.content.width / dpi;
                   final imageOriginHeight = sharedVideo.content.height / dpi;
                   if (imageOriginWidth >= imageOriginHeight) {
@@ -281,8 +276,8 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
                     width: width * 1.0,
                     height: height * 1.0,
                     child: ClipRRect(
-                        borderRadius: const BorderRadius.all(Radius.circular(
-                            10)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10)),
                         child: content),
                   );
                 }
@@ -317,9 +312,24 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
     final previewWidget;
     if (videoEntity.content.resourceId.isEmpty || isDesktop()) {
       previewWidget = AspectRatioVideo(
-          key: _videoWidget, videoPath: videoEntity.content.path!, preview: false);
+          key: _videoWidget,
+          videoPath: videoEntity.content.path!,
+          preview: false);
     } else {
-      previewWidget = Image(key: _videoWidget, image: FlixThumbnailProvider(resourceId: videoEntity.content.resourceId));
+      previewWidget = Image(
+          key: _videoWidget,
+          image:
+              FlixThumbnailProvider(resourceId: videoEntity.content.resourceId),
+          fit: BoxFit.contain,
+          errorBuilder: (
+            BuildContext context,
+            Object error,
+            StackTrace? stackTrace,
+          ) {
+            talker.error('failed to preview video: ${videoEntity.id}', error,
+                stackTrace);
+            return _imageErrorWidget();
+          });
     }
 
     return IntrinsicHeight(
@@ -337,6 +347,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
         ],
       ),
     );
-
   }
+
+  Widget _imageErrorWidget() => const PreviewErrorWidget();
 }
