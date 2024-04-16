@@ -19,6 +19,7 @@ import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
@@ -33,6 +34,7 @@ class SettingsScreenState extends State<SettingsScreen> {
   var isAutoSave = false;
   var deviceName = DeviceProfileRepo.instance.deviceName;
   StreamSubscription<String>? deviceNameSubscription = null;
+  var isStartUpEnabled = false;
 
   @override
   void initState() {
@@ -41,6 +43,12 @@ class SettingsScreenState extends State<SettingsScreen> {
         DeviceProfileRepo.instance.deviceNameBroadcast.stream.listen((event) {
       setState(() {
         deviceName = event;
+      });
+    });
+
+    launchAtStartup.isEnabled().then((value) {
+      setState(() {
+        isStartUpEnabled = value;
       });
     });
   }
@@ -69,6 +77,8 @@ class SettingsScreenState extends State<SettingsScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 16, right: 16),
               child: ClickableItem(
+                  topRadius: true,
+                  bottomRadius: false,
                   label: '本机名称',
                   des: deviceName,
                   onClick: () {
@@ -79,6 +89,74 @@ class SettingsScreenState extends State<SettingsScreen> {
                         });
                   }),
             ),
+
+            // 高度1pt的分割线
+            Visibility(
+              visible:
+                  Platform.isMacOS || Platform.isWindows || Platform.isLinux,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16),
+                child: SettingsItemWrapper(
+                  topRadius: false,
+                  bottomRadius: true,
+                  child: StreamBuilder<bool>(
+                    initialData: SettingsRepo.instance.isMinimized,
+                    stream: SettingsRepo.instance.isMinimizedStream.stream,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                      return SwitchableItem(
+                        label: '关闭窗口后，保留在系统托盘区域',
+                        checked: snapshot.data ?? false,
+                        onChanged: (value) async {
+                          print("isMinimized value = $value");
+                          SettingsRepo.instance.setMinimizedMode(value!);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+
+            // 高度1pt的分割线
+            Visibility(
+              visible:
+                  Platform.isMacOS || Platform.isWindows || Platform.isLinux,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16),
+                child: SettingsItemWrapper(
+                  topRadius: false,
+                  bottomRadius: true,
+                  child: StreamBuilder<bool>(
+                    initialData: SettingsRepo.instance.autoReceive,
+                    stream: SettingsRepo.instance.autoReceiveStream.stream,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                      return SwitchableItem(
+                        label: '开机时自动启动',
+                        des: '软件会在后台静默启动，不会弹窗打扰',
+                        checked: isStartUpEnabled,
+                        onChanged: (value) async {
+                          print("startup value = $value");
+                          var success = false;
+                          if (value == true) {
+                            success = await launchAtStartup.enable();
+                          } else {
+                            success = await launchAtStartup.disable();
+                          }
+                          setState(() {
+                            if (success) {
+                              isStartUpEnabled = value!;
+                            }
+                          });
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+
             const Padding(
               padding: EdgeInsets.only(left: 20, top: 20, right: 20),
               child: Text(
@@ -92,8 +170,8 @@ class SettingsScreenState extends State<SettingsScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
               child: SettingsItemWrapper(
-                topRadius: true,
-                bottomRadius: !showCustomSaveDir,
+                topRadius: false,
+                bottomRadius: false,
                 child: StreamBuilder<bool>(
                   initialData: SettingsRepo.instance.autoReceive,
                   stream: SettingsRepo.instance.autoReceiveStream.stream,
@@ -130,7 +208,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                         topRadius: false,
                         bottomRadius: true,
                         onClick: () async {
-                          if (!(await checkStoragePermission(context, manageExternalStorage: true))) {
+                          if (!(await checkStoragePermission(context,
+                              manageExternalStorage: true))) {
                             return;
                           }
 
@@ -223,7 +302,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                         child: StreamBuilder<bool>(
                           initialData: SettingsRepo.instance.autoReceive,
                           stream:
-                          SettingsRepo.instance.autoReceiveStream.stream,
+                              SettingsRepo.instance.autoReceiveStream.stream,
                           builder: (BuildContext context,
                               AsyncSnapshot<bool> snapshot) {
                             return const SizedBox(

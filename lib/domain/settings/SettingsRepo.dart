@@ -28,11 +28,15 @@ class SettingsRepo {
   static SettingsRepo get instance => _instance;
 
   static const autoReceiveKey = "autoReceive";
+  static const isMinimizedKey = "isMinimized";
   static const savedDirKey = "savedDir";
   static const enableMdnsKey = "enableMdns";
 
-  bool _autoReceive = false;
+  bool _isMinimized = false;
+  StreamController<bool> isMinimizedStream = StreamController.broadcast();
+  bool get isMinimized => _isMinimized;
 
+  bool _autoReceive = false;
   bool get autoReceive => _autoReceive;
   StreamController<bool> autoReceiveStream = StreamController.broadcast();
 
@@ -90,5 +94,17 @@ class SettingsRepo {
     }
     var sharePreference = await SharedPreferences.getInstance();
     return sharePreference.getBool(enableMdnsKey) ?? _enableMdns;
+  }
+
+  Future<void> setMinimizedMode(bool miniMode) async {
+    _isMinimized = miniMode;
+    isMinimizedStream.add(_isMinimized);
+    var sharePreference = await SharedPreferences.getInstance();
+    await sharePreference.setBool(isMinimizedKey, _isMinimized);
+  }
+
+  Future<bool> isMinimizedMode() async {
+    var sharePreference = await SharedPreferences.getInstance();
+    return sharePreference.getBool(isMinimizedKey) ?? _isMinimized;
   }
 }

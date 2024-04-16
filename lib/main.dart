@@ -11,6 +11,7 @@ import 'package:flix/domain/device/device_profile_repo.dart';
 
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
+import 'package:flix/domain/settings/SettingsRepo.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/domain/window/FlixWindowManager.dart';
 import 'package:flix/model/device_info.dart';
@@ -34,14 +35,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter/src/widgets/basic.dart';
 import 'package:flutter_ume/flutter_ume.dart'; // UME framework
 import 'package:flutter_ume_kit_console/flutter_ume_kit_console.dart'; // Show debugPrint
 import 'package:flutter_ume_kit_ui/flutter_ume_kit_ui.dart'; // UI kits
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:modals/modals.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:share_handler/share_handler.dart';
+import 'package:system_tray/system_tray.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'domain/notification/BadgeService.dart';
@@ -62,33 +66,14 @@ GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    if (Platform.isMacOS || Platform.isIOS || Platform.isAndroid) {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-      FlutterError.onError = (FlutterErrorDetails details) async {
-        if (kReleaseMode) {
-          await FirebaseCrashlytics.instance.recordFlutterFatalError;
-        } else {
-          talker.critical(details);
-        }
-      };
-      PlatformDispatcher.instance.onError = (error, stack) {
-        if (kReleaseMode) {
-          FirebaseCrashlytics.instance.recordError(error, stack,
-              fatal: true, information: ['platform errors']);
-        } else {
-          talker.critical('platform errors', error, stack);
-        }
-        return true;
-      };
-    }
-
     await flixWindowsManager.init();
     flixWindowsManager.restoreWindow();
 
+    await initBootStartUp();
+    await initFireBase();
+    await initWindowManager();
     await _initNotification();
-
+    await initSystemManager();
 
     NotificationService.instance.init();
     await DeviceProfileRepo.instance.initDeviceInfo();
@@ -151,7 +136,7 @@ Future<void> main() async {
         ..register(const WidgetInfoInspector())
         ..register(const ColorSucker())
         ..register(AlignRuler())
-      // ..register(const ColorPicker())                            // New feature
+        // ..register(const ColorPicker())                            // New feature
         ..register(const TouchIndicator())
         ..register(Console()); // Pass in your Dio instance
       // After flutter_ume 0.3.0
@@ -163,7 +148,86 @@ Future<void> main() async {
     talker.error('launch error', e, stackTrace);
     runApp(const Placeholder());
   }
+}
 
+Future<void> initWindowManager() async {
+  if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
+    await windowManager.ensureInitialized();
+    windowManager.setMinimumSize(const Size(400, 400));
+  }
+}
+
+Future<void> initFireBase() async {
+  if (Platform.isMacOS || Platform.isIOS || Platform.isAndroid) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+      FlutterError.onError = (FlutterErrorDetails details) async {
+        if (kReleaseMode) {
+          await FirebaseCrashlytics.instance.recordFlutterFatalError;
+        } else {
+          talker.critical(details);
+        }
+      };
+      PlatformDispatcher.instance.onError = (error, stack) {
+        if (kReleaseMode) {
+          FirebaseCrashlytics.instance.recordError(error, stack,
+              fatal: true, information: ['platform errors']);
+        } else {
+          talker.critical('platform errors', error, stack);
+        }
+        return true;
+      };
+    }
+}
+
+Future<void> initSystemManager() async {
+  if (!(Platform.isMacOS || Platform.isWindows || Platform.isLinux)) {
+    return;
+  }
+  const String _iconPathWin = 'assets/images/logo.jpg.ico';
+  const String _iconPathOther = 'assets/images/logo.jpg';
+  final AppWindow appWindow = AppWindow();
+  final SystemTray systemTray = SystemTray();
+
+  // We first init the systray menu
+  await systemTray.initSystemTray(
+    iconPath: _iconPathOther,
+  );
+
+  // create context menu
+  final Menu menu = Menu();
+  await menu.buildFrom([
+    MenuItemLabel(label: 'Show', onClicked: (menuItem) => appWindow.show()),
+    MenuItemLabel(label: 'Hide', onClicked: (menuItem) => appWindow.hide()),
+    MenuItemLabel(label: 'Exit', onClicked: (menuItem) => appWindow.close()),
+  ]);
+
+  // set context menu
+  await systemTray.setContextMenu(menu);
+
+  // handle system tray event
+  systemTray.registerSystemTrayEventHandler((eventName) {
+    debugPrint("eventName: $eventName");
+    if (eventName == kSystemTrayEventClick) {
+      Platform.isWindows ? appWindow.show() : systemTray.popUpContextMenu();
+    } else if (eventName == kSystemTrayEventRightClick) {
+      Platform.isWindows ? systemTray.popUpContextMenu() : appWindow.show();
+    }
+  });
+}
+
+Future<void> initBootStartUp() async {
+  if (!(Platform.isMacOS || Platform.isWindows || Platform.isLinux)) {
+    return;
+  }
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  launchAtStartup.setup(
+    appName: packageInfo.appName,
+    appPath: Platform.resolvedExecutable,
+  );
+  bool isEnabled = await launchAtStartup.isEnabled();
 }
 
 void _logAppContext() {
@@ -234,7 +298,8 @@ class MyAppState extends State<MyApp> {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: [
-          Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN'),
+          Locale.fromSubtags(
+              languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN'),
         ],
         theme: ThemeData(
           // This is the theme of your application.
@@ -282,7 +347,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends BaseScreenState<MyHomePage> {
+class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
   var selectedIndex = 0;
 
   // DeviceInfo? selectedDevice;
@@ -323,6 +388,48 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> {
     }
   }
 
+  Future<void> initWindowClose() async {
+    windowManager.setPreventClose(true);
+    windowManager.addListener(this);
+  }
+
+  @override
+  Future<void> onWindowClose() async {
+    var isMinimized = await SettingsRepo.instance.isMinimizedMode();
+    if (isMinimized) {
+      windowManager.minimize();
+      return;
+    }
+
+    var text = '确定要关闭Flix吗？';
+    bool isPreventClose = await windowManager.isPreventClose();
+    if (isPreventClose) {
+      showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            title: Text(text),
+            actions: [
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Yes'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  await windowManager.destroy();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   void _tryGoPickDeviceScreen(SharedMedia? sharedMedia) {
     if (sharedMedia == null) {
       talker.error('shareMedia is null');
@@ -359,6 +466,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> {
     super.initState();
     flixToast.init(navigatorKey.currentContext!);
     initPlatformState();
+    initWindowClose();
     receptionNotificationStream.stream.listen((receptionNotification) {
       final deviceModal = DeviceManager.instance.deviceList
           .find((element) => element.fingerprint == receptionNotification.from);
