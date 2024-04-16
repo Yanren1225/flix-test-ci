@@ -76,7 +76,7 @@ class ShipService extends ApInterface {
     final tmp = await _startShipServerInner(app, defaultPort, 'first', () async {
       return await Future.delayed(const Duration(seconds: 1), () async {
         return await _startShipServerInner(app, defaultPort + 1, 'second', () async {
-          return await Future.delayed(const Duration(seconds: 2), () async {
+          return await Future.delayed(const Duration(seconds: 1), () async {
             return await _startShipServerInner(app, defaultPort + 2, 'third', () async {});
           });
         });

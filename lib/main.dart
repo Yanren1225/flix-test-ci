@@ -69,13 +69,12 @@ Future<void> main() async {
     await flixWindowsManager.init();
     flixWindowsManager.restoreWindow();
 
-    await initBootStartUp();
     await initFireBase();
+    await initBootStartUp();
     await initWindowManager();
     await _initNotification();
     await initSystemManager();
 
-    NotificationService.instance.init();
     await DeviceProfileRepo.instance.initDeviceInfo();
     DeviceManager.instance.init();
     ShipService.instance.startShipServer().then((isSuccess) async {
@@ -151,10 +150,8 @@ Future<void> main() async {
 }
 
 Future<void> initWindowManager() async {
-  if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
-    await windowManager.ensureInitialized();
-    windowManager.setMinimumSize(const Size(400, 400));
-  }
+  await flixWindowsManager.init();
+  flixWindowsManager.restoreWindow();
 }
 
 Future<void> initFireBase() async {
@@ -267,6 +264,8 @@ Future<void> _initNotification() async {
         break;
     }
   });
+
+  NotificationService.instance.init();
 }
 
 class MyApp extends StatefulWidget {
