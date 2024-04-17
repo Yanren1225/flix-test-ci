@@ -5,7 +5,6 @@ import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
-import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/basic/flix_thumbnail_provider.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/aspect_ratio_video.dart';
@@ -65,7 +64,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
       switch (sharedVideo.state) {
         case FileState.picked:
           clickable = true;
-          content = _buildInlineVideoPlayer(sharedVideo, false);
+          content = _buildInlineVideoPlayer(true, sharedVideo, false);
           stateIcon = CancelSendButton(key: _cancelButtonKey, entity: entity);
           break;
         case FileState.waitToAccepted:
@@ -73,7 +72,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
           content = Stack(
             fit: StackFit.passthrough,
             children: [
-              _buildInlineVideoPlayer(sharedVideo, true),
+              _buildInlineVideoPlayer(true, sharedVideo, true),
               Container(
                 decoration:
                     const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
@@ -94,7 +93,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
           content = Stack(
             fit: StackFit.passthrough,
             children: [
-              _buildInlineVideoPlayer(sharedVideo, true),
+              _buildInlineVideoPlayer(true, sharedVideo, true),
               Container(
                 decoration: BoxDecoration(color: Colors.black.withOpacity(0.5)),
                 width: double.infinity,
@@ -135,14 +134,14 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
         case FileState.receiveCompleted:
         case FileState.completed:
           clickable = true;
-          content = _buildInlineVideoPlayer(sharedVideo, false);
+          content = _buildInlineVideoPlayer(true, sharedVideo, false);
           break;
         case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
           clickable = true;
-          content = _buildInlineVideoPlayer(sharedVideo, false);
+          content = _buildInlineVideoPlayer(true, sharedVideo, false);
           stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
         default:
@@ -182,7 +181,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
         case FileState.receiveCompleted:
         case FileState.completed:
           clickable = true;
-          content = _buildInlineVideoPlayer(sharedVideo, false);
+          content = _buildInlineVideoPlayer(false, sharedVideo, false);
         case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
@@ -308,9 +307,9 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
     }
   }
 
-  Widget _buildInlineVideoPlayer(SharedFile videoEntity, bool preview) {
+  Widget _buildInlineVideoPlayer(bool isFromSelf, SharedFile videoEntity, bool preview) {
     final previewWidget;
-    if (videoEntity.content.resourceId.isEmpty || isDesktop()) {
+    if (!isFromSelf || videoEntity.content.resourceId.isEmpty || isDesktop()) {
       previewWidget = AspectRatioVideo(
           key: _videoWidget,
           videoPath: videoEntity.content.path!,

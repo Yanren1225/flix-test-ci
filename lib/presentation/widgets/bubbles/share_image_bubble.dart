@@ -65,7 +65,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
         case FileState.picked:
           clickable = true;
           content = (cacheWidth, cacheHeight) =>
-              _image(sharedImage,
+              _image(true, sharedImage,
                   cacheWidth: cacheWidth, cacheHeight: cacheHeight);
           stateIcon =
               CancelSendButton(key: _cancelSendButtonKey, entity: entity);
@@ -77,7 +77,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
               Stack(
                 fit: StackFit.passthrough,
                 children: [
-                  _image(sharedImage),
+                  _image(true, sharedImage),
                   Container(
                     decoration: const BoxDecoration(
                         color: Color.fromRGBO(0, 0, 0, 0.5)),
@@ -101,7 +101,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
               Stack(
                 fit: StackFit.passthrough,
                 children: [
-                  _image(sharedImage),
+                  _image(true, sharedImage),
                   Container(
                     decoration: const BoxDecoration(
                         color: Color.fromRGBO(0, 0, 0, 0.5)),
@@ -146,7 +146,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
         case FileState.completed:
           clickable = true;
           content = (cacheWidth, cacheHeight) =>
-              _image(sharedImage,
+              _image(true, sharedImage,
                   cacheWidth: cacheWidth, cacheHeight: cacheHeight);
           break;
         case FileState.cancelled:
@@ -155,7 +155,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
         case FileState.failed:
           clickable = true;
           content = (cacheWidth, cacheHeight) =>
-              _image(sharedImage,
+              _image(true, sharedImage,
                   cacheWidth: cacheWidth, cacheHeight: cacheHeight);
           stateIcon =
               stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
@@ -208,7 +208,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
         case FileState.completed:
           clickable = true;
           content = (cacheWidth, cacheHeight) =>
-              _image(sharedImage,
+              _image(false, sharedImage,
                   cacheWidth: cacheWidth, cacheHeight: cacheHeight);
           break;
         case FileState.cancelled:
@@ -346,7 +346,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
   }
 
 
-  Widget _image(SharedFile sharedFile, {int? cacheWidth, int? cacheHeight}) {
+  Widget _image(bool isFromSelf, SharedFile sharedFile, {int? cacheWidth, int? cacheHeight}) {
     final resourceId = sharedFile.content.resourceId;
     final errorBuilder = (BuildContext context,
         Object error,
@@ -355,7 +355,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
           stackTrace);
       return _imageErrorWidget();
     };
-    if (resourceId.isEmpty || isDesktop()) {
+    if (!isFromSelf || resourceId.isEmpty || isDesktop()) {
       return Image.file(
         key: _imageKey,
         cacheWidth: cacheWidth,
