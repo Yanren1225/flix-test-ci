@@ -71,10 +71,6 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
             tag: contextMenuTag,
             child: InkWell(
               borderRadius: const BorderRadius.all(Radius.circular(10)),
-              onSecondaryTapDown: (TapDownDetails details) {
-                _showBubbleContextMenu(_context, details.localPosition,
-                    andropContext, concertProvider);
-              },
               onTapDown: (TapDownDetails details) {
                 tapDown = details.localPosition;
               },
