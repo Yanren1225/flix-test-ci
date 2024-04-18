@@ -28,7 +28,7 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
   Offset? tapDown;
 
   late String contextMenuTag;
-
+  TextSelection? textSelection;
   @override
   void initState() {
     super.initState();
@@ -74,18 +74,20 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
               onTapDown: (TapDownDetails details) {
                 tapDown = details.localPosition;
               },
-              onLongPress: () {
-                if (tapDown == null) {
-                  return;
-                }
-                HapticFeedback.mediumImpact();
-                _showBubbleContextMenu(
-                    _context, tapDown!, andropContext, concertProvider);
-              },
               child: Padding(
                 padding: const EdgeInsets.all(10),
-                child: Text(
+                child: SelectableText(
                   sharedText.content,
+                  contextMenuBuilder: null,
+                  onSelectionChanged: (TextSelection selection, SelectionChangedCause? cause){
+                    talker.debug("onSelectionChanged cause = $cause selection = $selection");
+                    textSelection = selection;
+                    if(cause == SelectionChangedCause.longPress || cause == SelectionChangedCause.drag){
+                      HapticFeedback.mediumImpact();
+                      _showBubbleContextMenu(
+                          _context, tapDown!, andropContext, concertProvider);
+                    }
+                  },
                   style: TextStyle(
                       color: contentColor,
                       fontSize: 16,
@@ -130,8 +132,14 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
   }
 
   void _copyContentToClipboard() {
-    Clipboard.setData(
-        ClipboardData(text: (entity.shareable as SharedText).content));
+    if(textSelection == null){
+      Clipboard.setData(
+          ClipboardData(text: (entity.shareable as SharedText).content));
+    }else{
+      Clipboard.setData(
+          ClipboardData(text: (entity.shareable as SharedText).content.substring(textSelection!.baseOffset,textSelection!.extentOffset)));
+    }
+
     Fluttertoast.showToast(
         msg: "已复制到剪切板",
         toastLength: Toast.LENGTH_SHORT,
