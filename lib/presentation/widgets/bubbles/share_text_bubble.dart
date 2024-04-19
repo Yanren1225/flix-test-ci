@@ -86,9 +86,6 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
                 _showBubbleContextMenu(
                     _context, tapDown!, andropContext, concertProvider);
               },
-              onTap: () {
-                _copyContentToClipboard();
-              },
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Text(
