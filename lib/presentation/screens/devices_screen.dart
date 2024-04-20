@@ -2,12 +2,14 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/BadgeService.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/notification/reception_notification.dart';
 import 'package:flix/network/multicast_client_provider.dart';
+import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/presentation/widgets/devices/device_list.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/super_title.dart';
@@ -15,6 +17,7 @@ import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/notification_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lottie/lottie.dart';
@@ -34,21 +37,18 @@ class DeviceScreen extends StatefulWidget {
 
 class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
   final _badges = BadgeService.instance.badges;
+  List<DeviceInfo> history = List.empty(growable: true);
+  List<DeviceInfo> devices = List.empty(growable: true);
 
   @override
   Widget build(BuildContext context) {
-    final deviceProvider = MultiCastClientProvider.of(context, listen: true);
-    final devices =
-        deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
-    final history =
-        deviceProvider.history.map((d) => d.toDeviceInfo()).toList();
     return Container(
       decoration:
           const BoxDecoration(color: Color.fromARGB(255, 247, 247, 247)),
       child: Stack(
         children: [
           InkWell(
-            onTap: () => deviceProvider.startScan(),
+            onTap: () => MultiCastClientProvider.of(context, listen: true).startScan(),
             child: CupertinoNavigationScaffold(
                 title: '附近设备',
                 isSliverChild: false,
@@ -77,6 +77,17 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      final deviceProvider = MultiCastClientProvider.of(context, listen: false);
+      history = deviceProvider.history.map((d) => d.toDeviceInfo()).toList();
+      devices = deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
+      BubblePool.instance.getAllDeviceIdFromBubble().then((value) {
+        setState(() {
+          history.removeWhere((element) => !value.contains(element.id));
+        });
+      });
+    });
+
     BadgeService.instance.addOnBadgesChangedListener(_onBadgesChanged);
   }
 

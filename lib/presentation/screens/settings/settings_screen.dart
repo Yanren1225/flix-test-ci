@@ -47,11 +47,13 @@ class SettingsScreenState extends State<SettingsScreen> {
       });
     });
 
-    launchAtStartup.isEnabled().then((value) {
-      setState(() {
-        isStartUpEnabled = value;
-      });
-    });
+   if(Platform.isLinux || Platform.isWindows || Platform.isMacOS){
+     launchAtStartup.isEnabled().then((value) {
+       setState(() {
+         isStartUpEnabled = value;
+       });
+     });
+   }
   }
 
   @override

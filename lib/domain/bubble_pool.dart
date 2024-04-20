@@ -62,4 +62,8 @@ class BubblePool {
     return await appDatabase.bubblesDao.deleteBubbleById(uiBubble.shareable.id);
   }
 
+  Future<List<String?>> getAllDeviceIdFromBubble() async {
+    return await appDatabase.bubblesDao.getAllId();
+  }
+
 }

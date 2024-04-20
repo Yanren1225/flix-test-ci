@@ -6,4 +6,9 @@ class DeviceInfo {
   String icon;
 
   DeviceInfo(this.id, this.type, this.name, this.icon);
+
+  @override
+  String toString() {
+    return 'DeviceInfo{id: $id, type: $type, name: $name, icon: $icon}';
+  }
 }
