@@ -83,8 +83,8 @@ dependencies:
   chinese_font_library: ^1.1.0
   talker: ^4.1.0
   talker_flutter: ^4.1.0
-  firebase_crashlytics: ^3.4.19
-  firebase_core: ^2.27.1
+  firebase_crashlytics: ^3.5.2
+  firebase_core: ^2.30.0
   system_tray: ^2.0.3
   flutter_native_image: ^0.0.6+1
   easy_refresh: ^3.3.4
