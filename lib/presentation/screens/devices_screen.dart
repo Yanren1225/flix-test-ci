@@ -39,9 +39,11 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
   final _badges = BadgeService.instance.badges;
   List<DeviceInfo> history = List.empty(growable: true);
   List<DeviceInfo> devices = List.empty(growable: true);
-
   @override
   Widget build(BuildContext context) {
+    final deviceProvider = MultiCastClientProvider.of(context, listen: false);
+    history = deviceProvider.history.map((d) => d.toDeviceInfo()).toList();
+    devices = deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
     return Container(
       decoration:
           const BoxDecoration(color: Color.fromARGB(255, 247, 247, 247)),
@@ -77,18 +79,16 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
+    BadgeService.instance.addOnBadgesChangedListener(_onBadgesChanged);
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      final deviceProvider = MultiCastClientProvider.of(context, listen: false);
-      history = deviceProvider.history.map((d) => d.toDeviceInfo()).toList();
-      devices = deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
       BubblePool.instance.getAllDeviceIdFromBubble().then((value) {
         setState(() {
+          talker.debug("history = $history");
           history.removeWhere((element) => !value.contains(element.id));
         });
       });
     });
 
-    BadgeService.instance.addOnBadgesChangedListener(_onBadgesChanged);
   }
 
   @override
