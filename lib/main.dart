@@ -55,7 +55,6 @@ GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 bool needExitApp = false;
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
@@ -87,7 +86,7 @@ Future<void> main() async {
 }
 
 void _initSystemChrome() {
-   SystemChannels.lifecycle.setMessageHandler((msg) async {
+  SystemChannels.lifecycle.setMessageHandler((msg) async {
     talker.verbose('AppLifecycle $msg ${msg}');
     // msg是个字符串，是下面的值
     // AppLifecycleState.resumed
@@ -138,7 +137,8 @@ Future<void> _initDeviceManager() async {
   DeviceManager.instance.init();
   ShipService.instance.startShipServer().then((isSuccess) async {
     if (isSuccess) {
-      DeviceDiscover.instance.start(ShipService.instance, ShipService.instance.port);
+      DeviceDiscover.instance
+          .start(ShipService.instance, ShipService.instance.port);
     }
   });
 }
@@ -154,23 +154,23 @@ Future<void> initFireBase() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
-      FlutterError.onError = (FlutterErrorDetails details) async {
-        if (kReleaseMode) {
-          await FirebaseCrashlytics.instance.recordFlutterFatalError;
-        } else {
-          talker.critical(details);
-        }
-      };
-      PlatformDispatcher.instance.onError = (error, stack) {
-        if (kReleaseMode) {
-          FirebaseCrashlytics.instance.recordError(error, stack,
-              fatal: true, information: ['platform errors']);
-        } else {
-          talker.critical('platform errors', error, stack);
-        }
-        return true;
-      };
-    }
+    FlutterError.onError = (FlutterErrorDetails details) async {
+      if (kReleaseMode) {
+        await FirebaseCrashlytics.instance.recordFlutterFatalError;
+      } else {
+        talker.critical(details);
+      }
+    };
+    PlatformDispatcher.instance.onError = (error, stack) {
+      if (kReleaseMode) {
+        FirebaseCrashlytics.instance.recordError(error, stack,
+            fatal: true, information: ['platform errors']);
+      } else {
+        talker.critical('platform errors', error, stack);
+      }
+      return true;
+    };
+  }
 }
 
 // linux需要前置安装其他库： https://pub.dev/packages/system_tray
@@ -196,11 +196,17 @@ Future<void> initSystemManager() async {
   final Menu menu = Menu();
   await menu.buildFrom([
     MenuItemLabel(label: 'Show', onClicked: (menuItem) => windowManager.show()),
-    MenuItemLabel(label: 'Hide', onClicked: (menuItem) => windowManager.hide()),
-    MenuItemLabel(label: 'Exit', onClicked: (menuItem) {
-      needExitApp = true;
-      windowManager.close();
-  }),
+    MenuItemLabel(
+        label: 'Hide',
+        onClicked: (menuItem) {
+          if (Platform.isWindows) {
+            windowManager.hide();
+          } else {
+            windowManager.minimize();
+          }
+        }),
+    MenuItemLabel(
+        label: 'Exit', onClicked: (menuItem) => windowManager.destroy()),
   ]);
 
   // set context menu
@@ -225,7 +231,6 @@ Future<void> initBootStartUp() async {
   launchAtStartup.setup(
     appName: packageInfo.appName,
     appPath: Platform.resolvedExecutable,
-
   );
   bool isEnabled = await launchAtStartup.isEnabled();
 }
@@ -368,25 +373,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
 
   @override
   Future<void> onWindowClose() async {
-    // var isMinimized = await SettingsRepo.instance.isMinimizedMode();
-    // if (isMinimized) {
     if (Platform.isWindows) {
-      if (needExitApp) {
-        Navigator.of(context).pop();
-        await windowManager.destroy();
-      } else {
-        windowManager.hide();
-      }
+      windowManager.hide();
     } else {
       windowManager.minimize();
     }
-    //   return;
-    // }
-
-    // bool isPreventClose = await windowManager.isPreventClose();
-    // if (isPreventClose) {
-    //   showCupertinoModalPopup(context: context, builder: (_context) => ConfirmExitAppBottomSheet());
-    // }
   }
 
   void _tryGoPickDeviceScreen(SharedMedia? sharedMedia) {
@@ -430,7 +421,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
   }
 
   void _initNotificationListener() {
-    flixNotification.receptionNotificationStream.stream.listen((receptionNotification) {
+    flixNotification.receptionNotificationStream.stream
+        .listen((receptionNotification) {
       if (Platform.isWindows) {
         Future.delayed(Duration(seconds: 0), () async {
           await windowManager.show();
