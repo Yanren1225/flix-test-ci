@@ -115,5 +115,10 @@ class DeviceManager {
       notifyHistoryChanged();
     });
   }
+
+  Future<void> deleteHistory(String deviceId) async {
+    await appDatabase.bubblesDao.deleteBubblesByDeviceId(deviceId);
+    await appDatabase.devicesDao.deleteDevice(deviceId);
+  }
 }
 

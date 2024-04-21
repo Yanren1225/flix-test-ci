@@ -64,7 +64,7 @@ void showBubbleContextMenu(
     tag: 'menu',
     anchorTag: tag,
     modalAlignment: modalAlignment,
-    anchorAlignment: Alignment.topLeft,
+    anchorAlignment: anchorAlignment,
     offset: clickPosition,
     // barrierColor: const Color.fromRGBO(0, 0, 0, 0.45),
     removeOnPop: true,

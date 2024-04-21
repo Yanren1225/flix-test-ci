@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 import 'package:lottie/lottie.dart';
 import 'package:modals/modals.dart';
 
@@ -39,6 +40,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
   final _badges = BadgeService.instance.badges;
   List<DeviceInfo> history = List.empty(growable: true);
   List<DeviceInfo> devices = List.empty(growable: true);
+
   @override
   Widget build(BuildContext context) {
     final deviceProvider = MultiCastClientProvider.of(context, listen: false);
@@ -50,7 +52,8 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
       child: Stack(
         children: [
           InkWell(
-            onTap: () => MultiCastClientProvider.of(context, listen: true).startScan(),
+            onTap: () =>
+                MultiCastClientProvider.of(context, listen: true).startScan(),
             child: CupertinoNavigationScaffold(
                 title: '附近设备',
                 isSliverChild: false,
@@ -62,6 +65,9 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
                   showHistory: true,
                   history: history,
                   badges: _badges,
+                  onHistoryDelete: (item) {
+                    deviceProvider.deleteHistory(item.id);
+                  },
                 )),
           ),
           ClipRect(
@@ -88,7 +94,6 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
         });
       });
     });
-
   }
 
   @override
@@ -110,51 +115,77 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
 }
 
 class HistoryItem extends StatelessWidget {
+  final int index;
   final DeviceInfo historyItemInfo;
   final VoidCallback onTap;
+  final void Function(DeviceInfo deviceInfo) onDelete;
+  final SwipeActionController _swipeActionController = SwipeActionController();
 
-  const HistoryItem(
-      {Key? key, required this.historyItemInfo, required this.onTap})
+  HistoryItem(
+      {Key? key,
+      required this.index,
+      required this.historyItemInfo,
+      required this.onTap,
+      required this.onDelete})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding:
-            const EdgeInsets.only(left: 20, right: 10, top: 10, bottom: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SvgPicture.asset(
-                  'assets/images/history.svg',
-                  width: 20,
-                  height: 20,
-                ),
-                const SizedBox(
-                  width: 6,
-                ),
-                Text(historyItemInfo.name,
+    return SwipeActionCell(
+      key: ValueKey(historyItemInfo.id),
+      index: index,
+      controller: _swipeActionController,
+      backgroundColor: Color.fromRGBO(247, 247, 247, 1),
+      trailingActions: <SwipeAction>[
+        SwipeAction(
+            backgroundRadius: 6,
+            color: Color.fromRGBO(255, 59, 48, 1),
+            title: '删除',
+            style: TextStyle(color: Colors.white, fontSize: 14),
+            onTap: (CompletionHandler handler) async {
+              onDelete(historyItemInfo);
+              await handler(true);
+            }),
+      ],
+      child: InkWell(
+        onTap: onTap,
+        onSecondaryTap: () {
+          _swipeActionController.openCellAt(index: index, trailing: true);
+        },
+        child: Padding(
+          padding:
+              const EdgeInsets.only(left: 20, right: 10, top: 10, bottom: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                'assets/images/history.svg',
+                width: 20,
+                height: 20,
+              ),
+              const SizedBox(
+                width: 6,
+              ),
+              Expanded(
+                child: Text(historyItemInfo.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                         fontSize: 14,
                         color: Colors.black,
-                        fontWeight: FontWeight.w500))
-              ],
-            ),
-            const SizedBox(
-              width: 16,
-            ),
-            SvgPicture.asset(
-              'assets/images/arrow_right.svg',
-              width: 20,
-              height: 20,
-            ),
-          ],
+                        fontWeight: FontWeight.w500)),
+              ),
+              const SizedBox(
+                width: 16,
+              ),
+              SvgPicture.asset(
+                'assets/images/arrow_right.svg',
+                width: 20,
+                height: 20,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -213,4 +213,16 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
       final query = selectOnly(bubbleEntities, distinct: true)..addColumns([itemType]);
       return query.map((row) => row.read(itemType)).get();
   }
+
+  Future<void> deleteBubblesByDeviceId(String deviceId) async {
+    return transaction(() async {
+      final bubbleEntitiesToDelete = await (select(bubbleEntities)
+            ..where((tbl) => tbl.fromDevice.equals(deviceId) | tbl.toDevice.equals(deviceId)))
+          .get();
+      final ids = bubbleEntitiesToDelete.map((e) => e.id).toList();
+      await (delete(bubbleEntities)..where((tbl) => tbl.fromDevice.equals(deviceId) | tbl.toDevice.equals(deviceId))).go();
+      await (delete(textContents)..where((tbl) => tbl.id.isIn(ids))).go();
+      await (delete(fileContents)..where((tbl) => tbl.id.isIn(ids))).go();
+    });
+  }
 }

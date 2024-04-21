@@ -14,10 +14,12 @@ class DeviceList extends StatefulWidget {
       required this.onDeviceSelected,
       required this.showHistory,
       required this.history,
+      this.onHistoryDelete,
       this.badges = const <String, int>{}});
 
   final List<DeviceInfo> devices;
   final void Function(DeviceInfo deviceInfo, bool isHistory) onDeviceSelected;
+  final void Function(DeviceInfo deviceInfo)? onHistoryDelete;
   final bool showHistory;
   final List<DeviceInfo> history;
   final Map<String, int> badges;
@@ -43,7 +45,7 @@ class _DeviceListState extends State<DeviceList> {
   @override
   Widget build(BuildContext context) {
     final deviceProvider = MultiCastClientProvider.of(context, listen: true);
-    return Column( crossAxisAlignment: CrossAxisAlignment.start, children: [
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       ...List.generate(devices.length, (index) {
         var deviceInfo = devices[index];
         return Padding(
@@ -55,7 +57,9 @@ class _DeviceListState extends State<DeviceList> {
               onDeviceSelected(deviceInfo, false);
               deviceProvider.setSelectedDeviceId(deviceInfo.id);
             },
-            selected: isOverMediumWidth(context) ? deviceProvider.selectedDeviceId == deviceInfo.id : false,
+            selected: isOverMediumWidth(context)
+                ? deviceProvider.selectedDeviceId == deviceInfo.id
+                : false,
             badge: badges[deviceInfo.id] ?? 0,
           ),
         );
@@ -75,9 +79,16 @@ class _DeviceListState extends State<DeviceList> {
       ),
       ...List.generate(showHistory ? history.length : 0, (index) {
         var historyItemInfo = history[index];
-        return HistoryItem(historyItemInfo: historyItemInfo, onTap: () {
-          onDeviceSelected(historyItemInfo, true);
-        },);
+        return HistoryItem(
+          index: index,
+          historyItemInfo: historyItemInfo,
+          onTap: () {
+            onDeviceSelected(historyItemInfo, true);
+          },
+          onDelete: (item) {
+            widget.onHistoryDelete?.call(item);
+          },
+        );
       }),
       const Expanded(child: SizedBox())
     ]);

@@ -84,4 +84,8 @@ class MultiCastClientProvider extends ChangeNotifier {
     _selectedDeviceId = id;
     notifyListeners();
   }
+
+  Future<void> deleteHistory(String deviceId) async {
+    await DeviceManager.instance.deleteHistory(deviceId);
+  }
 }

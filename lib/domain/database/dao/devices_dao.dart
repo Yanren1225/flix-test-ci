@@ -38,4 +38,8 @@ class DevicesDao extends DatabaseAccessor<AppDatabase> with _$DevicesDaoMixin {
             )).toList());
   }
 
+  Future<void> deleteDevice(String deviceId) async {
+    await (delete(persistenceDevices)..where((tbl) => tbl.fingerprint.equals(deviceId))).go();
+  }
+
 }
