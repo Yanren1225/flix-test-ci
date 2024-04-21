@@ -1,30 +1,16 @@
-import 'dart:developer';
-import 'dart:io';
-
-import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/BadgeService.dart';
-import 'package:flix/domain/notification/NotificationService.dart';
 import 'package:flix/model/device_info.dart';
-import 'package:flix/model/notification/reception_notification.dart';
 import 'package:flix/network/multicast_client_provider.dart';
-import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/presentation/widgets/devices/device_list.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
-import 'package:flix/presentation/widgets/super_title.dart';
 import 'package:flix/utils/device/device_utils.dart';
-import 'package:flix/utils/notification_utils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 import 'package:lottie/lottie.dart';
-import 'package:modals/modals.dart';
-
-import 'concert/concert_screen.dart';
 
 class DeviceScreen extends StatefulWidget {
   final void Function(DeviceInfo deviceInfo, bool isHistory) onDeviceSelected;

@@ -8,16 +8,13 @@ import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
-
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
-import 'package:flix/domain/settings/SettingsRepo.dart';
+import 'package:flix/domain/notification/flix_notification.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/domain/window/FlixWindowManager.dart';
 import 'package:flix/model/device_info.dart';
-import 'package:flix/model/notification/reception_notification.dart';
 import 'package:flix/network/multicast_client_provider.dart';
-import 'package:flix/presentation/dialog/confirm_exit_app_bottomsheet.dart';
 import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
@@ -33,10 +30,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:flutter/src/widgets/basic.dart';
 import 'package:flutter_ume/flutter_ume.dart'; // UME framework
 import 'package:flutter_ume_kit_console/flutter_ume_kit_console.dart'; // Show debugPrint
 import 'package:flutter_ume_kit_ui/flutter_ume_kit_ui.dart'; // UI kits
@@ -56,11 +51,6 @@ import 'presentation/screens/base_screen.dart';
 // final demoSplitViewKey = GlobalKey<NavigatorState>();
 // final _leftKey = GlobalKey();
 
-int id = 1;
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-final receptionNotificationStream = StreamController<MessageNotification>();
-
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 bool needExitApp = false;
@@ -69,70 +59,14 @@ bool needExitApp = false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    await flixWindowsManager.init();
-    flixWindowsManager.restoreWindow();
-
     await initFireBase();
-    await initBootStartUp();
     await initWindowManager();
+    await initBootStartUp();
     await _initNotification();
     await initSystemManager();
-
-    await DeviceProfileRepo.instance.initDeviceInfo();
-    DeviceManager.instance.init();
-    ShipService.instance.startShipServer().then((isSuccess) async {
-      if (isSuccess) {
-        DeviceDiscover.instance.start(ShipService.instance, ShipService.instance.port);
-      }
-    });
-
+    await _initDeviceManager();
     _logAppContext();
-
-    SystemChannels.lifecycle.setMessageHandler((msg) async {
-      talker.verbose('AppLifecycle $msg ${msg}');
-      // msg是个字符串，是下面的值
-      // AppLifecycleState.resumed
-      // AppLifecycleState.inactive
-      // AppLifecycleState.paused
-      // AppLifecycleState.detached
-
-      if (msg == 'AppLifecycleState.resumed') {
-        talker.verbose('App resumed');
-        // iOS在省电模式下，app切入后台一段时间后ship server会挂掉。
-        // 等app返回前台时检测server状态，若server dead，则重新启动
-        ShipService.instance.isServerLiving().then((isServerLiving) async {
-          talker.debug('isServerLiving: $isServerLiving');
-          if (!isServerLiving) {
-            if (await ShipService.instance.restartShipServer()) {
-              DeviceDiscover.instance.startScan(ShipService.instance.port);
-            }
-          } else {
-            DeviceDiscover.instance.startScan(ShipService.instance.port);
-          }
-        }).catchError((error, stackTrace) =>
-            talker.error('isServerLiving error', error, stackTrace));
-        // ShipService.instance.startShipServer();
-      } else if (msg == 'AppLifecycleState.paused') {
-        talker.verbose('App paused');
-        DeviceDiscover.instance.stop();
-      }
-      return msg;
-    });
-
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          // 设置为透明
-          statusBarBrightness: Brightness.light,
-          systemStatusBarContrastEnforced: false,
-          // 在状态栏上的图标和文字颜色为深色
-          statusBarIconBrightness: Brightness.dark,
-          systemNavigationBarColor: Colors.transparent,
-          systemNavigationBarContrastEnforced: false,
-          systemNavigationBarIconBrightness: Brightness.dark),
-    );
-
+    _initSystemChrome();
     if (kDebugMode) {
       PluginManager.instance // Register plugin kits
         ..register(const WidgetInfoInspector())
@@ -150,6 +84,63 @@ Future<void> main() async {
     talker.error('launch error', e, stackTrace);
     runApp(const Placeholder());
   }
+}
+
+void _initSystemChrome() {
+   SystemChannels.lifecycle.setMessageHandler((msg) async {
+    talker.verbose('AppLifecycle $msg ${msg}');
+    // msg是个字符串，是下面的值
+    // AppLifecycleState.resumed
+    // AppLifecycleState.inactive
+    // AppLifecycleState.paused
+    // AppLifecycleState.detached
+
+    if (msg == 'AppLifecycleState.resumed') {
+      talker.verbose('App resumed');
+      // iOS在省电模式下，app切入后台一段时间后ship server会挂掉。
+      // 等app返回前台时检测server状态，若server dead，则重新启动
+      ShipService.instance.isServerLiving().then((isServerLiving) async {
+        talker.debug('isServerLiving: $isServerLiving');
+        if (!isServerLiving) {
+          if (await ShipService.instance.restartShipServer()) {
+            DeviceDiscover.instance.startScan(ShipService.instance.port);
+          }
+        } else {
+          DeviceDiscover.instance.startScan(ShipService.instance.port);
+        }
+      }).catchError((error, stackTrace) =>
+          talker.error('isServerLiving error', error, stackTrace));
+      // ShipService.instance.startShipServer();
+    } else if (msg == 'AppLifecycleState.paused') {
+      talker.verbose('App paused');
+      DeviceDiscover.instance.stop();
+    }
+    return msg;
+  });
+
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        // 设置为透明
+        statusBarBrightness: Brightness.light,
+        systemStatusBarContrastEnforced: false,
+        // 在状态栏上的图标和文字颜色为深色
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarContrastEnforced: false,
+        systemNavigationBarIconBrightness: Brightness.dark),
+  );
+}
+
+Future<void> _initDeviceManager() async {
+  await DeviceProfileRepo.instance.initDeviceInfo();
+  DeviceManager.instance.init();
+  ShipService.instance.startShipServer().then((isSuccess) async {
+    if (isSuccess) {
+      DeviceDiscover.instance.start(ShipService.instance, ShipService.instance.port);
+    }
+  });
 }
 
 Future<void> initWindowManager() async {
@@ -246,38 +237,7 @@ void _logAppContext() {
 }
 
 Future<void> _initNotification() async {
-// initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('ic_launcher');
-  final DarwinInitializationSettings initializationSettingsDarwin =
-      DarwinInitializationSettings(
-          onDidReceiveLocalNotification: null,
-          requestAlertPermission: true,
-          requestBadgePermission: true,
-          requestSoundPermission: true,
-          requestCriticalPermission: true);
-  final LinuxInitializationSettings initializationSettingsLinux =
-      LinuxInitializationSettings(defaultActionName: 'Open notification');
-  final InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsDarwin,
-      macOS: initializationSettingsDarwin,
-      linux: initializationSettingsLinux);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse details) {
-    switch (details.notificationResponseType) {
-      case NotificationResponseType.selectedNotification:
-        final receptionNotification =
-            MessageNotification.fromJson(details.payload!);
-        receptionNotificationStream.add(receptionNotification);
-        break;
-      case NotificationResponseType.selectedNotificationAction:
-        talker
-            .debug('selectedNotificationAction, actionId: ${details.actionId}');
-        break;
-    }
-  });
-
+  await flixNotification.init();
   NotificationService.instance.init();
 }
 
@@ -467,7 +427,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
     flixToast.init(navigatorKey.currentContext!);
     initPlatformState();
     initWindowClose();
-    receptionNotificationStream.stream.listen((receptionNotification) {
+    _initNotificationListener();
+  }
+
+  void _initNotificationListener() {
+    flixNotification.receptionNotificationStream.stream.listen((receptionNotification) {
       final deviceModal = DeviceManager.instance.deviceList
           .find((element) => element.fingerprint == receptionNotification.from);
       if (deviceModal != null) {
@@ -496,7 +460,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
 
   @override
   void dispose() {
-    receptionNotificationStream.close();
+    flixNotification.receptionNotificationStream.close();
     super.dispose();
   }
 

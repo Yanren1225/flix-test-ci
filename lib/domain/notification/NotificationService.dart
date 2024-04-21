@@ -3,10 +3,10 @@ import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/BadgeService.dart';
+import 'package:flix/domain/notification/flix_notification.dart';
 import 'package:flix/model/notification/reception_notification.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
-import 'package:flix/utils/notification_utils.dart' as notifyUtils;
 import 'package:flutter/cupertino.dart';
 
 class NotificationService {
@@ -39,12 +39,12 @@ class NotificationService {
   }
 
   void requestPermission(VoidCallback callback) {
-    notifyUtils.createNotificationChannel();
-    notifyUtils.isAndroidNotificationPermissionGranted().then((granted) {
+    flixNotification.createNotificationChannel();
+    flixNotification.isAndroidNotificationPermissionGranted().then((granted) {
       if (granted) {
         callback();
       } else {
-        notifyUtils.requestNotificationPermissions().then((granted) {
+        flixNotification.requestNotificationPermissions().then((granted) {
           if (granted) {
             callback();
           }
@@ -57,7 +57,7 @@ class NotificationService {
 
   void showTextNotification(
       PrimitiveTextBubble bubble, MessageNotification notification) {
-    notifyUtils.showTextNotification(
+    flixNotification.showTextNotification(
         DeviceManager.instance.getDeviceInfoById(bubble.from)?.name ?? "",
         bubble.content,
         notification);
@@ -65,7 +65,7 @@ class NotificationService {
 
   void showFileNotification(
       PrimitiveBubble bubble, MessageNotification notification) {
-    notifyUtils.showFileNotification(
+    flixNotification.showFileNotification(
         DeviceManager.instance.getDeviceInfoById(bubble.from)?.name ?? "",
         notification);
   }
