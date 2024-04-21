@@ -75,9 +75,9 @@ Future<void> main() async {
         ..register(const TouchIndicator())
         ..register(Console()); // Pass in your Dio instance
       // After flutter_ume 0.3.0
-      runApp(const UMEWidget(child: const MyApp(), enable: true));
+      runApp(MaterialApp(home:const UMEWidget(child: const MyApp(), enable: true)));
     } else {
-      runApp(const MyApp());
+      runApp(MaterialApp(home: const MyApp()));
     }
   } catch (e, stackTrace) {
     talker.error('launch error', e, stackTrace);
