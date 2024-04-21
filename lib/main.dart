@@ -180,7 +180,6 @@ Future<void> initSystemManager() async {
   }
   const String _iconPathWin = 'assets/images/tray_logo.ico';
   const String _iconPathOther = 'assets/images/tray_logo_no_color.png';
-  final AppWindow appWindow = AppWindow();
   final SystemTray systemTray = SystemTray();
 
   // We first init the systray menu
@@ -196,11 +195,11 @@ Future<void> initSystemManager() async {
   // create context menu
   final Menu menu = Menu();
   await menu.buildFrom([
-    MenuItemLabel(label: 'Show', onClicked: (menuItem) => appWindow.show()),
-    MenuItemLabel(label: 'Hide', onClicked: (menuItem) => appWindow.hide()),
+    MenuItemLabel(label: 'Show', onClicked: (menuItem) => windowManager.show()),
+    MenuItemLabel(label: 'Hide', onClicked: (menuItem) => windowManager.hide()),
     MenuItemLabel(label: 'Exit', onClicked: (menuItem) {
       needExitApp = true;
-      appWindow.close();
+      windowManager.close();
   }),
   ]);
 
@@ -211,9 +210,9 @@ Future<void> initSystemManager() async {
   systemTray.registerSystemTrayEventHandler((eventName) {
     debugPrint("eventName: $eventName");
     if (eventName == kSystemTrayEventClick) {
-      Platform.isWindows ? appWindow.show() : systemTray.popUpContextMenu();
+      Platform.isWindows ? windowManager.show() : systemTray.popUpContextMenu();
     } else if (eventName == kSystemTrayEventRightClick) {
-      Platform.isWindows ? systemTray.popUpContextMenu() : appWindow.show();
+      Platform.isWindows ? systemTray.popUpContextMenu() : windowManager.show();
     }
   });
 }
@@ -432,6 +431,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
 
   void _initNotificationListener() {
     flixNotification.receptionNotificationStream.stream.listen((receptionNotification) {
+      if (Platform.isWindows) {
+        Future.delayed(Duration(seconds: 0), () async {
+          await windowManager.show();
+        });
+      }
       final deviceModal = DeviceManager.instance.deviceList
           .find((element) => element.fingerprint == receptionNotification.from);
       if (deviceModal != null) {
