@@ -56,9 +56,9 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
                 MultiCastClientProvider.of(context, listen: true).startScan(),
             child: CupertinoNavigationScaffold(
                 title: '附近设备',
-                isSliverChild: false,
+                isSliverChild: true,
                 padding: 16,
-                enableRefresh: true,
+                enableRefresh: false,
                 child: DeviceList(
                   devices: devices,
                   onDeviceSelected: widget.onDeviceSelected,

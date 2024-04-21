@@ -49,12 +49,14 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
                 fontWeight: FontWeight.w500).useSystemChineseFont()),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(top: 20),
-        child: DeviceList(
-          devices: devices,
-          onDeviceSelected: (deviceInfo, _) => _onDeviceSelected(deviceInfo),
-          showHistory: false,
-          history: [],
+        padding: const EdgeInsets.only(top: 20, bottom: 20),
+        child: CustomScrollView(
+          slivers: [DeviceList(
+            devices: devices,
+            onDeviceSelected: (deviceInfo, _) => _onDeviceSelected(deviceInfo),
+            showHistory: false,
+            history: [],
+          )],
         ),
       ),
     );

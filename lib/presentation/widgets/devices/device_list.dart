@@ -45,7 +45,7 @@ class _DeviceListState extends State<DeviceList> {
   @override
   Widget build(BuildContext context) {
     final deviceProvider = MultiCastClientProvider.of(context, listen: true);
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    return SliverList.list( children: [
       ...List.generate(devices.length, (index) {
         var deviceInfo = devices[index];
         return Padding(
@@ -90,7 +90,8 @@ class _DeviceListState extends State<DeviceList> {
           },
         );
       }),
-      const Expanded(child: SizedBox())
+      SizedBox(height: 40,)
+      // const Expanded(child: SizedBox())
     ]);
   }
 }
