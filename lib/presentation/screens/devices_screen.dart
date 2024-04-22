@@ -44,7 +44,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
                 title: '附近设备',
                 isSliverChild: true,
                 padding: 16,
-                enableRefresh: false,
+                enableRefresh: true,
                 child: DeviceList(
                   devices: devices,
                   onDeviceSelected: widget.onDeviceSelected,
