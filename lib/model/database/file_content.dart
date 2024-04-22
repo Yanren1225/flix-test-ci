@@ -10,6 +10,7 @@ class FileContents extends Table {
   TextColumn get path => text().nullable()();
   IntColumn get state => integer()();
   RealColumn get progress => real()();
+  IntColumn get speed => integer().withDefault(const Constant(0))();
   IntColumn get width => integer()();
   IntColumn get height => integer()();
   BoolColumn get waitingForAccept => boolean().withDefault(const Constant(true))();

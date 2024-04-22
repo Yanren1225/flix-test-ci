@@ -540,6 +540,13 @@ class $FileContentsTable extends FileContents
   late final GeneratedColumn<double> progress = GeneratedColumn<double>(
       'progress', aliasedName, false,
       type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _speedMeta = const VerificationMeta('speed');
+  @override
+  late final GeneratedColumn<int> speed = GeneratedColumn<int>(
+      'speed', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
   static const VerificationMeta _widthMeta = const VerificationMeta('width');
   @override
   late final GeneratedColumn<int> width = GeneratedColumn<int>(
@@ -571,6 +578,7 @@ class $FileContentsTable extends FileContents
         path,
         state,
         progress,
+        speed,
         width,
         height,
         waitingForAccept
@@ -638,6 +646,10 @@ class $FileContentsTable extends FileContents
     } else if (isInserting) {
       context.missing(_progressMeta);
     }
+    if (data.containsKey('speed')) {
+      context.handle(
+          _speedMeta, speed.isAcceptableOrUnknown(data['speed']!, _speedMeta));
+    }
     if (data.containsKey('width')) {
       context.handle(
           _widthMeta, width.isAcceptableOrUnknown(data['width']!, _widthMeta));
@@ -683,6 +695,8 @@ class $FileContentsTable extends FileContents
           .read(DriftSqlType.int, data['${effectivePrefix}state'])!,
       progress: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}progress'])!,
+      speed: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}speed'])!,
       width: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}width'])!,
       height: attachedDatabase.typeMapping
@@ -708,6 +722,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
   final String? path;
   final int state;
   final double progress;
+  final int speed;
   final int width;
   final int height;
   final bool waitingForAccept;
@@ -721,6 +736,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       this.path,
       required this.state,
       required this.progress,
+      required this.speed,
       required this.width,
       required this.height,
       required this.waitingForAccept});
@@ -738,6 +754,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
     }
     map['state'] = Variable<int>(state);
     map['progress'] = Variable<double>(progress);
+    map['speed'] = Variable<int>(speed);
     map['width'] = Variable<int>(width);
     map['height'] = Variable<int>(height);
     map['waiting_for_accept'] = Variable<bool>(waitingForAccept);
@@ -755,6 +772,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       path: path == null && nullToAbsent ? const Value.absent() : Value(path),
       state: Value(state),
       progress: Value(progress),
+      speed: Value(speed),
       width: Value(width),
       height: Value(height),
       waitingForAccept: Value(waitingForAccept),
@@ -774,6 +792,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       path: serializer.fromJson<String?>(json['path']),
       state: serializer.fromJson<int>(json['state']),
       progress: serializer.fromJson<double>(json['progress']),
+      speed: serializer.fromJson<int>(json['speed']),
       width: serializer.fromJson<int>(json['width']),
       height: serializer.fromJson<int>(json['height']),
       waitingForAccept: serializer.fromJson<bool>(json['waitingForAccept']),
@@ -792,6 +811,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       'path': serializer.toJson<String?>(path),
       'state': serializer.toJson<int>(state),
       'progress': serializer.toJson<double>(progress),
+      'speed': serializer.toJson<int>(speed),
       'width': serializer.toJson<int>(width),
       'height': serializer.toJson<int>(height),
       'waitingForAccept': serializer.toJson<bool>(waitingForAccept),
@@ -808,6 +828,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
           Value<String?> path = const Value.absent(),
           int? state,
           double? progress,
+          int? speed,
           int? width,
           int? height,
           bool? waitingForAccept}) =>
@@ -821,6 +842,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
         path: path.present ? path.value : this.path,
         state: state ?? this.state,
         progress: progress ?? this.progress,
+        speed: speed ?? this.speed,
         width: width ?? this.width,
         height: height ?? this.height,
         waitingForAccept: waitingForAccept ?? this.waitingForAccept,
@@ -837,6 +859,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
           ..write('path: $path, ')
           ..write('state: $state, ')
           ..write('progress: $progress, ')
+          ..write('speed: $speed, ')
           ..write('width: $width, ')
           ..write('height: $height, ')
           ..write('waitingForAccept: $waitingForAccept')
@@ -855,6 +878,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       path,
       state,
       progress,
+      speed,
       width,
       height,
       waitingForAccept);
@@ -871,6 +895,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
           other.path == this.path &&
           other.state == this.state &&
           other.progress == this.progress &&
+          other.speed == this.speed &&
           other.width == this.width &&
           other.height == this.height &&
           other.waitingForAccept == this.waitingForAccept);
@@ -886,6 +911,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
   final Value<String?> path;
   final Value<int> state;
   final Value<double> progress;
+  final Value<int> speed;
   final Value<int> width;
   final Value<int> height;
   final Value<bool> waitingForAccept;
@@ -900,6 +926,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     this.path = const Value.absent(),
     this.state = const Value.absent(),
     this.progress = const Value.absent(),
+    this.speed = const Value.absent(),
     this.width = const Value.absent(),
     this.height = const Value.absent(),
     this.waitingForAccept = const Value.absent(),
@@ -915,6 +942,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     this.path = const Value.absent(),
     required int state,
     required double progress,
+    this.speed = const Value.absent(),
     required int width,
     required int height,
     this.waitingForAccept = const Value.absent(),
@@ -938,6 +966,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     Expression<String>? path,
     Expression<int>? state,
     Expression<double>? progress,
+    Expression<int>? speed,
     Expression<int>? width,
     Expression<int>? height,
     Expression<bool>? waitingForAccept,
@@ -953,6 +982,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
       if (path != null) 'path': path,
       if (state != null) 'state': state,
       if (progress != null) 'progress': progress,
+      if (speed != null) 'speed': speed,
       if (width != null) 'width': width,
       if (height != null) 'height': height,
       if (waitingForAccept != null) 'waiting_for_accept': waitingForAccept,
@@ -970,6 +1000,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
       Value<String?>? path,
       Value<int>? state,
       Value<double>? progress,
+      Value<int>? speed,
       Value<int>? width,
       Value<int>? height,
       Value<bool>? waitingForAccept,
@@ -984,6 +1015,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
       path: path ?? this.path,
       state: state ?? this.state,
       progress: progress ?? this.progress,
+      speed: speed ?? this.speed,
       width: width ?? this.width,
       height: height ?? this.height,
       waitingForAccept: waitingForAccept ?? this.waitingForAccept,
@@ -1021,6 +1053,9 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     if (progress.present) {
       map['progress'] = Variable<double>(progress.value);
     }
+    if (speed.present) {
+      map['speed'] = Variable<int>(speed.value);
+    }
     if (width.present) {
       map['width'] = Variable<int>(width.value);
     }
@@ -1048,6 +1083,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
           ..write('path: $path, ')
           ..write('state: $state, ')
           ..write('progress: $progress, ')
+          ..write('speed: $speed, ')
           ..write('width: $width, ')
           ..write('height: $height, ')
           ..write('waitingForAccept: $waitingForAccept, ')

@@ -52,8 +52,8 @@ class NavigationScaffold extends StatelessWidget {
                   fontSize: 18,
                   fontWeight: FontWeight.w500)
               .useSystemChineseFont()),
-      backgroundColor: const Color.fromRGBO(247, 247, 247, 0.8),
-      surfaceTintColor: const Color.fromRGBO(247, 247, 247, 0.8),
+      backgroundColor: const Color.fromRGBO(242, 242, 242, 0.8),
+      surfaceTintColor: const Color.fromRGBO(242, 242, 242, 0.8),
       titleTextStyle: const TextStyle(
           color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500),
       titleSpacing: 6,
@@ -86,8 +86,8 @@ class NavigationScaffold extends StatelessWidget {
       titleTextStyle: const TextStyle(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500)
           .useSystemChineseFont(),
-      backgroundColor: const Color.fromRGBO(247, 247, 247, 0.8),
-      surfaceTintColor: const Color.fromRGBO(247, 247, 247, 0.8),
+      backgroundColor: const Color.fromRGBO(242, 242, 242, 0.8),
+      surfaceTintColor: const Color.fromRGBO(242, 242, 242, 0.8),
     );
     final Widget appBar = AnimatedCrossFade(
         firstChild: normalAppBar,
@@ -99,7 +99,7 @@ class NavigationScaffold extends StatelessWidget {
     final appBarHeight =
         normalAppBar.preferredSize.height + MediaQuery.of(context).padding.top;
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+      backgroundColor: const Color.fromRGBO(242, 242, 242, 1),
       extendBodyBehindAppBar: true,
       appBar: BlurAppBar(
         appBar: appBar,

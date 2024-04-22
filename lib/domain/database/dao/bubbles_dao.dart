@@ -45,6 +45,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
                   path: Value(fileBubble.content.meta.path),
                   state: fileBubble.content.state.index,
                   progress: fileBubble.content.progress,
+                  speed: Value(fileBubble.content.speed),
                   width: fileBubble.content.meta.width,
                   height: fileBubble.content.meta.height));
         default:

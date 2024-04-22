@@ -11,6 +11,8 @@ class SharedFile extends Shareable<FileMeta> {
   // 发送或者接收的进度, 范围：0~1
   double progress;
 
+  int speed;
+
   @override
   FileMeta content;
 
@@ -18,7 +20,8 @@ class SharedFile extends Shareable<FileMeta> {
       {required this.id,
       required this.content,
       this.state = FileState.unknown,
-      this.progress = 0});
+      this.progress = 0,
+      this.speed = 0});
 }
 
 class FileMeta with DrawinFileSecurityExtension {

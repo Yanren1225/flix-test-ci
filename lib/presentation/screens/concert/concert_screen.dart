@@ -297,7 +297,7 @@ class InputAreaState extends State<InputArea> {
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           decoration: const BoxDecoration(
-              color: Color.fromRGBO(247, 247, 247, 0.8),
+              color: Color.fromRGBO(242, 242, 242, 0.8),
               border: Border(
                   top: BorderSide(
                 color: Color.fromRGBO(240, 240, 240, 1),

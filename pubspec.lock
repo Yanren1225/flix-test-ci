@@ -631,6 +631,15 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.0"
+  flutter_linkify:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "v6.0.0"
+      resolved-ref: b43e490da124721d003f5f95f000372548db27e3
+      url: "https://github.com/Cretezy/flutter_linkify"
+    source: git
+    version: "6.0.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -760,6 +769,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.2"
+  gradient_txt:
+    dependency: "direct main"
+    description:
+      name: gradient_txt
+      sha256: d26284126493dc96bd03107a26e36c2d5b7f3133d25364f4c791cf71d3a226d6
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.0"
   graphs:
     dependency: transitive
     description:
@@ -984,6 +1001,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.1"
+  linkify:
+    dependency: transitive
+    description:
+      name: linkify
+      sha256: "4139ea77f4651ab9c315b577da2dd108d9aa0bd84b5d03d33323f1970c645832"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "5.0.0"
   lints:
     dependency: transitive
     description:

@@ -36,8 +36,6 @@ abstract class PrimitiveBubble<Content> {
   }
 
   Map<String, dynamic> toJson();
-
-
 }
 
 class PrimitiveTextBubble extends PrimitiveBubble<String> {
@@ -181,6 +179,7 @@ class PrimitiveTimeBubble extends PrimitiveTextBubble {
 
 class FileTransfer {
   late double progress;
+  late int speed;
   late FileState state;
   late FileMeta meta;
   bool waitingForAccept = true;
@@ -188,34 +187,43 @@ class FileTransfer {
   FileTransfer(
       {this.state = FileState.unknown,
       this.progress = 0.0,
+      this.speed = 0,
       required this.meta,
       this.waitingForAccept = true});
 
   FileTransfer.fromJson(Map<String, dynamic> json) {
     state = FileState.values[json['state'] as int];
     progress = json['progress'] as double;
+    speed = json['speed'] as int? ?? 0;
     meta = FileMeta.fromJson(json['meta'] as Map<String, dynamic>);
   }
 
   Map<String, dynamic> toJson() {
-    return {'state': state.index, 'progress': progress, 'meta': meta.toJson()};
+    return {
+      'state': state.index,
+      'progress': progress,
+      'speed': speed,
+      'meta': meta.toJson()
+    };
   }
 
   FileTransfer copy(
       {FileState? state,
       double? progress,
+      int? speed,
       FileMeta? meta,
       bool? waitingForAccept}) {
     return FileTransfer(
         state: state ?? this.state,
         progress: progress ?? this.progress,
+        speed: speed ?? this.speed,
         meta: meta ?? this.meta,
         waitingForAccept: waitingForAccept ?? this.waitingForAccept);
   }
 
   @override
   String toString() {
-    return 'progress: $progress, state: $state, meta: $meta';
+    return 'progress: $progress, speed: $speed, state: $state, meta: $meta';
   }
 }
 

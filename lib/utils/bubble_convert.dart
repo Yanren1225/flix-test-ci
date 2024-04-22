@@ -70,6 +70,7 @@ UIBubble toUIBubble(PrimitiveBubble bubble) {
               id: bubble.id,
               state: primitive.content.state,
               progress: primitive.content.progress,
+              speed: primitive.content.speed,
               content: primitive.content.meta));
       currentBubble.time = primitive.time;
       return currentBubble;
