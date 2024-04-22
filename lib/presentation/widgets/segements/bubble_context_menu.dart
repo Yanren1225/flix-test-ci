@@ -32,10 +32,10 @@ void showBubbleContextMenu(
   }
   final showLeft;
 
-  if (globalOffset.dx < relativeWidget.size.width - 180) {
-    showLeft = false;
-  } else {
+  if (globalOffset.dx > relativeWidget.size.width - 220) {
     showLeft = true;
+  } else {
+    showLeft = false;
   }
 
   // if (bubble.isFromMe(selfId)) {
@@ -44,19 +44,14 @@ void showBubbleContextMenu(
   //   showLeft = false;
   // }
   final modalAlignment;
-  final anchorAlignment;
   if (showTop && showLeft) {
     modalAlignment = Alignment.bottomRight;
-    anchorAlignment = Alignment.topRight;
   } else if (showTop && !showLeft) {
     modalAlignment = Alignment.bottomLeft;
-    anchorAlignment = Alignment.topLeft;
   } else if (!showTop && !showLeft) {
     modalAlignment = Alignment.topLeft;
-    anchorAlignment = Alignment.bottomLeft;
   } else {
     modalAlignment = Alignment.topRight;
-    anchorAlignment = Alignment.bottomRight;
   }
 
   showModal(ModalEntry.anchored(
@@ -64,7 +59,7 @@ void showBubbleContextMenu(
     tag: 'menu',
     anchorTag: tag,
     modalAlignment: modalAlignment,
-    anchorAlignment: anchorAlignment,
+    anchorAlignment: Alignment.topLeft,
     offset: clickPosition,
     // barrierColor: const Color.fromRGBO(0, 0, 0, 0.45),
     removeOnPop: true,
