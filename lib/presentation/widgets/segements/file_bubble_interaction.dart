@@ -65,58 +65,65 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
 
     return ModalAnchor(
       tag: contextMenuTag,
-      child: InkWell(
-          radius: 10,
-          borderRadius: BorderRadius.circular(10),
-          onTapDown: (details) {
-            tapDown = details.localPosition;
-            // 记下按下的时间
-            tapDownTime = DateTime.now().millisecondsSinceEpoch;
-            talker.debug('gesture details: ');
-            // details.kind?.index == 0
-            _controller.forward();
-          },
-          onTapUp: (_) {
-            final diff = DateTime.now().millisecondsSinceEpoch - tapDownTime;
-            talker.debug('gesture time diff: $diff');
-            if (DateTime.now().millisecondsSinceEpoch - tapDownTime < 60) {
-              Future.delayed(Duration(milliseconds: 60 - diff + 100), () {
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+            radius: 12,
+            borderRadius: BorderRadius.circular(12),
+            onTapDown: (details) {
+              tapDown = details.localPosition;
+              // 记下按下的时间
+              tapDownTime = DateTime.now().millisecondsSinceEpoch;
+              talker.debug('gesture details: ');
+              // details.kind?.index == 0
+              _controller.forward();
+            },
+            onTapUp: (_) {
+              final diff = DateTime.now().millisecondsSinceEpoch - tapDownTime;
+              talker.debug('gesture time diff: $diff');
+              if (DateTime.now().millisecondsSinceEpoch - tapDownTime < 60) {
+                Future.delayed(Duration(milliseconds: 60 - diff + 100), () {
+                  _controller.reverse();
+                });
+              } else {
                 _controller.reverse();
-              });
-            } else {
-              _controller.reverse();
-            }
-            tapDownTime = 0;
-          },
-          onTapCancel: () {
-            _controller.reverse();
-          },
-          // onDoubleTap: () {
-          //   if (!widget.clickable) return;
-          //   _openDir();
-          // },
-          onTap: () async {
-            if (!widget.clickable) return;
-            // _controller.forward().whenComplete(() => _controller.reverse());
-            _openFile(widget.filePath).then((isSuccess) {
-              if (!isSuccess) {
-                _openDir();
               }
-            });
-          },
-          onSecondaryTapDown: (detials) {
-            _showBubbleContextMenu(context, detials.localPosition,
-                andropContext, concertProvider, !widget.clickable);
-          },
-          onLongPress: () {
-            if (tapDown == null) {
-              return;
-            }
-            HapticFeedback.mediumImpact();
-            _showBubbleContextMenu(context, tapDown!, andropContext,
-                concertProvider, !widget.clickable);
-          },
-          child: ScaleTransition(scale: _animation, child: widget.child)),
+              tapDownTime = 0;
+            },
+            onTapCancel: () {
+              _controller.reverse();
+            },
+            // onDoubleTap: () {
+            //   if (!widget.clickable) return;
+            //   _openDir();
+            // },
+            onTap: () async {
+              if (!widget.clickable) return;
+              // _controller.forward().whenComplete(() => _controller.reverse());
+              _openFile(widget.filePath).then((isSuccess) {
+                if (!isSuccess) {
+                  _openDir();
+                }
+              });
+            },
+            onSecondaryTapDown: (detials) {
+              _showBubbleContextMenu(context, detials.localPosition,
+                  andropContext, concertProvider, !widget.clickable);
+            },
+            onLongPress: () {
+              if (tapDown == null) {
+                return;
+              }
+              HapticFeedback.mediumImpact();
+              _showBubbleContextMenu(context, tapDown!, andropContext,
+                  concertProvider, !widget.clickable);
+            },
+            child: ScaleTransition(
+                scale: _animation,
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: widget.child))),
+      ),
     );
   }
 

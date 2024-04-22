@@ -169,6 +169,17 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.transparent,
+                        color: Colors.white,
+                        strokeWidth: 2.0,
+                      )),
+                  const SizedBox(
+                    height: 8,
+                  ),
                   Text('${(sharedVideo.progress * 100).round()}%',
                       style: const TextStyle(
                           color: Colors.white,
@@ -224,8 +235,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
             clickable: clickable,
             child: Container(
               decoration: BoxDecoration(
-                  color: backgroundColor,
-                  borderRadius: const BorderRadius.all(Radius.circular(10))),
+                  color: backgroundColor),
               child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
                 final maxPhysicalSize =
@@ -274,10 +284,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
                   return SizedBox(
                     width: width * 1.0,
                     height: height * 1.0,
-                    child: ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10)),
-                        child: content),
+                    child: content,
                   );
                 }
               }),

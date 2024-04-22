@@ -32,15 +32,6 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
   final _resendButtonKey = GlobalKey();
 
   @override
-  void initState() {
-    super.initState();
-
-    // Thumbnailer.addCustomMimeTypesToIconDataMappings(<String, IconData>{
-    //   'image/jpeg': Icons.image,
-    // });
-  }
-
-  @override
   Widget build(BuildContext context) {
     AndropContext andropContext = context.watch();
     ConcertProvider concertProvider = context.watch();
@@ -217,131 +208,131 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
       }
     }
 
-    final _innerBubble = ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        decoration: const BoxDecoration(color: backgroundColor),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return ConstrainedBox(
-              constraints: BoxConstraints(
-                  maxWidth: min(constraints.maxWidth - 20, 400), minWidth: 200),
-              child: IntrinsicWidth(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(left: 12, top: 10, right: 12),
-                      child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                sharedFile.content.name,
-                                style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: contentColor),
-                                maxLines: 2,
-                                // TODO: 省略中间
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            SizedBox(
-                              width: 44,
-                              height: 44,
-                              child: SvgPicture.asset(
-                                  mimeIcon(sharedFile.content.nameWithSuffix), width: 44, height: 44,),
-                            ),
-                          ]),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 12, top: 8.0, right: 12, bottom: 6),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+    final _innerBubble = Container(
+      decoration: const BoxDecoration(color: backgroundColor),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return ConstrainedBox(
+            constraints: BoxConstraints(
+                maxWidth: min(constraints.maxWidth - 20, 400), minWidth: 200),
+            child: IntrinsicWidth(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 12, top: 10, right: 12),
+                    child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Visibility(
-                            visible: sharedFile.content.size > 0,
+                          Flexible(
                             child: Text(
-                              size,
+                              sharedFile.content.name,
                               style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color.fromRGBO(60, 60, 67, 0.6)),
-                              maxLines: 1,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: contentColor),
+                              maxLines: 2,
+                              // TODO: 省略中间
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           const SizedBox(
                             width: 10,
                           ),
-                          Visibility(
-                            visible: stateDes != null,
-                            child: stateDesGradient == null
-                                ? Text(
-                                    stateDes ?? '',
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400,
-                                        color: stateDesColor ?? Colors.grey),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  )
-                                : GradientText(
-                                    text: stateDes ?? '',
-                                    gradient: LinearGradient(
-                                        colors: stateDesGradient ?? []),
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400,
-                                        color: contentColor.withOpacity(0.5)),
-                                  ),
+                          SizedBox(
+                            width: 44,
+                            height: 44,
+                            child: SvgPicture.asset(
+                                mimeIcon(sharedFile.content.nameWithSuffix), width: 44, height: 44,),
                           ),
-                        ],
-                      ),
+                        ]),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 12, top: 8.0, right: 12, bottom: 6),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Visibility(
+                          visible: sharedFile.content.size > 0,
+                          child: Text(
+                            size,
+                            style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: Color.fromRGBO(60, 60, 67, 0.6)),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Visibility(
+                          visible: stateDes != null,
+                          child: stateDesGradient == null
+                              ? Text(
+                                  stateDes ?? '',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: stateDesColor ?? Colors.grey),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                )
+                              : GradientText(
+                                  text: stateDes ?? '',
+                                  gradient: LinearGradient(
+                                      colors: stateDesGradient ?? []),
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: contentColor.withOpacity(0.5)),
+                                ),
+                        ),
+                      ],
                     ),
-                    AnimatedCrossFade(
-                      key: ValueKey(sharedFile.id),
-                      crossFadeState: showProgressBar
-                          ? CrossFadeState.showFirst
-                          : CrossFadeState.showSecond,
-                      firstChild: AnimatedProgressBar(
-                          value: sharedFile.progress,
-                          duration: const Duration(milliseconds: 200),
-                          width: double.infinity,
-                          height: 6,
-                          backgroundColor:
-                              const Color.fromRGBO(247, 247, 247, 1),
-                          gradient: LinearGradient(colors: progressBarColors)),
-                      secondChild: const SizedBox(
+                  ),
+                  AnimatedCrossFade(
+                    key: ValueKey(sharedFile.id),
+                    crossFadeState: showProgressBar
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    firstChild: AnimatedProgressBar(
+                        value: sharedFile.progress,
+                        duration: const Duration(milliseconds: 200),
+                        width: double.infinity,
                         height: 6,
-                      ),
-                      duration: Duration(milliseconds: 200),
-                    )
-                  ],
-                ),
+                        backgroundColor:
+                            const Color.fromRGBO(247, 247, 247, 1),
+                        gradient: LinearGradient(colors: progressBarColors)),
+                    secondChild: const SizedBox(
+                      height: 6,
+                    ),
+                    duration: Duration(milliseconds: 200),
+                  )
+                ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
     Widget innerBubble;
     if (!entity.isFromMe(andropContext.deviceId) &&
         sharedFile.state == FileState.waitToAccepted) {
-      innerBubble = InkWell(
-        onTap: () {
-          _confirmReceive(concertProvider);
-        },
-        child: _innerBubble,
+      innerBubble = ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: () {
+            _confirmReceive(concertProvider);
+          },
+          child: _innerBubble,
+        ),
       );
     } else {
       innerBubble = FileBubbleInteraction(

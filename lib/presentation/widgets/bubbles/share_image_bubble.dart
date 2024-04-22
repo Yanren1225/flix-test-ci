@@ -255,71 +255,67 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
             bubble: entity,
             filePath: sharedImage.content.path ?? '',
             clickable: clickable,
-            child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(10)),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                      color: backgroundColor,
-                      borderRadius:
-                      const BorderRadius.all(Radius.circular(10))),
-                  child: LayoutBuilder(builder:
-                      (BuildContext context, BoxConstraints constraints) {
-                    final maxPhysicalSize =
-                    Platform.isAndroid || Platform.isIOS ? 250.0 : 300.0;
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                  color: backgroundColor),
+              child: LayoutBuilder(builder:
+                  (BuildContext context, BoxConstraints constraints) {
+                final maxPhysicalSize =
+                Platform.isAndroid || Platform.isIOS ? 250.0 : 300.0;
 
-                    if (sharedImage.content.width == 0 ||
-                        sharedImage.content.height == 0) {
-                      return ConstrainedBox(
-                          constraints: BoxConstraints(
-                              minWidth: 100,
-                              maxWidth: max(
-                                  100,
-                                  min(constraints.maxWidth - 60,
-                                      maxPhysicalSize)),
-                              minHeight: 100),
-                          child: IntrinsicHeight(child: content(null, null)));
+                if (sharedImage.content.width == 0 ||
+                    sharedImage.content.height == 0) {
+                  return ConstrainedBox(
+                      constraints: BoxConstraints(
+                          minWidth: 100,
+                          maxWidth: max(
+                              100,
+                              min(constraints.maxWidth - 60,
+                                  maxPhysicalSize)),
+                          minHeight: 100),
+                      child: IntrinsicHeight(child: content(null, null)));
+                } else {
+                  double width;
+                  double height;
+
+                  const minSize = 100;
+                  final maxSize = max(minSize,
+                      min(maxPhysicalSize, constraints.maxWidth - 60));
+
+                  final dpi = MediaQuery
+                      .of(context)
+                      .devicePixelRatio;
+                  final imageOriginWidth = sharedImage.content.width / dpi;
+                  final imageOriginHeight =
+                      sharedImage.content.height / dpi;
+                  if (imageOriginWidth >= imageOriginHeight) {
+                    if (imageOriginWidth > maxSize) {
+                      width = maxSize * 1.0;
+                    } else if (imageOriginWidth < minSize) {
+                      width = minSize * 1.0;
                     } else {
-                      double width;
-                      double height;
-
-                      const minSize = 100;
-                      final maxSize = max(minSize,
-                          min(maxPhysicalSize, constraints.maxWidth - 60));
-
-                      final dpi = MediaQuery
-                          .of(context)
-                          .devicePixelRatio;
-                      final imageOriginWidth = sharedImage.content.width / dpi;
-                      final imageOriginHeight =
-                          sharedImage.content.height / dpi;
-                      if (imageOriginWidth >= imageOriginHeight) {
-                        if (imageOriginWidth > maxSize) {
-                          width = maxSize * 1.0;
-                        } else if (imageOriginWidth < minSize) {
-                          width = minSize * 1.0;
-                        } else {
-                          width = imageOriginWidth;
-                        }
-                        height = width / imageOriginWidth * imageOriginHeight;
-                      } else {
-                        if (imageOriginHeight > maxSize) {
-                          height = maxSize * 1.0;
-                        } else if (imageOriginHeight < minSize) {
-                          height = minSize * 1.0;
-                        } else {
-                          height = imageOriginHeight;
-                        }
-                        width = height / imageOriginHeight * imageOriginWidth;
-                      }
-
-                      return SizedBox(
-                          width: width * 1.0,
-                          height: height * 1.0,
-                          child: content(
-                              (width * dpi).toInt(), (height * dpi).toInt()));
+                      width = imageOriginWidth;
                     }
-                  }),
-                )),
+                    height = width / imageOriginWidth * imageOriginHeight;
+                  } else {
+                    if (imageOriginHeight > maxSize) {
+                      height = maxSize * 1.0;
+                    } else if (imageOriginHeight < minSize) {
+                      height = minSize * 1.0;
+                    } else {
+                      height = imageOriginHeight;
+                    }
+                    width = height / imageOriginHeight * imageOriginWidth;
+                  }
+
+                  return SizedBox(
+                      width: width * 1.0,
+                      height: height * 1.0,
+                      child: content(
+                          (width * dpi).toInt(), (height * dpi).toInt()));
+                }
+              }),
+            ),
           ),
         ),
         Visibility(
