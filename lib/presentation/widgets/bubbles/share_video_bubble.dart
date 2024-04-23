@@ -325,7 +325,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
       previewWidget = Image(
           key: _videoWidget,
           image:
-              FlixThumbnailProvider(resourceId: videoEntity.content.resourceId),
+              FlixThumbnailProvider(id: videoEntity.id, resourceId: videoEntity.content.resourceId, preferWidth: 250, preferHeight: 250),
           fit: BoxFit.contain,
           errorBuilder: (
             BuildContext context,

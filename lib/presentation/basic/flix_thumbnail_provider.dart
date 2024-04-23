@@ -1,20 +1,28 @@
-
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
+import 'dart:ui';
 
+import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 final _providerLocks = <FlixThumbnailProvider, Completer<Codec>>{};
 final photoManagerPlugin = PhotoManagerPlugin();
 
+// Android9以下设备对heif的支持
 class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
+  final String id;
+  final String? resourceId;
+  final String? resourcePath;
+  final int preferWidth;
+  final int preferHeight;
 
-  final String resourceId;
-
-  FlixThumbnailProvider({required this.resourceId});
+  FlixThumbnailProvider(
+      {required this.id, required this.resourceId, this.resourcePath, required this.preferWidth, required this.preferHeight});
 
   @override
   Future<FlixThumbnailProvider> obtainKey(ImageConfiguration configuration) {
@@ -22,8 +30,8 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
   }
 
   @override
-  ImageStreamCompleter loadImage(FlixThumbnailProvider key,
-      ImageDecoderCallback decode) {
+  ImageStreamCompleter loadImage(
+      FlixThumbnailProvider key, ImageDecoderCallback decode) {
     return MultiFrameImageStreamCompleter(
       codec: _loadAsync(key, decode),
       scale: 1.0,
@@ -37,9 +45,33 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
     );
   }
 
-  Future<Codec> _loadAsync(FlixThumbnailProvider key,
-      ImageDecoderCallback decode, // ignore: deprecated_member_use
-      ) {
+  Future<bool> _isThumbnailCacheExist(FlixThumbnailProvider key) async {
+    return await File(await _getThumbnailCachePath(key)).exists();
+  }
+
+  Future<String> _getThumbnailCachePath(FlixThumbnailProvider key) async {
+    final cachePath = await getCachePath();
+    final thumbnailDir = Directory('$cachePath/thumbnail');
+    if (!(await thumbnailDir.exists())) {
+      await thumbnailDir.create(recursive: true);
+    }
+    return '${thumbnailDir.path}/${key.id}.jpg';
+  }
+
+  Future<XFile?> _compressImage(FlixThumbnailProvider key) async {
+    File originalImage = File(key.resourcePath!); // 你的原始图片路径
+    if (!await originalImage.exists()) {
+      throw StateError('The original image is not exist: ${key.resourcePath}');
+    }
+
+    return await FlutterImageCompress.compressAndGetFile(
+        originalImage.path, await _getThumbnailCachePath(key), // 保存压缩后图片的路径
+        minWidth: preferWidth, // 压缩质量，范围为0-100
+        minHeight: preferHeight);
+  }
+
+  Future<Codec> _loadAsync(
+      FlixThumbnailProvider key, ImageDecoderCallback decode) async {
     if (_providerLocks.containsKey(key)) {
       return _providerLocks[key]!.future;
     }
@@ -48,29 +80,15 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
     Future(() async {
       try {
         assert(key == this);
-
-        Uint8List? data;
-        final ThumbnailOption option;
-        if (Platform.isIOS || Platform.isMacOS) {
-          option = ThumbnailOption.ios(
-            size: pmDefaultGridThumbnailSize,
-            format: ThumbnailFormat.jpeg,
-          );
+        if (await _isThumbnailCacheExist(key)) {
+          return await _loadFromCacheAsync(key, decode);
+        } else if (key.resourceId != null && key.resourceId!.isNotEmpty) {
+          return await _loadByEntityAsync(key, decode);
+        } else if (key.resourcePath != null && key.resourcePath!.isNotEmpty) {
+          return await _cacheAndLoadAsync(key, decode);
         } else {
-          option = ThumbnailOption(
-            size: pmDefaultGridThumbnailSize,
-            format: ThumbnailFormat.jpeg,
-            frame: 0,
-          );
+          throw StateError('The key is invalid: $key');
         }
-        data = await photoManagerPlugin.getThumbnail(
-            id: key.resourceId, option: option);
-
-        if (data == null) {
-          throw StateError('The data of the entity is null: ${key.resourceId}');
-        }
-        final buffer = await ImmutableBuffer.fromUint8List(data);
-        return decode(buffer);
       } catch (e, s) {
         if (kDebugMode) {
           FlutterError.presentError(
@@ -96,12 +114,59 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
     return lock.future;
   }
 
+  Future<Codec> _loadFromCacheAsync(
+      FlixThumbnailProvider key, ImageDecoderCallback decode) async {
+    final thumbnail = XFile(await _getThumbnailCachePath(key));
+    final buffer =
+        await ImmutableBuffer.fromUint8List(await thumbnail.readAsBytes());
+    return decode(buffer);
+  }
+
+  Future<Codec> _cacheAndLoadAsync(
+      FlixThumbnailProvider key, ImageDecoderCallback decode) async {
+    assert(key == this);
+    final thumbnail = await _compressImage(key);
+    if (thumbnail == null) {
+      throw StateError('the thumbnail is null: ${key.resourceId}');
+    }
+    final buffer =
+        await ImmutableBuffer.fromUint8List(await thumbnail.readAsBytes());
+    return decode(buffer);
+  }
+
+  Future<Codec> _loadByEntityAsync(
+    FlixThumbnailProvider key,
+    ImageDecoderCallback decode, // ignore: deprecated_member_use
+  ) async {
+    Uint8List? data;
+    final ThumbnailOption option;
+    if (Platform.isIOS || Platform.isMacOS) {
+      option = ThumbnailOption.ios(
+        size: pmDefaultGridThumbnailSize,
+        format: ThumbnailFormat.jpeg,
+      );
+    } else {
+      option = ThumbnailOption(
+        size: pmDefaultGridThumbnailSize,
+        format: ThumbnailFormat.jpeg,
+        frame: 0,
+      );
+    }
+    data = await photoManagerPlugin.getThumbnail(
+        id: key.resourceId!, option: option);
+
+    if (data == null) {
+      throw StateError('The data of the entity is null: ${key.resourceId}');
+    }
+    final buffer = await ImmutableBuffer.fromUint8List(data);
+    return decode(buffer);
+  }
+
   static void _evictCache(FlixThumbnailProvider key) {
     // ignore: unnecessary_cast
     ((PaintingBinding.instance as PaintingBinding).imageCache as ImageCache)
         .evict(key);
   }
-
 
   @override
   bool operator ==(Object other) {
@@ -111,11 +176,16 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
     if (identical(this, other)) {
       return true;
     }
-    return resourceId == other.resourceId;
+    return id == id &&
+        resourceId == other.resourceId &&
+        resourcePath == resourcePath;
   }
 
   @override
-  int get hashCode =>
-      resourceId.hashCode;
+  int get hashCode => id.hashCode ^ resourceId.hashCode ^ resourcePath.hashCode;
 
+  @override
+  String toString() {
+    return 'FlixThumbnailProvider(id: $id, resourceId: $resourceId, resourcePath: $resourcePath)';
+  }
 }

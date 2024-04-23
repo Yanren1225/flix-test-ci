@@ -113,6 +113,7 @@ dependencies:
   windows_notification: ^1.1.0
   gradient_txt: ^1.0.0
   extended_text: ^13.0.0
+  flutter_image_compress: ^2.2.0
       # thumbnailer: ^2.2.0
 
   # pdfx: ^2.5.0
@@ -136,6 +137,11 @@ dependency_overrides:
       url: "https://github.com/foxik0169/Bonsoir"
       ref: "323d53763bd3d6fd42d889d1a0f0a4df8d03d0f1"
       path: "packages/bonsoir_darwin"
+  flutter_image_compress_macos:
+    git:
+      url: "https://github.com/heiha100/flutter_image_compress"
+      ref: "2783ceece9f22697d021a3dee991855a8521fd91"
+      path: "packages/flutter_image_compress_macos"
 
 #  share_plus_platform_interface:
 
