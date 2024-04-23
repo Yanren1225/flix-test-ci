@@ -19,7 +19,7 @@ class ProgressPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint();
     if (gradient != null) {
-      paint.shader = gradient?.createShader(Offset.zero & size);
+      paint.shader = gradient?.createShader(Offset.zero & Size(size.width * value, size.height));
     }
     if (color != null) {
       paint.color = color!;

@@ -146,8 +146,8 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
           stateDes = '点击确认接收';
           stateDesColor = const Color.fromRGBO(60, 60, 67, 0.6);
           clickable = false;
-          stateIcon = ReceiveButton(
-              onTap: () => _confirmReceive(concertProvider));
+          stateIcon =
+              ReceiveButton(onTap: () => _confirmReceive(concertProvider));
           break;
         case FileState.inTransit:
         case FileState.sendCompleted:
@@ -212,53 +212,56 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
       decoration: const BoxDecoration(color: backgroundColor),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          return ConstrainedBox(
-            constraints: BoxConstraints(
-                maxWidth: min(constraints.maxWidth - 20, 400), minWidth: 200),
-            child: IntrinsicWidth(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 12, top: 10, right: 12),
-                    child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              sharedFile.content.name,
-                              style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: contentColor),
-                              maxLines: 2,
-                              // TODO: 省略中间
-                              overflow: TextOverflow.ellipsis,
-                            ),
+          return SizedBox(
+            width: 260,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 12, top: 10, right: 12),
+                  child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            sharedFile.content.name,
+                            style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: contentColor),
+                            maxLines: 2,
+                            // TODO: 省略中间
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          SizedBox(
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        SizedBox(
+                          width: 44,
+                          height: 44,
+                          child: SvgPicture.asset(
+                            mimeIcon(sharedFile.content.nameWithSuffix),
                             width: 44,
                             height: 44,
-                            child: SvgPicture.asset(
-                                mimeIcon(sharedFile.content.nameWithSuffix), width: 44, height: 44,),
                           ),
-                        ]),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 12, top: 8.0, right: 12, bottom: 6),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Visibility(
-                          visible: sharedFile.content.size > 0,
+                        ),
+                      ]),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 12, top: 8.0, right: 12, bottom: 6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Visibility(
+                        visible: sharedFile.content.size > 0,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 10.0),
                           child: Text(
                             size,
                             style: const TextStyle(
@@ -269,54 +272,50 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Visibility(
-                          visible: stateDes != null,
-                          child: stateDesGradient == null
-                              ? Text(
-                                  stateDes ?? '',
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
-                                      color: stateDesColor ?? Colors.grey),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                )
-                              : GradientText(
-                                  text: stateDes ?? '',
-                                  gradient: LinearGradient(
-                                      colors: stateDesGradient ?? []),
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
-                                      color: contentColor.withOpacity(0.5)),
-                                ),
-                        ),
-                      ],
-                    ),
+                      ),
+                      Visibility(
+                        visible: stateDes != null,
+                        child: stateDesGradient == null
+                            ? Text(
+                                stateDes ?? '',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: stateDesColor ?? Colors.grey),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              )
+                            : GradientText(
+                                text: stateDes ?? '',
+                                gradient: LinearGradient(
+                                    colors: stateDesGradient ?? []),
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: contentColor.withOpacity(0.5)),
+                              ),
+                      ),
+                    ],
                   ),
-                  AnimatedCrossFade(
-                    key: ValueKey(sharedFile.id),
-                    crossFadeState: showProgressBar
-                        ? CrossFadeState.showFirst
-                        : CrossFadeState.showSecond,
-                    firstChild: AnimatedProgressBar(
-                        value: sharedFile.progress,
-                        duration: const Duration(milliseconds: 200),
-                        width: double.infinity,
-                        height: 6,
-                        backgroundColor:
-                            const Color.fromRGBO(247, 247, 247, 1),
-                        gradient: LinearGradient(colors: progressBarColors)),
-                    secondChild: const SizedBox(
+                ),
+                AnimatedCrossFade(
+                  key: ValueKey(sharedFile.id),
+                  crossFadeState: showProgressBar
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond,
+                  firstChild: AnimatedProgressBar(
+                      value: sharedFile.progress,
+                      duration: const Duration(milliseconds: 200),
+                      width: double.infinity,
                       height: 6,
-                    ),
-                    duration: Duration(milliseconds: 200),
-                  )
-                ],
-              ),
+                      backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+                      gradient: LinearGradient(colors: progressBarColors)),
+                  secondChild: const SizedBox(
+                    height: 6,
+                  ),
+                  duration: Duration(milliseconds: 200),
+                )
+              ],
             ),
           );
         },
@@ -328,6 +327,8 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
       innerBubble = ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
+          radius: 12,
+          borderRadius: BorderRadius.circular(12),
           onTap: () {
             _confirmReceive(concertProvider);
           },

@@ -260,10 +260,25 @@ Future<Size?> getHeifImageSize2(String filePath) async {
 }
 
 String mimeIcon(String filePath) {
+  // 识别word excel ppt pdf 图片 视频等文件
   final mimeType = lookupMimeType(filePath) ?? "";
-  if (mimeType.startsWith(
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
-    return 'assets/images/ic_excel.svg';
+  if (mimeType.startsWith('application/vnd.openxmlformats-officedocument')) {
+    if (mimeType
+        .startsWith('application/vnd.openxmlformats-officedocument.word')) {
+      return 'assets/images/ic_txt.svg';
+    } else if (mimeType.startsWith(
+        'application/vnd.openxmlformats-officedocument.spreadsheet')) {
+      return 'assets/images/ic_excel.svg';
+    } else if (mimeType.startsWith(
+        'application/vnd.openxmlformats-officedocument.presentation')) {
+      return 'assets/images/ic_ppt.svg';
+    } else {
+      return 'assets/images/ic_unknown_type.svg';
+    }
+  } else if (mimeType.startsWith('image')) {
+    return 'assets/images/ic_mime_image.svg';
+  } else if (mimeType.startsWith('video')) {
+    return 'assets/images/ic_mime_video.svg';
   } else if (mimeType.startsWith('text')) {
     return 'assets/images/ic_txt.svg';
   } else if (mimeType.startsWith('application/zip')) {
