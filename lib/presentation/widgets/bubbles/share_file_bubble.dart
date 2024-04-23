@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:extended_text/extended_text.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
@@ -219,25 +220,28 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding:
-                      const EdgeInsets.only(left: 12, top: 10, right: 12),
+                  padding: const EdgeInsets.only(left: 12, top: 10, right: 12),
                   child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Flexible(
-                          child: Text(
-                            sharedFile.content.name,
-                            style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: contentColor),
-                            maxLines: 2,
-                            // TODO: 省略中间
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
+                            child: ExtendedText(sharedFile.content.name,
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: contentColor),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                overflowWidget: const TextOverflowWidget(
+                                  position: TextOverflowPosition.middle,
+                                  child: Text('\u2026 ',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: contentColor)),
+                                ))),
                         const SizedBox(
                           width: 10,
                         ),
