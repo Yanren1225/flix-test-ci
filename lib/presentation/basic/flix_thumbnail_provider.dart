@@ -77,8 +77,11 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
           samplingFilter: nativeCompress.FilterType.Lanczos3);
 
       final thumbnailFile = File(await _getThumbnailCachePath(key));
-      await thumbnailFile.create();
-      await thumbnailFile.writeAsBytes(bytes);
+      if (!(await thumbnailFile.exists())) {
+        await thumbnailFile.create();
+      }
+      await thumbnailFile.writeAsBytes(bytes, flush: true);
+      return XFile(thumbnailFile.path);
     } else {
       File originalImage = File(key.resourcePath!); // 你的原始图片路径
       if (!await originalImage.exists()) {
