@@ -15,6 +15,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 final _providerLocks = <FlixThumbnailProvider, Completer<Codec>>{};
 final photoManagerPlugin = PhotoManagerPlugin();
 
+// win不支持展示heic图片
 // Android9以下设备对heif的支持
 class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
   final String id;
@@ -116,19 +117,22 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
           throw StateError('The key is invalid: $key');
         }
       } catch (e, s) {
-        if (kDebugMode) {
-          FlutterError.presentError(
-            FlutterErrorDetails(
-              exception: e,
-              stack: s,
-            ),
-          );
-        }
         // Depending on where the exception was thrown, the image cache may not
         // have had a chance to track the key in the cache at all.
         // Schedule a microtask to give the cache a chance to add the key.
-        Future<void>.microtask(() => _evictCache(key));
-        rethrow;
+        talker.error('Failed to load the image: $key', e, s);
+        if (key.resourcePath != null && key.resourcePath!.isNotEmpty) {
+          try {
+            return await _loadByFlutterMethod(key, decode);
+          } catch (e, s) {
+            talker.error('Failed to load the image: $key with back-up method', e, s);
+            Future<void>.microtask(() => _evictCache(key));
+            rethrow;
+          }
+        } else {
+          Future<void>.microtask(() => _evictCache(key));
+          rethrow;
+        }
       }
     }).then((codec) {
       lock.complete(codec);
@@ -188,6 +192,48 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
     return decode(buffer);
   }
 
+  Future<Codec> _loadByFlutterMethod(FlixThumbnailProvider key,
+      ImageDecoderCallback decode, ) async {
+    Future<Codec> decodeResize(ImmutableBuffer buffer, {TargetImageSizeCallback? getTargetSize}) {
+      assert(
+      getTargetSize == null,
+      'ResizeImage cannot be composed with another ImageProvider that applies '
+          'getTargetSize.',
+      );
+      return decode(buffer, getTargetSize: (int intrinsicWidth, int intrinsicHeight) {
+            final double aspectRatio = intrinsicWidth / intrinsicHeight;
+            final int maxWidth = key.preferWidth;
+            final int maxHeight = key.preferHeight;
+            int targetWidth = intrinsicWidth;
+            int targetHeight = intrinsicHeight;
+
+            if (targetWidth > maxWidth) {
+              targetWidth = maxWidth;
+              targetHeight = targetWidth ~/ aspectRatio;
+            }
+
+            if (targetHeight > maxHeight) {
+              targetHeight = maxHeight;
+              targetWidth = (targetHeight * aspectRatio).floor();
+            }
+
+            return TargetImageSize(width: targetWidth, height: targetHeight);
+      });
+    }
+
+    final file = File(key.resourcePath!);
+    final int lengthInBytes = await file.length();
+    if (lengthInBytes == 0) {
+      // The file may become available later.
+      PaintingBinding.instance.imageCache.evict(key);
+      throw StateError('$file is empty and cannot be loaded as an image.');
+    }
+
+    return (file.runtimeType == File)
+        ? decodeResize(await ImmutableBuffer.fromFilePath(file.path))
+        : decodeResize(await ImmutableBuffer.fromUint8List(await file.readAsBytes()));
+  }
+
   static void _evictCache(FlixThumbnailProvider key) {
     // ignore: unnecessary_cast
     ((PaintingBinding.instance as PaintingBinding).imageCache as ImageCache)
@@ -206,6 +252,7 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
         resourceId == other.resourceId &&
         resourcePath == resourcePath;
   }
+
 
   @override
   int get hashCode => id.hashCode ^ resourceId.hashCode ^ resourcePath.hashCode;
