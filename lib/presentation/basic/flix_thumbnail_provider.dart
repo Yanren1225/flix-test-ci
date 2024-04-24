@@ -7,6 +7,8 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:simple_native_image_compress/simple_native_image_compress.dart'
+    as nativeCompress;
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
@@ -21,8 +23,14 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
   final int preferWidth;
   final int preferHeight;
 
+  static final compress = nativeCompress.SimpleNativeImageCompress();
+
   FlixThumbnailProvider(
-      {required this.id, required this.resourceId, this.resourcePath, required this.preferWidth, required this.preferHeight});
+      {required this.id,
+      required this.resourceId,
+      this.resourcePath,
+      required this.preferWidth,
+      required this.preferHeight});
 
   @override
   Future<FlixThumbnailProvider> obtainKey(ImageConfiguration configuration) {
@@ -59,15 +67,30 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
   }
 
   Future<XFile?> _compressImage(FlixThumbnailProvider key) async {
-    File originalImage = File(key.resourcePath!); // 你的原始图片路径
-    if (!await originalImage.exists()) {
-      throw StateError('The original image is not exist: ${key.resourcePath}');
-    }
+    if (Platform.isWindows || Platform.isLinux) {
+      final bytes = await compress.contain(
+          filePath: key.resourcePath!,
+          compressFormat: nativeCompress.CompressFormat.Jpeg,
+          quality: 90,
+          maxWidth: key.preferWidth,
+          maxHeight: key.preferHeight,
+          samplingFilter: nativeCompress.FilterType.Lanczos3);
 
-    return await FlutterImageCompress.compressAndGetFile(
-        originalImage.path, await _getThumbnailCachePath(key), // 保存压缩后图片的路径
-        minWidth: preferWidth, // 压缩质量，范围为0-100
-        minHeight: preferHeight);
+      final thumbnailFile = File(await _getThumbnailCachePath(key));
+      await thumbnailFile.create();
+      await thumbnailFile.writeAsBytes(bytes);
+    } else {
+      File originalImage = File(key.resourcePath!); // 你的原始图片路径
+      if (!await originalImage.exists()) {
+        throw StateError(
+            'The original image is not exist: ${key.resourcePath}');
+      }
+
+      return await FlutterImageCompress.compressAndGetFile(
+          originalImage.path, await _getThumbnailCachePath(key), // 保存压缩后图片的路径
+          minWidth: key.preferWidth, // 压缩质量，范围为0-100
+          minHeight: key.preferHeight);
+    }
   }
 
   Future<Codec> _loadAsync(
