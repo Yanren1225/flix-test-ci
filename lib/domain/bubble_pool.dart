@@ -63,7 +63,7 @@ class BubblePool {
   }
 
   Future<List<String?>> getAllDeviceIdFromBubble() async {
-    return await appDatabase.bubblesDao.getAllId();
+    return await appDatabase.bubblesDao.getAllDeviceId();
   }
 
 }

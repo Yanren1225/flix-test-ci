@@ -209,8 +209,8 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
   }
 
 
-  Future<List<String?>> getAllId() {
-      final itemType = bubbleEntities.toDevice;
+  Future<List<String?>> getAllDeviceId() {
+      final itemType = bubbleEntities.fromDevice;
       final query = selectOnly(bubbleEntities, distinct: true)..addColumns([itemType]);
       return query.map((row) => row.read(itemType)).get();
   }

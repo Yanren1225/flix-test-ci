@@ -29,7 +29,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    final deviceProvider = MultiCastClientProvider.of(context, listen: false);
+    final deviceProvider = MultiCastClientProvider.of(context, listen: true);
     history = deviceProvider.history.map((d) => d.toDeviceInfo()).toList();
     devices = deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
     return Container(
@@ -39,7 +39,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
         children: [
           InkWell(
             onTap: () =>
-                MultiCastClientProvider.of(context, listen: true).startScan(),
+                MultiCastClientProvider.of(context, listen: false).startScan(),
             child: CupertinoNavigationScaffold(
                 title: '附近设备',
                 isSliverChild: true,
@@ -72,14 +72,6 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
   void initState() {
     super.initState();
     BadgeService.instance.addOnBadgesChangedListener(_onBadgesChanged);
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      BubblePool.instance.getAllDeviceIdFromBubble().then((value) {
-        setState(() {
-          talker.debug("history = $history");
-          history.removeWhere((element) => !value.contains(element.id));
-        });
-      });
-    });
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/bonjour_impl.dart';
 import 'package:flix/utils/device/device_utils.dart';
@@ -112,13 +113,25 @@ class DeviceManager {
       // 在前端去重，当在线设备变化时，可以再次去重
       // event.removeWhere((element) => deviceList.contains(element));
       history.addAll(event);
-      notifyHistoryChanged();
+
+      appDatabase.bubblesDao.getAllDeviceId().then((value) {
+        talker.debug("_watchHistory  bubbleDeviceid = $value");
+        talker.debug("_watchHistory history = $history");
+        history.removeWhere((element) {
+          var hasMessageDevice = value.contains(element.fingerprint);
+          if (!hasMessageDevice) {
+            deleteHistory(element.fingerprint);
+          }
+          return !hasMessageDevice;
+        });
+        notifyHistoryChanged();
+      });
     });
   }
 
   Future<void> deleteHistory(String deviceId) async {
+    talker.debug("deleteHistory = $deviceId");
     await appDatabase.bubblesDao.deleteBubblesByDeviceId(deviceId);
     await appDatabase.devicesDao.deleteDevice(deviceId);
   }
 }
-
