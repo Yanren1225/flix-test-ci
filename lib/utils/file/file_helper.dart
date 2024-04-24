@@ -318,7 +318,7 @@ Future<File> createFile(String desDir, String fileName,
   }
 
   final tag = copyIndex == 0 ? "" : "($copyIndex)";
-  String filePath = '$desDir/$fileNameWithoutSuffix$tag$fileSuffix';
+  String filePath = '$desDir${Platform.pathSeparator}$fileNameWithoutSuffix$tag$fileSuffix';
   final outFile = File(filePath);
   if (await outFile.exists()) {
     try {

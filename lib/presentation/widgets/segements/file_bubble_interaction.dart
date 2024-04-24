@@ -190,10 +190,17 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
     if (Platform.isIOS || Platform.isAndroid) {
       _openDownloadDir();
     } else {
+      final encodePath = File(widget.filePath).parent.path;
+      talker.debug('encodePath: $encodePath');
+      if (Platform.isWindows) {
+        // 使用 Explorer 打开目录
+        Process.run('explorer', [encodePath]).catchError((error) => print('Failed to open download folder: $error'));
+        return;
+      }
       OpenDir()
           .openNativeDir(
               path: Platform.isWindows
-                  ? File(widget.filePath).parent.path
+                  ? encodePath
                   : widget.filePath)
           .catchError(
               (error) => print('Failed to open download folder: $error'));
