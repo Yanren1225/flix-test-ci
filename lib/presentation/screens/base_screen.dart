@@ -85,7 +85,9 @@ Future<bool> checkPhotosPermission(BuildContext context) async {
     DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     final androidInfo = await deviceInfoPlugin.androidInfo;
     if (androidInfo.version.sdkInt >= 33) {
-      return await checkPermission(context, [Permission.photos], '访问照片权限', '选择照片需要获取设备的访问照片权限');
+      return await checkPermission(context, [Permission.photos, Permission.accessMediaLocation], '访问照片权限', '选择照片需要获取设备的访问照片权限');
+    } else if (androidInfo.version.sdkInt >= 29) {
+      return await checkPermission(context, [Permission.storage, Permission.accessMediaLocation], '访问照片权限', '选择照片需要获取设备的访问照片权限');
     } else {
       return await checkStoragePermissionOnOldPlatform(context);
     }
@@ -99,7 +101,9 @@ Future<bool> checkVideosPermission(BuildContext context) async {
     DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     final androidInfo = await deviceInfoPlugin.androidInfo;
     if (androidInfo.version.sdkInt >= 33) {
-      return await checkPermission(context, [Permission.videos], '访问视频权限', '选择视频需要获取设备的访问视频权限');
+      return await checkPermission(context, [Permission.videos, Permission.accessMediaLocation], '访问视频权限', '选择视频需要获取设备的访问视频权限');
+    } else if (androidInfo.version.sdkInt >= 29) {
+      return await checkPermission(context, [Permission.storage, Permission.accessMediaLocation], '访问视频权限', '选择视频需要获取设备的访问视频权限');
     } else {
       return await checkStoragePermissionOnOldPlatform(context);
     }
@@ -184,10 +188,10 @@ Future<bool> isAnyPermanentlyDenied(List<Permission> permissions) async {
 }
 
 
-Future<bool> isAllGranted(List<Permission> storagePermission) async {
+Future<bool> isAllGranted(List<Permission> permissions) async {
   bool isGranted = true;
 
-  for (var permission in storagePermission) {
+  for (var permission in permissions) {
     isGranted = isGranted & await permission.isGranted;
     talker.debug('permission: $permission to $isGranted');
     if (!isGranted) {
