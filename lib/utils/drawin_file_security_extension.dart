@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:macos_secure_bookmarks/macos_secure_bookmarks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,8 +47,12 @@ mixin DrawinFileSecurityExtension {
       var sharePreference = await SharedPreferences.getInstance();
       var bookmark = sharePreference.getString(fileMeta.path!);
       if (bookmark == null) {
-        bookmark = await secureBookmarks.bookmark(File(fileMeta.path!));
-        sharePreference.setString(fileMeta.path!, bookmark);
+        try {
+          bookmark = await secureBookmarks.bookmark(File(fileMeta.path!));
+          sharePreference.setString(fileMeta.path!, bookmark);
+        } catch (e, s) {
+          talker.error('authPersistentAccess failed: ${fileMeta.path}', e, s);
+        }
       } else {
         final resolvedFile = await secureBookmarks.resolveBookmark(bookmark);
         await secureBookmarks.stopAccessingSecurityScopedResource(resolvedFile);
@@ -63,8 +68,12 @@ Future<void> _resolvePath(String resourceId, String path,
     var sharePreference = await SharedPreferences.getInstance();
     var bookmark = sharePreference.getString(path);
     if (bookmark == null) {
-      bookmark = await secureBookmarks.bookmark(File(path));
-      sharePreference.setString(path, bookmark);
+      try {
+        bookmark = await secureBookmarks.bookmark(File(path));
+        sharePreference.setString(path, bookmark);
+      } catch (e, s) {
+        talker.error('authPersistentAccess failed: $path', e, s);
+      }
       await callback.call(path);
     } else {
       final resolvedFile = await secureBookmarks.resolveBookmark(bookmark);
@@ -91,8 +100,13 @@ Future<void> authPersistentAccess(String path) async {
     var sharePreference = await SharedPreferences.getInstance();
     var bookmark = sharePreference.getString(path);
     if (bookmark == null) {
-      bookmark = await secureBookmarks.bookmark(File(path));
-      sharePreference.setString(path, bookmark);
+      try {
+        bookmark = await secureBookmarks.bookmark(File(path));
+        sharePreference.setString(path, bookmark);
+      } catch (e, s) {
+        talker.error('authPersistentAccess failed: $path', e, s);
+      }
+
     }
   }
 }
