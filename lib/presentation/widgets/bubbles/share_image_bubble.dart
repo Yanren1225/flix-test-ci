@@ -248,7 +248,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
               child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
                 final maxPhysicalSize = 250.0;
-                    // Platform.isAndroid || Platform.isIOS ? 250.0 : 300.0;
+                // Platform.isAndroid || Platform.isIOS ? 250.0 : 300.0;
 
                 if (sharedImage.content.width == 0 ||
                     sharedImage.content.height == 0) {
@@ -257,7 +257,8 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
                           minWidth: 100,
                           maxWidth: max(100,
                               min(constraints.maxWidth - 60, maxPhysicalSize)),
-                          minHeight: 100),
+                          minHeight: 100,
+                          maxHeight: maxPhysicalSize),
                       child: IntrinsicHeight(child: content(null, null)));
                 } else {
                   double width;
@@ -344,7 +345,9 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
           resourceId: !isFromSelf || resourceId.isEmpty || isDesktop()
               ? null
               : sharedFile.content.resourceId,
-          resourcePath: sharedFile.content.path, preferWidth: cacheWidth ?? 250, preferHeight: cacheHeight ?? 250),
+          resourcePath: sharedFile.content.path,
+          preferWidth: cacheWidth ?? 250,
+          preferHeight: cacheHeight ?? 250),
       fit: BoxFit.contain,
       errorBuilder: errorBuilder,
     );

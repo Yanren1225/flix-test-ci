@@ -238,8 +238,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
                   color: backgroundColor),
               child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
-                final maxPhysicalSize =
-                    Platform.isAndroid || Platform.isIOS ? 250.0 : 300.0;
+                final maxPhysicalSize = 250.0;
 
                 if (sharedVideo.content.width == 0 ||
                     sharedVideo.content.height == 0) {
@@ -248,7 +247,8 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
                           minWidth: 100,
                           maxWidth: max(100,
                               min(constraints.maxWidth - 60, maxPhysicalSize)),
-                          minHeight: 100),
+                          minHeight: 100,
+                          maxHeight: maxPhysicalSize),
                       child: IntrinsicHeight(child: content));
                 } else {
                   final width;
