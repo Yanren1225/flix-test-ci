@@ -3,9 +3,7 @@ import 'dart:ui';
 
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
-import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
-
 import 'package:flix/domain/notification/BadgeService.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/pickable.dart';
@@ -24,13 +22,14 @@ import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pasteboard/pasteboard.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import 'droper.dart';
 
-class ConcertScreen extends StatelessWidget {
+class ConcertScreen extends StatefulWidget {
   final DeviceInfo deviceInfo;
   final String? anchor;
   final bool showBackButton;
@@ -44,11 +43,44 @@ class ConcertScreen extends StatelessWidget {
       this.playable = true});
 
   @override
+  State<StatefulWidget> createState() {
+    return _ConcertScreenState();
+  }
+
+}
+
+class _ConcertScreenState extends State<ConcertScreen> with SingleTickerProviderStateMixin  {
+  DeviceInfo get deviceInfo => widget.deviceInfo;
+  String? get anchor => widget.anchor;
+  bool get showBackButton => widget.showBackButton;
+  bool get playable => widget.playable;
+  bool _isContentReady = false;
+
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300), // 淡入效果持续2秒
+      vsync: this,
+    );
+    _animation = Tween(begin: 0.0, end: 1.0).animate(_controller);
+    Future.delayed(Duration(milliseconds: 300), () {
+      setState(() {
+        _isContentReady = true;
+      });
+      _controller.forward();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final main = LayoutBuilder(
       builder: (_context, constraints) {
         final concertProvider =
-            Provider.of<ConcertProvider>(_context, listen: true);
+        Provider.of<ConcertProvider>(_context, listen: true);
         return ValueListenableBuilder(
           valueListenable: concertProvider.deviceName,
           builder: (_context, value, child) {
@@ -75,13 +107,16 @@ class ConcertScreen extends StatelessWidget {
                     concertProvider.existEditing();
                   },
                   builder: (padding) {
-                    return ShareConcertMainView(
-                      key: concertProvider.concertMainKey,
-                      deviceInfo: concertProvider.deviceInfo,
-                      padding: padding,
-                      anchor: anchor,
-                      playable: playable,
-                    );
+                    return _isContentReady ? FadeTransition(
+                      opacity: _animation,
+                      child: ShareConcertMainView(
+                        key: concertProvider.concertMainKey,
+                        deviceInfo: concertProvider.deviceInfo,
+                        padding: padding,
+                        anchor: anchor,
+                        playable: playable,
+                      ),
+                    ) : SizedBox();
                   }),
             );
           },
@@ -95,9 +130,9 @@ class ConcertScreen extends StatelessWidget {
         },
         child: playable
             ? Droper(
-                deviceInfo: deviceInfo,
-                child: main,
-              )
+          deviceInfo: deviceInfo,
+          child: main,
+        )
             : main);
   }
 }
