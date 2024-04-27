@@ -42,6 +42,9 @@ class SearchBoxState extends State<SearchBox> {
             maxLines: 1,
             autocorrect: false,
             keyboardType: TextInputType.text,
+            onChanged: (text){
+              onSearch(text);
+            },
             onSubmitted: onSearch,
           ),
         )
