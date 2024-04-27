@@ -422,11 +422,15 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
 
   void _initNotificationListener() {
     flixNotification.receptionNotificationStream.stream
-        .listen((receptionNotification) {
+        .listen((receptionNotification) async {
       if (Platform.isWindows) {
-        Future.delayed(Duration(seconds: 0), () async {
-          await windowManager.show();
-        });
+        // trick: 直接使用show, 大概率无法把窗口展示在最上方
+        await windowManager.setAlwaysOnTop(true);
+        await windowManager.show();
+        await windowManager.focus();
+        // Future.delayed(Duration(seconds: 1), () async {
+          await windowManager.setAlwaysOnTop(false);
+        // });
       }
       final deviceModal = DeviceManager.instance.deviceList
           .find((element) => element.fingerprint == receptionNotification.from);

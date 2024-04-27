@@ -30,7 +30,8 @@ class FlixNotification {
   Future<void> initWin() async {
     await _winNotifyPlugin.initNotificationCallBack(
             (NotificationCallBackDetails details) {
-          final content = details.message.payload['content'];
+              _winNotifyPlugin.removeNotificationId(details.message.id, 'flix');
+              final content = details.message.payload['content'];
           if (content != null) {
             final receptionNotification =
             MessageNotification.fromJson(content);
@@ -141,7 +142,8 @@ class FlixNotification {
           "$id",
           deviceName,
           text,
-          payload: {"content": notification.toJson()}
+          payload: {"content": notification.toJson()},
+          group: 'flix'
       );
       id++;
       _winNotifyPlugin.showNotificationPluginTemplate(message);
@@ -171,7 +173,8 @@ class FlixNotification {
           "$id",
           "接收到一个新的文件",
           '来自$deviceName',
-        payload: {"content": notification.toJson()}
+        payload: {"content": notification.toJson()},
+        group: 'flix'
       );
       id++;
       _winNotifyPlugin.showNotificationPluginTemplate(message);
