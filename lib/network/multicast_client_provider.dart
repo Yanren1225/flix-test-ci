@@ -39,14 +39,19 @@ class MultiCastClientProvider extends ChangeNotifier {
     connectivitySubscription =
         Connectivity().onConnectivityChanged.listen((result) {
       talker.debug('connectivity changed: $result');
-      ShipService.instance.isServerLiving().then((isServerLiving) {
+      ShipService.instance.isServerLiving().then((isServerLiving) async {
         talker.debug('isServerLiving: $isServerLiving');
-        if (!isServerLiving) {
-          ShipService.instance.restartShipServer();
+        if (isServerLiving) {
+          startScan();
+        } else {
+          if (await ShipService.instance.restartShipServer()) {
+            startScan();
+          } else {
+            talker.error('restartShipServer failed');
+          }
         }
       }).catchError((error, stackTrace) =>
           talker.error('isServerLiving error', error, stackTrace));
-      startScan();
     });
     DeviceProfileRepo.instance.deviceNameBroadcast.stream.listen((event) {
       if (deviceName != event) {

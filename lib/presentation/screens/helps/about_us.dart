@@ -1,4 +1,5 @@
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flix/utils/download_nonweb_logs.dart';
 import 'package:flutter/gestures.dart';
@@ -174,14 +175,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
             downloadFile(versionContext, talker.history.text).onError(
                   (error, stackTrace) {
                 talker.error('日志分享失败, $error, $stackTrace', error, stackTrace);
-                Fluttertoast.showToast(
-                    msg: "日志分享失败",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.CENTER,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: Colors.grey.shade200,
-                    textColor: Colors.black,
-                    fontSize: 16.0);
+                flixToast.alert("日志分享失败");
               },
             );
           // }

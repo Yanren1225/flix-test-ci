@@ -120,13 +120,14 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
       }
 
       List<PrimitiveBubble?> bubblesResult = List.empty(growable: true);
+      List<PrimitiveBubble> nonNullsBubbles = primitiveBubbles.nonNulls.toList();
 
-      if (primitiveBubbles.isEmpty) {
-        return primitiveBubbles.nonNulls.toList();
+      if (nonNullsBubbles.isEmpty) {
+        return nonNullsBubbles;
       }
 
       final timeGap = 3 * 60 * 1000;
-      var timeBubbleSource = primitiveBubbles[0];
+      var timeBubbleSource = nonNullsBubbles[0];
       if (DateTime.now().millisecondsSinceEpoch - timeBubbleSource!.time >= timeGap) {
         final timeBubble = PrimitiveTimeBubble(
             id: timeBubbleSource!.id,
@@ -140,9 +141,9 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
 
       bubblesResult.add(timeBubbleSource);
 
-      for (var i = 0; i < primitiveBubbles.length - 1; i++) {
-        timeBubbleSource = primitiveBubbles[i + 1];
-        final beforeItem = primitiveBubbles[i];
+      for (var i = 0; i < nonNullsBubbles.length - 1; i++) {
+        timeBubbleSource = nonNullsBubbles[i + 1];
+        final beforeItem = nonNullsBubbles[i];
         if (timeBubbleSource == null) {
           talker.error('missing bubble: ${bubbleEntities[i + 1]}');
           continue;

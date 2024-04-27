@@ -14,10 +14,15 @@ class SearchBoxState extends State<SearchBox> {
 
   @override
   Widget build(BuildContext context) {
+    int marginLeft = 16;
+    double screenWidth = MediaQuery.of(context).size.width-marginLeft*2;
     return Row(
       children: [
         Container(
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+          width: screenWidth,
+          height: 54,
+          margin: EdgeInsets.only(left: marginLeft.toDouble(),right: marginLeft.toDouble(),top: 10,bottom: 10),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),color: Colors.white),
           child: TextField(
             cursorColor: Colors.black,
             decoration: const InputDecoration(
@@ -37,6 +42,9 @@ class SearchBoxState extends State<SearchBox> {
             maxLines: 1,
             autocorrect: false,
             keyboardType: TextInputType.text,
+            onChanged: (text){
+              onSearch(text);
+            },
             onSubmitted: onSearch,
           ),
         )

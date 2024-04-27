@@ -7,7 +7,6 @@ import 'package:flix/domain/settings/SettingsRepo.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/bonjour_impl.dart';
 import 'package:flix/network/multicast_impl.dart';
-import 'package:flix/network/multicast_util.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/utils/device/device_utils.dart';
@@ -24,7 +23,7 @@ class DeviceDiscover {
 
   final deviceProfileRepo = DeviceProfileRepo.instance;
   final settingsRepo = SettingsRepo.instance;
-  late ApInterface apInterface;
+  ApInterface? apInterface;
 
   final deviceList = <DeviceModal>{};
   final _netAddress2DeviceInfo = <String, DeviceInfo>{};
@@ -36,7 +35,7 @@ class DeviceDiscover {
 
   Future<void> start(ApInterface apInterface, int port) async {
     this.apInterface = apInterface;
-    this.apInterface.listenPong((pong) {
+    this.apInterface?.listenPong((pong) {
       _onDeviceDiscover(pong.from);
     });
     SettingsRepo.instance.enableMdnsStream.stream.listen((enableMdns) async {
@@ -58,7 +57,7 @@ class DeviceDiscover {
           if (needPong) {
             multiCastApi.pong(port, deviceModal);
             deviceProfileRepo.getDeviceModal(port)
-                .then((value) => apInterface.pong(value, deviceModal));
+                .then((value) => apInterface?.pong(value, deviceModal));
           }
           _onDeviceDiscover(deviceModal);
         });

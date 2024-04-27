@@ -72,7 +72,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
           content = (_w, _h) => Stack(
                 fit: StackFit.passthrough,
                 children: [
-                  _image(true, sharedImage),
+                  _image(true, sharedImage, cacheWidth: _w, cacheHeight: _h),
                   Container(
                     decoration: const BoxDecoration(
                         color: Color.fromRGBO(0, 0, 0, 0.5)),
@@ -95,7 +95,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
           content = (_w, _h) => Stack(
                 fit: StackFit.passthrough,
                 children: [
-                  _image(true, sharedImage),
+                  _image(true, sharedImage, cacheWidth: _w, cacheHeight: _h),
                   Container(
                     decoration: const BoxDecoration(
                         color: Color.fromRGBO(0, 0, 0, 0.5)),
