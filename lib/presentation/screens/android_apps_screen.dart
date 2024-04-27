@@ -5,8 +5,10 @@ import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/app_icon.dart';
 import 'package:flix/presentation/widgets/check_state_box.dart';
+import 'package:flix/presentation/widgets/search_box.dart';
 import 'package:flix/utils/app/apk_utils.dart';
 import 'package:device_apps/device_apps.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pinyin/pinyin.dart';
@@ -23,7 +25,9 @@ class AppsScreen extends StatefulWidget {
 class AppsScreenState extends State<AppsScreen> {
   // List<Application> apps = List.empty();
   List<String> sortedPackageNames = List.empty();
+  List<String> originSortPackageNames = List.empty();
   Map<String, Application> package2AppMap = {};
+  Map<String, Application> name2AppMap = {};
 
   ValueNotifier<Set<Application>> selectedApps = ValueNotifier({});
 
@@ -70,32 +74,46 @@ class AppsScreenState extends State<AppsScreen> {
         // Navigator.pop(context);
       },
       child: Scaffold(
-        extendBodyBehindAppBar: true,
-        backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
-        appBar: BlurAppBar(
-          appBar: appBar,
-          cpreferredSize: appBar.preferredSize,
-        ),
-        body: ListView.builder(
-            padding: EdgeInsets.only(top: appBarHeight),
-            itemCount: sortedPackageNames.length,
-            itemBuilder: (context, index) {
-              final packageName = sortedPackageNames[index]!;
-              final Application app = package2AppMap[packageName]!;
-              return AppItem(
-                  application: app,
-                  onChecked: (checked) {
-                    if (checked) {
-                      selectedApps.value.add(app);
-                      selectedApps.notifyListeners();
-                    } else {
-                      selectedApps.value.remove(app);
-                      selectedApps.notifyListeners();
-                    }
-                  });
-            }),
-      ),
+          extendBodyBehindAppBar: true,
+          backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+          appBar: BlurAppBar(
+            appBar: appBar,
+            cpreferredSize: appBar.preferredSize,
+          ),
+          body: Container(
+            margin: EdgeInsets.only(top: appBarHeight),
+            child: Column(
+              children: [
+                Container(
+                    child: SizedBox(child: createSearchBar())),
+                Expanded(
+                    child: MediaQuery.removePadding(
+                        removeTop: true,
+                        context: context, child: createListView())),
+              ],
+            ),
+          )),
     );
+  }
+
+  ListView createListView() {
+    return ListView.builder(
+        itemCount: sortedPackageNames.length,
+        itemBuilder: (context, index) {
+          final packageName = sortedPackageNames[index]!;
+          final Application app = package2AppMap[packageName]!;
+          return AppItem(
+              application: app,
+              onChecked: (checked) {
+                if (checked) {
+                  selectedApps.value.add(app);
+                  selectedApps.notifyListeners();
+                } else {
+                  selectedApps.value.remove(app);
+                  selectedApps.notifyListeners();
+                }
+              });
+        });
   }
 
   Widget confirmButton(int count) {
@@ -131,11 +149,34 @@ class AppsScreenState extends State<AppsScreen> {
       if (mounted) {
         setState(() {
           this.sortedPackageNames = _sortedPackageName;
+          this.originSortPackageNames = _sortedPackageName;
           this.package2AppMap = apps
               .asMap()
               .map((key, value) => MapEntry(value.packageName, value));
+          this.name2AppMap =
+              apps.asMap().map((key, value) => MapEntry(value.appName, value));
         });
       }
+    });
+  }
+
+  Widget createSearchBar() {
+    return SearchBox(onSearch: (keyword) {
+      if (keyword.isEmpty) {
+        setState(() {
+          sortedPackageNames = originSortPackageNames;
+        });
+        return;
+      }
+      List<String> searchResult = [];
+      name2AppMap.forEach((key, value) {
+        if (key.contains(keyword)) {
+          searchResult.add(value.packageName);
+        }
+      });
+      setState(() {
+        sortedPackageNames = searchResult;
+      });
     });
   }
 }
