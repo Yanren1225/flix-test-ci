@@ -81,7 +81,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
   }
 
   void _onBadgesChanged(Map<String, int> badges) {
-    if (!context.mounted) {
+    if (!mounted) {
       talker.warning('context has unmounted');
       return;
     }
