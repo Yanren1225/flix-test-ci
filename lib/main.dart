@@ -441,7 +441,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
           setState(() {
             thirdWidget = ConcertScreen(
               deviceInfo: deviceModal.toDeviceInfo(),
-              showBackButton: true,
+              showBackButton: false,
             );
           });
         } else {
