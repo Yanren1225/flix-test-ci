@@ -84,12 +84,12 @@ class AppsScreenState extends State<AppsScreen> {
             margin: EdgeInsets.only(top: appBarHeight),
             child: Column(
               children: [
-                Container(
-                    child: SizedBox(child: createSearchBar())),
+                Container(child: SizedBox(child: createSearchBar())),
                 Expanded(
                     child: MediaQuery.removePadding(
                         removeTop: true,
-                        context: context, child: createListView())),
+                        context: context,
+                        child: createListView())),
               ],
             ),
           )),
@@ -121,7 +121,7 @@ class AppsScreenState extends State<AppsScreen> {
       onPressed: () {
         Navigator.pop(context, selectedApps.value.toList());
       },
-      child: Text('发送 ($count)'),
+      child: Text('发送 ($count)', style: const TextStyle().useSystemChineseFont(),),
     );
   }
 
@@ -235,16 +235,18 @@ class AppItemState extends State<AppItem> {
                     Text(
                       application.appName,
                       style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black)
+                          .useSystemChineseFont(),
                     ),
                     Text(
                       application.packageName,
                       style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: Color.fromRGBO(60, 60, 67, 0.6)),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              color: Color.fromRGBO(60, 60, 67, 0.6))
+                          .useSystemChineseFont(),
                     )
                   ],
                 ),

@@ -1,4 +1,5 @@
 
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flutter/material.dart';
 
 class SuperTitle extends StatelessWidget {
@@ -12,9 +13,9 @@ class SuperTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(title,
-        style: const TextStyle(
+        style: TextStyle(
             color: Colors.black,
             fontSize: 36.0,
-            fontWeight: FontWeight.w300));
+            fontWeight: FontWeight.w300).useSystemChineseFont());
   }
 }

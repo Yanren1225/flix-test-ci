@@ -1,3 +1,4 @@
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
@@ -14,20 +15,16 @@ class AboutUSScreen extends StatefulWidget {
   int lastTapTime = 0;
   bool showBack = true;
 
-
   AboutUSScreen({this.showBack = true});
-
-
 
   @override
   State<StatefulWidget> createState() => AboutUSScreenState();
-
 }
-
 
 class AboutUSScreenState extends State<AboutUSScreen> {
   var versionTapCount = 0;
   int lastTapTime = 0;
+
   bool get showBack => widget.showBack;
 
   ValueNotifier<String> _version = ValueNotifier('');
@@ -82,11 +79,14 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   }
 
   Widget niceToMeetU() {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.all(10.0),
       child: Text('👋 你好，很高兴认识你！',
-          style: TextStyle(
-              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400)),
+          style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400)
+              .useSystemChineseFont()),
     );
   }
 
@@ -103,20 +103,26 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   }
 
   Widget brief() {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.all(10.0),
       child: Text('这里是 Flix，一个快速简洁的多端互传软件，希望你能喜欢 😆',
-          style: TextStyle(
-              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400)),
+          style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400)
+              .useSystemChineseFont()),
     );
   }
 
   Widget participate() {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.only(left: 10, top: 10, right: 80, bottom: 10),
       child: Text('Flix 制作小组\n------\n✅设计：\nlemo\n\n✅开发：\nMovenLecker\nEava_wu',
-          style: TextStyle(
-              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400)),
+          style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400)
+              .useSystemChineseFont()),
     );
   }
 
@@ -127,7 +133,8 @@ class AboutUSScreenState extends State<AboutUSScreen> {
           children: [
             TextSpan(text: '如果你有任何想法，欢迎你'),
             ClickableSpan('点我进入官方QQ群 🌸', () {
-              final Uri _url = Uri.parse('http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=sLHZTbK8nxPPoKl2BWApIKoO9TBBGua8&authKey=XBVLWiLqFFt5UD72Gc8tOhyj2Y02J%2FF%2Bw4ijEv%2FsWrYVPy8Y%2B5lbbxvLyx6EQwMP&noverify=0&group_code=539943326');
+              final Uri _url = Uri.parse(
+                  'http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=sLHZTbK8nxPPoKl2BWApIKoO9TBBGua8&authKey=XBVLWiLqFFt5UD72Gc8tOhyj2Y02J%2FF%2Bw4ijEv%2FsWrYVPy8Y%2B5lbbxvLyx6EQwMP&noverify=0&group_code=539943326');
               launchUrl(_url).then((value) {
                 if (!value) {
                   talker.error('join qq error');
@@ -135,11 +142,13 @@ class AboutUSScreenState extends State<AboutUSScreen> {
               }).onError((error, stackTrace) {
                 talker.error('join qq error', error, stackTrace);
               });
-
             }),
           ],
           style: TextStyle(
-              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400))),
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400)
+              .useSystemChineseFont())),
     );
   }
 
@@ -152,8 +161,11 @@ class AboutUSScreenState extends State<AboutUSScreen> {
             ClickableSpan('点我进入捐赠渠道', () {}),
             TextSpan(text: '，非常感谢你来支持我们的持续开发 🙏'),
           ],
-          style: TextStyle(
-              color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400))),
+          style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400)
+              .useSystemChineseFont())),
     );
   }
 
@@ -172,12 +184,12 @@ class AboutUSScreenState extends State<AboutUSScreen> {
           // if (versionTapCount >= 5) {
           //   versionTapCount = 0;
 
-            downloadFile(versionContext, talker.history.text).onError(
-                  (error, stackTrace) {
-                talker.error('日志分享失败, $error, $stackTrace', error, stackTrace);
-                flixToast.alert("日志分享失败");
-              },
-            );
+          downloadFile(versionContext, talker.history.text).onError(
+            (error, stackTrace) {
+              talker.error('日志分享失败, $error, $stackTrace', error, stackTrace);
+              flixToast.alert("日志分享失败");
+            },
+          );
           // }
         },
         child: Padding(
@@ -186,9 +198,10 @@ class AboutUSScreenState extends State<AboutUSScreen> {
             valueListenable: _version,
             builder: (_, _version, child) => Text('当前软件版本：v$_version',
                 style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400)),
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400)
+                    .useSystemChineseFont()),
           ),
         ),
       ),
@@ -198,7 +211,8 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   TextSpan ClickableSpan(String text, GestureTapCallback onTap) {
     return TextSpan(
         text: text,
-        style: const TextStyle(color: Color.fromRGBO(0, 122, 255, 1)),
+        style: const TextStyle(color: Color.fromRGBO(0, 122, 255, 1))
+            .useSystemChineseFont(),
         recognizer: TapGestureRecognizer()..onTap = onTap);
   }
 }

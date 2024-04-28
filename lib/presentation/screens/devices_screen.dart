@@ -1,3 +1,4 @@
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/BadgeService.dart';
@@ -119,7 +120,8 @@ class HistoryItem extends StatelessWidget {
             backgroundRadius: 6,
             color: Color.fromRGBO(255, 59, 48, 1),
             title: '删除',
-            style: TextStyle(color: Colors.white, fontSize: 14),
+            style: const TextStyle(color: Colors.white, fontSize: 14)
+                .useSystemChineseFont(),
             onTap: (CompletionHandler handler) async {
               onDelete(historyItemInfo);
               await handler(true);
@@ -150,9 +152,10 @@ class HistoryItem extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500)),
+                            fontSize: 14,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500)
+                        .useSystemChineseFont()),
               ),
               const SizedBox(
                 width: 16,

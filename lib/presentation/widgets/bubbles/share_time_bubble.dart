@@ -1,3 +1,4 @@
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
@@ -26,7 +27,7 @@ class ShareTimeBubbleState extends State<ShareTimeBubble> {
         alignment: Alignment.center,
         child: Text(
             formatTime(DateTime.fromMillisecondsSinceEpoch(entity.time!)),
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Color.fromRGBO(60, 60, 67, 0.6))));
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Color.fromRGBO(60, 60, 67, 0.6)).useSystemChineseFont()));
   }
 
   String formatTime(DateTime dateTime) {

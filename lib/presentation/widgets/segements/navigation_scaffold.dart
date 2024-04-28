@@ -55,7 +55,7 @@ class NavigationScaffold extends StatelessWidget {
       backgroundColor: const Color.fromRGBO(242, 242, 242, 0.8),
       surfaceTintColor: const Color.fromRGBO(242, 242, 242, 0.8),
       titleTextStyle: const TextStyle(
-          color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500),
+          color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500).useSystemChineseFont(),
       titleSpacing: 6,
     );
 

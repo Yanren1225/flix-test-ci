@@ -1,3 +1,4 @@
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/presentation/widgets/settings/settings_label.dart';
 import 'package:flutter/material.dart';
 
@@ -10,13 +11,14 @@ class ClickableItem extends StatelessWidget {
 
   final GestureTapCallback? onClick;
 
-  const ClickableItem({super.key,
-    required this.label,
-    this.des,
-    this.tail,
-    this.topRadius = true,
-    this.bottomRadius = true,
-    required this.onClick});
+  const ClickableItem(
+      {super.key,
+      required this.label,
+      this.des,
+      this.tail,
+      this.topRadius = true,
+      this.bottomRadius = true,
+      required this.onClick});
 
   @override
   Widget build(BuildContext context) {
@@ -32,31 +34,31 @@ class ClickableItem extends StatelessWidget {
                     topRight: Radius.circular(topRadius ? 14 : 0),
                     bottomLeft: Radius.circular(bottomRadius ? 14 : 0),
                     bottomRight: Radius.circular(bottomRadius ? 14 : 0))),
-        child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                    child: Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: SettingsLabel(label: label, des: des))),
-                Visibility(
-                    visible: tail != null,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: Text(tail ?? "",
-                          style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal,
-                              color: Color.fromRGBO(60, 60, 67, 0.6))),
-                    )),
-                const Icon(Icons.arrow_forward_ios_rounded,
-                    size: 16, color: Color.fromRGBO(60, 60, 67, 0.6))
-              ],
-            )))
-    );
+            child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                        child: Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: SettingsLabel(label: label, des: des))),
+                    Visibility(
+                        visible: tail != null,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 6),
+                          child: Text(tail ?? "",
+                              style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.normal,
+                                      color: Color.fromRGBO(60, 60, 67, 0.6))
+                                  .useSystemChineseFont()),
+                        )),
+                    const Icon(Icons.arrow_forward_ios_rounded,
+                        size: 16, color: Color.fromRGBO(60, 60, 67, 0.6))
+                  ],
+                ))));
   }
 }

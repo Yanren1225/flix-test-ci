@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flix/domain/device/device_manager.dart';
@@ -151,15 +152,14 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(left: 20, top: 20, right: 20),
               child: Text(
                 '接收设置',
                 style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.normal,
-                    color: Color.fromRGBO(60, 60, 67, 0.6)),
+                    color: Color.fromRGBO(60, 60, 67, 0.6)).useSystemChineseFont(),
               ),
             ),
             Padding(
@@ -235,14 +235,14 @@ class SettingsScreenState extends State<SettingsScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(left: 20, top: 20, right: 20),
                   child: Text(
                     '更多',
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.normal,
-                        color: Color.fromRGBO(60, 60, 67, 0.6)),
+                        color: Color.fromRGBO(60, 60, 67, 0.6)).useSystemChineseFont(),
                   ),
                 ),
                 Padding(
@@ -286,14 +286,14 @@ class SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(left: 20, top: 10, right: 20),
                     child: Text(
                       '开发者',
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.normal,
-                          color: Color.fromRGBO(60, 60, 67, 0.6)),
+                          color: Color.fromRGBO(60, 60, 67, 0.6)).useSystemChineseFont(),
                     ),
                   ),
                   Padding(

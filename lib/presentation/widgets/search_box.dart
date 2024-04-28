@@ -1,3 +1,4 @@
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flutter/material.dart';
 
 class SearchBox extends StatefulWidget {
@@ -25,13 +26,13 @@ class SearchBoxState extends State<SearchBox> {
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),color: Colors.white),
           child: TextField(
             cursorColor: Colors.black,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: '搜索',
                 hintStyle: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Color.fromRGBO(102, 102, 102, 1)),
+                    color: Color.fromRGBO(102, 102, 102, 1)).useSystemChineseFont(),
                 contentPadding:
                     EdgeInsets.only(left: 48, top: 14, right: 12, bottom: 14),
                 prefixIcon: Icon(
@@ -46,6 +47,7 @@ class SearchBoxState extends State<SearchBox> {
               onSearch(text);
             },
             onSubmitted: onSearch,
+            style: const TextStyle().useSystemChineseFont(),
           ),
         )
       ],

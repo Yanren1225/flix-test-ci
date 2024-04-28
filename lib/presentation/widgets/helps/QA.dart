@@ -1,3 +1,4 @@
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flutter/material.dart';
 
 class QA extends StatefulWidget {
@@ -14,25 +15,29 @@ class QAState extends State<QA> {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(14)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         child: ExpansionTile(
           tilePadding: EdgeInsets.zero,
-          expandedAlignment:Alignment.topLeft ,
+          expandedAlignment: Alignment.topLeft,
           expandedCrossAxisAlignment: CrossAxisAlignment.start,
           backgroundColor: Colors.white,
           collapsedBackgroundColor: Colors.white,
           textColor: Colors.black,
           collapsedTextColor: Colors.black,
-          iconColor:const Color.fromRGBO(60, 60, 67, 0.6),
+          iconColor: const Color.fromRGBO(60, 60, 67, 0.6),
           collapsedIconColor: const Color.fromRGBO(60, 60, 67, 0.6),
           shape: InputBorder.none,
           collapsedShape: InputBorder.none,
           title: Text(
             widget.question,
             style: const TextStyle(
-                fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.black)
+                .useSystemChineseFont(),
           ),
           children: [
             Padding(
@@ -40,9 +45,10 @@ class QAState extends State<QA> {
               child: Text(
                 widget.answer,
                 style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.normal,
-                    color: Color.fromRGBO(60, 60, 67, 0.6)),
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                        color: Color.fromRGBO(60, 60, 67, 0.6))
+                    .useSystemChineseFont(),
               ),
             )
           ],

@@ -52,16 +52,6 @@ class MultiSelectActions extends StatelessWidget {
                 onTap: onDelete,
               ),
             )
-
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     TextButton(
-            //       onPressed: onDelete,
-            //       child: Text('Delete'),
-            //     ),
-            //   ],
-            // ),
             ),
       ),
     );

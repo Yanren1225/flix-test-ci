@@ -1,3 +1,4 @@
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -70,7 +71,7 @@ class MaskLoadingState extends State<MaskLoading> with RouteAware {
                     style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
-                        fontWeight: FontWeight.normal),
+                        fontWeight: FontWeight.normal).useSystemChineseFont(),
                   ),
                 ),
               )

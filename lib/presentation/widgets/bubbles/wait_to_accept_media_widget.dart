@@ -1,4 +1,5 @@
 
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -9,11 +10,11 @@ class WaitToAcceptMediaWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(
+        const SizedBox(
             width: 18,
             height: 18,
             child: CircularProgressIndicator(
@@ -21,15 +22,15 @@ class WaitToAcceptMediaWidget extends StatelessWidget {
               color: Colors.white,
               strokeWidth: 2.0,
             )),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Text(
           '等待对方确认',
-          style: TextStyle(
+          style: const TextStyle(
               color: Colors.white,
               fontSize: 14,
-              fontWeight: FontWeight.normal),
+              fontWeight: FontWeight.normal).useSystemChineseFont(),
         )
       ],
     );

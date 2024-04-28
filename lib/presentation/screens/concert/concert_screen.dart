@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
@@ -431,7 +432,7 @@ class InputAreaState extends State<InputArea> {
                                 style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 16,
-                                    fontWeight: FontWeight.normal),
+                                    fontWeight: FontWeight.normal).useSystemChineseFont(),
                                 keyboardType: TextInputType.multiline,
                                 minLines: null,
                                 maxLines: null,

@@ -1,3 +1,4 @@
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
@@ -66,14 +67,14 @@ class _DeviceListState extends State<DeviceList> {
       }),
       Visibility(
         visible: showHistory && history.isNotEmpty,
-        child: const Padding(
-          padding: EdgeInsets.only(left: 16, right: 16, top: 20, bottom: 6),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 20, bottom: 6),
           child: Text(
             '历史记录',
-            style: TextStyle(
+            style: const TextStyle(
                 color: Color.fromRGBO(60, 60, 67, 0.6),
                 fontSize: 14,
-                fontWeight: FontWeight.w500),
+                fontWeight: FontWeight.w500).useSystemChineseFont(),
           ),
         ),
       ),

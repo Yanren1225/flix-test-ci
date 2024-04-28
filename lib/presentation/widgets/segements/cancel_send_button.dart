@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
@@ -58,7 +59,7 @@ class CancelSendButtonState extends State<CancelSendButton> {
                         removeAllModals();
                         concertProvider.cancelSend(widget.entity);
                       },
-                      child: const Padding(
+                      child: Padding(
                         padding:
                         EdgeInsets.only(left: 20, top: 14, right: 40, bottom: 14),
                         child: Text(
@@ -66,7 +67,7 @@ class CancelSendButtonState extends State<CancelSendButton> {
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
-                              color: Color.fromRGBO(255, 59, 48, 1)),
+                              color: Color.fromRGBO(255, 59, 48, 1)).useSystemChineseFont(),
                         ),
                       ),
                     ),

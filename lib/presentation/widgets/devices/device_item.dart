@@ -1,3 +1,4 @@
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/presentation/screens/concert/droper.dart';
 import 'package:flutter/material.dart';
@@ -112,7 +113,7 @@ class DeviceItemState extends State<DeviceItem> {
                           style: const TextStyle(
                               color: Colors.black,
                               fontSize: 14,
-                              fontWeight: FontWeight.w500),
+                              fontWeight: FontWeight.w500).useSystemChineseFont(),
                         ),
                       ),
                     ],

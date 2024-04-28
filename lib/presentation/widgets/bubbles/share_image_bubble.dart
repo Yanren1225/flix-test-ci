@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -123,9 +124,10 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
                         Text(
                           '${(sharedImage.progress * 100).round()}%',
                           style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal),
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal)
+                              .useSystemChineseFont(),
                         )
                       ],
                     ),
@@ -188,7 +190,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
                           style: const TextStyle(
                               color: Colors.white,
                               fontSize: 14,
-                              fontWeight: FontWeight.normal))
+                              fontWeight: FontWeight.normal).useSystemChineseFont())
                     ],
                   ),
                 ),

@@ -339,12 +339,12 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
           const SizedBox(
             height: 16,
           ),
-          const Text(
+          Text(
             '请选择设备',
-            style: TextStyle(
+            style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.normal,
-                color: Colors.black),
+                color: Colors.black).useSystemChineseFont(),
           )
         ],
       ),

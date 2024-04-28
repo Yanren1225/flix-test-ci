@@ -1,4 +1,4 @@
-
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/model/ui_bubble/shareable.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/widgets/app_icon.dart';
@@ -70,18 +70,20 @@ class ShareAppBubble extends StatelessWidget {
                             Text(
                               sharedApp.content.appName,
                               style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: contentColor),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                      color: contentColor)
+                                  .useSystemChineseFont(),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               sharedApp.content.packageName,
                               style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: contentColor.withOpacity(0.5)),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: contentColor.withOpacity(0.5))
+                                  .useSystemChineseFont(),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             )

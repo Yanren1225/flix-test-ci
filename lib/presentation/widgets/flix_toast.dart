@@ -1,3 +1,4 @@
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -51,7 +52,7 @@ class FlixToast {
                 color: Colors.black,
                 fontSize: 14.0,
                 fontWeight: FontWeight.w400,
-              ),
+              ).useSystemChineseFont(),
             ),
           ],
         ),

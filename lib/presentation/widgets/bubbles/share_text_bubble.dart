@@ -1,3 +1,4 @@
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -136,11 +137,11 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
                   linkStyle: TextStyle(
                       color: contentColor,
                       fontSize: 16,
-                      fontWeight: FontWeight.w400),
+                      fontWeight: FontWeight.w400).useSystemChineseFont(),
                   style: TextStyle(
                       color: contentColor,
                       fontSize: 16,
-                      fontWeight: FontWeight.w400),
+                      fontWeight: FontWeight.w400).useSystemChineseFont(),
                 ),
               ),
             ),
