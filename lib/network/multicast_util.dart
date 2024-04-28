@@ -71,7 +71,6 @@ class MultiCastUtil {
                 return;
               }
               var data = jsonDecode(utf8.decode(datagram.data));
-              talker.debug('receive data:$data');
               _receiveMessage(
                   datagram.address.address, data, deviceScanCallback);
               break;

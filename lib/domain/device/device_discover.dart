@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/SettingsRepo.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/bonjour_impl.dart';
@@ -30,8 +31,12 @@ class DeviceDiscover {
   final _deviceId2NetAddress = <String, String>{};
   final deviceListChangeListeners = <OnDeviceListChanged>{};
 
-  late MultiCastImpl multiCastApi = MultiCastImpl(multicastGroup: defaultMulticastGroup, multicastPort: defaultMulticastPort , deviceProfileRepo: deviceProfileRepo);
-  late BonjourImpl bonjourApi = BonjourImpl(deviceProfileRepo: deviceProfileRepo);
+  late MultiCastImpl multiCastApi = MultiCastImpl(
+      multicastGroup: defaultMulticastGroup,
+      multicastPort: defaultMulticastPort,
+      deviceProfileRepo: deviceProfileRepo);
+  late BonjourImpl bonjourApi =
+      BonjourImpl(deviceProfileRepo: deviceProfileRepo);
 
   Future<void> start(ApInterface apInterface, int port) async {
     this.apInterface = apInterface;
@@ -50,23 +55,22 @@ class DeviceDiscover {
     startScan(port);
   }
 
-
   Future<void> startScan(port) async {
-    await multiCastApi.startScan(
-            (deviceModal, needPong) {
-          if (needPong) {
-            multiCastApi.pong(port, deviceModal);
-            deviceProfileRepo.getDeviceModal(port)
-                .then((value) => apInterface?.pong(value, deviceModal));
-          }
-          _onDeviceDiscover(deviceModal);
-        });
+    await multiCastApi.startScan((deviceModal, needPong) {
+      talker.debug('discover device: $deviceModal');
+      if (needPong) {
+        multiCastApi.pong(port, deviceModal);
+        deviceProfileRepo
+            .getDeviceModal(port)
+            .then((value) => apInterface?.pong(value, deviceModal));
+      }
+      _onDeviceDiscover(deviceModal);
+    });
     unawaited(multiCastApi.ping(port));
 
     if (await settingsRepo.getEnableMdnsAsync()) {
       await startBonjourScanService(port);
     }
-
   }
 
   Future<void> startBonjourScanService(int port) async {
@@ -82,7 +86,6 @@ class DeviceDiscover {
     bonjourApi.stop();
   }
 
-
   Future<void> ping(int port) async {
     multiCastApi.ping(port);
     if (await SettingsRepo.instance.getEnableMdnsAsync()) {
@@ -97,7 +100,8 @@ class DeviceDiscover {
     } else {
       bool isChanged = isDeviceInfoChanged(deviceModal);
       if (isChanged) {
-        deviceList.removeWhere((element) => element.fingerprint == deviceModal.fingerprint);
+        deviceList.removeWhere(
+            (element) => element.fingerprint == deviceModal.fingerprint);
         _addDevice(deviceModal);
       }
     }
@@ -125,7 +129,11 @@ class DeviceDiscover {
     var isChanged = false;
     for (var element in deviceList) {
       if (element.fingerprint == event.fingerprint) {
-        if (element.ip != event.ip || element.port != event.port || element.alias != event.alias || element.deviceModel != event.deviceModel || element.deviceType != event.deviceType) {
+        if (element.ip != event.ip ||
+            element.port != event.port ||
+            element.alias != event.alias ||
+            element.deviceModel != event.deviceModel ||
+            element.deviceType != event.deviceType) {
           isChanged = true;
         }
       }
@@ -165,8 +173,6 @@ class DeviceDiscover {
   String? getNetAdressByDeviceId(String id) {
     return _deviceId2NetAddress[id];
   }
-
-
 }
 
 typedef OnDeviceListChanged = void Function(Set<DeviceModal>);

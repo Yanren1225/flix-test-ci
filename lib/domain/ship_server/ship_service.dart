@@ -28,6 +28,8 @@ import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_multipart/form_data.dart';
 import 'package:shelf_multipart/multipart.dart';
 import 'package:shelf_router/shelf_router.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
+
 
 import '../../utils/file/file_helper.dart';
 
@@ -45,6 +47,7 @@ class ShipService extends ApInterface {
   HttpServer? _server;
 
   final lock = Mutex();
+  var _longTaskCount = 0;
 
   // final Map<String, Cancelable> tasks = {};
 
@@ -181,8 +184,10 @@ class ShipService extends ApInterface {
   }
 
   Future<Response> _receiveFile(Request request) async {
+    _addLongTask();
     try {
       if (!request.isMultipart) {
+        _removeLongTask();
         return Response.badRequest();
       } else if (request.isMultipartForm) {
         final description = StringBuffer('Parsed form multipart request\n');
@@ -235,21 +240,26 @@ class ShipService extends ApInterface {
                         .copy(state: FileState.receiveFailed, progress: 1.0));
                 // removeBubbleById(updatedBubble.id);
                 await _bubblePool.add(updatedBubble);
+                _removeLongTask();
                 return Response.internalServerError();
               }
               break;
           }
         }
 
+        _removeLongTask();
         return Response.ok(description.toString());
       } else {
+        _removeLongTask();
         return Response.badRequest();
       }
     } on CancelException catch (e, stacktrace) {
       talker.warning('_receiveFile canceled, ', e, stacktrace);
+      _removeLongTask();
       return Response.ok('canceled');
     } catch (e, stackTrace) {
       talker.error('_receiveFile failed, ', e, stackTrace);
+      _removeLongTask();
       return Response.internalServerError();
     }
   }
@@ -439,8 +449,10 @@ class ShipService extends ApInterface {
   }
 
   Future<void> _sendFileReal(PrimitiveFileBubble fileBubble) async {
+    _addLongTask();
     try {
       await checkCancel(fileBubble.id);
+
       final shardFile = fileBubble.content.meta;
 
       var request = http.MultipartRequest(
@@ -478,6 +490,7 @@ class ShipService extends ApInterface {
       talker.error('发送异常: ', e, stackTrace);
       _updateFileShareState(fileBubble.id, FileState.sendFailed);
     }
+    _removeLongTask();
   }
 
   Future<void> _deleteCachedFile(PrimitiveFileBubble fileBubble, String path) async {
@@ -605,6 +618,23 @@ class ShipService extends ApInterface {
       }
     } catch (e, stackTrace) {
       talker.error('sendCancelMessage failed: ', e, stackTrace);
+    }
+  }
+
+  Future<void> _addLongTask() async {
+    _longTaskCount++;
+    if (!(await WakelockPlus.enabled)) {
+      await WakelockPlus.enable();
+    }
+  }
+
+  Future<void> _removeLongTask() async {
+    _longTaskCount--;
+    if (_longTaskCount <= 0) {
+      _longTaskCount = 0;
+      if (await WakelockPlus.enabled) {
+        await WakelockPlus.disable();
+      }
     }
   }
 }
