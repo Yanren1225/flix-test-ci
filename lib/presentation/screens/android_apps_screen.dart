@@ -104,6 +104,7 @@ class AppsScreenState extends State<AppsScreen> {
           final Application app = package2AppMap[packageName]!;
           return AppItem(
               application: app,
+              checked: selectedApps.value.contains(app),
               onChecked: (checked) {
                 if (checked) {
                   selectedApps.value.add(app);
@@ -186,9 +187,12 @@ typedef OnChecked = void Function(bool checked);
 class AppItem extends StatefulWidget {
   final Application application;
   final OnChecked onChecked;
+  late ValueNotifier<bool> _checked = ValueNotifier<bool>(false);
 
-  const AppItem(
-      {super.key, required this.application, required this.onChecked});
+  AppItem(
+      {super.key, required this.application, required bool checked, required this.onChecked}) {
+    _checked.value = checked;
+  }
 
   @override
   State<StatefulWidget> createState() => AppItemState();
@@ -199,7 +203,7 @@ class AppItemState extends State<AppItem> {
 
   OnChecked get onChecked => widget.onChecked;
 
-  final ValueNotifier<bool> _checked = ValueNotifier<bool>(false);
+  ValueNotifier<bool> get _checked => widget._checked;
 
   void _setChecked(bool? checked) {
     if (checked == null) return;
