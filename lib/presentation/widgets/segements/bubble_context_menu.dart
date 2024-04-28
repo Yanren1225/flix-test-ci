@@ -32,7 +32,7 @@ void showBubbleContextMenu(
   }
   final showLeft;
 
-  if (globalOffset.dx > relativeWidget.size.width - 220) {
+  if (globalOffset.dx > relativeWidget.size.width - 200) {
     showLeft = true;
   } else {
     showLeft = false;

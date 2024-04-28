@@ -23,26 +23,24 @@ abstract class BaseFileBubbleState<T extends BaseFileBubble> extends State<T> {
   void initState() {
     super.initState();
     final sharedFile = entity.shareable as SharedFile;
-    if (entity.isFromMe(DeviceProfileRepo.instance.did)) {
-      if (Platform.isMacOS) {
-        sharedFile.content.startAccessPath();
-      } else if (Platform.isIOS) {
-        sharedFile.content.startAccessPath().then((path) {
-          Future.delayed(Duration.zero, () {
-            if (mounted) {
-              if (path != null && path.isNotEmpty && path != _tmpPath && path != sharedFile.content.path) {
-                talker.debug('old path: ${sharedFile.content.path}, new path: $path');
-                _tmpPath = path;
-                setState(() {
-                  sharedFile.content.path = path;
-                });
-                ConcertProvider concertProvider = Provider.of(context, listen: false);
-                concertProvider.updateFilePath(entity, path);
-              }
+    if (Platform.isIOS) {
+      sharedFile.content.startAccessPath().then((path) {
+        Future.delayed(Duration.zero, () {
+          if (mounted) {
+            if (path != null && path.isNotEmpty && path != _tmpPath && path != sharedFile.content.path) {
+              talker.debug('old path: ${sharedFile.content.path}, new path: $path');
+              _tmpPath = path;
+              setState(() {
+                sharedFile.content.path = path;
+              });
+              ConcertProvider concertProvider = Provider.of(context, listen: false);
+              concertProvider.updateFilePath(entity, path);
             }
-          });
+          }
         });
-      }
+      });
+    } else if (Platform.isMacOS && entity.isFromMe(DeviceProfileRepo.instance.did)) {
+        sharedFile.content.startAccessPath();
     }
   }
 

@@ -106,7 +106,7 @@ extension PlatformFileConvert on PlatformFile {
     }
     await authPersistentAccess(this.path!);
     return FileMeta(
-        resourceId: this.identifier ?? '',
+        resourceId: '',
         name: this.name,
         path: this.path,
         mimeType: lookupMimeType(this.name) ?? 'application/octet-stream',
