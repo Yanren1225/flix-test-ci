@@ -33,10 +33,6 @@ class AppDatabase extends _$AppDatabase {
       // put the database file, called db.sqlite here, into the documents folder
       // for your app.
       final file;
-      // if (Platform.isAndroid) {
-      //   // TODO 方便测试，上线后修改
-      //   file = File(p.join('/data/user/0/com.ifreedomer.flix/databases', 'db.sqlite'));
-      // } else {
       final dbFolder = await getApplicationSupportDirectory();
       talker.verbose('create db in folder: $dbFolder');
       file = File(p.join(dbFolder.path, 'db.sqlite'));
@@ -63,7 +59,7 @@ class AppDatabase extends _$AppDatabase {
     return MigrationStrategy(
       onUpgrade: (m, from, to) async {
         if (from < 2) {
-          migration1_2(m);
+          await migration1_2(m);
         }
         if (from < 3) {
           await migration2_3(m);
@@ -76,15 +72,35 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> migration3_4(Migrator m) async {
-    await m.addColumn(fileContents, fileContents.speed);
+    if (!(await _checkIfColumnExists(fileContents.actualTableName, fileContents.speed.name))) {
+      await m.addColumn(fileContents, fileContents.speed);
+    }
   }
 
   Future<void> migration2_3(Migrator m) async {
-    await m.addColumn(bubbleEntities, bubbleEntities.time);
+    if (!(await _checkIfColumnExists(bubbleEntities.actualTableName, bubbleEntities.time.name))) {
+      await m.addColumn(bubbleEntities, bubbleEntities.time);
+    }
   }
 
   Future<void> migration1_2(Migrator m) async {
-    await m.addColumn(fileContents, fileContents.resourceId);
+    if (!(await _checkIfColumnExists(fileContents.actualTableName, fileContents.resourceId.name))) {
+      await m.addColumn(fileContents, fileContents.resourceId);
+    }
+  }
+
+  Future<bool> _checkIfColumnExists(String tableName, String columnName) async {
+    final result = await customSelect(
+      'PRAGMA table_info($tableName)',
+      readsFrom: { /* 这里应该列出你的表作为依赖 */ },
+    ).get();
+
+    for (final row in result) {
+      if (row.read<String>('name') == columnName) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 
