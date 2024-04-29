@@ -184,7 +184,7 @@ class PickActionAreaState extends State<PickActionsArea> {
     // see: https://github.com/flutter/flutter/issues/141002
     // 且通过XFile在Android平台拿不到真实的文件名称
     try {
-      if (context.mounted) {
+      if (mounted) {
         if (await checkStoragePermission(context,
             manageExternalStorage: false)) {
           // if (Platform.isAndroid) {
@@ -210,19 +210,7 @@ class PickActionAreaState extends State<PickActionsArea> {
                 PickableFile(
                     type: PickedFileType.File, content: await file.toFileMeta())
             ]);
-            // }
-            // } else {
-            //   final typeGroup = const XTypeGroup(label: 'all');
-            //   final files = await openFiles(acceptedTypeGroups: [typeGroup]);
-            //
-            //   if (files.isNotEmpty) {
-            //     onPicked([
-            //       for (final file in files)
-            //         PickableFile(
-            //             type: PickedFileType.File, content: await file.toFileMeta())
-            //     ]);
           }
-          // }
         }
       }
     } catch (e, stackTrace) {

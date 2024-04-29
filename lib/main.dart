@@ -24,6 +24,7 @@ import 'package:flix/presentation/screens/settings/settings_screen.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/setting/setting_provider.dart';
 import 'package:flix/utils/device/device_utils.dart';
+import 'package:flix/utils/device_info_helper.dart';
 import 'package:flix/utils/iterable_extension.dart';
 import 'package:flix/utils/meida/media_utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -63,8 +64,8 @@ Future<void> main() async {
     await initBootStartUp();
     await _initNotification();
     await initSystemManager();
-    await _initDeviceManager();
-    _logAppContext();
+    final deviceInfo = await _initDeviceManager();
+    _logAppContext(deviceInfo);
     _initSystemChrome();
     if (kDebugMode) {
       PluginManager.instance // Register plugin kits
@@ -75,7 +76,8 @@ Future<void> main() async {
         ..register(const TouchIndicator())
         ..register(Console()); // Pass in your Dio instance
       // After flutter_ume 0.3.0
-      runApp(MaterialApp(home:const UMEWidget(child: const MyApp(), enable: true)));
+      runApp(MaterialApp(
+          home: const UMEWidget(child: const MyApp(), enable: true)));
     } else {
       runApp(MaterialApp(home: const MyApp()));
     }
@@ -132,8 +134,8 @@ void _initSystemChrome() {
   );
 }
 
-Future<void> _initDeviceManager() async {
-  await DeviceProfileRepo.instance.initDeviceInfo();
+Future<DeviceInfoResult> _initDeviceManager() async {
+  final deviceInfo = await DeviceProfileRepo.instance.initDeviceInfo();
   DeviceManager.instance.init();
   ShipService.instance.startShipServer().then((isSuccess) async {
     if (isSuccess) {
@@ -141,6 +143,7 @@ Future<void> _initDeviceManager() async {
           .start(ShipService.instance, ShipService.instance.port);
     }
   });
+  return deviceInfo;
 }
 
 Future<void> initWindowManager() async {
@@ -235,9 +238,17 @@ Future<void> initBootStartUp() async {
   bool isEnabled = await launchAtStartup.isEnabled();
 }
 
-void _logAppContext() {
-  PackageInfo.fromPlatform().then((info) => talker.info(
-      'Platform: ${Platform.operatingSystem}, Version: ${Platform.operatingSystemVersion}, AppVersion: ${info.version}'));
+Future<void> _logAppContext(DeviceInfoResult deviceInfo) async {
+  String operatingSystem = '';
+  String operatingSystemVersion = '';
+  final info = await PackageInfo.fromPlatform();
+  try {
+    operatingSystem = Platform.operatingSystem;
+    operatingSystemVersion = Platform.operatingSystemVersion;
+  } catch (e, s) {
+    talker.error('get platform info error', e, s);
+  }
+  talker.info('name: ${deviceInfo.alias}, Model: ${deviceInfo.deviceModel}, Platform: $operatingSystem, Version: $operatingSystemVersion, AppVersion: ${info.version}');
 }
 
 Future<void> _initNotification() async {
@@ -342,9 +353,10 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
           Text(
             '请选择设备',
             style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.normal,
-                color: Colors.black).useSystemChineseFont(),
+                    fontSize: 20,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.black)
+                .useSystemChineseFont(),
           )
         ],
       ),
@@ -429,7 +441,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
         await windowManager.show();
         await windowManager.focus();
         // Future.delayed(Duration(seconds: 1), () async {
-          await windowManager.setAlwaysOnTop(false);
+        await windowManager.setAlwaysOnTop(false);
         // });
       }
       final deviceModal = DeviceManager.instance.deviceList

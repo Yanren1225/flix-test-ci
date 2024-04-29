@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:uuid/uuid.dart';
 
+// TODO： 兼容ContentProvider
 class FilesConfirmBottomSheet extends StatefulWidget {
   final DeviceInfo deviceInfo;
   final List<XFile> files;

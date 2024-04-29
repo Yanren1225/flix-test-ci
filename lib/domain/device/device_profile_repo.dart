@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flix/network/protocol/device_modal.dart';
+import 'package:flix/utils/device_info_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flix/utils/device_info_helper.dart' as deviceUtils;
@@ -23,7 +24,7 @@ class DeviceProfileRepo {
   String deviceName = '';
   final deviceNameBroadcast = StreamController<String>.broadcast();
 
-  Future<void> initDeviceInfo() async {
+  Future<DeviceInfoResult> initDeviceInfo() async {
     var sharePreference = await SharedPreferences.getInstance();
     var deviceKey = "device_key";
     var saveDid = sharePreference.getString(deviceKey);
@@ -41,6 +42,11 @@ class DeviceProfileRepo {
     }
 
     deviceName = savedDeviceName;
+    return deviceUtils.DeviceInfoResult(
+        alias: deviceName,
+        deviceType: deviceInfo.deviceType,
+        deviceModel: deviceInfo.deviceModel,
+        androidSdkInt: deviceInfo.androidSdkInt);
   }
 
   Future<deviceUtils.DeviceInfoResult> getDeviceInfo() async {

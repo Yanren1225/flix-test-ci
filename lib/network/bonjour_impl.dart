@@ -137,10 +137,14 @@ class BonjourImpl extends MultiCastApi {
               final port = remoteService.port;
               final serviceAttributes = remoteService.attributes;
               if (serviceAttributes != null) {
-                final alias = serviceAttributes['alias']!;
-                final deviceType = serviceAttributes['deviceType']!;
-                final deviceModel = serviceAttributes['deviceModal']!;
-                final fingerprint = serviceAttributes['fingerprint']!;
+                final alias = serviceAttributes['alias'];
+                final deviceType = serviceAttributes['deviceType'];
+                final deviceModel = serviceAttributes['deviceModal'];
+                final fingerprint = serviceAttributes['fingerprint'];
+                if (alias == null || deviceType == null || deviceModel == null || fingerprint == null) {
+                  talker.error('mDns Service resolved error: $serviceAttributes');
+                  return;
+                }
                 if (_isFromSelf(fingerprint)) {
                   return;
                 }
@@ -160,8 +164,8 @@ class BonjourImpl extends MultiCastApi {
               BonsoirDiscoveryEventType.discoveryServiceLost) {
             talker.debug('mDns Service lost : ${event.service?.toJson()}');
           }
-        }, onError: (e) {
-          talker.error('mDns discover error: $e');
+        }, onError: (e, s) {
+          talker.error('mDns discover error: $e', s);
         });
 
 // Start the discovery **after** listening to discovery events :
