@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   desktop_drop
   downloadsfolder
   file_selector_linux
+  local_notifier
   open_dir_linux
   pasteboard
   screen_retriever

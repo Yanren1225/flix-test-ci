@@ -12,6 +12,7 @@
 #include <downloadsfolder/downloadsfolder_plugin_c_api.h>
 #include <file_selector_windows/file_selector_windows.h>
 #include <firebase_core/firebase_core_plugin_c_api.h>
+#include <local_notifier/local_notifier_plugin.h>
 #include <open_dir_windows/open_dir_windows_plugin_c_api.h>
 #include <pasteboard/pasteboard_plugin.h>
 #include <permission_handler_windows/permission_handler_windows_plugin.h>
@@ -22,7 +23,6 @@
 #include <url_launcher_windows/url_launcher_windows.h>
 #include <video_player_win/video_player_win_plugin_c_api.h>
 #include <window_manager/window_manager_plugin.h>
-#include <windows_notification/windows_notification_plugin_c_api.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   BonsoirWindowsPluginCApiRegisterWithRegistrar(
@@ -37,6 +37,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("FileSelectorWindows"));
   FirebaseCorePluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FirebaseCorePluginCApi"));
+  LocalNotifierPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("LocalNotifierPlugin"));
   OpenDirWindowsPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("OpenDirWindowsPluginCApi"));
   PasteboardPluginRegisterWithRegistrar(
@@ -57,6 +59,4 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("VideoPlayerWinPluginCApi"));
   WindowManagerPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("WindowManagerPlugin"));
-  WindowsNotificationPluginCApiRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("WindowsNotificationPluginCApi"));
 }
