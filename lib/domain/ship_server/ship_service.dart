@@ -632,7 +632,8 @@ class ShipService extends ApInterface {
     _longTaskCount--;
     if (_longTaskCount <= 0) {
       _longTaskCount = 0;
-      if (await WakelockPlus.enabled) {
+      await Future.delayed(Duration(seconds: 2));
+      if (_longTaskCount <= 0 && await WakelockPlus.enabled) {
         await WakelockPlus.disable();
       }
     }
