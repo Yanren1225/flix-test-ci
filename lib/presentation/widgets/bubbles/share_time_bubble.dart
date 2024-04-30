@@ -1,4 +1,5 @@
 import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
@@ -26,34 +27,41 @@ class ShareTimeBubbleState extends State<ShareTimeBubble> {
     return Align(
         alignment: Alignment.center,
         child: Text(
-            formatTime(DateTime.fromMillisecondsSinceEpoch(entity.time!)),
+            formatTime(entity.time!),
             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Color.fromRGBO(60, 60, 67, 0.6)).useSystemChineseFont()));
   }
 
-  String formatTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final formatter = DateFormat("yyyy/MM/dd HH:mm");
-    final todayStart = DateTime(now.year, now.month, now.day);
-    final yesterdayStart = DateTime(now.year, now.month, now.day - 1);
-    final twoDaysAgoStart = DateTime(now.year, now.month, now.day - 2);
+  String formatTime(int time) {
+    try {
+      final dateTime = DateTime.fromMillisecondsSinceEpoch(time);
+      final now = DateTime.now();
+      final formatter = DateFormat("yyyy/MM/dd HH:mm");
+      final todayStart = DateTime(now.year, now.month, now.day);
+      final yesterdayStart = DateTime(now.year, now.month, now.day - 1);
+      final twoDaysAgoStart = DateTime(now.year, now.month, now.day - 2);
 
-    if (dateTime.millisecondsSinceEpoch >= todayStart.millisecondsSinceEpoch) {
-      // 当天的时间，只显示分钟和秒
-      return formatter.format(dateTime).substring(11); // 截取"HH:mm:ss"部分
-    } else if (dateTime.millisecondsSinceEpoch >=
-            yesterdayStart.millisecondsSinceEpoch &&
-        dateTime.millisecondsSinceEpoch < todayStart.millisecondsSinceEpoch) {
-      // 昨天的时间，显示"昨天 HH:mm:ss"
-      return '昨天 ${formatter.format(dateTime).substring(11)}';
-    } else if (dateTime.millisecondsSinceEpoch >=
-            twoDaysAgoStart.millisecondsSinceEpoch &&
-        dateTime.millisecondsSinceEpoch <
-            yesterdayStart.millisecondsSinceEpoch) {
-      // 前天的时间，只显示日期
-      return formatter.format(dateTime).substring(0, 10); // 截取"yyyy-MM-dd"部分
-    } else {
-      // 其他时间，显示完整日期和时间
-      return formatter.format(dateTime);
+      if (dateTime.millisecondsSinceEpoch >= todayStart.millisecondsSinceEpoch) {
+        // 当天的时间，只显示分钟和秒
+        return formatter.format(dateTime).substring(11); // 截取"HH:mm:ss"部分
+      } else if (dateTime.millisecondsSinceEpoch >=
+          yesterdayStart.millisecondsSinceEpoch &&
+          dateTime.millisecondsSinceEpoch < todayStart.millisecondsSinceEpoch) {
+        // 昨天的时间，显示"昨天 HH:mm:ss"
+        return '昨天 ${formatter.format(dateTime).substring(11)}';
+      } else if (dateTime.millisecondsSinceEpoch >=
+          twoDaysAgoStart.millisecondsSinceEpoch &&
+          dateTime.millisecondsSinceEpoch <
+              yesterdayStart.millisecondsSinceEpoch) {
+        // 前天的时间，只显示日期
+        return formatter.format(dateTime).substring(0, 10); // 截取"yyyy-MM-dd"部分
+      } else {
+        // 其他时间，显示完整日期和时间
+        return formatter.format(dateTime);
+      }
+    } catch (e, s) {
+      talker.error('failed to format time', e, s);
+      return "";
     }
+
   }
 }
