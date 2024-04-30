@@ -81,9 +81,13 @@ Future<void> main() async {
     } else {
       runApp(MaterialApp(home: const MyApp()));
     }
-  } catch (e, stackTrace) {
-    talker.error('launch error', e, stackTrace);
-    runApp(const Placeholder());
+  } catch (e, s) {
+    talker.error('launch error', e, s);
+    runApp(MaterialApp(
+        home: Center(
+          child: Text('启动失败, $e\n$s', style:  TextStyle(fontSize: 16),),
+        )
+    ));
   }
 }
 

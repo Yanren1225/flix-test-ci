@@ -466,6 +466,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.3.5"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      sha256: c2b87cb7756efdf69892005af546c56c0b5037f54d2a88269b4f347a505e3ca2
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.5"
   extended_image:
     dependency: transitive
     description:
@@ -2146,6 +2154,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.3.8"
+  windows_system_info:
+    dependency: "direct main"
+    description:
+      name: windows_system_info
+      sha256: a4577ee4ca784362940a51267155bacbf27109b282c6157127dcc715177f1b13
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.4"
   xdg_directories:
     dependency: transitive
     description:

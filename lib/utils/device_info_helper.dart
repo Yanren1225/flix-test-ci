@@ -1,9 +1,10 @@
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
-import 'package:slang/builder/model/enums.dart';
-import 'package:slang/builder/utils/string_extensions.dart';
+import 'package:windows_system_info/windows_system_info.dart';
 
+var isWindowsInfoInited = false;
 
 class DeviceInfoResult {
   final String? alias;
@@ -117,7 +118,20 @@ Future<DeviceInfoResult> getDeviceInfo() async {
         deviceModel = deviceInfo.model;
         break;
       case TargetPlatform.windows:
-        final deviceInfo = await plugin.windowsInfo;
+        try {
+          final deviceInfo = await plugin.windowsInfo;
+          alias = deviceInfo.computerName;
+        } catch (e, s) {
+          talker.warning('failed to get device info by device_info_plus plugin', e, s);
+          if (!isWindowsInfoInited) {
+            isWindowsInfoInited = true;
+            await WindowsSystemInfo.initWindowsInfo(requiredValues: [WindowsSystemInfoFeat.username]);
+          }
+          if (await WindowsSystemInfo.isInitilized) {
+            alias = WindowsSystemInfo.deviceName;
+            print('=== ${ WindowsSystemInfo.deviceName} ${WindowsSystemInfo.userName}');
+          }
+        }
         // 打印windowsInfo
         // print('computerName: ${deviceInfo.computerName}');
         // print('windowsEdition: ${deviceInfo.windowsEdition}');
@@ -127,7 +141,6 @@ Future<DeviceInfoResult> getDeviceInfo() async {
         // print('windowsUBR: ${deviceInfo.windowsUBR}');
 
 
-        alias = deviceInfo.computerName;
         // deviceModel = deviceInfo.model;
         deviceModel = 'Windows';
         break;
