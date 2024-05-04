@@ -10,10 +10,14 @@ import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/lifecycle/AppLifecycle.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/domain/log/persistence/log_persistence.dart';
+import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
 import 'package:flix/domain/notification/flix_notification.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
+import 'package:flix/domain/ship_server/ship_service_lifecycle_watcher.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/domain/window/FlixWindowManager.dart';
 import 'package:flix/model/device_info.dart';
@@ -62,6 +66,7 @@ bool needExitApp = false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
+    await logPersistence.init();
     await initFireBase();
     await initWindowManager();
     await initBootStartUp();
@@ -70,6 +75,7 @@ Future<void> main() async {
     _initDatabase();
     final deviceInfo = await _initDeviceManager();
     _logAppContext(deviceInfo);
+    _initAppLifecycle();
     _initSystemChrome();
     if (kDebugMode) {
       PluginManager.instance // Register plugin kits
@@ -89,10 +95,18 @@ Future<void> main() async {
     talker.error('launch error', e, s);
     runApp(MaterialApp(
         home: Center(
-          child: Text('启动失败, $e\n$s', style:  TextStyle(fontSize: 16),),
-        )
-    ));
+      child: Text(
+        '启动失败, $e\n$s',
+        style: TextStyle(fontSize: 16),
+      ),
+    )));
   }
+}
+
+void _initAppLifecycle() {
+  appLifecycle.init();
+  appLifecycle.addListener(logPersistence);
+  appLifecycle.addListener(ShipServiceLifecycleWatcher());
 }
 
 void _initDatabase() {
@@ -260,7 +274,8 @@ Future<void> _logAppContext(DeviceInfoResult deviceInfo) async {
   } catch (e, s) {
     talker.error('get platform info error', e, s);
   }
-  talker.info('name: ${deviceInfo.alias}, Model: ${deviceInfo.deviceModel}, Platform: $operatingSystem, Version: $operatingSystemVersion, AppVersion: ${info.version}');
+  talker.info(
+      'name: ${deviceInfo.alias}, Model: ${deviceInfo.deviceModel}, Platform: $operatingSystem, Version: $operatingSystemVersion, AppVersion: ${info.version}');
 }
 
 Future<void> _initNotification() async {

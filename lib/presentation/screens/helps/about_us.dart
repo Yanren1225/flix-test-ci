@@ -172,25 +172,18 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   Widget version() {
     return Builder(
       builder: (versionContext) => GestureDetector(
-        onDoubleTap: () {
-          // final now = DateTime.now().millisecondsSinceEpoch;
-          // if (versionTapCount == 0 || now - lastTapTime < 300) {
-          //   versionTapCount++;
-          // } else {
-          //   talker.verbose('=== else ===');
-          //   versionTapCount = 1;
-          // }
-          // lastTapTime = now;
-          // if (versionTapCount >= 5) {
-          //   versionTapCount = 0;
-
-          downloadFile(versionContext, talker.history.text).onError(
-            (error, stackTrace) {
-              talker.error('日志分享失败, $error, $stackTrace', error, stackTrace);
-              flixToast.alert("日志分享失败");
-            },
-          );
-          // }
+        onDoubleTap: () async {
+          try {
+            await packageLogAndShare(context);
+          } catch (e, s) {
+            talker.error('日志分享失败', e, s);
+            downloadFile(versionContext, talker.history.text).onError(
+                  (error, stackTrace) {
+                talker.error('日志分享失败, $error, $stackTrace', error, stackTrace);
+                flixToast.alert("日志分享失败");
+              },
+            );
+          }
         },
         child: Padding(
           padding: EdgeInsets.all(10.0),

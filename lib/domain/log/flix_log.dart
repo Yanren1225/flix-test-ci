@@ -1,7 +1,10 @@
+import 'package:flix/domain/log/persistence/log_persistence.dart';
+import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
 import 'package:talker/talker.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 final talker = TalkerFlutter.init(
+  observer: _FlixTalkerObserver(),
   settings: TalkerSettings(
     /// You can enable/disable all talker processes with this field
     enabled: true,
@@ -22,18 +25,24 @@ final talker = TalkerFlutter.init(
   ///etc...
 );
 
-// /// Jsut logs
-// talker.warning('The pizza is over 😥');
-// talker.debug('Thinking about order new one 🤔');
-//
-// // Handling Exception's and Error's
-// try {
-// throw Exception('The restaurant is closed ❌');
-// } catch (e, st) {
-// talker.handle(e, st);
-// }
-//
-// /// Jsut logs
-// talker.info('Ordering from other restaurant...');
-// talker.info('Payment started...');
-// talker.good('Payment completed. Waiting for pizza 🍕');
+class _FlixTalkerObserver extends TalkerObserver {
+  _FlixTalkerObserver();
+
+  @override
+  void onError(TalkerError err) {
+    super.onError(err);
+    logPersistence.write(err.generateTextMessage() + '\n');
+  }
+
+  @override
+  void onException(TalkerException exception) {
+    super.onException(exception);
+    logPersistence.write(exception.generateTextMessage() + '\n');
+  }
+
+  @override
+  void onLog(TalkerData log) {
+    super.onLog(log);
+    logPersistence.write(log.generateTextMessage() + '\n');
+  }
+}

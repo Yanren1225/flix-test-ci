@@ -61,7 +61,7 @@ dependencies:
   mime: ^1.0.5
   drift: ^2.15.0
   sqlite3_flutter_libs: ^0.5.21
-  path: ^1.8.3
+  path: ^1.9.0
   flutter_local_notifications: ^16.3.2
   macos_secure_bookmarks: ^0.2.1
   window_manager: ^0.3.8
@@ -120,6 +120,7 @@ dependencies:
   wakelock_plus: ^1.2.1
   local_notifier: ^0.1.6
   windows_system_info: ^0.0.4
+  archive: ^3.5.0
 #  simple_native_image_compress: ^1.1.0
 # thumbnailer: ^2.2.0
 
