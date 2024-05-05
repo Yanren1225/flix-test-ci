@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
+import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/model/ui_bubble/shareable.dart';
 import 'package:flix/utils/stream_progress.dart';
 import 'package:http/http.dart' as http;
@@ -45,23 +46,23 @@ class ConcertService {
 
 
   Future<void> send(UIBubble uiBubble) async {
-    return await ShipService.instance.send(uiBubble);
+    return await shipService.send(uiBubble);
   }
 
   Future<void> confirmReceiveFile(UIBubble uiBubble) async {
-    return await ShipService.instance.confirmReceiveFile(uiBubble.from, uiBubble.shareable.id);
+    return await shipService.confirmReceiveFile(uiBubble.from, uiBubble.shareable.id);
   }
 
   Future<void> cancelSend(UIBubble uiBubble) async {
-    return await ShipService.instance.cancelSend(uiBubble);
+    return await shipService.cancelSend(uiBubble);
   }
 
   Future<void> cancelReceive(UIBubble uiBubble) async {
-    return await ShipService.instance.cancelReceive(uiBubble);
+    return await shipService.cancelReceive(uiBubble);
   }
 
   Future<void> resend(UIBubble uiBubble) async {
-    return await ShipService.instance.resend(uiBubble);
+    return await shipService.resend(uiBubble);
   }
 
   Future<void> deleteBubble(UIBubble uiBubble) async {

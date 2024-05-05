@@ -35,7 +35,7 @@ abstract class PrimitiveBubble<Content> {
     }
   }
 
-  Map<String, dynamic> toJson();
+  Map<String, dynamic> toJson({bool full = false});
 }
 
 class PrimitiveTextBubble extends PrimitiveBubble<String> {
@@ -69,7 +69,7 @@ class PrimitiveTextBubble extends PrimitiveBubble<String> {
   }
 
   @override
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({bool full = false}) {
     return {
       'id': id,
       'from': from,
@@ -125,13 +125,13 @@ class PrimitiveFileBubble extends PrimitiveBubble<FileTransfer> {
   }
 
   @override
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({bool full = false}) {
     return {
       'id': id,
       'from': from,
       'to': to,
       'type': type.index,
-      'content': content.toJson(),
+      'content': content.toJson(full: full),
       'time': time
     };
   }
@@ -196,15 +196,20 @@ class FileTransfer {
     progress = json['progress'] as double;
     speed = json['speed'] as int? ?? 0;
     meta = FileMeta.fromJson(json['meta'] as Map<String, dynamic>);
+    waitingForAccept = json['waitingForAccept'] ?? true;
   }
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson({bool full = false}) {
+    final map = {
       'state': state.index,
       'progress': progress,
       'speed': speed,
-      'meta': meta.toJson()
+      'meta': meta.toJson(full: full)
     };
+    if (full) {
+      map['waitingForAccept'] = waitingForAccept;
+    }
+    return map;
   }
 
   FileTransfer copy(
@@ -262,7 +267,7 @@ class UpdateFileStateBubble extends InVisibleBubble<FileState> {
   }
 
   @override
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({bool full = false}) {
     return {
       'id': id,
       'from': from,

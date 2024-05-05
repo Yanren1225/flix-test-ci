@@ -47,24 +47,31 @@ class FileMeta with DrawinFileSecurityExtension {
       this.height = 0});
 
   FileMeta.fromJson(Map<String, dynamic> json)
-      : resourceId = '',
+      : resourceId = json['resourceId'] ?? '',
         name = json['name'],
         mimeType = json['mimeType'],
         nameWithSuffix = json['nameWithSuffix'],
         size = json['size'],
-        path = null,
+        path = json['path'],
         width = json['width'],
         height = json['height'];
 
-  Map<String, dynamic> toJson() {
-    return {
+  Map<String, dynamic> toJson({bool full = false}) {
+    final map = {
       'name': name,
       'mimeType': mimeType,
       'nameWithSuffix': nameWithSuffix,
       'size': size,
       'width': width,
-      'height': height
+      'height': height,
     };
+    if (full) {
+      map['resourceId'] = resourceId;
+      if (path != null) {
+        map['path'] = path!;
+      }
+    }
+    return map;
   }
 
   FileMeta copy(

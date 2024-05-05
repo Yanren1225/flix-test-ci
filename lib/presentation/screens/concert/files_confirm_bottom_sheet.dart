@@ -1,9 +1,7 @@
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:file_selector/file_selector.dart';
-import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
-
-import 'package:flix/domain/ship_server/ship_service.dart';
+import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
@@ -11,7 +9,6 @@ import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/file/size_utils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:uuid/uuid.dart';
@@ -73,7 +70,7 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
           : fileType == FileType.video
               ? BubbleType.Video
               : BubbleType.File;
-      ShipService.instance.send(UIBubble(
+      shipService.send(UIBubble(
           time: DateTime.now().millisecondsSinceEpoch,
           from: DeviceProfileRepo.instance.did,
           to: deviceInfo.id,

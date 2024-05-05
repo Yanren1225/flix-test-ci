@@ -12,37 +12,47 @@ import 'package:quiver/collection.dart';
 
 /// 承担bubble的传递、查找和缓存、订阅分发
 class BubblePool {
-
   BubblePool._privateConstruct();
 
   static final BubblePool _instance = BubblePool._privateConstruct();
+
   static BubblePool get instance => _instance;
 
   static final Map<String, PrimitiveBubble> _cache = LruMap(maximumSize: 60);
   PrimitiveBubble? _buffer;
   final _broadcast = StreamController<PrimitiveBubble>.broadcast();
+  late AppDatabase _appDatabase;
 
-
+  void init(AppDatabase appDatabase) {
+    this._appDatabase = appDatabase;
+  }
 
   Future<void> add(PrimitiveBubble bubble) async {
     talker.debug('add bubble $bubble');
     try {
-      _cache[bubble.id] = bubble;
-      _buffer = bubble;
-      _broadcast.add(bubble);
-      await appDatabase.bubblesDao.insert(bubble);
+      notify(bubble);
+      await _appDatabase.bubblesDao.insert(bubble);
     } catch (e) {
       talker.error('failed to insert bubble into database: ', e);
     }
-
   }
 
-  StreamSubscription<PrimitiveBubble> listen(void onData(PrimitiveBubble bubble)?,
-      {Function? onError, void onDone()?, bool? cancelOnError}) {
+  Future<void> notify(PrimitiveBubble bubble) async {
+    _cache[bubble.id] = bubble;
+    _buffer = bubble;
+    _broadcast.add(bubble);
+  }
+
+  StreamSubscription<PrimitiveBubble> listen(
+      void onData(PrimitiveBubble bubble)?,
+      {Function? onError,
+      void onDone()?,
+      bool? cancelOnError}) {
     if (_buffer != null) {
       onData?.call(_buffer!);
     }
-    return _broadcast.stream.listen((bubble) => onData?.call(bubble), onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+    return _broadcast.stream.listen((bubble) => onData?.call(bubble),
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   Future<PrimitiveBubble?> findLastById(String id) async {
@@ -50,7 +60,8 @@ class BubblePool {
     if (cachedBubble != null) {
       return cachedBubble;
     } else {
-      final persistedBubble = await appDatabase.bubblesDao.getPrimitiveBubbleById(id);
+      final persistedBubble =
+          await _appDatabase.bubblesDao.getPrimitiveBubbleById(id);
       if (persistedBubble != null) {
         _cache[id] = persistedBubble;
       }
@@ -59,11 +70,11 @@ class BubblePool {
   }
 
   Future<void> deleteBubble(UIBubble uiBubble) async {
-    return await appDatabase.bubblesDao.deleteBubbleById(uiBubble.shareable.id);
+    return await _appDatabase.bubblesDao
+        .deleteBubbleById(uiBubble.shareable.id);
   }
 
   Future<List<String?>> getAllDeviceIdFromBubble() async {
-    return await appDatabase.bubblesDao.getAllDeviceId();
+    return await _appDatabase.bubblesDao.getAllDeviceId();
   }
-
 }

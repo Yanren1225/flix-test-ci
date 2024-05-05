@@ -4,6 +4,7 @@ import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
+import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shareable.dart';
@@ -65,7 +66,7 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
   Future<void> _onDeviceSelected(DeviceInfo deviceInfo) async {
     final bubbles = await _createUIBubbleFromSharedMedia(deviceInfo);
     for (final bubble in bubbles) {
-      ShipService.instance.send(bubble);
+      shipService.send(bubble);
     }
     if (context.mounted) {
       if (isOverMediumWidth(context)) {

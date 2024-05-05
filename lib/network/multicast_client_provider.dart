@@ -5,10 +5,8 @@ import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/domain/ship_server/ship_service.dart';
-import 'package:flix/model/device_info.dart';
+import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/network/protocol/device_modal.dart';
-import 'package:flix/utils/net/net_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -39,12 +37,12 @@ class MultiCastClientProvider extends ChangeNotifier {
     connectivitySubscription =
         Connectivity().onConnectivityChanged.listen((result) {
       talker.debug('connectivity changed: $result');
-      ShipService.instance.isServerLiving().then((isServerLiving) async {
+      shipService.isServerLiving().then((isServerLiving) async {
         talker.debug('isServerLiving: $isServerLiving');
         if (isServerLiving) {
           startScan();
         } else {
-          if (await ShipService.instance.restartShipServer()) {
+          if (await shipService.restartShipServer()) {
             startScan();
           } else {
             talker.error('restartShipServer failed');
@@ -53,10 +51,10 @@ class MultiCastClientProvider extends ChangeNotifier {
       }).catchError((error, stackTrace) =>
           talker.error('isServerLiving error', error, stackTrace));
     });
-    DeviceProfileRepo.instance.deviceNameBroadcast.stream.listen((event) {
+    DeviceProfileRepo.instance.deviceNameBroadcast.stream.listen((event) async {
       if (deviceName != event) {
         deviceName = event;
-        DeviceDiscover.instance.ping(ShipService.instance.port);
+        DeviceDiscover.instance.ping(await shipService.getPort());
       }
     });
   }
@@ -78,7 +76,7 @@ class MultiCastClientProvider extends ChangeNotifier {
   }
 
   Future<void> startScan() async {
-    DeviceDiscover.instance.startScan(ShipService.instance.port);
+    DeviceDiscover.instance.startScan(await shipService.getPort());
   }
 
   void clearDevices() {

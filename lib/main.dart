@@ -5,6 +5,8 @@ import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flix/domain/androp_context.dart';
+import 'package:flix/domain/bubble_pool.dart';
+import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
@@ -12,6 +14,7 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
 import 'package:flix/domain/notification/flix_notification.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
+import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/domain/window/FlixWindowManager.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/multicast_client_provider.dart';
@@ -64,6 +67,7 @@ Future<void> main() async {
     await initBootStartUp();
     await _initNotification();
     await initSystemManager();
+    _initDatabase();
     final deviceInfo = await _initDeviceManager();
     _logAppContext(deviceInfo);
     _initSystemChrome();
@@ -91,6 +95,10 @@ Future<void> main() async {
   }
 }
 
+void _initDatabase() {
+  BubblePool.instance.init(appDatabase);
+}
+
 void _initSystemChrome() {
   SystemChannels.lifecycle.setMessageHandler((msg) async {
     talker.verbose('AppLifecycle $msg ${msg}');
@@ -104,18 +112,18 @@ void _initSystemChrome() {
       talker.verbose('App resumed');
       // iOS在省电模式下，app切入后台一段时间后ship server会挂掉。
       // 等app返回前台时检测server状态，若server dead，则重新启动
-      ShipService.instance.isServerLiving().then((isServerLiving) async {
+      shipService.isServerLiving().then((isServerLiving) async {
         talker.debug('isServerLiving: $isServerLiving');
         if (!isServerLiving) {
-          if (await ShipService.instance.restartShipServer()) {
-            DeviceDiscover.instance.startScan(ShipService.instance.port);
+          if (await shipService.restartShipServer()) {
+            DeviceDiscover.instance.startScan(await shipService.getPort());
           }
         } else {
-          DeviceDiscover.instance.startScan(ShipService.instance.port);
+          DeviceDiscover.instance.startScan(await shipService.getPort());
         }
       }).catchError((error, stackTrace) =>
           talker.error('isServerLiving error', error, stackTrace));
-      // ShipService.instance.startShipServer();
+      // shipService.startShipServer();
     } else if (msg == 'AppLifecycleState.paused') {
       talker.verbose('App paused');
       DeviceDiscover.instance.stop();
@@ -141,10 +149,10 @@ void _initSystemChrome() {
 Future<DeviceInfoResult> _initDeviceManager() async {
   final deviceInfo = await DeviceProfileRepo.instance.initDeviceInfo();
   DeviceManager.instance.init();
-  ShipService.instance.startShipServer().then((isSuccess) async {
+  shipService.startShipServer().then((isSuccess) async {
     if (isSuccess) {
       DeviceDiscover.instance
-          .start(ShipService.instance, ShipService.instance.port);
+          .start(shipService, await shipService.getPort());
     }
   });
   return deviceInfo;
