@@ -1,4 +1,5 @@
 import 'package:chinese_font_library/chinese_font_library.dart';
+import 'dart:math';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -11,7 +12,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -104,7 +104,16 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
                       label: '复制',
                       onPressed: () {
                         ContextMenuController.removeAny();
-                        _copyContentToClipboard();
+                        if (textSelection == null) {
+                          _copyContentToClipboard(value.text);
+                          return;
+                        }
+                        int start = min(textSelection!.baseOffset,
+                            textSelection!.extentOffset);
+                        int end = max(textSelection!.baseOffset,
+                            textSelection!.extentOffset);
+                        _copyContentToClipboard(
+                            value.text.substring(start, end));
                       },
                     ));
 
@@ -164,9 +173,7 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
         BubbleContextMenuItemType.Delete,
         // BubbleContextMenuItemType.Location,
       ], {
-        BubbleContextMenuItemType.Copy: () {
-          _copyContentToClipboard();
-        },
+        BubbleContextMenuItemType.Copy: () {},
         BubbleContextMenuItemType.MultiSelect: () {
           concertProvider.enterEditing();
         },
@@ -181,24 +188,8 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
     });
   }
 
-  void _copyContentToClipboard() {
-    if (textSelection == null) {
-      Clipboard.setData(
-          ClipboardData(text: (entity.shareable as SharedText).content));
-    } else {
-      Clipboard.setData(ClipboardData(
-          text: (entity.shareable as SharedText).content.substring(
-              textSelection!.baseOffset, textSelection!.extentOffset)));
-    }
+  void _copyContentToClipboard(String text) {
+    Clipboard.setData(ClipboardData(text: text));
     FlixToast.instance.alert("已复制到剪切板");
-
-    // FlixToast.(
-    //     msg: "已复制到剪切板",
-    //     toastLength: Toast.LENGTH_SHORT,
-    //     gravity: ToastGravity.CENTER,
-    //     timeInSecForIosWeb: 1,
-    //     backgroundColor: Colors.grey.shade200,
-    //     textColor: Colors.black,
-    //     fontSize: 16.0);
   }
 }
