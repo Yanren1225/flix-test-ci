@@ -217,16 +217,13 @@ Future<void> initSystemManager() async {
     isTemplate: Platform.isMacOS,
   );
 
-  // if (Platform.isMacOS) {
-  //   await systemTray.setImage(_iconPathOther, isTemplate: true);
-  // }
 
   // create context menu
   final Menu menu = Menu();
   await menu.buildFrom([
-    MenuItemLabel(label: 'Show', onClicked: (menuItem) => windowManager.show()),
+    MenuItemLabel(label: '显示', onClicked: (menuItem) => windowManager.show()),
     MenuItemLabel(
-        label: 'Hide',
+        label: '隐藏',
         onClicked: (menuItem) {
           if (Platform.isWindows) {
             windowManager.hide();
@@ -235,7 +232,7 @@ Future<void> initSystemManager() async {
           }
         }),
     MenuItemLabel(
-        label: 'Exit', onClicked: (menuItem) => windowManager.destroy()),
+        label: '退出', onClicked: (menuItem) => windowManager.destroy()),
   ]);
 
   // set context menu
