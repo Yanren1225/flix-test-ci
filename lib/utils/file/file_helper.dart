@@ -336,6 +336,22 @@ Future<File> createFile(String desDir, String fileName,
   return await createFile(desDir, fileName, copyIndex: copyIndex + 1);
 }
 
+
+Future<void> openFileDirectoryOnWindows(String path) async {
+  try {
+    final encodePath = File(path).parent.path.replaceAll('/', '\\');
+    if (Platform.isWindows) {
+      // 使用 Explorer 打开目录
+      final result = await Process.run('explorer', [encodePath]);
+      talker.info('open file directory result: $result');
+      return;
+    }
+  } catch (e, s) {
+    talker.error('Failed to open file directory', e, s);
+  }
+
+}
+
 enum FileType {
   image,
   video,

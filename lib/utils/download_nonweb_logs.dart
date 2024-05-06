@@ -4,7 +4,9 @@ import 'dart:ui';
 import 'package:archive/archive_io.dart';
 import 'package:downloadsfolder/downloadsfolder.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
 import 'package:flix/domain/log/persistence/partition_log_file.dart';
+import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:open_dir/open_dir.dart';
@@ -34,7 +36,8 @@ Future<void> downloadFile(BuildContext context, String logs) async {
 }
 
 Future<void> packageLogAndShare(BuildContext context) async {
-// TODO: flush日志
+// TODO: flush日志同步
+  await logPersistence.flush();
   final logDir = await getApplicationSupportDirectory();
   final outParentDir = await getApplicationDocumentsDirectory();
   final now = DateTime.now();
@@ -76,7 +79,7 @@ Future<File> zipDirectory(String logDir, String zipFilePath) async {
 
 Future<void> shareFile(BuildContext context, File file) async {
   if (Platform.isWindows) {
-    await OpenDir().openNativeDir(path: file.path);
+    await openFileDirectoryOnWindows(file.path);
   } else {
     final box = context.findRenderObject() as RenderBox?;
 

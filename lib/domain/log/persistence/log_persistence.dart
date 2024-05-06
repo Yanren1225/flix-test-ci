@@ -47,11 +47,15 @@ class LogPersistence extends LifecycleListener {
     }
   }
 
+  // android: /data/user/0/com.ifreedomer.flix/files
+  // macos: /Users/heiha/Library/Application Support/com.ifreedomer.flix.mac
+  // windows: C:\Users\world\AppData\Roaming\com.ifreedomer\flix
   Future<void> _prepareLogFile() async {
     if (_logFile != null) return;
     if (_logFileCompleter == null) {
       _logFileCompleter = Completer();
       final dir = (await getApplicationSupportDirectory()).path;
+
       log('log dir: $dir');
       _logFile = PartitionLogFile(dir: '$dir/log', singleFileMaxSize: 1024 * 1024, maxSize: 10 * 1024 * 1024);
       // _logFile = PartitionLogFile(dir: '$dir/log', singleFileMaxSize: 100 * 1024, maxSize: 500 * 1024);

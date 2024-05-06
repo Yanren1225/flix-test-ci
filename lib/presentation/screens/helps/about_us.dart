@@ -5,7 +5,6 @@ import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flix/utils/download_nonweb_logs.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:talker/talker.dart';
 import 'package:url_launcher/url_launcher.dart';

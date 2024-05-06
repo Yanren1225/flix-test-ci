@@ -8,6 +8,7 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/segements/bubble_context_menu.dart';
+import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -190,19 +191,16 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
     if (Platform.isIOS || Platform.isAndroid) {
       _openDownloadDir();
     } else {
-      final encodePath = File(widget.filePath).parent.path.replaceAll('/', '\\');
       if (Platform.isWindows) {
-        // 使用 Explorer 打开目录
-        Process.run('explorer', [encodePath]).catchError((error) => print('Failed to open download folder: $error'));
-        return;
+        openFileDirectoryOnWindows(widget.filePath);
+      } else {
+        OpenDir()
+            .openNativeDir(
+            path: widget.filePath)
+            .catchError(
+                (error) => print('Failed to open download folder: $error'));
       }
-      OpenDir()
-          .openNativeDir(
-              path: Platform.isWindows
-                  ? encodePath
-                  : widget.filePath)
-          .catchError(
-              (error) => print('Failed to open download folder: $error'));
+
     }
   }
 
