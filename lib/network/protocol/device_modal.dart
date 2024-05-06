@@ -9,8 +9,9 @@ class DeviceModal with DeviceModalMappable {
   final String? deviceModel;
   final DeviceType? deviceType; // nullable since v2
   final String fingerprint;
-  final int? port; // v2
-  String ip = ""; // v2
+  final int? port;
+  String ip = "";
+  String host = "";
 
   DeviceModal({
     required this.alias,
@@ -18,7 +19,8 @@ class DeviceModal with DeviceModalMappable {
     required this.deviceType,
     required this.fingerprint,
     required this.port,
-    this.ip = ''
+    this.ip = '',
+    this.host = ''
   });
 
 

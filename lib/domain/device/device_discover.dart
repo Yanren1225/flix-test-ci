@@ -5,12 +5,10 @@ import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/SettingsRepo.dart';
-import 'package:flix/model/device_info.dart';
 import 'package:flix/network/bonjour_impl.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
-import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/net/net_utils.dart';
 
 class DeviceDiscover {
@@ -27,8 +25,7 @@ class DeviceDiscover {
   ApInterface? apInterface;
 
   final deviceList = <DeviceModal>{};
-  final _netAddress2DeviceInfo = <String, DeviceInfo>{};
-  final _deviceId2NetAddress = <String, String>{};
+  final _deviceId2Device = <String, DeviceModal>{};
   final deviceListChangeListeners = <OnDeviceListChanged>{};
 
   late MultiCastImpl multiCastApi = MultiCastImpl(
@@ -93,36 +90,79 @@ class DeviceDiscover {
     }
   }
 
-  void _onDeviceDiscover(DeviceModal deviceModal) {
-    bool isConnect = isDeviceConnected(deviceModal);
-    if (!isConnect) {
-      _addDevice(deviceModal);
+  void _onDeviceDiscover(DeviceModal device) {
+    final preDevice = _findDevice(device);
+    if (preDevice == null) {
+      _addDevice(device);
+      notifyDeviceListChanged();
     } else {
-      bool isChanged = isDeviceInfoChanged(deviceModal);
+      final int? port;
+      String ip = "";
+      String host = "";
+
+      bool isChanged = false;
+      if (device.ip.isNotEmpty &&
+          device.ip != preDevice.ip) {
+        ip = device.ip;
+        isChanged = true;
+      } else {
+        ip = preDevice.ip;
+      }
+
+      if (device.host.isNotEmpty &&
+          device.host != preDevice.host) {
+        host = device.host;
+        isChanged = true;
+      } else {
+        host = preDevice.host;
+      }
+
+      if (device.port != null && device.port != preDevice.port) {
+        port = device.port;
+        isChanged = true;
+      } else {
+        port = preDevice.port;
+      }
+
+      if (device.alias != preDevice.alias ||
+          device.deviceModel != preDevice.deviceModel ||
+          device.deviceType != preDevice.deviceType) {
+        isChanged = true;
+      }
+
       if (isChanged) {
-        deviceList.removeWhere(
-            (element) => element.fingerprint == deviceModal.fingerprint);
-        _addDevice(deviceModal);
+        final newDevice = DeviceModal(
+            alias: device.alias,
+            deviceModel: device.deviceModel,
+            deviceType: device.deviceType,
+            fingerprint: device.fingerprint,
+            port: port,
+            ip: ip,
+            host: host);
+        deviceList.remove(preDevice);
+        _addDevice(newDevice);
+        notifyDeviceListChanged();
       }
     }
-    notifyDeviceListChanged();
   }
 
   void clearDevices() {
     deviceList.clear();
-    _netAddress2DeviceInfo.clear();
-    _deviceId2NetAddress.clear();
+    _deviceId2Device.clear();
     notifyDeviceListChanged();
   }
 
   bool isDeviceConnected(DeviceModal event) {
-    var isConnect = false;
+    return _findDevice(event) != null;
+  }
+
+  DeviceModal? _findDevice(DeviceModal deviceModal) {
     for (var element in deviceList) {
-      if (element.fingerprint == event.fingerprint) {
-        isConnect = true;
+      if (element.fingerprint == deviceModal.fingerprint) {
+        return element;
       }
     }
-    return isConnect;
+    return null;
   }
 
   bool isDeviceInfoChanged(DeviceModal event) {
@@ -149,10 +189,7 @@ class DeviceDiscover {
 
   void _addDevice(DeviceModal device) {
     deviceList.add(device);
-    _netAddress2DeviceInfo[toNetAddress(device.ip, device.port)] =
-        device.toDeviceInfo();
-    _deviceId2NetAddress[device.fingerprint] =
-        toNetAddress(device.ip, device.port);
+    _deviceId2Device[device.fingerprint] = device;
     appDatabase.devicesDao.insertDevice(device);
     notifyDeviceListChanged();
   }
@@ -166,12 +203,18 @@ class DeviceDiscover {
     deviceListChangeListeners.remove(onDeviceListChanged);
   }
 
-  DeviceInfo? getDeviceInfoByNetAddress(String ip, int? port) {
-    return _netAddress2DeviceInfo[toNetAddress(ip, port)];
-  }
-
   String? getNetAdressByDeviceId(String id) {
-    return _deviceId2NetAddress[id];
+    final device = _deviceId2Device[id];
+    if (device != null) {
+      if (device.ip.isNotEmpty) {
+        return toNetAddress(device.ip, device.port);
+      } else if (device.host.isNotEmpty) {
+        return toNetAddress(device.host, device.port);
+      } else {
+        return null;
+      }
+    }
+    return null;
   }
 }
 

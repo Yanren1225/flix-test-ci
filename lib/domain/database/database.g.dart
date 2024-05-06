@@ -1132,6 +1132,11 @@ class $PersistenceDevicesTable extends PersistenceDevices
   late final GeneratedColumn<String> ip = GeneratedColumn<String>(
       'ip', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _hostMeta = const VerificationMeta('host');
+  @override
+  late final GeneratedColumn<String> host = GeneratedColumn<String>(
+      'host', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _insertOrUpdateTimeMeta =
       const VerificationMeta('insertOrUpdateTime');
   @override
@@ -1148,6 +1153,7 @@ class $PersistenceDevicesTable extends PersistenceDevices
         fingerprint,
         port,
         ip,
+        host,
         insertOrUpdateTime
       ];
   @override
@@ -1193,6 +1199,10 @@ class $PersistenceDevicesTable extends PersistenceDevices
     if (data.containsKey('ip')) {
       context.handle(_ipMeta, ip.isAcceptableOrUnknown(data['ip']!, _ipMeta));
     }
+    if (data.containsKey('host')) {
+      context.handle(
+          _hostMeta, host.isAcceptableOrUnknown(data['host']!, _hostMeta));
+    }
     if (data.containsKey('insert_or_update_time')) {
       context.handle(
           _insertOrUpdateTimeMeta,
@@ -1220,6 +1230,8 @@ class $PersistenceDevicesTable extends PersistenceDevices
           .read(DriftSqlType.int, data['${effectivePrefix}port']),
       ip: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}ip']),
+      host: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}host']),
       insertOrUpdateTime: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime,
           data['${effectivePrefix}insert_or_update_time'])!,
@@ -1240,6 +1252,7 @@ class PersistenceDevice extends DataClass
   final String fingerprint;
   final int? port;
   final String? ip;
+  final String? host;
   final DateTime insertOrUpdateTime;
   const PersistenceDevice(
       {required this.alias,
@@ -1248,6 +1261,7 @@ class PersistenceDevice extends DataClass
       required this.fingerprint,
       this.port,
       this.ip,
+      this.host,
       required this.insertOrUpdateTime});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1266,6 +1280,9 @@ class PersistenceDevice extends DataClass
     if (!nullToAbsent || ip != null) {
       map['ip'] = Variable<String>(ip);
     }
+    if (!nullToAbsent || host != null) {
+      map['host'] = Variable<String>(host);
+    }
     map['insert_or_update_time'] = Variable<DateTime>(insertOrUpdateTime);
     return map;
   }
@@ -1282,6 +1299,7 @@ class PersistenceDevice extends DataClass
       fingerprint: Value(fingerprint),
       port: port == null && nullToAbsent ? const Value.absent() : Value(port),
       ip: ip == null && nullToAbsent ? const Value.absent() : Value(ip),
+      host: host == null && nullToAbsent ? const Value.absent() : Value(host),
       insertOrUpdateTime: Value(insertOrUpdateTime),
     );
   }
@@ -1296,6 +1314,7 @@ class PersistenceDevice extends DataClass
       fingerprint: serializer.fromJson<String>(json['fingerprint']),
       port: serializer.fromJson<int?>(json['port']),
       ip: serializer.fromJson<String?>(json['ip']),
+      host: serializer.fromJson<String?>(json['host']),
       insertOrUpdateTime:
           serializer.fromJson<DateTime>(json['insertOrUpdateTime']),
     );
@@ -1310,6 +1329,7 @@ class PersistenceDevice extends DataClass
       'fingerprint': serializer.toJson<String>(fingerprint),
       'port': serializer.toJson<int?>(port),
       'ip': serializer.toJson<String?>(ip),
+      'host': serializer.toJson<String?>(host),
       'insertOrUpdateTime': serializer.toJson<DateTime>(insertOrUpdateTime),
     };
   }
@@ -1321,6 +1341,7 @@ class PersistenceDevice extends DataClass
           String? fingerprint,
           Value<int?> port = const Value.absent(),
           Value<String?> ip = const Value.absent(),
+          Value<String?> host = const Value.absent(),
           DateTime? insertOrUpdateTime}) =>
       PersistenceDevice(
         alias: alias ?? this.alias,
@@ -1329,6 +1350,7 @@ class PersistenceDevice extends DataClass
         fingerprint: fingerprint ?? this.fingerprint,
         port: port.present ? port.value : this.port,
         ip: ip.present ? ip.value : this.ip,
+        host: host.present ? host.value : this.host,
         insertOrUpdateTime: insertOrUpdateTime ?? this.insertOrUpdateTime,
       );
   @override
@@ -1340,6 +1362,7 @@ class PersistenceDevice extends DataClass
           ..write('fingerprint: $fingerprint, ')
           ..write('port: $port, ')
           ..write('ip: $ip, ')
+          ..write('host: $host, ')
           ..write('insertOrUpdateTime: $insertOrUpdateTime')
           ..write(')'))
         .toString();
@@ -1347,7 +1370,7 @@ class PersistenceDevice extends DataClass
 
   @override
   int get hashCode => Object.hash(alias, deviceModel, deviceType, fingerprint,
-      port, ip, insertOrUpdateTime);
+      port, ip, host, insertOrUpdateTime);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1358,6 +1381,7 @@ class PersistenceDevice extends DataClass
           other.fingerprint == this.fingerprint &&
           other.port == this.port &&
           other.ip == this.ip &&
+          other.host == this.host &&
           other.insertOrUpdateTime == this.insertOrUpdateTime);
 }
 
@@ -1368,6 +1392,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
   final Value<String> fingerprint;
   final Value<int?> port;
   final Value<String?> ip;
+  final Value<String?> host;
   final Value<DateTime> insertOrUpdateTime;
   final Value<int> rowid;
   const PersistenceDevicesCompanion({
@@ -1377,6 +1402,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
     this.fingerprint = const Value.absent(),
     this.port = const Value.absent(),
     this.ip = const Value.absent(),
+    this.host = const Value.absent(),
     this.insertOrUpdateTime = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -1387,6 +1413,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
     required String fingerprint,
     this.port = const Value.absent(),
     this.ip = const Value.absent(),
+    this.host = const Value.absent(),
     this.insertOrUpdateTime = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : alias = Value(alias),
@@ -1398,6 +1425,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
     Expression<String>? fingerprint,
     Expression<int>? port,
     Expression<String>? ip,
+    Expression<String>? host,
     Expression<DateTime>? insertOrUpdateTime,
     Expression<int>? rowid,
   }) {
@@ -1408,6 +1436,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
       if (fingerprint != null) 'fingerprint': fingerprint,
       if (port != null) 'port': port,
       if (ip != null) 'ip': ip,
+      if (host != null) 'host': host,
       if (insertOrUpdateTime != null)
         'insert_or_update_time': insertOrUpdateTime,
       if (rowid != null) 'rowid': rowid,
@@ -1421,6 +1450,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
       Value<String>? fingerprint,
       Value<int?>? port,
       Value<String?>? ip,
+      Value<String?>? host,
       Value<DateTime>? insertOrUpdateTime,
       Value<int>? rowid}) {
     return PersistenceDevicesCompanion(
@@ -1430,6 +1460,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
       fingerprint: fingerprint ?? this.fingerprint,
       port: port ?? this.port,
       ip: ip ?? this.ip,
+      host: host ?? this.host,
       insertOrUpdateTime: insertOrUpdateTime ?? this.insertOrUpdateTime,
       rowid: rowid ?? this.rowid,
     );
@@ -1456,6 +1487,9 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
     if (ip.present) {
       map['ip'] = Variable<String>(ip.value);
     }
+    if (host.present) {
+      map['host'] = Variable<String>(host.value);
+    }
     if (insertOrUpdateTime.present) {
       map['insert_or_update_time'] =
           Variable<DateTime>(insertOrUpdateTime.value);
@@ -1475,6 +1509,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
           ..write('fingerprint: $fingerprint, ')
           ..write('port: $port, ')
           ..write('ip: $ip, ')
+          ..write('host: $host, ')
           ..write('insertOrUpdateTime: $insertOrUpdateTime, ')
           ..write('rowid: $rowid')
           ..write(')'))

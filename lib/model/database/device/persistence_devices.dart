@@ -7,6 +7,7 @@ class PersistenceDevices extends Table {
   TextColumn get fingerprint => text()();
   IntColumn get port => integer().nullable()();
   TextColumn get ip => text().nullable()();
+  TextColumn get host => text().nullable()();
   DateTimeColumn get insertOrUpdateTime => dateTime().withDefault(currentDateAndTime)();
 
   @override

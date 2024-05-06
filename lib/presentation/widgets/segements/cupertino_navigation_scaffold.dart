@@ -39,8 +39,7 @@ class CupertinoNavigationScalffoldState
 
   double get padding => widget.padding;
   var isFolded = ValueNotifier(false);
-  // RefreshController _refreshController =
-  // RefreshController(initialRefresh: false);
+
 
   @override
   Widget build(BuildContext context) {
@@ -87,22 +86,6 @@ class CupertinoNavigationScalffoldState
           }
         },
       ),
-      // CupertinoSliverNavigationBar(
-      //   largeTitle: SuperTitle(title: title),
-      //
-      //   alwaysShowMiddle: false,
-      //   border: null,
-      //   // padding: const EdgeInsetsDirectional.only(top: 42),
-      //   backgroundColor: const Color.fromARGB(255, 247, 247, 247),
-      //   // backgroundColor: Colors.transparent,
-      //   middle: Text(title,
-      //       style: const TextStyle(
-      //               color: Colors.black,
-      //               fontSize: 18,
-      //               fontWeight: FontWeight.w500)
-      //           .useSystemChineseFont()),
-      // ),
-      // SliverToBoxAdapter(child: SizedBox(height: padding,),),
       SliverPadding(
           padding: EdgeInsets.only(top: padding),
           sliver: isSliverChild
@@ -124,10 +107,6 @@ class CupertinoNavigationScalffoldState
             return IndicatorResult.success;
           },
           header: const MaterialHeader(color: Color.fromRGBO(0, 122, 255, 1)),
-          // header: BezierHeader(
-          //
-          //   // backgroundColor: ,
-          // ),
           child: CustomScrollView(
             slivers: slivers,
           ),

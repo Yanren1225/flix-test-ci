@@ -38,25 +38,21 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
           const BoxDecoration(color: Color.fromARGB(255, 247, 247, 247)),
       child: Stack(
         children: [
-          InkWell(
-            onTap: () =>
-                MultiCastClientProvider.of(context, listen: false).startScan(),
-            child: CupertinoNavigationScaffold(
-                title: '附近设备',
-                isSliverChild: true,
-                padding: 16,
-                enableRefresh: true,
-                child: DeviceList(
-                  devices: devices,
-                  onDeviceSelected: widget.onDeviceSelected,
-                  showHistory: true,
-                  history: history,
-                  badges: _badges,
-                  onHistoryDelete: (item) {
-                    deviceProvider.deleteHistory(item.id);
-                  },
-                )),
-          ),
+          CupertinoNavigationScaffold(
+              title: '附近设备',
+              isSliverChild: true,
+              padding: 16,
+              enableRefresh: true,
+              child: DeviceList(
+                devices: devices,
+                onDeviceSelected: widget.onDeviceSelected,
+                showHistory: true,
+                history: history,
+                badges: _badges,
+                onHistoryDelete: (item) {
+                  deviceProvider.deleteHistory(item.id);
+                },
+              )),
           ClipRect(
             child: SizedBox(
                 width: double.infinity,

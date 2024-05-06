@@ -17,6 +17,7 @@ class DevicesDao extends DatabaseAccessor<AppDatabase> with _$DevicesDaoMixin {
         fingerprint: deviceModal.fingerprint,
         port: Value(deviceModal.port),
         ip: Value(deviceModal.ip),
+        host: Value(deviceModal.host),
         insertOrUpdateTime: Value(DateTime.now())));
   }
 

@@ -133,7 +133,7 @@ class BonjourImpl extends MultiCastApi {
             final remoteService = event.service as ResolvedBonsoirService;
             if (remoteService != null) {
               // final alias = remoteService.name;
-              final ip = remoteService.host ?? '';
+              final host = remoteService.host ?? '';
               final port = remoteService.port;
               final serviceAttributes = remoteService.attributes;
               if (serviceAttributes != null) {
@@ -156,7 +156,7 @@ class BonjourImpl extends MultiCastApi {
                         fingerprint: fingerprint,
                         port: port,
                         deviceModel: deviceModel,
-                        ip: ip),
+                        host: host),
                     false);
               }
             }

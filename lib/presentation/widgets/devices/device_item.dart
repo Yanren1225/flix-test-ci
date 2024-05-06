@@ -11,7 +11,6 @@ class DeviceItem extends StatefulWidget {
   final int badge;
   final VoidCallback onTap;
   final bool selected;
-  final MaterialStatesController _statesController = MaterialStatesController();
 
   DeviceItem(Key key, this.deviceInfo, this.onTap,
       {this.selected = false, this.badge = 0})

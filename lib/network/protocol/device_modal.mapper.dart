@@ -95,6 +95,9 @@ class DeviceModalMapper extends ClassMapperBase<DeviceModal> {
   static String _$ip(DeviceModal v) => v.ip;
   static const Field<DeviceModal, String> _f$ip =
       Field('ip', _$ip, opt: true, def: '');
+  static String _$host(DeviceModal v) => v.host;
+  static const Field<DeviceModal, String> _f$host =
+      Field('host', _$host, opt: true, def: '');
 
   @override
   final Map<Symbol, Field<DeviceModal, dynamic>> fields = const {
@@ -104,6 +107,7 @@ class DeviceModalMapper extends ClassMapperBase<DeviceModal> {
     #fingerprint: _f$fingerprint,
     #port: _f$port,
     #ip: _f$ip,
+    #host: _f$host,
   };
 
   static DeviceModal _instantiate(DecodingData data) {
@@ -113,7 +117,8 @@ class DeviceModalMapper extends ClassMapperBase<DeviceModal> {
         deviceType: data.dec(_f$deviceType),
         fingerprint: data.dec(_f$fingerprint),
         port: data.dec(_f$port),
-        ip: data.dec(_f$ip));
+        ip: data.dec(_f$ip),
+        host: data.dec(_f$host));
   }
 
   @override
@@ -175,7 +180,8 @@ abstract class DeviceModalCopyWith<$R, $In extends DeviceModal, $Out>
       DeviceType? deviceType,
       String? fingerprint,
       int? port,
-      String? ip});
+      String? ip,
+      String? host});
   DeviceModalCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -194,14 +200,16 @@ class _DeviceModalCopyWithImpl<$R, $Out>
           Object? deviceType = $none,
           String? fingerprint,
           Object? port = $none,
-          String? ip}) =>
+          String? ip,
+          String? host}) =>
       $apply(FieldCopyWithData({
         if (alias != null) #alias: alias,
         if (deviceModel != $none) #deviceModel: deviceModel,
         if (deviceType != $none) #deviceType: deviceType,
         if (fingerprint != null) #fingerprint: fingerprint,
         if (port != $none) #port: port,
-        if (ip != null) #ip: ip
+        if (ip != null) #ip: ip,
+        if (host != null) #host: host
       }));
   @override
   DeviceModal $make(CopyWithData data) => DeviceModal(
@@ -210,7 +218,8 @@ class _DeviceModalCopyWithImpl<$R, $Out>
       deviceType: data.get(#deviceType, or: $value.deviceType),
       fingerprint: data.get(#fingerprint, or: $value.fingerprint),
       port: data.get(#port, or: $value.port),
-      ip: data.get(#ip, or: $value.ip));
+      ip: data.get(#ip, or: $value.ip),
+      host: data.get(#host, or: $value.host));
 
   @override
   DeviceModalCopyWith<$R2, DeviceModal, $Out2> $chain<$R2, $Out2>(

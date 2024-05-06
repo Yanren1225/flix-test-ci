@@ -91,10 +91,6 @@ class DeviceManager {
     historyChangeListeners.remove(onDeviceListChanged);
   }
 
-  DeviceInfo? getDeviceInfoByNetAddress(String ip, int? port) {
-    return deviceDiscover.getDeviceInfoByNetAddress(ip, port);
-  }
-
   String? getNetAdressByDeviceId(String id) {
     return deviceDiscover.getNetAdressByDeviceId(id);
   }
