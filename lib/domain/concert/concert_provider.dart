@@ -26,7 +26,6 @@ class ConcertProvider extends ChangeNotifier {
     _concertService = ConcertService(collaboratorId: deviceInfo.id);
     _concertService.listenBubbles((bubbles) {
       this.bubbles = bubbles;
-      _logLastProgress();
       notifyListeners();
     });
     DeviceManager.instance.addDeviceListChangeListener(_onDevicesChanged);
@@ -66,13 +65,6 @@ class ConcertProvider extends ChangeNotifier {
     DeviceManager.instance.removeDeviceListChangeListener(_onDevicesChanged);
     _concertService.clear();
     super.dispose();
-  }
-
-  void _logLastProgress() {
-    final last = this.bubbles.lastOrNull;
-    if (last != null && last.shareable is SharedFile) {
-      talker.debug('progress: ${(last.shareable as SharedFile).progress}');
-    }
   }
 
   Future<void> deleteBubble(UIBubble uiBubble) async {

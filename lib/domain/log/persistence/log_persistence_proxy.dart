@@ -2,37 +2,54 @@ import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:flix/domain/isolate/isolate_communication.dart';
 import 'package:flix/domain/lifecycle/AppLifecycle.dart';
 import 'package:flix/domain/log/persistence/log_persistence.dart';
+import 'package:flix/model/isolate/isolate_command.dart';
 import 'package:flutter/services.dart';
 
 class LogPersistenceProxy extends LifecycleListener {
   late SendPort _sender;
-  late ReceivePort _receiver;
+  final ReceivePort _receiver = ReceivePort();
+  Completer<void> _initWait = Completer();
   bool? _isInitSuccess = false;
+  final syncTasks = <String, Completer>{};
 
   /**
    * 存放未初始化完成前写入的日志
    */
   StringBuffer? _buffer;
 
-  Future<void> init() async {
-    _receiver = ReceivePort();
+  Future<void> init({SendPort? sender = null}) async {
     _receiver.listen(_receiveMessageFromChild);
-    RootIsolateToken? token = RootIsolateToken.instance;
-    print('${DateTime.now()} LogPersistenceProxy init');
-    await Isolate.spawn(_startChild, [_receiver.sendPort, token]);
-    Future.delayed(const Duration(seconds: 30), () {
-      _isInitSuccess ??= false;
-    });
+    if (sender == null) {
+      RootIsolateToken? token = RootIsolateToken.instance;
+      print('${DateTime.now()} LogPersistenceProxy init');
+      await Isolate.spawn(_startChild, [_receiver.sendPort, token]);
+      Future.delayed(const Duration(seconds: 30), () {
+        if (_isInitSuccess == null) {
+          _isInitSuccess = false;
+          _initWait.complete();
+        }
+      });
+    } else {
+      _sender = sender;
+      _isInitSuccess = true;
+      _initWait.complete();
+    }
   }
-  
+
   void _receiveMessageFromChild(var message) {
     if (message is SendPort) {
       _sender = message;
       print('${DateTime.now()} LogPersistenceProxy _receiveMessageFromChild');
       _isInitSuccess = true;
+      _initWait.complete();
       return;
+    } else if (message is String) {
+      final IsolateCommand command = IsolateCommand.fromJson(message);
+      final taskKey = command.command;
+      callback<void>(syncTasks, taskKey, null);
     }
   }
 
@@ -48,11 +65,19 @@ class LogPersistenceProxy extends LifecycleListener {
     }
   }
 
-  Future<void> flush() async {
+  void flush({bool wait = false}) {
     if (_isInitSuccess == true) {
       _flushBuffer();
-      _sender.send(LogPersistenceBridge.FLUSH);
+      _sender.send(
+          wait ? LogPersistenceBridge.WAIT_FLUSH : LogPersistenceBridge.FLUSH);
     }
+  }
+
+  Future<void> waitFlush() async {
+    await executeTaskWithPrint(syncTasks, 'waitFlush', () async {
+      await _initWait.future;
+      flush(wait: true);
+    });
   }
 
   @override
@@ -71,14 +96,26 @@ class LogPersistenceProxy extends LifecycleListener {
       _buffer = null;
     }
   }
+
+  Future<SendPort?> getLogSender() async {
+    await _initWait.future;
+    if (_isInitSuccess == true) {
+      return _sender;
+    } else {
+      return null;
+    }
+  }
 }
 
 class LogPersistenceBridge {
   static const FLUSH = 1;
+  static const WAIT_FLUSH = 2;
 
   final LogPersistence _logPersistence = LogPersistence();
+  late SendPort _sendPort;
 
   LogPersistenceBridge(SendPort _sendPort) {
+    this._sendPort = _sendPort;
     final ReceivePort _receivePort = ReceivePort();
     _receivePort.listen(_receiveMessage);
     _sendPort.send(_receivePort.sendPort);
@@ -90,6 +127,11 @@ class LogPersistenceBridge {
     } else if (message is int) {
       if (message == FLUSH) {
         _logPersistence.flush();
+      } else if (message == WAIT_FLUSH) {
+        _logPersistence
+            .flush()
+            .then((value) => _sendPort.send(IsolateCommand('waitFlush').toJson()))
+            .catchError(() => _sendPort.send(IsolateCommand('waitFlush').toJson()));
       }
     } else if (message is AppLifecycleState) {
       _logPersistence.onLifecycleChanged(message);

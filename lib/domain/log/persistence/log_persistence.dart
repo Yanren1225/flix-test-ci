@@ -31,8 +31,8 @@ class LogPersistence extends LifecycleListener {
   /**
    * Flush the buffer to the log file
    */
-  void flush() {
-    _batchWrite();
+  Future<void> flush() async {
+    await _batchWrite();
   }
 
   Future<void> _batchWrite() async {

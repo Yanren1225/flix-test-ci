@@ -59,7 +59,7 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
   }
 
   Future<String> _getThumbnailCachePath(FlixThumbnailProvider key) async {
-    final cachePath = await getCachePath();
+    final cachePath = await getTmpPath();
     final thumbnailDir = Directory('$cachePath/thumbnail');
     if (!(await thumbnailDir.exists())) {
       await thumbnailDir.create(recursive: true);

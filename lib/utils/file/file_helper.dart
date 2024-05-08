@@ -156,8 +156,7 @@ Future deleteCache() async {
 
   // final tmpDir = await getTemporaryDirectory();
   if (Platform.isIOS) {
-    final Directory directory = await getApplicationDocumentsDirectory();
-    String tmpPath = "${directory.parent.path}/tmp/";
+    String tmpPath = await getTmpPath();
     final tmpDir = Directory(tmpPath);
     talker.debug('clean tmp dir: ${tmpDir.path}');
     // 删除临时文件
@@ -172,8 +171,7 @@ Future deleteCache() async {
 
 Future<bool> isInCacheOrTmpDir(String path) async {
   if (Platform.isIOS) {
-    final Directory directory = await getApplicationDocumentsDirectory();
-    String tmpPath = "${directory.parent.path}/tmp/";
+    String tmpPath = await getTmpPath();
     if (path.toLowerCase().startsWith(tmpPath.toLowerCase())) {
       return true;
     }
@@ -183,15 +181,30 @@ Future<bool> isInCacheOrTmpDir(String path) async {
   return path.toLowerCase().startsWith(cacheDir.path.toLowerCase());
 }
 
+Future<String> getTmpPath() async {
+  if (Platform.isAndroid) {
+    return await getCachePath();
+  } else {
+    return await _getTmpPath();
+  }
+}
+
+Future<String> _getTmpPath() async {
+  final Directory directory = await getApplicationDocumentsDirectory();
+  String tmpPath = "${directory.parent.path}/tmp/";
+  return tmpPath;
+}
+
 Future<String> getCachePath() async {
   return (await getApplicationCacheDirectory()).path;
 }
 
 Future<void> _deleteFilesInDir(Directory dir) async {
-  dir.listSync(recursive: true).forEach((entity) {
+  dir.list(recursive: true).forEach((entity) async {
     if (entity is File) {
       try {
-        entity.deleteSync();
+        talker.verbose('delete ${entity.path}');
+        await entity.delete();
       } catch (e) {
         talker.error('delete ${entity.path} failed: ', e);
       }

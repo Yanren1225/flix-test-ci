@@ -36,8 +36,7 @@ Future<void> downloadFile(BuildContext context, String logs) async {
 }
 
 Future<void> packageLogAndShare(BuildContext context) async {
-// TODO: flush日志同步
-  await logPersistence.flush();
+  await logPersistence.waitFlush();
   final logDir = await getApplicationSupportDirectory();
   final outParentDir = await getApplicationDocumentsDirectory();
   final now = DateTime.now();

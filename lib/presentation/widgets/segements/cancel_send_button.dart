@@ -23,7 +23,6 @@ class CancelSendButtonState extends State<CancelSendButton> {
   @override
   void dispose() {
     removeModal(anchorTag);
-    talker.debug('cancel send button disposed: $anchorTag');
     super.dispose();
   }
 

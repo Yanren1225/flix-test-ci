@@ -5,12 +5,15 @@ import 'dart:isolate';
 import 'package:drift/isolate.dart';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/database/database.dart';
-import 'package:flix/domain/ship_server/ship_command.dart';
+import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
+import 'package:flix/model/isolate/isolate_command.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flutter/services.dart';
+
+import '../isolate/isolate_communication.dart';
 
 abstract class ShipServiceDependency {
   Future<String> getNetAddressById(String deviceId);
@@ -37,20 +40,20 @@ class ShipServiceBridge extends ShipServiceDependency {
 
   Future<void> startServer() async {
     final result = await _shipService.startShipService();
-    sendPort.send(ShipCommand('returnStartShipServer', result).toJson());
+    sendPort.send(IsolateCommand('returnStartShipServer', result).toJson());
   }
 
   void _listenIsolateMessage() {
     receivePort.listen((message) async {
-      final shipCommand = ShipCommand.fromJson(message);
+      final shipCommand = IsolateCommand.fromJson(message);
       switch (shipCommand.command) {
         case 'isServerLiving':
           final result = await _shipService.isServerLiving();
-          sendPort.send(ShipCommand('returnIsServerLiving', result).toJson());
+          sendPort.send(IsolateCommand('returnIsServerLiving', result).toJson());
           break;
         case 'startShipServer':
           final result = await _shipService.startShipService();
-          sendPort.send(ShipCommand('returnStartShipServer', result).toJson());
+          sendPort.send(IsolateCommand('returnStartShipServer', result).toJson());
           break;
         case 'send':
           final bubble =
@@ -96,49 +99,41 @@ class ShipServiceBridge extends ShipServiceDependency {
   }
 
   void _sendServerPort() {
-    sendPort.send(ShipCommand('returnPort', _shipService.port).toJson());
+    sendPort.send(IsolateCommand('returnPort', _shipService.port).toJson());
   }
 
   @override
   Future<String> getNetAddressById(String deviceId) async {
     final taskKey = 'getNetAddress-$deviceId';
-    return await executeSyncTask(syncTasks, taskKey, () {
-      sendPort.send(ShipCommand('getNetAddress', deviceId).toJson());
+    return await executeTaskWithTalker(syncTasks, taskKey, () {
+      sendPort.send(IsolateCommand('getNetAddress', deviceId).toJson());
     });
   }
 
   @override
   Future<bool> isAutoReceive() async {
     const taskKey = 'isAutoReceive';
-    return await executeSyncTask(syncTasks, taskKey, () {
-      sendPort.send(ShipCommand('isAutoReceive').toJson());
+    return await executeTaskWithTalker(syncTasks, taskKey, () {
+      sendPort.send(IsolateCommand('isAutoReceive').toJson());
     });
   }
 
   @override
   Future<String> getSaveDir() async {
     const taskKey = 'getSaveDir';
-    return await executeSyncTask(syncTasks, taskKey, () {
-      sendPort.send(ShipCommand('getSaveDir').toJson());
+    return await executeTaskWithTalker(syncTasks, taskKey, () {
+      sendPort.send(IsolateCommand('getSaveDir').toJson());
     });
   }
 
   @override
   void notifyNewBubble(PrimitiveBubble bubble) {
-    sendPort.send(ShipCommand('notifyNewBubble', jsonEncode(bubble.toJson(full: true))).toJson());
+    sendPort.send(IsolateCommand('notifyNewBubble', jsonEncode(bubble.toJson(full: true))).toJson());
   }
 
   @override
   void notifyPong(Pong pong) {
-    sendPort.send(ShipCommand('receivePong', pong.toJson()).toJson());
-  }
-}
-
-void callback<T>(Map<String, Completer> taskMap, String key, T data) {
-  final task = taskMap[key] as Completer<T>?;
-  if (task != null) {
-    task.complete(data);
-    taskMap.remove(key);
+    sendPort.send(IsolateCommand('receivePong', pong.toJson()).toJson());
   }
 }
 
@@ -147,8 +142,10 @@ void startServer(var args) async {
   final did = args['did'] as String;
   final _rootToken = args['rootToken'] as RootIsolateToken;
   final _connection = args['connection'] as DriftIsolate;
+  final _logSender = args['logSender'] as SendPort?;
   BackgroundIsolateBinaryMessenger.ensureInitialized(_rootToken);
   BubblePool.instance.init(AppDatabase(await _connection.connect()));
+  logPersistence.init(sender: _logSender);
   final childReceivePort = ReceivePort();
   final childSendPort = childReceivePort.sendPort;
   parentSendPort.send(childSendPort);

@@ -30,7 +30,7 @@ class AppLifecycle {
   }
 
   void _dispatchLifecycleEvent(String? msg) {
-    talker.verbose('AppLifecycle $msg ${msg}');
+    talker.verbose('AppLifecycle $msg');
     if (msg == 'AppLifecycleState.resumed') {
       _lifecycleListeners.forEach((listener) {
         listener.onLifecycleChanged(AppLifecycleState.resumed);

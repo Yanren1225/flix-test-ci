@@ -114,37 +114,6 @@ void _initDatabase() {
 }
 
 void _initSystemChrome() {
-  SystemChannels.lifecycle.setMessageHandler((msg) async {
-    talker.verbose('AppLifecycle $msg ${msg}');
-    // msg是个字符串，是下面的值
-    // AppLifecycleState.resumed
-    // AppLifecycleState.inactive
-    // AppLifecycleState.paused
-    // AppLifecycleState.detached
-
-    if (msg == 'AppLifecycleState.resumed') {
-      talker.verbose('App resumed');
-      // iOS在省电模式下，app切入后台一段时间后ship server会挂掉。
-      // 等app返回前台时检测server状态，若server dead，则重新启动
-      shipService.isServerLiving().then((isServerLiving) async {
-        talker.debug('isServerLiving: $isServerLiving');
-        if (!isServerLiving) {
-          if (await shipService.restartShipServer()) {
-            DeviceDiscover.instance.startScan(await shipService.getPort());
-          }
-        } else {
-          DeviceDiscover.instance.startScan(await shipService.getPort());
-        }
-      }).catchError((error, stackTrace) =>
-          talker.error('isServerLiving error', error, stackTrace));
-      // shipService.startShipServer();
-    } else if (msg == 'AppLifecycleState.paused') {
-      talker.verbose('App paused');
-      DeviceDiscover.instance.stop();
-    }
-    return msg;
-  });
-
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
