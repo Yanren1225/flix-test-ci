@@ -61,9 +61,9 @@ class PartitionLogFile {
       _initUsedSize(fileEntities);
     } else {
       if (_currentFileUsedSize >= singleFileMaxSize) {
+        _usedSize += _currentFileUsedSize;
         _setLogFile(_createLogFile());
       }
-      _usedSize += _currentFileUsedSize;
     }
 
     _tryCleanLogFile();
