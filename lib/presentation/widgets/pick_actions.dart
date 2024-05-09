@@ -179,10 +179,6 @@ class PickActionAreaState extends State<PickActionsArea> {
   }
 
   Future<void> _onFileButtonPressed() async {
-    // TODO 在Android平台上特化实现, 因为file_selector没有很好的支持ContentProvider,
-    // 目前的实现是读取文件的所有内容加载到内存中，对于大文件来说会导致OOM，
-    // see: https://github.com/flutter/flutter/issues/141002
-    // 且通过XFile在Android平台拿不到真实的文件名称
     try {
       if (mounted) {
         if (await checkStoragePermission(context,

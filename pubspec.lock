@@ -1022,10 +1022,10 @@ packages:
     dependency: "direct main"
     description:
       name: intl
-      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.18.1"
+    version: "0.19.0"
   io:
     dependency: transitive
     description:
@@ -1813,8 +1813,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/talker"
-      ref: "0cafff0f60ec684b2d83b07ce86b5b578c044b2c"
-      resolved-ref: "0cafff0f60ec684b2d83b07ce86b5b578c044b2c"
+      ref: cb6306e089c707e3a3387b897ddc09b2f1bbc1c4
+      resolved-ref: cb6306e089c707e3a3387b897ddc09b2f1bbc1c4
       url: "https://github.com/heiha100/talker"
     source: git
     version: "4.0.3"

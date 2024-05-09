@@ -79,28 +79,31 @@ class _ConcertScreenState extends State<ConcertScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    final main = GestureDetector(
-      onTapDown: (_) => removeAllModals(),
-      child: LayoutBuilder(
-        builder: (_context, constraints) {
-          final concertProvider =
-          Provider.of<ConcertProvider>(_context, listen: true);
-          return ValueListenableBuilder(
-            valueListenable: concertProvider.deviceName,
-            builder: (_context, value, child) {
-              return PopScope(
-                canPop: !concertProvider.isEditing,
-                onPopInvoked: (didPop) {
-                  if (!didPop) {
-                    Future.delayed(Duration.zero, () {
-                      if (concertProvider.isEditing) {
-                        concertProvider.existEditing();
-                      } else {
-                        Navigator.pop(context);
-                      }
-                    });
-                  }
-                  // Navigator.pop(context);
+    final main = LayoutBuilder(
+      builder: (_context, constraints) {
+        final concertProvider =
+        Provider.of<ConcertProvider>(_context, listen: true);
+        return ValueListenableBuilder(
+          valueListenable: concertProvider.deviceName,
+          builder: (_context, value, child) {
+            return PopScope(
+              canPop: !concertProvider.isEditing,
+              onPopInvoked: (didPop) {
+                if (!didPop) {
+                  Future.delayed(Duration.zero, () {
+                    if (concertProvider.isEditing) {
+                      concertProvider.existEditing();
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  });
+                }
+                // Navigator.pop(context);
+              },
+              child: GestureDetector(
+                onTapDown: (_) {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  removeAllModals();
                 },
                 child: NavigationScaffold(
                     showBackButton: showBackButton,
@@ -122,11 +125,11 @@ class _ConcertScreenState extends State<ConcertScreen> with SingleTickerProvider
                         ),
                       ) : SizedBox();
                     }),
-              );
-            },
-          );
-        },
-      ),
+              ),
+            );
+          },
+        );
+      },
     );
     return ChangeNotifierProvider<ConcertProvider>(
         key: Key(deviceInfo.id),

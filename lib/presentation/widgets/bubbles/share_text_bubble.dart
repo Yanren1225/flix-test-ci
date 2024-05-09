@@ -1,5 +1,6 @@
-import 'package:chinese_font_library/chinese_font_library.dart';
 import 'dart:math';
+
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -9,6 +10,7 @@ import 'package:flix/presentation/screens/concert/free_copy_screen.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/segements/bubble_context_menu.dart';
+import 'package:flix/utils/platform_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,11 +34,26 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
   Offset? tapDown;
   late String contextMenuTag;
   TextSelection? textSelection;
+  final FocusNode _focusNode = FocusNode();
+  int _focusId = 0;
 
   @override
   void initState() {
     super.initState();
     contextMenuTag = Uuid().v4();
+    _focusNode.addListener(() {
+      if (!_focusNode.hasPrimaryFocus) {
+        setState(() {
+          _focusId++;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -64,8 +81,44 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
       alignment = Alignment.centerLeft;
     }
     final textStyle = TextStyle(
-            color: contentColor, fontSize: 16, fontWeight: FontWeight.w400)
+            color: contentColor, fontSize: 16, decorationColor: contentColor ,fontWeight: FontWeight.w400)
         .useSystemChineseFont();
+    final content = Padding(
+      padding: const EdgeInsets.all(10),
+      child: Theme(
+        data: ThemeData(
+          textSelectionTheme: TextSelectionThemeData(
+            selectionColor: selectIndicatorColor,
+            cursorColor: Colors.black,
+            selectionHandleColor: Colors.black,
+          ),
+        ),
+        child: SelectableLinkify(
+          key: ValueKey(_focusId),
+          text: sharedText.content,
+          focusNode: _focusNode,
+          onOpen: (link) async {
+            if (!await launchUrl(Uri.parse(link.url))) {
+              talker.error('Could not launch ${link.url}');
+            }
+          },
+          onSelectionChanged: (TextSelection selection,
+              SelectionChangedCause? cause) {
+            textSelection = selection;
+          },
+          contextMenuBuilder: (
+              BuildContext context,
+              EditableTextState editableTextState,
+              ) {
+            return _buildContextMenu(concertProvider, context,
+                editableTextState.contextMenuAnchors);
+          },
+          linkStyle: textStyle,
+          style: textStyle,
+          cursorColor: Colors.black,
+        ),
+      ),
+    );
     return Align(
       alignment: alignment,
       child: LayoutBuilder(
@@ -75,94 +128,11 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
           child: ModalAnchor(
             key: ValueKey(entity.shareable.id),
             tag: contextMenuTag,
-            child: InkWell(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              // onSecondaryTapDown: (TapDownDetails details) {
-              //   _showBubbleContextMenu(_context, details.localPosition,
-              //       andropContext, concertProvider);
-              // },
-              onTapDown: (TapDownDetails details) {
-                tapDown = details.localPosition;
+            child: isDesktop() ? content : GestureDetector(
+              onDoubleTap: () {
+                _startFreeCopyScreen(context);
               },
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Theme(
-                  data: ThemeData(
-                    textSelectionTheme: TextSelectionThemeData(
-                      selectionColor: selectIndicatorColor,
-                    ),
-                  ),
-                  child: SelectableLinkify(
-                    text: sharedText.content,
-                    onOpen: (link) async {
-                      if (!await launchUrl(Uri.parse(link.url))) {
-                        throw Exception('Could not launch ${link.url}');
-                      }
-                    },
-                    onSelectionChanged: (TextSelection selection,
-                        SelectionChangedCause? cause) {
-                      textSelection = selection;
-                    },
-                    contextMenuBuilder: (
-                      BuildContext context,
-                      EditableTextState editableTextState,
-                    ) {
-
-                      // return _buildContextMenu(concertProvider, context, editableTextState.contextMenuAnchors);
-                      final TextEditingValue value =
-                          editableTextState.textEditingValue;
-                      final List<ContextMenuButtonItem> buttonItems =
-                          editableTextState.contextMenuButtonItems;
-                      buttonItems.clear();
-
-                      buttonItems.add(ContextMenuButtonItem(
-                        label: '复制',
-                        onPressed: () {
-                          ContextMenuController.removeAny();
-                          if (textSelection == null) {
-                            _copyContentToClipboard(value.text);
-                            return;
-                          }
-                          int start = min(textSelection!.baseOffset,
-                              textSelection!.extentOffset);
-                          int end = max(textSelection!.baseOffset,
-                              textSelection!.extentOffset);
-                          _copyContentToClipboard(
-                              value.text.substring(start, end));
-                        },
-                      ));
-
-                      buttonItems.add(ContextMenuButtonItem(
-                        label: '多选',
-                        onPressed: () {
-                          ContextMenuController.removeAny();
-                          concertProvider.enterEditing();
-                        },
-                      ));
-
-                      buttonItems.add(ContextMenuButtonItem(
-                        label: '删除',
-                        onPressed: () {
-                          ContextMenuController.removeAny();
-                          showCupertinoModalPopup(
-                              context: context,
-                              builder: (context) =>
-                                  DeleteMessageBottomSheet(onConfirm: () {
-                                    concertProvider.deleteBubble(entity);
-                                  }));
-                        },
-                      ));
-
-                      return AdaptiveTextSelectionToolbar.buttonItems(
-                        anchors: editableTextState.contextMenuAnchors,
-                        buttonItems: buttonItems,
-                      );
-                    },
-                    linkStyle: textStyle,
-                    style: textStyle,
-                  ),
-                ),
-              ),
+              child: content,
             ),
           ),
         ),
@@ -176,12 +146,20 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
         .debug('show anchor tag: $contextMenuTag, id: ${entity.shareable.id}');
 
     Future.delayed(Duration.zero, () {
-      showBubbleContextMenu(context, contextMenuTag, clickPosition,
-          andropContext.deviceId, concertProvider.concertMainKey, entity, _getMenuItems(), _getMenuActions(concertProvider, context));
+      showBubbleContextMenu(
+          context,
+          contextMenuTag,
+          clickPosition,
+          andropContext.deviceId,
+          concertProvider.concertMainKey,
+          entity,
+          _getMenuItems(),
+          _getMenuActions(concertProvider, context));
     });
   }
 
-  Widget _buildContextMenu(ConcertProvider concertProvider, BuildContext context, TextSelectionToolbarAnchors anchors) {
+  Widget _buildContextMenu(ConcertProvider concertProvider,
+      BuildContext context, TextSelectionToolbarAnchors anchors) {
     return BubbleContextMenuWithMask(
       anchors: anchors,
       itemTypes: _getMenuItems(),
@@ -193,25 +171,34 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
     return [
       BubbleContextMenuItemType.Copy,
       BubbleContextMenuItemType.MultiSelect,
-      BubbleContextMenuItemType.Delete,
       BubbleContextMenuItemType.FreeCopy,
+      BubbleContextMenuItemType.Delete,
     ];
   }
 
-  Map<BubbleContextMenuItemType, VoidCallback> _getMenuActions(ConcertProvider concertProvider, BuildContext context) {
+  Map<BubbleContextMenuItemType, VoidCallback> _getMenuActions(
+      ConcertProvider concertProvider, BuildContext context) {
     return {
       BubbleContextMenuItemType.Copy: () {
         final sharedText = entity.shareable as SharedText;
         if (textSelection == null) {
           _copyContentToClipboard(sharedText.content);
         } else {
-          int start = min(textSelection!.baseOffset, textSelection!.extentOffset);
+          int start =
+              min(textSelection!.baseOffset, textSelection!.extentOffset);
           int end = max(textSelection!.baseOffset, textSelection!.extentOffset);
-          _copyContentToClipboard(sharedText.content.substring(start, end));
+          if (start == end) {
+            _copyContentToClipboard(sharedText.content);
+          } else {
+            _copyContentToClipboard(sharedText.content.substring(start, end));
+          }
         }
       },
       BubbleContextMenuItemType.MultiSelect: () {
         concertProvider.enterEditing();
+      },
+      BubbleContextMenuItemType.FreeCopy: () {
+        _startFreeCopyScreen(context);
       },
       BubbleContextMenuItemType.Delete: () {
         showCupertinoModalPopup(
@@ -219,9 +206,6 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
             builder: (context) => DeleteMessageBottomSheet(onConfirm: () {
               concertProvider.deleteBubble(entity);
             }));
-      },
-      BubbleContextMenuItemType.FreeCopy: () {
-        _startFreeCopyScreen(context);
       },
     };
   }
@@ -236,6 +220,6 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
 
   void _copyContentToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text));
-    FlixToast.instance.alert("已复制到剪切板");
+    flixToast.info("已复制到剪切板");
   }
 }

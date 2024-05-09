@@ -32,7 +32,7 @@ class FreeCopyScreenState extends State<FreeCopyScreen> {
                       parent: BouncingScrollPhysics(
                           decelerationRate: ScrollDecelerationRate.fast)),
                   child: SelectableText(widget.text,
-                      style: const TextStyle(fontSize: 18, color: Colors.black)
+                      style: const TextStyle(fontSize: 20, color: Colors.black)
                           .useSystemChineseFont()))),
         ),
       ),

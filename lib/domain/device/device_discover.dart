@@ -9,6 +9,7 @@ import 'package:flix/network/bonjour_impl.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/net/net_utils.dart';
 
 class DeviceDiscover {
@@ -213,6 +214,9 @@ class DeviceDiscover {
       } else {
         return null;
       }
+    } else {
+      talker.warning('设备已离线');
+      flixToast.alert('设备已离线');
     }
     return null;
   }

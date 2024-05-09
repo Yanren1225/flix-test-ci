@@ -93,6 +93,10 @@ int _getMenuWidth(List<BubbleContextMenuItemType> itemTypes) {
   return itemTotalWidth;
 }
 
+int _getMenuHeight(List<BubbleContextMenuItemType> itemTypes) {
+  return 67;
+}
+
 class BubbleContextMenu extends StatefulWidget {
   final List<BubbleContextMenuItemType> itemTypes;
   final Map<BubbleContextMenuItemType, VoidCallback> itemActions;
@@ -194,10 +198,10 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: const Color.fromRGBO(255, 255, 255, 0.6),
+                  color: const Color.fromRGBO(255, 255, 255, 0.9),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(
@@ -293,14 +297,22 @@ class BubbleContextMenuWithMaskState extends BubbleContextMenuState {
   @override
   Widget build(BuildContext context) {
     final anchors = (widget as BubbleContextMenuWithMask).anchors;
+    final margin = 13.0;
+    final appBarHeight = 60.0;
+    final availableHeight = anchors.primaryAnchor.dy - margin - MediaQuery.paddingOf(context).top - appBarHeight;
+    final fitsAbove = _getMenuHeight(widget.itemTypes) <= availableHeight;
     return CustomSingleChildLayout(
-        delegate: isDesktop() ? DesktopTextSelectionToolbarLayoutDelegate(
-          anchor: anchors.primaryAnchor,
-        ) : TextSelectionToolbarLayoutDelegate(
-          anchorAbove: anchors.primaryAnchor,
-          anchorBelow: anchors.secondaryAnchor == null ? anchors.primaryAnchor : anchors.secondaryAnchor!,
-          fitsAbove: true,
-        ),
+        delegate: isDesktop()
+            ? DesktopTextSelectionToolbarLayoutDelegate(
+                anchor: anchors.primaryAnchor,
+              )
+            : TextSelectionToolbarLayoutDelegate(
+                anchorAbove: anchors.primaryAnchor - Offset(0, margin),
+                anchorBelow: (anchors.secondaryAnchor == null
+                    ? anchors.primaryAnchor
+                    : anchors.secondaryAnchor!) + Offset(0, margin),
+                fitsAbove: fitsAbove,
+              ),
         child: super.build(context));
   }
 }

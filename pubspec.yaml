@@ -107,7 +107,7 @@ dependencies:
     sdk: flutter
   mutex: ^3.1.0
   bonsoir: ^5.1.9
-  intl: ^0.18.1
+  intl: ^0.19.0
   pinyin: ^3.2.0
   flutter_swipe_action_cell: ^3.1.3
   gradient_txt: ^1.0.0
@@ -137,7 +137,7 @@ dependency_overrides:
   talker:
     git:
       url: "https://github.com/heiha100/talker"
-      ref: "0cafff0f60ec684b2d83b07ce86b5b578c044b2c"
+      ref: "cb6306e089c707e3a3387b897ddc09b2f1bbc1c4"
       path: "packages/talker"
   share_plus: ^8.0.2
   bonsoir_darwin:
@@ -151,6 +151,7 @@ dependency_overrides:
       ref: "2783ceece9f22697d021a3dee991855a8521fd91"
       path: "packages/flutter_image_compress_macos"
   uuid: ^4.3.3
+  intl: ^0.19.0
 
 #  share_plus_platform_interface:
 
