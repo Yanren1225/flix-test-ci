@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/utils/platform_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -16,12 +17,15 @@ void showBubbleContextMenu(
     UIBubble bubble,
     List<BubbleContextMenuItemType> itemTypes,
     Map<BubbleContextMenuItemType, VoidCallback> itemActions) {
+  removeAllModals();
   RenderBox? currentWidget = context.findRenderObject() as RenderBox?;
   RenderBox? relativeWidget =
       relativeWidgetKey.currentContext?.findRenderObject() as RenderBox?;
   if (currentWidget == null || relativeWidget == null) {
     throw StateError('currentWidget or relativeWidget should not null');
   }
+  final availableWidth = relativeWidget.size.width;
+  int itemTotalWidth = _getMenuWidth(itemTypes);
   final globalOffset =
       currentWidget.localToGlobal(clickPosition, ancestor: relativeWidget);
   final showTop;
@@ -38,11 +42,6 @@ void showBubbleContextMenu(
     showLeft = false;
   }
 
-  // if (bubble.isFromMe(selfId)) {
-  //   showLeft = true;
-  // } else {
-  //   showLeft = false;
-  // }
   final modalAlignment;
   if (showTop && showLeft) {
     modalAlignment = Alignment.bottomRight;
@@ -54,6 +53,22 @@ void showBubbleContextMenu(
     modalAlignment = Alignment.topRight;
   }
 
+  if (modalAlignment == Alignment.topRight ||
+      modalAlignment == Alignment.bottomRight) {
+    if (globalOffset.dx < itemTotalWidth) {
+      clickPosition = Offset(
+          clickPosition.dx + itemTotalWidth - globalOffset.dx,
+          clickPosition.dy);
+    }
+  } else {
+    if (availableWidth - globalOffset.dx < itemTotalWidth) {
+      clickPosition = Offset(
+          clickPosition.dx -
+              (itemTotalWidth - (availableWidth - globalOffset.dx)),
+          clickPosition.dy);
+    }
+  }
+
   showModal(ModalEntry.anchored(
     context,
     tag: 'menu',
@@ -63,9 +78,19 @@ void showBubbleContextMenu(
     offset: clickPosition,
     // barrierColor: const Color.fromRGBO(0, 0, 0, 0.45),
     removeOnPop: true,
-    barrierDismissible: true,
+    barrierDismissible: false,
     child: BubbleContextMenu(itemTypes: itemTypes, itemActions: itemActions),
   ));
+}
+
+int _getMenuWidth(List<BubbleContextMenuItemType> itemTypes) {
+  final itemWidth = 55;
+  final horizontalMargin = 20;
+  final itemGap = 8;
+  final itemTotalWidth = itemWidth * itemTypes.length +
+      itemGap * (itemTypes.length - 1) +
+      horizontalMargin;
+  return itemTotalWidth;
 }
 
 class BubbleContextMenu extends StatefulWidget {
@@ -137,6 +162,13 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
             onTap: onTap(type),
           ));
           break;
+        case BubbleContextMenuItemType.FreeCopy:
+          items.add(BubbleContextMenuItem(
+            title: '自由复制',
+            icon: 'assets/images/ic_free_copy.svg',
+            onTap: onTap(type),
+          ));
+          break;
       }
     return AnimatedBuilder(
       animation: _animation,
@@ -171,19 +203,10 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
                   padding: const EdgeInsets.only(
                       left: 10, top: 6, right: 10, bottom: 6),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      ...items
-                      // BubbleContextMenuItem(
-                      //     title: '复制',
-                      //     icon: 'assets/images/ic_copy.svg',
-                      //     onTap: () {}),
-                      // BubbleContextMenuItem(
-                      //     title: '文件位置',
-                      //     icon: 'assets/images/ic_location.svg',
-                      //     onTap: () {}),
-                    ],
+                    children: [...items],
                   ),
                 ),
               ),
@@ -252,10 +275,41 @@ class BubbleContextMenuItem extends StatelessWidget {
   }
 }
 
+class BubbleContextMenuWithMask extends BubbleContextMenu {
+  final TextSelectionToolbarAnchors anchors;
+
+  BubbleContextMenuWithMask(
+      {required this.anchors,
+      required super.itemTypes,
+      required super.itemActions});
+
+  @override
+  BubbleContextMenuState createState() {
+    return BubbleContextMenuWithMaskState();
+  }
+}
+
+class BubbleContextMenuWithMaskState extends BubbleContextMenuState {
+  @override
+  Widget build(BuildContext context) {
+    final anchors = (widget as BubbleContextMenuWithMask).anchors;
+    return CustomSingleChildLayout(
+        delegate: isDesktop() ? DesktopTextSelectionToolbarLayoutDelegate(
+          anchor: anchors.primaryAnchor,
+        ) : TextSelectionToolbarLayoutDelegate(
+          anchorAbove: anchors.primaryAnchor,
+          anchorBelow: anchors.secondaryAnchor == null ? anchors.primaryAnchor : anchors.secondaryAnchor!,
+          fitsAbove: true,
+        ),
+        child: super.build(context));
+  }
+}
+
 enum BubbleContextMenuItemType {
   Copy,
   Forward,
   Location,
   MultiSelect,
   Delete,
+  FreeCopy,
 }

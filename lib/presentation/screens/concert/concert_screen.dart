@@ -24,6 +24,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:modals/modals.dart';
 import 'package:pasteboard/pasteboard.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -78,51 +79,54 @@ class _ConcertScreenState extends State<ConcertScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    final main = LayoutBuilder(
-      builder: (_context, constraints) {
-        final concertProvider =
-        Provider.of<ConcertProvider>(_context, listen: true);
-        return ValueListenableBuilder(
-          valueListenable: concertProvider.deviceName,
-          builder: (_context, value, child) {
-            return PopScope(
-              canPop: !concertProvider.isEditing,
-              onPopInvoked: (didPop) {
-                if (!didPop) {
-                  Future.delayed(Duration.zero, () {
-                    if (concertProvider.isEditing) {
+    final main = GestureDetector(
+      onTapDown: (_) => removeAllModals(),
+      child: LayoutBuilder(
+        builder: (_context, constraints) {
+          final concertProvider =
+          Provider.of<ConcertProvider>(_context, listen: true);
+          return ValueListenableBuilder(
+            valueListenable: concertProvider.deviceName,
+            builder: (_context, value, child) {
+              return PopScope(
+                canPop: !concertProvider.isEditing,
+                onPopInvoked: (didPop) {
+                  if (!didPop) {
+                    Future.delayed(Duration.zero, () {
+                      if (concertProvider.isEditing) {
+                        concertProvider.existEditing();
+                      } else {
+                        Navigator.pop(context);
+                      }
+                    });
+                  }
+                  // Navigator.pop(context);
+                },
+                child: NavigationScaffold(
+                    showBackButton: showBackButton,
+                    title: value,
+                    isEditing: concertProvider.isEditing,
+                    editTitle: '退出多选',
+                    onExitEditing: () {
                       concertProvider.existEditing();
-                    } else {
-                      Navigator.pop(context);
-                    }
-                  });
-                }
-                // Navigator.pop(context);
-              },
-              child: NavigationScaffold(
-                  showBackButton: showBackButton,
-                  title: value,
-                  isEditing: concertProvider.isEditing,
-                  editTitle: '退出多选',
-                  onExitEditing: () {
-                    concertProvider.existEditing();
-                  },
-                  builder: (padding) {
-                    return _isContentReady ? FadeTransition(
-                      opacity: _animation,
-                      child: ShareConcertMainView(
-                        key: concertProvider.concertMainKey,
-                        deviceInfo: concertProvider.deviceInfo,
-                        padding: padding,
-                        anchor: anchor,
-                        playable: playable,
-                      ),
-                    ) : SizedBox();
-                  }),
-            );
-          },
-        );
-      },
+                    },
+                    builder: (padding) {
+                      return _isContentReady ? FadeTransition(
+                        opacity: _animation,
+                        child: ShareConcertMainView(
+                          key: concertProvider.concertMainKey,
+                          deviceInfo: concertProvider.deviceInfo,
+                          padding: padding,
+                          anchor: anchor,
+                          playable: playable,
+                        ),
+                      ) : SizedBox();
+                    }),
+              );
+            },
+          );
+        },
+      ),
     );
     return ChangeNotifierProvider<ConcertProvider>(
         key: Key(deviceInfo.id),
