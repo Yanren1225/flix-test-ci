@@ -70,6 +70,9 @@ class ShipServiceProxy extends ApInterface {
             case 'returnStartShipServer':
               callback<bool>(syncTasks, 'startShipServer', shipCommand.data);
               break;
+            case 'returnRestartShipServer':
+              callback<bool>(syncTasks, 'restartShipServer', shipCommand.data);
+              break;
             case 'returnIsServerLiving':
               callback<bool>(syncTasks, 'isServerLiving', shipCommand.data);
               break;
@@ -155,6 +158,7 @@ class ShipServiceProxy extends ApInterface {
       sendPort.send(IsolateCommand('restartShipServer').toJson());
     });
   }
+
   Future<void> cancelSend(UIBubble uiBubble) async {
     await _awaitServerReady();
     sendPort.send(IsolateCommand('cancelSend', jsonEncode(fromUIBubble(uiBubble).toJson(full: true))).toJson());

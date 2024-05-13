@@ -88,7 +88,7 @@ class ShipService {
 
   Future<bool> restartShipServer() async {
     try {
-      await lock.protect(() async {
+      return await lock.protect(() async {
         talker.debug('restart sever: $_server');
         await _server?.close(force: true);
         return await _startShipServer();

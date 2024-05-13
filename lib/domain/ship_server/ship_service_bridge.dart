@@ -55,6 +55,10 @@ class ShipServiceBridge extends ShipServiceDependency {
           final result = await _shipService.startShipService();
           sendPort.send(IsolateCommand('returnStartShipServer', result).toJson());
           break;
+        case 'restartShipServer':
+          final result = await _shipService.restartShipServer();
+          sendPort.send(IsolateCommand('returnRestartShipServer', result).toJson());
+          break;
         case 'send':
           final bubble =
               PrimitiveBubble.fromJson(jsonDecode(shipCommand.data!));
