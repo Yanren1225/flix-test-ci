@@ -2,6 +2,7 @@ import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
+import 'package:flix/utils/PlatformUtil.dart';
 import 'package:flix/utils/download_nonweb_logs.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +13,8 @@ import 'package:url_launcher/url_launcher.dart';
 class AboutUSScreen extends StatefulWidget {
   var versionTapCount = 0;
   int lastTapTime = 0;
-  bool showBack = true;
 
-  AboutUSScreen({this.showBack = true});
+  AboutUSScreen({super.key});
 
   @override
   State<StatefulWidget> createState() => AboutUSScreenState();
@@ -23,8 +23,6 @@ class AboutUSScreen extends StatefulWidget {
 class AboutUSScreenState extends State<AboutUSScreen> {
   var versionTapCount = 0;
   int lastTapTime = 0;
-
-  bool get showBack => widget.showBack;
 
   ValueNotifier<String> _version = ValueNotifier('');
 
@@ -39,7 +37,8 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   @override
   Widget build(BuildContext context) {
     return NavigationScaffold(
-        showBackButton: showBack,
+        showBackButton: PlatformUtil.isMobile(),
+        toolbarCoverBody: true,
         title: '关于我们',
         builder: (padding) {
           final widgets = <Widget>[
@@ -51,29 +50,30 @@ class AboutUSScreenState extends State<AboutUSScreen> {
             // donate(),
             version()
           ];
-          return ListView.builder(
-              physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics(
-                      decelerationRate: ScrollDecelerationRate.fast)),
-              padding: padding.copyWith(
-                  bottom: padding.bottom +
-                      MediaQuery.of(context).padding.bottom +
-                      20),
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(
-                      left: 16.0, right: 80.0, top: 12, bottom: 12),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: DecoratedBox(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: widgets[index]),
-                  ),
-                );
-              },
-              itemCount: widgets.length);
+          return Container(
+              child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics(
+                          decelerationRate: ScrollDecelerationRate.fast)),
+                  padding: padding.copyWith(
+                      bottom: padding.bottom +
+                          MediaQuery.of(context).padding.bottom +
+                          20),
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 80.0, top: 12, bottom: 12),
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: DecoratedBox(
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: widgets[index]),
+                      ),
+                    );
+                  },
+                  itemCount: widgets.length));
         });
   }
 
@@ -177,7 +177,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
           } catch (e, s) {
             talker.error('日志分享失败', e, s);
             downloadFile(versionContext, talker.history.text).onError(
-                  (error, stackTrace) {
+              (error, stackTrace) {
                 talker.error('日志分享失败, $error, $stackTrace', error, stackTrace);
                 flixToast.alert("日志分享失败");
               },

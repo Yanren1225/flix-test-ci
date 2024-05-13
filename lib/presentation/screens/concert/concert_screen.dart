@@ -143,6 +143,19 @@ class _ConcertScreenState extends State<ConcertScreen> with SingleTickerProvider
         )
             : main);
   }
+
+  FadeTransition createFadeTransition(ConcertProvider concertProvider, EdgeInsets padding) {
+    return FadeTransition(
+                    opacity: _animation,
+                    child: ShareConcertMainView(
+                      key: concertProvider.concertMainKey,
+                      deviceInfo: concertProvider.deviceInfo,
+                      padding: padding,
+                      anchor: anchor,
+                      playable: playable,
+                    ),
+                  );
+  }
 }
 
 class ShareConcertMainView extends StatefulWidget {
@@ -206,7 +219,6 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
     final items = concertProvider.bubbles.reversed.toList();
 
     return Stack(
-      fit: StackFit.loose,
       children: [
         BubbleList(
           scrollController: _scrollController,
@@ -217,7 +229,8 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
         ),
         Align(
           alignment: Alignment.bottomLeft,
-          child: SizedBox(
+          child: Container(
+            padding: padding,
             width: double.infinity,
             child: AnimatedCrossFade(
               crossFadeState: concertProvider.isEditing

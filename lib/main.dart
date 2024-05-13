@@ -25,6 +25,7 @@ import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
+import 'package:flix/presentation/screens/helps/donate_us.dart';
 import 'package:flix/presentation/screens/helps/help_screen.dart';
 import 'package:flix/presentation/screens/pick_device_screen.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
@@ -50,6 +51,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:share_handler/share_handler.dart';
 import 'package:system_tray/system_tray.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'domain/notification/BadgeService.dart';
@@ -134,8 +136,7 @@ Future<DeviceInfoResult> _initDeviceManager() async {
   DeviceManager.instance.init();
   shipService.startShipServer().then((isSuccess) async {
     if (isSuccess) {
-      DeviceDiscover.instance
-          .start(shipService, await shipService.getPort());
+      DeviceDiscover.instance.start(shipService, await shipService.getPort());
     }
   });
   return deviceInfo;
@@ -185,7 +186,6 @@ Future<void> initSystemManager() async {
     iconPath: Platform.isWindows ? _iconPathWin : _iconPathOther,
     isTemplate: Platform.isMacOS,
   );
-
 
   // create context menu
   final Menu menu = Menu();
@@ -568,7 +568,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
                   builder: (context) => ConcertScreen(
                         deviceInfo: deviceInfo,
                         showBackButton: true,
-                        playable: !isHistory,
+                        playable: true,
                       ))),
         );
       case 1:
@@ -578,6 +578,10 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
           goVersionScreen: () {
             Navigator.push(context,
                 CupertinoPageRoute(builder: (context) => AboutUSScreen()));
+          },
+          goDonateCallback: () {
+            Navigator.push(context,
+                CupertinoPageRoute(builder: (context) => DonateUSScreen()));
           },
         );
       default:
@@ -678,8 +682,13 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
         return HelpScreen(
           goVersionScreen: () {
             setState(() {
-              thirdWidget = AboutUSScreen(
-                showBack: false,
+              thirdWidget = AboutUSScreen();
+            });
+          },
+          goDonateCallback: () {
+            setState(() {
+              thirdWidget = DonateUSScreen(
+                showBack: true,
               );
             });
           },

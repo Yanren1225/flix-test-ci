@@ -9,8 +9,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 class HelpScreen extends StatefulWidget {
   VoidCallback goVersionScreen;
-
-  HelpScreen({required this.goVersionScreen});
+  VoidCallback goDonateCallback;
+  HelpScreen({required this.goVersionScreen,required this.goDonateCallback});
 
   @override
   State<StatefulWidget> createState() => HelpScreenState();
@@ -52,6 +52,19 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
               },
             ),
           ),
+          Padding(
+            padding:
+            const EdgeInsets.only(left: 16, top: 8, right: 16, bottom: 16),
+            child: ValueListenableBuilder<String>(
+              valueListenable: version,
+              builder: (BuildContext context, String value, Widget? child) {
+                return ClickableItem(
+                    label: '❤️捐赠支持我们',
+                    onClick: widget.goDonateCallback);
+              },
+            ),
+          ),
+
           Padding(
             padding: EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 4),
             child: Text(

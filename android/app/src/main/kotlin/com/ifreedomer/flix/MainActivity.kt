@@ -6,11 +6,14 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
+import android.content.Intent
+import android.content.Context
 
 
 class MainActivity : FlutterActivity() {
     companion object {
         const val MULTICAST_LOCK_CHANNEL = "com.ifreedomer.flix/multicast-lock"
+        const val PAY_CHANNEL = "com.ifreedomer.flix/pay"
     }
 
     private var multicastLock: WifiManager.MulticastLock? = null
@@ -31,6 +34,18 @@ class MainActivity : FlutterActivity() {
                 result.notImplemented();
             }
         }
+
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            PAY_CHANNEL
+        ).setMethodCallHandler { call, result ->
+            if (call.method.equals("wechat_scan_qrcode")) {
+                openWechatScanQrCode(applicationContext)
+            } else {
+                result.notImplemented();
+            }
+        }
+
     }
 
 
@@ -51,4 +66,22 @@ class MainActivity : FlutterActivity() {
         multicastLock?.release()
         return true
     }
+
+
+    /**
+     * 打开微信并跳入到二维码扫描页面
+     *
+     * @param context
+     */
+    fun openWechatScanQrCode(context: Context) {
+        try {
+            val intent: Intent? =
+                context.getPackageManager().getLaunchIntentForPackage("com.tencent.mm")
+            intent?.putExtra("LauncherUI.From.Scaner.Shortcut", true)
+            context.startActivity(intent)
+        } catch (e: Exception) {
+        }
+    }
+
+
 }
