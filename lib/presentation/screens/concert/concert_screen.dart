@@ -19,6 +19,7 @@ import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bot
 import 'package:flix/presentation/widgets/bubble_context_menu/multi_select_actions.dart';
 import 'package:flix/presentation/widgets/pick_actions.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
+import 'package:flix/presentation/widgets/segements/navigation_appbar_scaffold.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -105,7 +106,7 @@ class _ConcertScreenState extends State<ConcertScreen> with SingleTickerProvider
                   FocusManager.instance.primaryFocus?.unfocus();
                   removeAllModals();
                 },
-                child: NavigationScaffold(
+                child: NavigationAppbarScaffold(
                     showBackButton: showBackButton,
                     title: value,
                     isEditing: concertProvider.isEditing,
