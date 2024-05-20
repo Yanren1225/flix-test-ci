@@ -1,4 +1,4 @@
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/presentation/widgets/settings/settings_label.dart';
 import 'package:flutter/material.dart';
 
@@ -54,7 +54,7 @@ class ClickableItem extends StatelessWidget {
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
                                       color: Color.fromRGBO(60, 60, 67, 0.6))
-                                  .useSystemChineseFont()),
+                                  .fix()),
                         )),
                     const Icon(Icons.arrow_forward_ios_rounded,
                         size: 16, color: Color.fromRGBO(60, 60, 67, 0.6))

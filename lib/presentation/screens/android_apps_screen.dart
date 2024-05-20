@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'dart:ffi';
 
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/app_icon.dart';
 import 'package:flix/presentation/widgets/check_state_box.dart';
@@ -49,7 +49,7 @@ class AppsScreenState extends State<AppsScreen> {
       title: const Text('选择本机应用'),
       titleTextStyle: const TextStyle(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500)
-          .useSystemChineseFont(),
+          .fix(),
       actions: [
         ValueListenableBuilder(
             valueListenable: selectedApps,
@@ -122,7 +122,7 @@ class AppsScreenState extends State<AppsScreen> {
       onPressed: () {
         Navigator.pop(context, selectedApps.value.toList());
       },
-      child: Text('发送 ($count)', style: const TextStyle().useSystemChineseFont(),),
+      child: Text('发送 ($count)', style: const TextStyle().fix(),),
     );
   }
 
@@ -242,7 +242,7 @@ class AppItemState extends State<AppItem> {
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
                               color: Colors.black)
-                          .useSystemChineseFont(),
+                          .fix(),
                     ),
                     Text(
                       application.packageName,
@@ -250,7 +250,7 @@ class AppItemState extends State<AppItem> {
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
                               color: Color.fromRGBO(60, 60, 67, 0.6))
-                          .useSystemChineseFont(),
+                          .fix(),
                     )
                   ],
                 ),

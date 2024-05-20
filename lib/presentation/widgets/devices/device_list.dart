@@ -1,4 +1,4 @@
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
@@ -74,7 +74,7 @@ class _DeviceListState extends State<DeviceList> {
             style: const TextStyle(
                 color: Color.fromRGBO(60, 60, 67, 0.6),
                 fontSize: 14,
-                fontWeight: FontWeight.w500).useSystemChineseFont(),
+                fontWeight: FontWeight.w500).fix(),
           ),
         ),
       ),

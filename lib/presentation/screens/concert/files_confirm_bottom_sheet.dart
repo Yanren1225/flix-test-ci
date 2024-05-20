@@ -1,4 +1,4 @@
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
@@ -138,7 +138,7 @@ class ReadSendFileItemState extends State<ReadSendFileItem> {
                           fontWeight: FontWeight.w500,
                           color: Colors.black,
                           decoration: TextDecoration.none)
-                      .useSystemChineseFont(),
+                      .fix(),
                 ),
                 const SizedBox(
                   height: 2,
@@ -152,7 +152,7 @@ class ReadSendFileItemState extends State<ReadSendFileItem> {
                           letterSpacing: 0,
                           color: Color.fromRGBO(60, 60, 67, 0.6),
                           decoration: TextDecoration.none)
-                      .useSystemChineseFont(),
+                      .fix(),
                 ),
               ],
             ),

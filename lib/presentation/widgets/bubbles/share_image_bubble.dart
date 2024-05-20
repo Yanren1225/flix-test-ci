@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -127,7 +127,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
                                   color: Colors.white,
                                   fontSize: 14,
                                   fontWeight: FontWeight.normal)
-                              .useSystemChineseFont(),
+                              .fix(),
                         )
                       ],
                     ),
@@ -190,7 +190,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
                           style: const TextStyle(
                               color: Colors.white,
                               fontSize: 14,
-                              fontWeight: FontWeight.normal).useSystemChineseFont())
+                              fontWeight: FontWeight.normal).fix())
                     ],
                   ),
                 ),

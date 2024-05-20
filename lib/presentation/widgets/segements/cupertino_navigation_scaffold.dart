@@ -1,4 +1,4 @@
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/widgets/segements/custom_sliver_header.dart';
@@ -67,7 +67,7 @@ class CupertinoNavigationScalffoldState
                             color: Colors.black,
                             fontSize: 18,
                             fontWeight: FontWeight.w500)
-                            .useSystemChineseFont()),
+                            .fix()),
                   ),
                 ),
               ),

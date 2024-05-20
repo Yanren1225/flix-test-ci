@@ -1,4 +1,4 @@
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 
@@ -39,7 +39,7 @@ class NameEditBottomSheetState extends State<NameEditBottomSheet> {
                     color: Colors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.normal)
-                .useSystemChineseFont(),
+                .fix(),
             keyboardType: TextInputType.text,
             minLines: null,
             maxLines: 1,

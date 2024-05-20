@@ -12,11 +12,9 @@ import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/lifecycle/AppLifecycle.dart';
 import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/domain/log/persistence/log_persistence.dart';
 import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
 import 'package:flix/domain/notification/flix_notification.dart';
-import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/domain/ship_server/ship_service_lifecycle_watcher.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/domain/window/FlixWindowManager.dart';
@@ -35,15 +33,13 @@ import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/device_info_helper.dart';
 import 'package:flix/utils/iterable_extension.dart';
 import 'package:flix/utils/meida/media_utils.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:flutter_ume/flutter_ume.dart'; // UME framework
-import 'package:flutter_ume_kit_console/flutter_ume_kit_console.dart'; // Show debugPrint
-import 'package:flutter_ume_kit_ui/flutter_ume_kit_ui.dart'; // UI kits
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:modals/modals.dart';
@@ -51,7 +47,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:share_handler/share_handler.dart';
 import 'package:system_tray/system_tray.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'domain/notification/BadgeService.dart';
@@ -349,7 +344,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
                     fontSize: 20,
                     fontWeight: FontWeight.normal,
                     color: Colors.black)
-                .useSystemChineseFont(),
+                .fix(),
           )
         ],
       ),
@@ -546,10 +541,10 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
           unselectedFontSize: 12,
           selectedLabelStyle:
               const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)
-                  .useSystemChineseFont(),
+                  .fix(),
           unselectedLabelStyle:
               const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)
-                  .useSystemChineseFont(),
+                  .fix(),
           backgroundColor: Colors.white,
           elevation: 0,
           onTap: (value) => setSelectedIndex(value),
@@ -643,12 +638,12 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
               color: Colors.black,
               fontSize: 12,
               fontWeight: FontWeight.normal,
-            ).useSystemChineseFont(),
+            ).fix(),
             unselectedLabelTextStyle: const TextStyle(
                     color: Color.fromRGBO(60, 60, 67, 0.3),
                     fontSize: 12,
                     fontWeight: FontWeight.normal)
-                .useSystemChineseFont(),
+                .fix(),
             backgroundColor: Colors.white,
           ),
           Flexible(flex: 1, child: secondPart()),

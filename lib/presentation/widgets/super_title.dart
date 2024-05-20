@@ -1,5 +1,5 @@
 
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 
 class SuperTitle extends StatelessWidget {
@@ -16,6 +16,6 @@ class SuperTitle extends StatelessWidget {
         style: TextStyle(
             color: Colors.black,
             fontSize: 36.0,
-            fontWeight: FontWeight.w300).useSystemChineseFont());
+            fontWeight: FontWeight.w300).fix());
   }
 }

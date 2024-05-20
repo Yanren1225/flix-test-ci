@@ -1,5 +1,5 @@
 
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -30,7 +30,7 @@ class WaitToAcceptMediaWidget extends StatelessWidget {
           style: const TextStyle(
               color: Colors.white,
               fontSize: 14,
-              fontWeight: FontWeight.normal).useSystemChineseFont(),
+              fontWeight: FontWeight.normal).fix(),
         )
       ],
     );

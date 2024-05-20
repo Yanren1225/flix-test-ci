@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
@@ -47,7 +47,7 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
             style: TextStyle(
                 color: Colors.black,
                 fontSize: 14,
-                fontWeight: FontWeight.w500).useSystemChineseFont()),
+                fontWeight: FontWeight.w500).fix()),
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 20, bottom: 20),

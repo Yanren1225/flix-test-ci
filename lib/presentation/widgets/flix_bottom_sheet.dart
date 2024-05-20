@@ -1,4 +1,4 @@
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -77,7 +77,7 @@ class FlixBottomSheet extends StatelessWidget {
                                   fontWeight: FontWeight.w500,
                                   color: Colors.black,
                                   decoration: TextDecoration.none)
-                              .useSystemChineseFont(),
+                              .fix(),
                         ),
                       ),
                       Visibility(
@@ -92,7 +92,7 @@ class FlixBottomSheet extends StatelessWidget {
                                     letterSpacing: 0,
                                     color: Color.fromRGBO(60, 60, 67, 0.6),
                                     decoration: TextDecoration.none)
-                                .useSystemChineseFont(),
+                                .fix(),
                           ),
                         ),
                       ),
@@ -123,7 +123,7 @@ class FlixBottomSheet extends StatelessWidget {
                                           letterSpacing: 0,
                                           color: Colors.white,
                                           decoration: TextDecoration.none)
-                                      .useSystemChineseFont(),
+                                      .fix(),
                                 ),
                               ),
                             )),

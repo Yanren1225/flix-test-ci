@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
@@ -232,7 +232,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
                                 style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
-                                    color: contentColor).useSystemChineseFont(),
+                                    color: contentColor).fix(),
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
                                 overflowWidget: TextOverflowWidget(
@@ -241,7 +241,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
                                       style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w500,
-                                          color: contentColor).useSystemChineseFont()),
+                                          color: contentColor).fix()),
                                 ))),
                         const SizedBox(
                           width: 10,
@@ -272,7 +272,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
                             style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w400,
-                                color: Color.fromRGBO(60, 60, 67, 0.6)).useSystemChineseFont(),
+                                color: Color.fromRGBO(60, 60, 67, 0.6)).fix(),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -286,7 +286,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
                                 style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400,
-                                    color: stateDesColor ?? Colors.grey).useSystemChineseFont(),
+                                    color: stateDesColor ?? Colors.grey).fix(),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               )
@@ -297,7 +297,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
                                 style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400,
-                                    color: contentColor.withOpacity(0.5)).useSystemChineseFont(),
+                                    color: contentColor.withOpacity(0.5)).fix(),
                               ),
                       ),
                     ],

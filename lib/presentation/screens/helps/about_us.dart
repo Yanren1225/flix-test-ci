@@ -1,4 +1,4 @@
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
@@ -85,7 +85,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
                   color: Colors.black,
                   fontSize: 16,
                   fontWeight: FontWeight.w400)
-              .useSystemChineseFont()),
+              .fix()),
     );
   }
 
@@ -109,7 +109,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
                   color: Colors.black,
                   fontSize: 16,
                   fontWeight: FontWeight.w400)
-              .useSystemChineseFont()),
+              .fix()),
     );
   }
 
@@ -121,7 +121,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
                   color: Colors.black,
                   fontSize: 16,
                   fontWeight: FontWeight.w400)
-              .useSystemChineseFont()),
+              .fix()),
     );
   }
 
@@ -147,7 +147,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
                   color: Colors.black,
                   fontSize: 16,
                   fontWeight: FontWeight.w400)
-              .useSystemChineseFont())),
+              .fix())),
     );
   }
 
@@ -164,7 +164,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
                   color: Colors.black,
                   fontSize: 16,
                   fontWeight: FontWeight.w400)
-              .useSystemChineseFont())),
+              .fix())),
     );
   }
 
@@ -193,7 +193,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
                         color: Colors.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w400)
-                    .useSystemChineseFont()),
+                    .fix()),
           ),
         ),
       ),
@@ -204,7 +204,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
     return TextSpan(
         text: text,
         style: const TextStyle(color: Color.fromRGBO(0, 122, 255, 1))
-            .useSystemChineseFont(),
+            .fix(),
         recognizer: TapGestureRecognizer()..onTap = onTap);
   }
 }

@@ -1,4 +1,4 @@
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 
 class SearchBox extends StatefulWidget {
@@ -32,7 +32,7 @@ class SearchBoxState extends State<SearchBox> {
                 hintStyle: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Color.fromRGBO(102, 102, 102, 1)).useSystemChineseFont(),
+                    color: Color.fromRGBO(102, 102, 102, 1)).fix(),
                 contentPadding:
                     EdgeInsets.only(left: 48, top: 14, right: 12, bottom: 14),
                 prefixIcon: Icon(
@@ -47,7 +47,7 @@ class SearchBoxState extends State<SearchBox> {
               onSearch(text);
             },
             onSubmitted: onSearch,
-            style: const TextStyle().useSystemChineseFont(),
+            style: const TextStyle().fix(),
           ),
         )
       ],

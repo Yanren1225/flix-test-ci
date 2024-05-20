@@ -1,4 +1,4 @@
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -17,7 +17,7 @@ class AcceptMediaWidget extends StatelessWidget {
               style:const TextStyle(
                   color: Colors.black,
                   fontSize: 14,
-                  fontWeight: FontWeight.normal).useSystemChineseFont())
+                  fontWeight: FontWeight.normal).fix())
         ],
       ),
     );

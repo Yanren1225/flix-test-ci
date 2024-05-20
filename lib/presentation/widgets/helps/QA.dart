@@ -1,4 +1,4 @@
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 
 class QA extends StatefulWidget {
@@ -37,7 +37,7 @@ class QAState extends State<QA> {
                     fontSize: 16,
                     fontWeight: FontWeight.normal,
                     color: Colors.black)
-                .useSystemChineseFont(),
+                .fix(),
           ),
           children: [
             Padding(
@@ -48,7 +48,7 @@ class QAState extends State<QA> {
                         fontSize: 14,
                         fontWeight: FontWeight.normal,
                         color: Color.fromRGBO(60, 60, 67, 0.6))
-                    .useSystemChineseFont(),
+                    .fix(),
               ),
             )
           ],

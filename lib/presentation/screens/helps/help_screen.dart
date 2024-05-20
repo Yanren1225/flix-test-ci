@@ -1,4 +1,4 @@
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
 import 'package:flix/presentation/widgets/helps/QA.dart';
@@ -72,7 +72,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
               style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.normal,
-                  color: Color.fromRGBO(60, 60, 67, 0.6)).useSystemChineseFont(),
+                  color: Color.fromRGBO(60, 60, 67, 0.6)).fix(),
             ),
           ),
           const Padding(

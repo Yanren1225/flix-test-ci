@@ -1,4 +1,4 @@
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/presentation/widgets/blur_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -51,11 +51,11 @@ class NavigationAppbarScaffold extends StatelessWidget {
               color: Colors.black,
               fontSize: 18,
               fontWeight: FontWeight.w500)
-              .useSystemChineseFont()),
+              .fix()),
       backgroundColor: const Color.fromRGBO(242, 242, 242, 0.8),
       surfaceTintColor: const Color.fromRGBO(242, 242, 242, 0.8),
       titleTextStyle: const TextStyle(
-          color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500).useSystemChineseFont(),
+          color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500).fix(),
       titleSpacing: 6,
     );
 
@@ -85,7 +85,7 @@ class NavigationAppbarScaffold extends StatelessWidget {
       ),
       titleTextStyle: const TextStyle(
           color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500)
-          .useSystemChineseFont(),
+          .fix(),
       backgroundColor: const Color.fromRGBO(242, 242, 242, 0.8),
       surfaceTintColor: const Color.fromRGBO(242, 242, 242, 0.8),
     );

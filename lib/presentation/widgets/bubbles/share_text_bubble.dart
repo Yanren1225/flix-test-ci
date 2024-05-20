@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -82,7 +82,7 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
     }
     final textStyle = TextStyle(
             color: contentColor, fontSize: 16, decorationColor: contentColor ,fontWeight: FontWeight.w400)
-        .useSystemChineseFont();
+        .fix();
     final content = Padding(
       padding: const EdgeInsets.all(10),
       child: Theme(

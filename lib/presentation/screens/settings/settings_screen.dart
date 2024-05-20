@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flix/domain/device/device_manager.dart';
@@ -159,7 +159,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.normal,
-                    color: Color.fromRGBO(60, 60, 67, 0.6)).useSystemChineseFont(),
+                    color: Color.fromRGBO(60, 60, 67, 0.6)).fix(),
               ),
             ),
             Padding(
@@ -242,7 +242,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                     style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.normal,
-                        color: Color.fromRGBO(60, 60, 67, 0.6)).useSystemChineseFont(),
+                        color: Color.fromRGBO(60, 60, 67, 0.6)).fix(),
                   ),
                 ),
                 Padding(
@@ -293,7 +293,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.normal,
-                          color: Color.fromRGBO(60, 60, 67, 0.6)).useSystemChineseFont(),
+                          color: Color.fromRGBO(60, 60, 67, 0.6)).fix(),
                     ),
                   ),
                   Padding(
