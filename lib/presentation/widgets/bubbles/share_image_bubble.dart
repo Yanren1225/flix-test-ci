@@ -344,7 +344,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
       key: _imageKey,
       image: FlixThumbnailProvider(
           id: sharedFile.id,
-          resourceId: !isFromSelf || resourceId.isEmpty || isDesktop()
+          resourceId: resourceId.isEmpty || isDesktop()
               ? null
               : sharedFile.content.resourceId,
           resourcePath: sharedFile.content.path,

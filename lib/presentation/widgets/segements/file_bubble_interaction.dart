@@ -5,6 +5,7 @@ import 'package:downloadsfolder/downloadsfolder.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/segements/bubble_context_menu.dart';
@@ -18,11 +19,13 @@ import 'package:modals/modals.dart';
 import 'package:open_dir/open_dir.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 class FileBubbleInteraction extends StatefulWidget {
   final UIBubble bubble;
-  final String filePath;
+  String filePath;
   final Widget child;
   final bool clickable;
 
@@ -64,6 +67,8 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
         // setState(() {});
       });
 
+    final sharedFile = widget.bubble.shareable as SharedFile;
+
     return ModalAnchor(
       tag: contextMenuTag,
       child: ClipRRect(
@@ -101,7 +106,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
             onTap: () async {
               if (!widget.clickable) return;
               // _controller.forward().whenComplete(() => _controller.reverse());
-              _openFile(widget.filePath).then((isSuccess) {
+              _openFile(sharedFile.content.resourceId, widget.filePath).then((isSuccess) {
                 if (!isSuccess) {
                   _openDir();
                 }
@@ -171,24 +176,45 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
     });
   }
 
-  Future<bool> _openFile(String filePath) async {
+  Future<bool> _openFile(String resourceId, String filePath) async {
     if (Platform.isAndroid && filePath.endsWith(".apk") ||
         filePath.endsWith(".apk.1")) {
       return await _installApk(filePath);
-    } else {
-      final result = await OpenFilex.open(filePath);
-      if (result.type == ResultType.done) {
-        return true;
-      } else {
-        talker.error('Failed open file: ${widget.filePath}, result: $result');
-        return false;
+    } else if (Platform.isIOS) {
+      if (filePath.isEmpty && resourceId.isNotEmpty) {
+        final AssetEntity? asset = await AssetEntity.fromId(resourceId);
+        if (asset != null) {
+          final file = await asset.originFile;
+          filePath =  file?.path ?? '';
+          setState(() {
+            widget.filePath = filePath;
+          });
+        }
       }
+    }
+
+    final result = await OpenFilex.open(filePath);
+    if (result.type == ResultType.done) {
+      return true;
+    } else {
+      talker.error('Failed open file: ${widget.filePath}, result: $result');
+      return false;
     }
   }
 
   void _openDir() {
     // fixme 打开android目录
-    if (Platform.isIOS || Platform.isAndroid) {
+    if (!(widget.bubble.shareable is SharedFile)) return;
+    final sharedFile = widget.bubble.shareable as SharedFile;
+    if (Platform.isIOS && sharedFile.content.resourceId.isNotEmpty) {
+      _openIOSAlbum(sharedFile.content.resourceId).then((value) {
+        if (!value) {
+          talker.error("failed to open ios album");
+        }
+      }).catchError((e) {
+        talker.error("failed to open ios album: $e");
+      });
+    } else if (Platform.isIOS || Platform.isAndroid) {
       _openDownloadDir();
     } else {
       if (Platform.isWindows) {
@@ -213,6 +239,11 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
       }
     }).catchError(
         (error, stackTrace) => print('Failed to open download folder: $error'));
+  }
+
+  Future<bool> _openIOSAlbum(String resourceId) async {
+    String _url = "photos-redirect://$resourceId";
+    return await launchUrl(Uri.parse(_url));
   }
 
   Future<bool> _installApk(String apkPath) async {

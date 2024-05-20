@@ -54,6 +54,8 @@
     </array>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>我们需要访问你的照片库，以便你可以选择图片进行分享。</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>我们需要添加照片到你的照片库，以便你可以浏览接收到的图片。</string>
 	<key>NSCameraUsageDescription</key>
 	<string>我们需要访问你的相机，以便你可以拍摄照片进行分享。</string>
 	<key>NSMicrophoneUsageDescription</key>

@@ -317,7 +317,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
 
   Widget _buildInlineVideoPlayer(bool isFromSelf, SharedFile videoEntity, bool preview) {
     final previewWidget;
-    if (!isFromSelf || videoEntity.content.resourceId.isEmpty || isDesktop()) {
+    if (videoEntity.content.resourceId.isEmpty || isDesktop()) {
       previewWidget = AspectRatioVideo(
           key: _videoWidget,
           videoPath: videoEntity.content.path!,

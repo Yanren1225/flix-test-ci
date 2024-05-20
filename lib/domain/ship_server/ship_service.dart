@@ -16,6 +16,7 @@ import 'package:flix/utils/stream_cancelable.dart';
 import 'package:flix/utils/stream_progress.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:mutex/mutex.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
@@ -486,12 +487,36 @@ class ShipService {
   Future<void> _saveFileAndAddBubble(
       String desDir, FormData formData, PrimitiveFileBubble bubble) async {
     File outFile = await _saveFile(desDir, formData, bubble);
+    String? path = outFile.path;
+    String? resourceId = await _saveMediaToAlbumOnIOS(outFile);
+    // 保存到相册成功，删除副本
+    if (resourceId != null) {
+      path = null;
+      await outFile.delete();
+    }
     final updatedBubble = bubble.copy(
         content: bubble.content.copy(
             state: FileState.receiveCompleted,
             progress: 1.0,
-            meta: bubble.content.meta.copy(path: outFile.path)));
+            meta: bubble.content.meta.copy(resourceId: resourceId ,path: path)));
     await _bubblePool.add(updatedBubble);
+  }
+
+  Future<String?> _saveMediaToAlbumOnIOS(File outFile) async {
+    if (Platform.isIOS) {
+      try {
+        final result = await ImageGallerySaver.saveFile(outFile.path, isReturnPathOfIOS: true);
+        talker.debug("ios save file result: $result");
+        if (result["isSuccess"]) {
+          return result["resourceId"] as String;
+        } else {
+          talker.error("ios save file failed");
+        }
+      } catch (e, s) {
+        talker.error("failed to save to gallery", e, s);
+      }
+    }
+    return null;
   }
 
   Future<File> _saveFile(

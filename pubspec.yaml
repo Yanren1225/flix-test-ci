@@ -153,6 +153,10 @@ dependency_overrides:
       path: "packages/flutter_image_compress_macos"
   uuid: ^4.3.3
   intl: ^0.19.0
+  image_gallery_saver:
+    git:
+      url: "https://github.com/heiha100/image_gallery_saver"
+      ref: "cd896dd47a00a0065bff04b214136f442b97b2c4"
 
 #  share_plus_platform_interface:
 
