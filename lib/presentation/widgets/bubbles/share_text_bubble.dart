@@ -34,6 +34,7 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
   Offset? tapDown;
   late String contextMenuTag;
   TextSelection? textSelection;
+  SelectionChangedCause? selectionChangedCause;
   final FocusNode _focusNode = FocusNode();
   int _focusId = 0;
 
@@ -83,39 +84,55 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
     final textStyle = TextStyle(
             color: contentColor, fontSize: 16, decorationColor: contentColor ,fontWeight: FontWeight.w400)
         .fix();
-    final content = Padding(
-      padding: const EdgeInsets.all(10),
-      child: Theme(
-        data: ThemeData(
-          textSelectionTheme: TextSelectionThemeData(
-            selectionColor: selectIndicatorColor,
-            cursorColor: Colors.black,
-            selectionHandleColor: Colors.black,
+    final content = GestureDetector(
+      onTap: () {
+        _copyContentToClipboard(sharedText.content);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Theme(
+          data: ThemeData(
+            textSelectionTheme: TextSelectionThemeData(
+              selectionColor: selectIndicatorColor,
+              cursorColor: Colors.black,
+              selectionHandleColor: Colors.black,
+            ),
           ),
-        ),
-        child: SelectableLinkify(
-          key: ValueKey(_focusId),
-          text: sharedText.content,
-          focusNode: _focusNode,
-          onOpen: (link) async {
-            if (!await launchUrl(Uri.parse(link.url))) {
-              talker.error('Could not launch ${link.url}');
-            }
-          },
-          onSelectionChanged: (TextSelection selection,
-              SelectionChangedCause? cause) {
-            textSelection = selection;
-          },
-          contextMenuBuilder: (
-              BuildContext context,
-              EditableTextState editableTextState,
-              ) {
-            return _buildContextMenu(concertProvider, context,
-                editableTextState.contextMenuAnchors);
-          },
-          linkStyle: textStyle,
-          style: textStyle,
-          cursorColor: Colors.black,
+          child: SelectableLinkify(
+            key: ValueKey(_focusId),
+            text: sharedText.content,
+            focusNode: _focusNode,
+            onOpen: (link) async {
+              if (!await launchUrl(Uri.parse(link.url))) {
+                talker.error('Could not launch ${link.url}');
+              }
+            },
+            onTap: () {
+              _copyContentToClipboard(sharedText.content);
+            },
+            onSelectionChanged: (TextSelection selection,
+                SelectionChangedCause? cause) {
+              talker.debug("cause: $cause");
+              textSelection = selection;
+              selectionChangedCause = cause;
+            },
+            contextMenuBuilder: (
+                BuildContext context,
+                EditableTextState editableTextState,
+                ) {
+              if (selectionChangedCause == SelectionChangedCause.longPress) {
+                Future.delayed(Duration.zero, () {
+                  editableTextState.selectAll(SelectionChangedCause.toolbar);
+                });
+              }
+
+              return _buildContextMenu(concertProvider, context,
+                  editableTextState.contextMenuAnchors);
+            },
+            linkStyle: textStyle,
+            style: textStyle,
+            cursorColor: Colors.black,
+          ),
         ),
       ),
     );
