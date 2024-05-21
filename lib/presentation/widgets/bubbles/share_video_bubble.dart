@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flix/presentation/widgets/bubbles/bubble_decoration_widget.dart';
+import 'package:flix/presentation/widgets/bubbles/trans_info_widget.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
@@ -58,7 +60,6 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
       alignment = MainAxisAlignment.start;
     }
 
-    Widget stateIcon = SizedBox();
     final Widget content;
     if (entity.isFromMe(andropContext.deviceId)) {
       // 发送
@@ -66,70 +67,14 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
         case FileState.picked:
           clickable = true;
           content = _buildInlineVideoPlayer(true, sharedVideo, false);
-          stateIcon = CancelSendButton(key: _cancelButtonKey, entity: entity);
           break;
         case FileState.waitToAccepted:
           clickable = false;
-          content = Stack(
-            fit: StackFit.passthrough,
-            children: [
-              _buildInlineVideoPlayer(true, sharedVideo, true),
-              Container(
-                decoration:
-                    const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
-                width: double.infinity,
-                height: double.infinity,
-                child: const SizedBox(),
-              ),
-              const Align(
-                alignment: Alignment.center,
-                child: WaitToAcceptMediaWidget(),
-              )
-            ],
-          );
-          stateIcon = CancelSendButton(key: _cancelButtonKey, entity: entity);
+          content = _waitToAcceptedContent(sharedVideo);
           break;
         case FileState.inTransit:
           clickable = false;
-          content = Stack(
-            fit: StackFit.passthrough,
-            children: [
-              _buildInlineVideoPlayer(true, sharedVideo, true),
-              Container(
-                decoration: BoxDecoration(color: Colors.black.withOpacity(0.5)),
-                width: double.infinity,
-                height: double.infinity,
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.transparent,
-                          color: Colors.white,
-                          strokeWidth: 2.0,
-                        )),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      '${(sharedVideo.progress * 100).round()}%',
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal).fix(),
-                    )
-                  ],
-                ),
-              )
-            ],
-          );
-          stateIcon = CancelSendButton(key: _cancelButtonKey, entity: entity);
+          content = _inTransContent(sharedVideo);
           break;
         case FileState.sendCompleted:
         case FileState.receiveCompleted:
@@ -143,7 +88,6 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
         case FileState.failed:
           clickable = true;
           content = _buildInlineVideoPlayer(true, sharedVideo, false);
-          stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
         default:
           throw StateError('Error send state: ${sharedVideo.state}');
@@ -161,35 +105,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
           break;
         case FileState.inTransit:
         case FileState.sendCompleted:
-          content = AspectRatio(
-            aspectRatio: 1.333333,
-            child: DecoratedBox(
-              decoration:
-                  const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        backgroundColor: Colors.transparent,
-                        color: Colors.white,
-                        strokeWidth: 2.0,
-                      )),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Text('${(sharedVideo.progress * 100).round()}%',
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal).fix())
-                ],
-              ),
-            ),
-          );
+          content = _inReceiveContent(sharedVideo);
         case FileState.receiveCompleted:
         case FileState.completed:
           clickable = true;
@@ -205,107 +121,158 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
               child: PreviewErrorWidget(),
             ),
           );
-          stateIcon = SvgPicture.asset('assets/images/ic_trans_fail.svg');
           break;
         default:
           throw StateError('Error receive state: ${sharedVideo.state}');
       }
     }
-    return Row(
-      mainAxisAlignment: alignment,
-      crossAxisAlignment: CrossAxisAlignment.end,
+    return BubbleDecorationWidget(
+      key: ValueKey(entity.shareable.id),
+      entity: entity,
+      child: FileBubbleInteraction(
+        key: ValueKey(entity.shareable.id),
+        bubble: entity,
+        filePath: sharedVideo.content.path ?? '',
+        clickable: clickable,
+        child: _buildAspectContent(backgroundColor, sharedVideo, content),
+      ),
+    );
+  }
+
+  Widget _inReceiveContent(SharedFile sharedVideo) {
+    return Stack(
+      fit: StackFit.passthrough,
       children: [
-        Visibility(
-          visible: alignment == MainAxisAlignment.end,
-          replacement: alignment == MainAxisAlignment.end
-              ? const SizedBox(
-                  width: 20 + 18,
-                  height: 20,
-                )
-              : const SizedBox.shrink(),
-          child: Padding(
-            padding: const EdgeInsets.only(right: 18.0),
-            child: stateIcon,
+        const DecoratedBox(
+          decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+          child: Center(
+            child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  backgroundColor: Colors.transparent,
+                  color: Colors.white,
+                  strokeWidth: 2.0,
+                )),
           ),
         ),
-        Flexible(
-          child: FileBubbleInteraction(
-            key: ValueKey(entity.shareable.id),
-            bubble: entity,
-            filePath: sharedVideo.content.path ?? '',
-            clickable: clickable,
-            child: Container(
-              decoration: BoxDecoration(
-                  color: backgroundColor),
-              child: LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                final maxPhysicalSize = 250.0;
-
-                if (sharedVideo.content.width == 0 ||
-                    sharedVideo.content.height == 0) {
-                  return ConstrainedBox(
-                      constraints: BoxConstraints(
-                          minWidth: 100,
-                          maxWidth: max(100,
-                              min(constraints.maxWidth - 60, maxPhysicalSize)),
-                          minHeight: 100,
-                          maxHeight: maxPhysicalSize),
-                      child: IntrinsicHeight(child: content));
-                } else {
-                  final width;
-                  final height;
-
-                  const minSize = 100;
-                  final maxSize = max(
-                      minSize, min(maxPhysicalSize, constraints.maxWidth - 60));
-
-                  final dpi = MediaQuery.of(context).devicePixelRatio;
-                  final imageOriginWidth = sharedVideo.content.width / dpi;
-                  final imageOriginHeight = sharedVideo.content.height / dpi;
-                  if (imageOriginWidth >= imageOriginHeight) {
-                    if (imageOriginWidth > maxSize) {
-                      width = maxSize;
-                    } else if (imageOriginWidth < minSize) {
-                      width = minSize;
-                    } else {
-                      width = imageOriginWidth;
-                    }
-                    height = width / imageOriginWidth * imageOriginHeight;
-                  } else {
-                    if (imageOriginHeight > maxSize) {
-                      height = maxSize;
-                    } else if (imageOriginHeight < minSize) {
-                      height = minSize;
-                    } else {
-                      height = imageOriginHeight;
-                    }
-                    width = height / imageOriginHeight * imageOriginWidth;
-                  }
-
-                  return SizedBox(
-                    width: width * 1.0,
-                    height: height * 1.0,
-                    child: content,
-                  );
-                }
-              }),
-            ),
-          ),
-        ),
-        Visibility(
-          visible: alignment == MainAxisAlignment.start,
-          replacement: alignment == MainAxisAlignment.start
-              ? const SizedBox(
-                  width: 20 + 18,
-                  height: 20,
-                )
-              : const SizedBox.shrink(),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 18.0),
-            child: stateIcon,
-          ),
-        ),
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: TransInfoWidget(key: ValueKey(sharedVideo.id), entity: entity),
+        )
       ],
+    );
+  }
+
+  Stack _inTransContent(SharedFile sharedVideo) {
+    return Stack(
+      fit: StackFit.passthrough,
+      children: [
+        _buildInlineVideoPlayer(true, sharedVideo, true),
+        Container(
+          decoration: BoxDecoration(color: Colors.black.withOpacity(0.5)),
+          width: double.infinity,
+          height: double.infinity,
+        ),
+        Align(
+          alignment: Alignment.center,
+          child: const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.transparent,
+                color: Colors.white,
+                strokeWidth: 2.0,
+              )),
+        ),
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: TransInfoWidget(key: ValueKey(sharedVideo.id), entity: entity),
+        )
+      ],
+    );
+  }
+
+  Stack _waitToAcceptedContent(SharedFile sharedVideo) {
+    return Stack(
+      fit: StackFit.passthrough,
+      children: [
+        _buildInlineVideoPlayer(true, sharedVideo, true),
+        Container(
+          decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+          width: double.infinity,
+          height: double.infinity,
+          child: const SizedBox(),
+        ),
+        const Align(
+          alignment: Alignment.center,
+          child: WaitToAcceptMediaWidget(),
+        )
+      ],
+    );
+  }
+
+  Container _buildAspectContent(
+      Color backgroundColor, SharedFile sharedVideo, Widget content) {
+    return Container(
+      decoration: BoxDecoration(color: backgroundColor),
+      child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+        const maxPhysicalSize = 250.0;
+
+        if (sharedVideo.content.width == 0 || sharedVideo.content.height == 0) {
+          return ConstrainedBox(
+              constraints: BoxConstraints(
+                  minWidth: 100,
+                  maxWidth:
+                      max(100, min(constraints.maxWidth - 60, maxPhysicalSize)),
+                  minHeight: 100,
+                  maxHeight: maxPhysicalSize),
+              child: IntrinsicHeight(child: content));
+        } else {
+          return _aspectContent(
+              maxPhysicalSize, constraints, context, sharedVideo, content);
+        }
+      }),
+    );
+  }
+
+  SizedBox _aspectContent(double maxPhysicalSize, BoxConstraints constraints,
+      BuildContext context, SharedFile sharedVideo, Widget content) {
+    final width;
+    final height;
+
+    const minSize = 100;
+    final maxSize =
+        max(minSize, min(maxPhysicalSize, constraints.maxWidth - 60));
+
+    final dpi = MediaQuery.of(context).devicePixelRatio;
+    final imageOriginWidth = sharedVideo.content.width / dpi;
+    final imageOriginHeight = sharedVideo.content.height / dpi;
+    if (imageOriginWidth >= imageOriginHeight) {
+      if (imageOriginWidth > maxSize) {
+        width = maxSize;
+      } else if (imageOriginWidth < minSize) {
+        width = minSize;
+      } else {
+        width = imageOriginWidth;
+      }
+      height = width / imageOriginWidth * imageOriginHeight;
+    } else {
+      if (imageOriginHeight > maxSize) {
+        height = maxSize;
+      } else if (imageOriginHeight < minSize) {
+        height = minSize;
+      } else {
+        height = imageOriginHeight;
+      }
+      width = height / imageOriginHeight * imageOriginWidth;
+    }
+
+    return SizedBox(
+      width: width * 1.0,
+      height: height * 1.0,
+      child: content,
     );
   }
 
@@ -315,7 +282,8 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
     }
   }
 
-  Widget _buildInlineVideoPlayer(bool isFromSelf, SharedFile videoEntity, bool preview) {
+  Widget _buildInlineVideoPlayer(
+      bool isFromSelf, SharedFile videoEntity, bool preview) {
     final previewWidget;
     if (videoEntity.content.resourceId.isEmpty || isDesktop()) {
       previewWidget = AspectRatioVideo(
@@ -325,8 +293,11 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
     } else {
       previewWidget = Image(
           key: _videoWidget,
-          image:
-              FlixThumbnailProvider(id: videoEntity.id, resourceId: videoEntity.content.resourceId, preferWidth: 250, preferHeight: 250),
+          image: FlixThumbnailProvider(
+              id: videoEntity.id,
+              resourceId: videoEntity.content.resourceId,
+              preferWidth: 250,
+              preferHeight: 250),
           fit: BoxFit.contain,
           errorBuilder: (
             BuildContext context,

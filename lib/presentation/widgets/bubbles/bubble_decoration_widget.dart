@@ -30,7 +30,7 @@ class _BubbleDecorationWidgetState extends State<BubbleDecorationWidget> {
   Widget build(BuildContext context) {
     assert(entity.shareable is SharedFile);
     final sharedFile = entity.shareable as SharedFile;
-    AndropContext andropContext = context.watch();
+    AndropContext andropContext = Provider.of(context, listen: false);
     final isFromMe = widget.entity.isFromMe(andropContext.deviceId);
     final alignment;
     if (isFromMe) {

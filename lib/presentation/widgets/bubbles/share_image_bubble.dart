@@ -9,6 +9,8 @@ import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/bubbles/accept_media_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/base_file_bubble.dart';
 import 'package:flix/presentation/widgets/bubbles/bubble_decoration_widget.dart';
+import 'package:flix/presentation/widgets/bubbles/state_progress_bar.dart';
+import 'package:flix/presentation/widgets/bubbles/trans_info_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/preview_error_widget.dart';
@@ -40,7 +42,8 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
       switch (sharedImage.state) {
         case FileState.picked:
           clickable = true;
-          content = (cacheWidth, cacheHeight) => _normalContent(sharedImage, cacheWidth, cacheHeight);
+          content = (cacheWidth, cacheHeight) =>
+              _normalContent(sharedImage, cacheWidth, cacheHeight);
           break;
         case FileState.waitToAccepted:
           clickable = false;
@@ -55,14 +58,16 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
         case FileState.receiveCompleted:
         case FileState.completed:
           clickable = true;
-          content = (cacheWidth, cacheHeight) => _normalContent(sharedImage, cacheWidth, cacheHeight);
+          content = (cacheWidth, cacheHeight) =>
+              _normalContent(sharedImage, cacheWidth, cacheHeight);
           break;
         case FileState.cancelled:
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
           clickable = true;
-          content = (cacheWidth, cacheHeight) => _normalContent(sharedImage, cacheWidth, cacheHeight);
+          content = (cacheWidth, cacheHeight) =>
+              _normalContent(sharedImage, cacheWidth, cacheHeight);
           break;
         default:
           throw StateError('Error send state: ${sharedImage.state}');
@@ -113,144 +118,134 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
 
   AspectRatio _receiveErrorContent() {
     return AspectRatio(
-              aspectRatio: 1.333333,
-              child: DecoratedBox(
-                decoration: const BoxDecoration(color: Colors.white),
-                child: _imageErrorWidget(),
-              ),
-            );
+      aspectRatio: 1.333333,
+      child: DecoratedBox(
+        decoration: const BoxDecoration(color: Colors.white),
+        child: _imageErrorWidget(),
+      ),
+    );
   }
 
-  AspectRatio _inReceiveContent(SharedFile sharedImage) {
-    return AspectRatio(
-              aspectRatio: 1.333333,
-              child: DecoratedBox(
-                decoration:
-                    const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.transparent,
-                          color: Colors.white,
-                          strokeWidth: 2.0,
-                        )),
-                    Text('${(sharedImage.progress * 100).round()}%',
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.normal).fix())
-                  ],
-                ),
-              ),
-            );
+  Widget _inReceiveContent(SharedFile sharedImage) {
+    return Stack(
+      fit: StackFit.passthrough,
+      children: [
+        const DecoratedBox(
+          decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+          child: Center(
+            child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  backgroundColor: Colors.transparent,
+                  color: Colors.white,
+                  strokeWidth: 2.0,
+                )),
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: TransInfoWidget(key: ValueKey(sharedImage.id), entity: entity),
+        ),
+      ],
+    );
   }
 
-  Widget _normalContent(SharedFile sharedImage, int? cacheWidth, int? cacheHeight) {
+  Widget _normalContent(
+      SharedFile sharedImage, int? cacheWidth, int? cacheHeight) {
     return _image(true, sharedImage,
-            cacheWidth: cacheWidth, cacheHeight: cacheHeight);
+        cacheWidth: cacheWidth, cacheHeight: cacheHeight);
   }
 
   Stack _waitToAcceptedContent(SharedFile sharedImage, int? _w, int? _h) {
     return Stack(
-              fit: StackFit.passthrough,
-              children: [
-                _normalContent(sharedImage, _w, _h),
-                Container(
-                  decoration: const BoxDecoration(
-                      color: Color.fromRGBO(0, 0, 0, 0.5)),
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: const SizedBox(),
-                ),
-                const Align(
-                  alignment: Alignment.center,
-                  child: WaitToAcceptMediaWidget(),
-                )
-              ],
-            );
+      fit: StackFit.passthrough,
+      children: [
+        _normalContent(sharedImage, _w, _h),
+        Container(
+          decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+          width: double.infinity,
+          height: double.infinity,
+          child: const SizedBox(),
+        ),
+        const Align(
+          alignment: Alignment.center,
+          child: WaitToAcceptMediaWidget(),
+        )
+      ],
+    );
   }
 
   Stack _inTransContent(SharedFile sharedImage, int? _w, int? _h) {
     return Stack(
-              fit: StackFit.passthrough,
-              children: [
-                _normalContent(sharedImage, _w, _h),
-                Container(
-                  decoration: const BoxDecoration(
-                      color: Color.fromRGBO(0, 0, 0, 0.5)),
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: const SizedBox(),
-                ),
-                Align(
-                  alignment: Alignment.center,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            backgroundColor: Colors.transparent,
-                            color: Colors.white,
-                            strokeWidth: 2.0,
-                          )),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Text(
-                        '${(sharedImage.progress * 100).round()}%',
-                        style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal)
-                            .fix(),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            );
+      fit: StackFit.passthrough,
+      children: [
+        _normalContent(sharedImage, _w, _h),
+        Container(
+          decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+          width: double.infinity,
+          height: double.infinity,
+          child: const SizedBox(),
+        ),
+        const Align(
+          alignment: Alignment.center,
+          child: SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.transparent,
+                color: Colors.white,
+                strokeWidth: 2.0,
+              )),
+        ),
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: TransInfoWidget(key: ValueKey(sharedImage.id), entity: entity),
+        )
+      ],
+    );
   }
 
-  DecoratedBox _buildAspectContent(Color backgroundColor, SharedFile sharedImage, Widget Function(int? cacheWidth, int? cacheHeight) content) {
+  DecoratedBox _buildAspectContent(
+      Color backgroundColor,
+      SharedFile sharedImage,
+      Widget Function(int? cacheWidth, int? cacheHeight) content) {
     return DecoratedBox(
-        decoration: BoxDecoration(color: backgroundColor),
-        child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-          final maxPhysicalSize = 250.0;
-          // Platform.isAndroid || Platform.isIOS ? 250.0 : 300.0;
+      decoration: BoxDecoration(color: backgroundColor),
+      child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+        const maxPhysicalSize = 250.0;
+        // Platform.isAndroid || Platform.isIOS ? 250.0 : 300.0;
 
-          if (sharedImage.content.width == 0 ||
-              sharedImage.content.height == 0) {
-            return ConstrainedBox(
-                constraints: BoxConstraints(
-                    minWidth: 100,
-                    maxWidth: max(100,
-                        min(constraints.maxWidth - 60, maxPhysicalSize)),
-                    minHeight: 100,
-                    maxHeight: maxPhysicalSize),
-                child: IntrinsicHeight(child: content(null, null)));
-          } else {
-            return _aspectContent(maxPhysicalSize, constraints, context, sharedImage, content);
-          }
-        }),
-      );
+        if (sharedImage.content.width == 0 || sharedImage.content.height == 0) {
+          return ConstrainedBox(
+              constraints: BoxConstraints(
+                  minWidth: 100,
+                  maxWidth:
+                      max(100, min(constraints.maxWidth - 60, maxPhysicalSize)),
+                  minHeight: 100,
+                  maxHeight: maxPhysicalSize),
+              child: IntrinsicHeight(child: content(null, null)));
+        } else {
+          return _aspectContent(
+              maxPhysicalSize, constraints, context, sharedImage, content);
+        }
+      }),
+    );
   }
 
-  SizedBox _aspectContent(double maxPhysicalSize, BoxConstraints constraints, BuildContext context, SharedFile sharedImage, Widget content(int? cacheWidth, int? cacheHeight)) {
+  SizedBox _aspectContent(
+      double maxPhysicalSize,
+      BoxConstraints constraints,
+      BuildContext context,
+      SharedFile sharedImage,
+      Widget content(int? cacheWidth, int? cacheHeight)) {
     double width;
     double height;
 
     const minSize = 100;
-    final maxSize = max(
-        minSize, min(maxPhysicalSize, constraints.maxWidth - 60));
+    final maxSize =
+        max(minSize, min(maxPhysicalSize, constraints.maxWidth - 60));
 
     final dpi = MediaQuery.of(context).devicePixelRatio;
     final imageOriginWidth = sharedImage.content.width / dpi;
@@ -278,8 +273,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
     return SizedBox(
         width: width * 1.0,
         height: height * 1.0,
-        child: content(
-            (width * dpi).toInt(), (height * dpi).toInt()));
+        child: content((width * dpi).toInt(), (height * dpi).toInt()));
   }
 
   void _confirmReceive(ConcertProvider concertProvider) async {
@@ -302,6 +296,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
           stackTrace);
       return _imageErrorWidget();
     }
+
     return Image(
       key: _imageKey,
       image: FlixThumbnailProvider(
