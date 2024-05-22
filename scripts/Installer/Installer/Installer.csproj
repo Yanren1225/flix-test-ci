@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>lo.ico</ApplicationIcon>
+    <Copyright>Developer by Haoyang. Copyright © 2024 Flix. All rights reserved.</Copyright>
+    <Company>Flix</Company>
+    <Authors>Haoyang</Authors>
+    <Product>Flix Installer</Product>
+    <PackageIcon>logo.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="flix.zip" />
+    <None Remove="installer.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="lo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="flix.zip" />
+    <EmbeddedResource Include="installer.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\Downloads\logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
