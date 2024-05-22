@@ -23,7 +23,7 @@ class FlixNotification {
 
   Future<void> initWin() async {
     await localNotifier.setup(
-      appName: 'flix',
+      appName: 'Flix',
       // 参数 shortcutPolicy 仅适用于 Windows
       shortcutPolicy: ShortcutPolicy.requireCreate,
     );
