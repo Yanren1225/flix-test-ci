@@ -3,6 +3,8 @@ import Network
 import Flutter
 import flutter_local_notifications
 
+
+
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
     var group: NWConnectionGroup? = nil
@@ -20,6 +22,7 @@ import flutter_local_notifications
         if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
         }
+        initLog(app: self)
         registerMulticastChannel(app: self)
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
@@ -63,15 +66,18 @@ import flutter_local_notifications
     func scan(result: FlutterResult, channel: FlutterMethodChannel, host: String, port: UInt16) {
         group?.cancel()
         guard let multicast = try? NWMulticastGroup(for: [.hostPort(host: NWEndpoint.Host.ipv4(IPv4Address(host)!), port: NWEndpoint.Port(rawValue: port)!)])
-        else { fatalError("joint multicast group failed!") }
+        else {
+            log(level: LogLevel.Error, msg: "joint multicast group failed!")
+            result("")
+            return
+        }
         group = NWConnectionGroup(with: multicast, using: .udp)
         
-        
         group!.stateUpdateHandler = { state in
-            print("Multicast state: \(String(describing: state))")
+            log(level: LogLevel.Debug, msg: "Multicast state: \(String(describing: state))")
         }
         group!.setReceiveHandler { message, content, isComplete in
-            print("Receive message from \(String(describing: message.remoteEndpoint))")
+            log(level: LogLevel.Debug, msg: "Receive message from \(String(describing: message.remoteEndpoint))")
             
             // 接收数据
             if (content != nil) {
@@ -86,7 +92,7 @@ import flutter_local_notifications
                 channel.invokeMethod("receiveMulticastMessage", arguments: args)
 //                resut(json)
             } else {
-                fatalError("Multicast content should not be nil")
+                log(level: LogLevel.Error, msg: "Multicast content should not be nil")
             }
             
         }
@@ -99,7 +105,7 @@ import flutter_local_notifications
     func ping(result: FlutterResult, content: String) {
         group!.send(content: Data(content.utf8)) { error in
             if error != nil {
-                print("Ping error \(String(describing: error))")
+                log(level: LogLevel.Error, msg: "Ping error \(String(describing: error))")
             }
         }
         result("")
@@ -108,7 +114,7 @@ import flutter_local_notifications
     func pong(result: FlutterResult, content: String) {
         group!.send(content: Data(content.utf8)) { error in
             if error != nil {
-                print("Pong error \(String(describing: error))")
+                log(level: LogLevel.Error, msg: "Pong error \(String(describing: error))")
             }
         }
         result("")

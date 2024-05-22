@@ -64,6 +64,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await logPersistence.init();
+    initLog();
     await initFireBase();
     await initWindowManager();
     await initBootStartUp();
@@ -74,20 +75,7 @@ Future<void> main() async {
     _logAppContext(deviceInfo);
     _initAppLifecycle();
     _initSystemChrome();
-    // if (kDebugMode) {
-    //   PluginManager.instance // Register plugin kits
-    //     ..register(const WidgetInfoInspector())
-    //     ..register(const ColorSucker())
-    //     ..register(AlignRuler())
-    //     // ..register(const ColorPicker())                            // New feature
-    //     ..register(const TouchIndicator())
-    //     ..register(Console()); // Pass in your Dio instance
-    //   // After flutter_ume 0.3.0
-    //   runApp(MaterialApp(
-    //       home: const UMEWidget(child: const MyApp(), enable: true)));
-    // } else {
-      runApp(MaterialApp(home: const MyApp()));
-    // }
+    runApp(MaterialApp(home: const MyApp()));
   } catch (e, s) {
     talker.error('launch error', e, s);
     runApp(MaterialApp(

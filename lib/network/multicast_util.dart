@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_mappable/dart_mappable.dart';
-import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
-
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/protocol/device_modal.dart';
@@ -12,8 +10,6 @@ import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/utils/sleep.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-
-import 'nearby_service_info.dart';
 
 class MultiCastUtil {
 
