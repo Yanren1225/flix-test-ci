@@ -38,6 +38,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -65,6 +66,7 @@ Future<void> main() async {
   try {
     await logPersistence.init();
     initLog();
+    await _initHighRefreshRate();
     await initFireBase();
     await initWindowManager();
     await initBootStartUp();
@@ -85,6 +87,12 @@ Future<void> main() async {
         style: TextStyle(fontSize: 16),
       ),
     )));
+  }
+}
+
+Future<void> _initHighRefreshRate() async {
+  if (Platform.isAndroid) {
+    await FlutterDisplayMode.setHighRefreshRate();
   }
 }
 
