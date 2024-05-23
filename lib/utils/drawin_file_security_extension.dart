@@ -49,6 +49,7 @@ mixin DrawinFileSecurityExtension {
 
   Future<void> stopAccessPath() async {
     final fileMeta = this as FileMeta;
+    if (fileMeta.path == null) return;
     if (Platform.isMacOS) {
       final secureBookmarks = SecureBookmarks();
       var sharePreference = await SharedPreferences.getInstance();

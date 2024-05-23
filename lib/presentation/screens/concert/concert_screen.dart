@@ -79,6 +79,12 @@ class _ConcertScreenState extends State<ConcertScreen> with SingleTickerProvider
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final main = LayoutBuilder(
       builder: (_context, constraints) {
