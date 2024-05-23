@@ -39,6 +39,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:flutter_foreground_task/models/android_foreground_service_type.dart';
+import 'package:flutter_foreground_task/models/android_notification_options.dart';
+import 'package:flutter_foreground_task/models/foreground_task_options.dart';
+import 'package:flutter_foreground_task/models/ios_notification_options.dart';
+import 'package:flutter_foreground_task/models/notification_channel_importance.dart';
+import 'package:flutter_foreground_task/models/notification_icon_data.dart';
+import 'package:flutter_foreground_task/models/notification_priority.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -50,6 +58,7 @@ import 'package:share_handler/share_handler.dart';
 import 'package:system_tray/system_tray.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'domain/foreground_service/flix_foreground_service.dart';
 import 'domain/notification/BadgeService.dart';
 import 'firebase_options.dart';
 import 'presentation/screens/base_screen.dart';
@@ -68,6 +77,7 @@ Future<void> main() async {
     initLog();
     await _initHighRefreshRate();
     await initFireBase();
+    _initForegroundTask();
     await initWindowManager();
     await initBootStartUp();
     await _initNotification();
@@ -77,17 +87,22 @@ Future<void> main() async {
     _logAppContext(deviceInfo);
     _initAppLifecycle();
     _initSystemChrome();
-    runApp(MaterialApp(home: const MyApp()));
+    runApp(const WithForegroundTask(child: MaterialApp(home: MyApp())));
   } catch (e, s) {
     talker.error('launch error', e, s);
-    runApp(MaterialApp(
-        home: Center(
+
+    runApp( MaterialApp(
+    home: Center(
       child: Text(
         '启动失败, $e\n$s',
         style: TextStyle(fontSize: 16),
       ),
     )));
   }
+}
+
+void _initForegroundTask() {
+  flixForegroundService.init();
 }
 
 Future<void> _initHighRefreshRate() async {
@@ -100,6 +115,7 @@ void _initAppLifecycle() {
   appLifecycle.init();
   appLifecycle.addListener(logPersistence);
   appLifecycle.addListener(ShipServiceLifecycleWatcher());
+  appLifecycle.addListener(flixForegroundService);
 }
 
 void _initDatabase() {

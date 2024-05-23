@@ -8,6 +8,7 @@ import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/foreground_service/flix_foreground_service.dart';
 import 'package:flix/domain/isolate/isolate_communication.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
@@ -53,19 +54,22 @@ class ShipServiceProxy extends ApInterface {
           switch (shipCommand.command) {
             case 'getNetAddress':
               final address = _getAddressByDeviceId(shipCommand.data!);
-              final Map<String, String> args = {'deviceId': shipCommand.data as String, 'address': address};
+              final Map<String, String> args = {
+                'deviceId': shipCommand.data as String,
+                'address': address
+              };
               sendPort.send(IsolateCommand('returnNetAddress', args).toJson());
               break;
             case 'isAutoReceive':
               final isAutoReceive =
-              await SettingsRepo.instance.getAutoReceiveAsync();
-              sendPort.send(
-                  IsolateCommand('returnIsAutoReceive', isAutoReceive).toJson());
+                  await SettingsRepo.instance.getAutoReceiveAsync();
+              sendPort.send(IsolateCommand('returnIsAutoReceive', isAutoReceive)
+                  .toJson());
               break;
             case 'getSaveDir':
-              sendPort.send(
-                  IsolateCommand('returnSaveDir', SettingsRepo.instance.savedDir)
-                      .toJson());
+              sendPort.send(IsolateCommand(
+                      'returnSaveDir', SettingsRepo.instance.savedDir)
+                  .toJson());
               break;
             case 'returnStartShipServer':
               callback<bool>(syncTasks, 'startShipServer', shipCommand.data);
@@ -84,9 +88,18 @@ class ShipServiceProxy extends ApInterface {
               _receivePong(pong);
               break;
             case 'notifyNewBubble':
-              final bubble = PrimitiveBubble.fromJson(jsonDecode(shipCommand.data!));
+              final bubble =
+                  PrimitiveBubble.fromJson(jsonDecode(shipCommand.data!));
               await BubblePool.instance.notify(bubble);
               break;
+            // case "markTaskStarted":
+            //   await flixForegroundService.start();
+            //   sendPort.send(IsolateCommand('returnMarkTaskStarted').toJson());
+            //   break;
+            // case "markTaskStopped":
+            //   await flixForegroundService.stop();
+            //   sendPort.send(IsolateCommand('returnMarkTaskStopped').toJson());
+            //   break;
           }
         }
       });
@@ -97,7 +110,13 @@ class ShipServiceProxy extends ApInterface {
       if (logSender == null) {
         talker.error('logSender is null');
       }
-      await Isolate.spawn(startServer, {'sendPort': _sendPort, 'did': DeviceProfileRepo.instance.did, 'rootToken': rootToken, 'connection': connection, 'logSender': logSender});
+      await Isolate.spawn(startServer, {
+        'sendPort': _sendPort,
+        'did': DeviceProfileRepo.instance.did,
+        'rootToken': rootToken,
+        'connection': connection,
+        'logSender': logSender
+      });
     });
   }
 
@@ -115,7 +134,9 @@ class ShipServiceProxy extends ApInterface {
   Future<void> send(UIBubble uiBubble) async {
     await _awaitServerReady();
     final primitiveBubble = fromUIBubble(uiBubble);
-    sendPort.send(IsolateCommand('send', jsonEncode(primitiveBubble.toJson(full: true))).toJson());
+    sendPort.send(
+        IsolateCommand('send', jsonEncode(primitiveBubble.toJson(full: true)))
+            .toJson());
   }
 
   Future<void> confirmReceiveFile(String from, String bubbleId) async {
@@ -137,12 +158,16 @@ class ShipServiceProxy extends ApInterface {
 
   Future<void> cancelReceive(UIBubble uiBubble) async {
     final bubble = fromUIBubble(uiBubble) as PrimitiveFileBubble;
-    await updateFileShareState(BubblePool.instance, bubble.id, FileState.cancelled, create: bubble);
+    await updateFileShareState(
+        BubblePool.instance, bubble.id, FileState.cancelled,
+        create: bubble);
   }
 
   Future<void> resend(UIBubble uiBubble) async {
     await _awaitServerReady();
-    sendPort.send(IsolateCommand('resend', jsonEncode(fromUIBubble(uiBubble).toJson(full: true))).toJson());
+    sendPort.send(IsolateCommand(
+            'resend', jsonEncode(fromUIBubble(uiBubble).toJson(full: true)))
+        .toJson());
   }
 
   Future<bool> isServerLiving() async {
@@ -161,7 +186,9 @@ class ShipServiceProxy extends ApInterface {
 
   Future<void> cancelSend(UIBubble uiBubble) async {
     await _awaitServerReady();
-    sendPort.send(IsolateCommand('cancelSend', jsonEncode(fromUIBubble(uiBubble).toJson(full: true))).toJson());
+    sendPort.send(IsolateCommand(
+            'cancelSend', jsonEncode(fromUIBubble(uiBubble).toJson(full: true)))
+        .toJson());
   }
 
   void _receivePong(Pong pong) {
@@ -171,7 +198,6 @@ class ShipServiceProxy extends ApInterface {
   Future<bool> _awaitServerReady() async {
     return _serverReadyTask.future;
   }
-
 }
 
 final shipService = ShipServiceProxy.instance;

@@ -25,6 +25,10 @@ abstract class ShipServiceDependency {
   void notifyPong(Pong pong);
 
   void notifyNewBubble(PrimitiveBubble bubble);
+
+  Future<void> markTaskStarted();
+
+  Future<void> markTaskStopped();
 }
 
 class ShipServiceBridge extends ShipServiceDependency {
@@ -98,6 +102,12 @@ class ShipServiceBridge extends ShipServiceDependency {
         case 'getPort':
           _sendServerPort();
           break;
+        case "returnMarkTaskStarted":
+          callback<void>(syncTasks, "markTaskStarted", null);
+          break;
+        case "returnMarkTaskStopped":
+          callback<void>(syncTasks, "markTaskStopped", null);
+          break;
       }
     });
   }
@@ -138,6 +148,20 @@ class ShipServiceBridge extends ShipServiceDependency {
   @override
   void notifyPong(Pong pong) {
     sendPort.send(IsolateCommand('receivePong', pong.toJson()).toJson());
+  }
+
+  @override
+  Future<void> markTaskStarted() async {
+    return await executeTask(syncTasks, "markTaskStarted", () {
+      sendPort.send(IsolateCommand("markTaskStarted").toJson());
+    }, (msg, error, stack) { });
+  }
+
+  @override
+  Future<void> markTaskStopped() async {
+    return await executeTask(syncTasks, "markTaskStopped", () {
+      sendPort.send(IsolateCommand("markTaskStopped").toJson());
+    }, (msg, error, stack) { });
   }
 }
 

@@ -585,6 +585,7 @@ class ShipService {
     if (!(await WakelockPlus.enabled)) {
       await WakelockPlus.enable();
     }
+    dependency.markTaskStarted();
   }
 
   Future<void> _removeLongTask() async {
@@ -594,6 +595,9 @@ class ShipService {
       await Future.delayed(Duration(seconds: 2));
       if (_longTaskCount <= 0 && await WakelockPlus.enabled) {
         await WakelockPlus.disable();
+      }
+      if (_longTaskCount <= 0) {
+        dependency.markTaskStopped();
       }
     }
   }
