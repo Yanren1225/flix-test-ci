@@ -102,7 +102,9 @@ Future<void> main() async {
 }
 
 void _initForegroundTask() {
-  flixForegroundService.init();
+  if (Platform.isAndroid || Platform.isIOS) {
+    flixForegroundService.init();
+  }
 }
 
 Future<void> _initHighRefreshRate() async {
@@ -115,7 +117,9 @@ void _initAppLifecycle() {
   appLifecycle.init();
   appLifecycle.addListener(logPersistence);
   appLifecycle.addListener(ShipServiceLifecycleWatcher());
-  appLifecycle.addListener(flixForegroundService);
+  if (Platform.isAndroid || Platform.isIOS) {
+    appLifecycle.addListener(flixForegroundService);
+  }
 }
 
 void _initDatabase() {
