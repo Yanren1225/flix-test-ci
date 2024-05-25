@@ -65,19 +65,23 @@ class LogPersistenceProxy extends LifecycleListener {
     }
   }
 
-  void flush({bool wait = false}) {
-    if (_isInitSuccess == true) {
-      _flushBuffer();
-      _sender.send(
-          wait ? LogPersistenceBridge.WAIT_FLUSH : LogPersistenceBridge.FLUSH);
-    }
+  void flush() {
+    _flush(wait: false);
   }
 
   Future<void> waitFlush() async {
     await executeTaskWithPrint(syncTasks, 'waitFlush', () async {
       await _initWait.future;
-      flush(wait: true);
+      _flush(wait: true);
     });
+  }
+
+  void _flush({bool wait = false}) {
+    if (_isInitSuccess == true) {
+      _flushBuffer();
+      _sender.send(
+          wait ? LogPersistenceBridge.WAIT_FLUSH : LogPersistenceBridge.FLUSH);
+    }
   }
 
   @override

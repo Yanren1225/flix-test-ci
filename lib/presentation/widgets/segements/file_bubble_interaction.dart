@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:downloadsfolder/downloadsfolder.dart';
@@ -13,7 +12,6 @@ import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_app_installer/flutter_app_installer.dart';
 import 'package:modals/modals.dart';
 import 'package:open_dir/open_dir.dart';
