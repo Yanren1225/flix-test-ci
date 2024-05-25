@@ -72,6 +72,24 @@ mixin DrawinFileSecurityExtension {
 Future<void> _resolvePath(String resourceId, String path,
     Future<void> Function(String path) callback) async {
   if (Platform.isMacOS) {
+    await resolvePathOnMacOS(path, callback);
+  } else if (Platform.isIOS && resourceId.isNotEmpty) {
+    final AssetEntity? asset = await AssetEntity.fromId(resourceId);
+    if (asset != null) {
+      final file = await asset.originFile;
+      await callback.call(file?.path ?? '');
+    } else {
+      await callback.call(await replaceSandboxPath(path));
+    }
+  } else if (Platform.isIOS && path.isNotEmpty) {
+    callback.call(await replaceSandboxPath(path));
+  } else {
+    await callback.call(path);
+  }
+}
+
+Future<void> resolvePathOnMacOS(String path, Future<void> callback(String path)) async {
+  if (Platform.isMacOS) {
     final secureBookmarks = SecureBookmarks();
     var sharePreference = await SharedPreferences.getInstance();
     var bookmark = sharePreference.getString(path);
@@ -89,19 +107,10 @@ Future<void> _resolvePath(String resourceId, String path,
       await callback.call(path);
       await secureBookmarks.stopAccessingSecurityScopedResource(resolvedFile);
     }
-  } else if (Platform.isIOS && resourceId.isNotEmpty) {
-    final AssetEntity? asset = await AssetEntity.fromId(resourceId);
-    if (asset != null) {
-      final file = await asset.originFile;
-      await callback.call(file?.path ?? '');
-    } else {
-      await callback.call(await replaceSandboxPath(path));
-    }
-  } else if (Platform.isIOS && path.isNotEmpty) {
-    callback.call(await replaceSandboxPath(path));
   } else {
-    await callback.call(path);
+    callback(path);
   }
+
 }
 
 Future<void> authPersistentAccess(String path) async {

@@ -11,6 +11,7 @@ import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
+import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/stream_cancelable.dart';
 import 'package:flix/utils/stream_progress.dart';
@@ -419,8 +420,10 @@ class ShipService {
               await _checkCancel(bubble!.id);
               try {
                 final String desDir = await dependency.getSaveDir();
-                assert(formData.filename != null);
-                await _saveFileAndAddBubble(desDir, formData, bubble!);
+                await resolvePathOnMacOS(desDir, (desDir) async {
+                  assert(formData.filename != null);
+                  await _saveFileAndAddBubble(desDir, formData, bubble!);
+                });
               } on Error catch (e) {
                 talker.error('receive file error: ', e);
                 final updatedBubble = bubble.copy(

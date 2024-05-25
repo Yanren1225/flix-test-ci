@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
@@ -221,7 +222,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                                   initialDirectory: Platform.isWindows ? null : initialDirectory,
                                   lockParentWindow: true);
                           if (newSavedPath != null) {
-                            // authPersistentAccess(newSavedPath);
+                            authPersistentAccess(newSavedPath);
                             SettingsRepo.instance.setSavedDir(newSavedPath);
                           }
                           // showCupertinoModalPopup(context: context, builder: (context) {
