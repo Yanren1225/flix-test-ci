@@ -16,6 +16,7 @@ import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart
 import 'package:flix/presentation/widgets/segements/preview_error_widget.dart';
 import 'package:flix/utils/platform_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -161,12 +162,11 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
     return Stack(
       fit: StackFit.passthrough,
       children: [
-        _normalContent(sharedImage, _w, _h),
         Container(
           decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
           width: double.infinity,
           height: double.infinity,
-          child: const SizedBox(),
+          child: _normalContent(sharedImage, _w, _h),
         ),
         const Align(
           alignment: Alignment.center,
@@ -180,12 +180,11 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
     return Stack(
       fit: StackFit.passthrough,
       children: [
-        _normalContent(sharedImage, _w, _h),
         Container(
           decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
           width: double.infinity,
           height: double.infinity,
-          child: const SizedBox(),
+          child: _normalContent(sharedImage, _w, _h),
         ),
         const Align(
           alignment: Alignment.center,
