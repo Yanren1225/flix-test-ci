@@ -37,7 +37,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   @override
   Widget build(BuildContext context) {
     return NavigationScaffold(
-        showBackButton: PlatformUtil.isMobile(),
+        showBackButton: true,
         toolbarCoverBody: true,
         title: '关于我们',
         builder: (padding) {

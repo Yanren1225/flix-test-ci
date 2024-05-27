@@ -1,4 +1,5 @@
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/utils/meida/media_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -21,7 +22,7 @@ class ToolbarState extends State<Toolbar> {
         child: Column(
           children: [
             Visibility(
-                visible: widget.showBack,
+                visible: widget.showBack && !isOverMediumWidth(context),
                 maintainSize: true,
                 maintainAnimation: true,
                 maintainState: true,

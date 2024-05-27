@@ -40,8 +40,8 @@ class DonateUSScreenState extends State<DonateUSScreen> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     return NavigationScaffold(
-      title: "捐赠我们",
-      showBackButton: PlatformUtil.isMobile(),
+      title: "捐赠",
+      showBackButton: true,
       builder: (EdgeInsets padding) {
         return Container(
           margin: const EdgeInsets.only(left: 16, right: 16, top: 20),
@@ -123,11 +123,15 @@ class DonateUSScreenState extends State<DonateUSScreen> {
 
   createPayPicture() {
     return Container(
-        height: 360,
-        margin: const EdgeInsets.only(top: 40),
-        child: Image.asset(isWx()
-            ? 'assets/images/donate_wechat.png'
-            : 'assets/images/donate_alipay.png'));
+        margin: const EdgeInsets.only(top: 30),
+        height: 370,
+        child: ClipRRect(
+            borderRadius: BorderRadius.circular(10.0),
+            child: Image.asset(
+              isWx()
+                  ? 'assets/images/donate_wechat.png'
+                  : 'assets/images/donate_alipay.png',
+            )));
   }
 
   createDonateButton() {
@@ -140,6 +144,7 @@ class DonateUSScreenState extends State<DonateUSScreen> {
             PayUtil.startAlipayQrCode();
           }
         },
+        elevation: 0,
         color: isWx()
             ? const Color.fromRGBO(42, 174, 103, 1)
             : const Color.fromRGBO(0, 122, 255, 1),
