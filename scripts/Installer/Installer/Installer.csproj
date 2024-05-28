@@ -16,6 +16,8 @@
   <ItemGroup>
     <None Remove="flix.zip" />
     <None Remove="installer.zip" />
+    <None Remove="uninstall.exe" />
+    <None Remove="uninstall.zip" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +27,7 @@
   <ItemGroup>
     <EmbeddedResource Include="flix.zip" />
     <EmbeddedResource Include="installer.zip" />
+    <EmbeddedResource Include="uninstall.exe" />
   </ItemGroup>
 
   <ItemGroup>
