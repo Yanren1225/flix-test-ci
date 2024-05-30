@@ -20,17 +20,7 @@ mixin DrawinFileSecurityExtension {
   Future<String> startAccessPath() async {
     final fileMeta = this as FileMeta;
     if (Platform.isMacOS) {
-      final secureBookmarks = SecureBookmarks();
-      var sharePreference = await SharedPreferences.getInstance();
-      var bookmark = sharePreference.getString(fileMeta.path!);
-      if (bookmark == null) {
-        bookmark = await secureBookmarks.bookmark(File(fileMeta.path!));
-        sharePreference.setString(fileMeta.path!, bookmark);
-      } else {
-        final resolvedFile = await secureBookmarks.resolveBookmark(bookmark);
-        await secureBookmarks
-            .startAccessingSecurityScopedResource(resolvedFile);
-      }
+      await startAccessPathOnMacos(fileMeta.path!);
     } else if (Platform.isIOS && fileMeta.resourceId.isNotEmpty && (fileMeta.path == null || !(await File(fileMeta.path!).exists()))) {
       final AssetEntity? asset = await AssetEntity.fromId(fileMeta.resourceId);
       if (asset != null) {
@@ -51,22 +41,11 @@ mixin DrawinFileSecurityExtension {
     final fileMeta = this as FileMeta;
     if (fileMeta.path == null) return;
     if (Platform.isMacOS) {
-      final secureBookmarks = SecureBookmarks();
-      var sharePreference = await SharedPreferences.getInstance();
-      var bookmark = sharePreference.getString(fileMeta.path!);
-      if (bookmark == null) {
-        try {
-          bookmark = await secureBookmarks.bookmark(File(fileMeta.path!));
-          sharePreference.setString(fileMeta.path!, bookmark);
-        } catch (e, s) {
-          talker.error('authPersistentAccess failed: ${fileMeta.path}', e, s);
-        }
-      } else {
-        final resolvedFile = await secureBookmarks.resolveBookmark(bookmark);
-        await secureBookmarks.stopAccessingSecurityScopedResource(resolvedFile);
-      }
+      await stopAccessPathOnMacos(fileMeta.path!);
     }
   }
+
+
 }
 
 Future<void> _resolvePath(String resourceId, String path,
@@ -140,5 +119,42 @@ Future<String> replaceSandboxPath(String originalPath) async {
   var updatedPath = originalPath.replaceFirst(pattern, newPath);
 
   return updatedPath;
+}
+
+Future<void> startAccessPathOnMacos(String path) async {
+  if (Platform.isMacOS) {
+    final secureBookmarks = SecureBookmarks();
+    var sharePreference = await SharedPreferences.getInstance();
+    var bookmark = sharePreference.getString(path);
+    if (bookmark == null) {
+      bookmark = await secureBookmarks.bookmark(File(path));
+      sharePreference.setString(path, bookmark);
+    } else {
+      final resolvedFile = await secureBookmarks.resolveBookmark(bookmark);
+      await secureBookmarks
+          .startAccessingSecurityScopedResource(resolvedFile);
+    }
+  }
+
+}
+
+Future<void> stopAccessPathOnMacos(String path) async {
+  if (Platform.isMacOS) {
+    final secureBookmarks = SecureBookmarks();
+    var sharePreference = await SharedPreferences.getInstance();
+    var bookmark = sharePreference.getString(path);
+    if (bookmark == null) {
+      try {
+        bookmark = await secureBookmarks.bookmark(File(path));
+        sharePreference.setString(path, bookmark);
+      } catch (e, s) {
+        talker.error('authPersistentAccess failed: $path', e, s);
+      }
+    } else {
+      final resolvedFile = await secureBookmarks.resolveBookmark(bookmark);
+      await secureBookmarks.stopAccessingSecurityScopedResource(resolvedFile);
+    }
+  }
+
 }
 

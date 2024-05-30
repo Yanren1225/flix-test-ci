@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:flix/domain/settings/SettingsRepo.dart';
+import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
@@ -49,13 +51,16 @@ class ConcertScreen extends StatefulWidget {
   State<StatefulWidget> createState() {
     return _ConcertScreenState();
   }
-
 }
 
-class _ConcertScreenState extends State<ConcertScreen> with SingleTickerProviderStateMixin  {
+class _ConcertScreenState extends State<ConcertScreen>
+    with SingleTickerProviderStateMixin {
   DeviceInfo get deviceInfo => widget.deviceInfo;
+
   String? get anchor => widget.anchor;
+
   bool get showBackButton => widget.showBackButton;
+
   bool get playable => widget.playable;
   bool _isContentReady = false;
 
@@ -76,11 +81,17 @@ class _ConcertScreenState extends State<ConcertScreen> with SingleTickerProvider
       });
       _controller.forward();
     });
+    startAccessPathOnMacos(SettingsRepo.instance.savedDir).then((value) {
+      if (_isContentReady && mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    stopAccessPathOnMacos(SettingsRepo.instance.savedDir);
     super.dispose();
   }
 
@@ -89,7 +100,7 @@ class _ConcertScreenState extends State<ConcertScreen> with SingleTickerProvider
     final main = LayoutBuilder(
       builder: (_context, constraints) {
         final concertProvider =
-        Provider.of<ConcertProvider>(_context, listen: true);
+            Provider.of<ConcertProvider>(_context, listen: true);
         return ValueListenableBuilder(
           valueListenable: concertProvider.deviceName,
           builder: (_context, value, child) {
@@ -121,16 +132,18 @@ class _ConcertScreenState extends State<ConcertScreen> with SingleTickerProvider
                       concertProvider.existEditing();
                     },
                     builder: (padding) {
-                      return _isContentReady ? FadeTransition(
-                        opacity: _animation,
-                        child: ShareConcertMainView(
-                          key: concertProvider.concertMainKey,
-                          deviceInfo: concertProvider.deviceInfo,
-                          padding: padding,
-                          anchor: anchor,
-                          playable: playable,
-                        ),
-                      ) : SizedBox();
+                      return _isContentReady
+                          ? FadeTransition(
+                              opacity: _animation,
+                              child: ShareConcertMainView(
+                                key: concertProvider.concertMainKey,
+                                deviceInfo: concertProvider.deviceInfo,
+                                padding: padding,
+                                anchor: anchor,
+                                playable: playable,
+                              ),
+                            )
+                          : SizedBox();
                     }),
               ),
             );
@@ -145,23 +158,24 @@ class _ConcertScreenState extends State<ConcertScreen> with SingleTickerProvider
         },
         child: playable
             ? Droper(
-          deviceInfo: deviceInfo,
-          child: main,
-        )
+                deviceInfo: deviceInfo,
+                child: main,
+              )
             : main);
   }
 
-  FadeTransition createFadeTransition(ConcertProvider concertProvider, EdgeInsets padding) {
+  FadeTransition createFadeTransition(
+      ConcertProvider concertProvider, EdgeInsets padding) {
     return FadeTransition(
-                    opacity: _animation,
-                    child: ShareConcertMainView(
-                      key: concertProvider.concertMainKey,
-                      deviceInfo: concertProvider.deviceInfo,
-                      padding: padding,
-                      anchor: anchor,
-                      playable: playable,
-                    ),
-                  );
+      opacity: _animation,
+      child: ShareConcertMainView(
+        key: concertProvider.concertMainKey,
+        deviceInfo: concertProvider.deviceInfo,
+        padding: padding,
+        anchor: anchor,
+        playable: playable,
+      ),
+    );
   }
 }
 
@@ -457,9 +471,10 @@ class InputAreaState extends State<InputArea> {
                                 },
                                 controller: textEditController,
                                 style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.normal).fix(),
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.normal)
+                                    .fix(),
                                 keyboardType: TextInputType.multiline,
                                 minLines: null,
                                 maxLines: null,
