@@ -1,7 +1,7 @@
 ﻿/*
  
-Flix Installer v1.0
-Build date: 2024/05/24
+Flix Installer 
+Build date: 2024/05/30
 Copyright © 2024 Haoyang. All rights reserved.
 
 */
@@ -11,7 +11,7 @@ Copyright © 2024 Haoyang. All rights reserved.
  dotnet publish -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o ./publish
 
  更新方式：
- 替换 Installer/flix.zip 压缩包，不需要再手动添加uninstall.exe了，安装器自带卸载
+ 替换 Installer/flix.zip 压缩包，安装器自带卸载
 
  请勿删除和替换 installer.zip 和其他资源文件，避免出错
  */
@@ -26,6 +26,39 @@ class Program
 {
     static void Main()
     {
+        string desktopFlixPath = @"C:\Users\ASUS\Desktop\Flix";
+        string desktopFlixLnkPath = @"C:\Users\ASUS\Desktop\Flix.lnk";
+
+        // Delete the Flix file on the desktop if it exists
+        if (File.Exists(desktopFlixPath))
+        {
+            try
+            {
+                File.Delete(desktopFlixPath);
+                Console.WriteLine("Existing Flix file on desktop has been deleted.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to delete existing Flix file on desktop: {ex.Message}");
+                return;
+            }
+        }
+
+        // Delete the Flix.lnk file on the desktop if it exists
+        if (File.Exists(desktopFlixLnkPath))
+        {
+            try
+            {
+                File.Delete(desktopFlixLnkPath);
+                Console.WriteLine("Existing Flix.lnk file on desktop has been deleted.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to delete existing Flix.lnk file on desktop: {ex.Message}");
+                return;
+            }
+        }
+
         string localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         string targetFolderPath = Path.Combine(localAppDataPath, "Flix");
         string installerZipPath = Path.Combine(targetFolderPath, "installer.zip");
@@ -41,22 +74,17 @@ class Program
             Console.WriteLine("Failed to copy the flix.zip file.");
             return;
         }
+        if (!AddUninstallerToZip(flixZipPath, "Installer.uninstall.exe"))
+        {
+            Console.WriteLine("Failed to add uninstaller to flix.zip.");
+            return;
+        }
         string installerPath = Path.Combine(targetFolderPath, "installer.exe");
         if (File.Exists(installerPath))
         {
             if (TerminateProcess("flix") && DeleteFilesAndDirectoriesWithAdminPrivileges())
             {
-                RunInstaller(installerPath);
-                string roamingFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Flix", "Flix");
-                Directory.CreateDirectory(roamingFolderPath);
-                if (CopyEmbeddedResourceToFile("Installer.uninstall.exe", Path.Combine(roamingFolderPath, "uninstall.exe")))
-                {
-                    Console.WriteLine("Uninstaller has been copied successfully.");
-                }
-                else
-                {
-                    Console.WriteLine("Failed to copy the uninstaller.");
-                }
+                RunInstallerWithPowerShell(installerPath);
             }
             else
             {
@@ -108,18 +136,51 @@ class Program
         return true;
     }
 
-    static void RunInstaller(string filePath)
+    static bool AddUninstallerToZip(string zipFilePath, string uninstallerResourceName)
     {
-        ProcessStartInfo psi = new ProcessStartInfo
-        {
-            FileName = filePath,
-            UseShellExecute = true,
-            CreateNoWindow = true,
-            WindowStyle = ProcessWindowStyle.Hidden
-        };
         try
         {
-            Process process = Process.Start(psi);
+            using (FileStream zipToOpen = new FileStream(zipFilePath, FileMode.Open))
+            using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+            {
+                ZipArchiveEntry entry = archive.CreateEntry("uninstall.exe");
+
+                using (Stream entryStream = entry.Open())
+                using (Stream resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(uninstallerResourceName))
+                {
+                    if (resourceStream == null)
+                    {
+                        Console.WriteLine("Uninstaller resource not found.");
+                        return false;
+                    }
+                    resourceStream.CopyTo(entryStream);
+                }
+            }
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to add uninstaller to zip: {ex.Message}");
+            return false;
+        }
+    }
+
+    static void RunInstallerWithPowerShell(string filePath)
+    {
+        string script = $"Start-Process -FilePath \"{filePath}\" -NoNewWindow -Wait";
+        string escapedArgs = script.Replace("\"", "\\\"");
+
+        var psi = new ProcessStartInfo
+        {
+            FileName = "powershell",
+            Arguments = $"-NoProfile -ExecutionPolicy Bypass -Command \"{escapedArgs}\"",
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        try
+        {
+            var process = Process.Start(psi);
             process.WaitForExit();
             Console.WriteLine("Installer executed.");
         }
@@ -150,6 +211,27 @@ class Program
 
     static bool DeleteFilesAndDirectoriesWithAdminPrivileges()
     {
+        bool needAdminPrivileges = false;
+        string[] pathsToDelete = {
+            @"C:\Program Files\Flix",
+            @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Flix.lnk",
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Flix.lnk")
+        };
+
+        foreach (string path in pathsToDelete)
+        {
+            if (Directory.Exists(path) || File.Exists(path))
+            {
+                needAdminPrivileges = true;
+                break;
+            }
+        }
+
+        if (!needAdminPrivileges)
+        {
+            return true;
+        }
+
         string batchFilePath = Path.Combine(Path.GetTempPath(), "delete_flix_files.bat");
         try
         {
