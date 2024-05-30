@@ -13,8 +13,9 @@ import 'package:url_launcher/url_launcher.dart';
 class AboutUSScreen extends StatefulWidget {
   var versionTapCount = 0;
   int lastTapTime = 0;
+  bool showBack = true;
 
-  AboutUSScreen({super.key});
+  AboutUSScreen({super.key, required this.showBack});
 
   @override
   State<StatefulWidget> createState() => AboutUSScreenState();
@@ -37,7 +38,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   @override
   Widget build(BuildContext context) {
     return NavigationScaffold(
-        showBackButton: true,
+        showBackButton: widget.showBack,
         toolbarCoverBody: true,
         title: '关于我们',
         builder: (padding) {

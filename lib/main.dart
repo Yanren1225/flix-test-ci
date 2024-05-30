@@ -588,11 +588,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
         return HelpScreen(
           goVersionScreen: () {
             Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => AboutUSScreen()));
+                CupertinoPageRoute(builder: (context) => AboutUSScreen(showBack: true,)));
           },
           goDonateCallback: () {
             Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => DonateUSScreen()));
+                CupertinoPageRoute(builder: (context) => DonateUSScreen(showBack: true,)));
           },
         );
       default:
@@ -693,13 +693,13 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
         return HelpScreen(
           goVersionScreen: () {
             setState(() {
-              thirdWidget = AboutUSScreen();
+              thirdWidget = AboutUSScreen(showBack: false,);
             });
           },
           goDonateCallback: () {
             setState(() {
               thirdWidget = DonateUSScreen(
-                showBack: true,
+                showBack: false,
               );
             });
           },

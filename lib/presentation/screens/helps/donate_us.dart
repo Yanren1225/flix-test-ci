@@ -18,7 +18,7 @@ class DonateUSScreen extends StatefulWidget {
   int lastTapTime = 0;
   bool showBack = true;
 
-  DonateUSScreen({super.key, this.showBack = true});
+  DonateUSScreen({super.key, required this.showBack});
 
   @override
   State<StatefulWidget> createState() => DonateUSScreenState();
