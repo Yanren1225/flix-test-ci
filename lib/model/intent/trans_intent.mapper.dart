@@ -27,6 +27,10 @@ class TransActionMapper extends EnumMapper<TransAction> {
     switch (value) {
       case 'confirmReceive':
         return TransAction.confirmReceive;
+      case 'askBreakPoint':
+        return TransAction.askBreakPoint;
+      case 'confirmBreakPoint':
+        return TransAction.confirmBreakPoint;
       case 'cancel':
         return TransAction.cancel;
       default:
@@ -39,6 +43,10 @@ class TransActionMapper extends EnumMapper<TransAction> {
     switch (self) {
       case TransAction.confirmReceive:
         return 'confirmReceive';
+      case TransAction.askBreakPoint:
+        return 'askBreakPoint';
+      case TransAction.confirmBreakPoint:
+        return 'confirmBreakPoint';
       case TransAction.cancel:
         return 'cancel';
     }
@@ -76,19 +84,24 @@ class TransIntentMapper extends ClassMapperBase<TransIntent> {
   static TransAction _$action(TransIntent v) => v.action;
   static const Field<TransIntent, TransAction> _f$action =
       Field('action', _$action);
+  static Map<String, Object> _$extra(TransIntent v) => v.extra;
+  static const Field<TransIntent, Map<String, Object>> _f$extra =
+      Field('extra', _$extra);
 
   @override
   final Map<Symbol, Field<TransIntent, dynamic>> fields = const {
     #deviceId: _f$deviceId,
     #bubbleId: _f$bubbleId,
     #action: _f$action,
+    #extra: _f$extra,
   };
 
   static TransIntent _instantiate(DecodingData data) {
     return TransIntent(
         deviceId: data.dec(_f$deviceId),
         bubbleId: data.dec(_f$bubbleId),
-        action: data.dec(_f$action));
+        action: data.dec(_f$action),
+        extra: data.dec(_f$extra));
   }
 
   @override
@@ -144,7 +157,12 @@ extension TransIntentValueCopy<$R, $Out>
 
 abstract class TransIntentCopyWith<$R, $In extends TransIntent, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({String? deviceId, String? bubbleId, TransAction? action});
+  MapCopyWith<$R, String, Object, ObjectCopyWith<$R, Object, Object>> get extra;
+  $R call(
+      {String? deviceId,
+      String? bubbleId,
+      TransAction? action,
+      Map<String, Object>? extra});
   TransIntentCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -157,17 +175,27 @@ class _TransIntentCopyWithImpl<$R, $Out>
   late final ClassMapperBase<TransIntent> $mapper =
       TransIntentMapper.ensureInitialized();
   @override
-  $R call({String? deviceId, String? bubbleId, TransAction? action}) =>
+  MapCopyWith<$R, String, Object, ObjectCopyWith<$R, Object, Object>>
+      get extra => MapCopyWith($value.extra,
+          (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(extra: v));
+  @override
+  $R call(
+          {String? deviceId,
+          String? bubbleId,
+          TransAction? action,
+          Map<String, Object>? extra}) =>
       $apply(FieldCopyWithData({
         if (deviceId != null) #deviceId: deviceId,
         if (bubbleId != null) #bubbleId: bubbleId,
-        if (action != null) #action: action
+        if (action != null) #action: action,
+        if (extra != null) #extra: extra
       }));
   @override
   TransIntent $make(CopyWithData data) => TransIntent(
       deviceId: data.get(#deviceId, or: $value.deviceId),
       bubbleId: data.get(#bubbleId, or: $value.bubbleId),
-      action: data.get(#action, or: $value.action));
+      action: data.get(#action, or: $value.action),
+      extra: data.get(#extra, or: $value.extra));
 
   @override
   TransIntentCopyWith<$R2, TransIntent, $Out2> $chain<$R2, $Out2>(

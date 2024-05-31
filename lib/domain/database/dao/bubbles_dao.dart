@@ -227,4 +227,9 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
       await (delete(fileContents)..where((tbl) => tbl.id.isIn(ids))).go();
     });
   }
+
+  Future<int> queryDeviceBubbleCount(String fingerprint) async {
+    final query = select(bubbleEntities)..where((tbl) => tbl.fromDevice.equals(fingerprint) | tbl.toDevice.equals(fingerprint));
+    return (await query.get()).length;
+  }
 }

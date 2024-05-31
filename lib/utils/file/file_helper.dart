@@ -318,7 +318,7 @@ FileType getFileType(String filePath) {
 }
 
 Future<File> createFile(String desDir, String fileName,
-    {int copyIndex = 0}) async {
+    {int copyIndex = 0,bool deleteExist = true}) async {
   final dotIndex = fileName.lastIndexOf('.');
   final String fileSuffix;
   final String fileNameWithoutSuffix;
@@ -334,6 +334,9 @@ Future<File> createFile(String desDir, String fileName,
   String filePath = '$desDir${Platform.pathSeparator}$fileNameWithoutSuffix$tag$fileSuffix';
   final outFile = File(filePath);
   if (await outFile.exists()) {
+    if (!deleteExist) {
+      return outFile;
+    }
     try {
       await outFile.delete();
     } catch (e, stackTrace) {

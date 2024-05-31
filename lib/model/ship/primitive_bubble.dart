@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:flix/domain/constants.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/presentation/widgets/bubbles/bubble_widget.dart';
 import 'package:http/http.dart';
@@ -183,11 +184,13 @@ class FileTransfer {
   late FileState state;
   late FileMeta meta;
   bool waitingForAccept = true;
+  late int receiveBytes;
 
   FileTransfer(
       {this.state = FileState.unknown,
       this.progress = 0.0,
       this.speed = 0,
+      this.receiveBytes = 0,
       required this.meta,
       this.waitingForAccept = true});
 
@@ -195,6 +198,7 @@ class FileTransfer {
     state = FileState.values[json['state'] as int];
     progress = json['progress'] as double;
     speed = json['speed'] as int? ?? 0;
+    receiveBytes = json[Constants.receiveBytes] as int?? 0;
     meta = FileMeta.fromJson(json['meta'] as Map<String, dynamic>);
     waitingForAccept = json['waitingForAccept'] ?? true;
   }
@@ -204,6 +208,7 @@ class FileTransfer {
       'state': state.index,
       'progress': progress,
       'speed': speed,
+      'receiveBytes': receiveBytes,
       'meta': meta.toJson(full: full)
     };
     if (full) {
@@ -216,6 +221,7 @@ class FileTransfer {
       {FileState? state,
       double? progress,
       int? speed,
+      int? receiveBytes,
       FileMeta? meta,
       bool? waitingForAccept}) {
     return FileTransfer(
@@ -223,12 +229,13 @@ class FileTransfer {
         progress: progress ?? this.progress,
         speed: speed ?? this.speed,
         meta: meta ?? this.meta,
+        receiveBytes: receiveBytes ?? this.receiveBytes ,
         waitingForAccept: waitingForAccept ?? this.waitingForAccept);
   }
 
   @override
   String toString() {
-    return 'progress: $progress, speed: $speed, state: $state, meta: $meta';
+    return 'FileTransfer{progress: $progress, speed: $speed, state: $state, meta: $meta, waitingForAccept: $waitingForAccept, receiveBytes: $receiveBytes}';
   }
 }
 
