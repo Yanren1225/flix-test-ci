@@ -1,22 +1,4 @@
-﻿/*
- 
-Flix Installer 
-Build date: 2024/05/30
-Copyright © 2024 Haoyang. All rights reserved.
-
-*/
-
-/*
- 打包指令： 
- dotnet publish -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o ./publish
-
- 更新方式：
- 替换 Installer/flix.zip 压缩包，安装器自带卸载
-
- 请勿删除和替换 installer.zip 和其他资源文件，避免出错
- */
-
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -26,8 +8,9 @@ class Program
 {
     static void Main()
     {
-        string desktopFlixPath = @"C:\Users\ASUS\Desktop\Flix";
-        string desktopFlixLnkPath = @"C:\Users\ASUS\Desktop\Flix.lnk";
+        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        string desktopFlixPath = Path.Combine(desktopPath, "Flix");
+        string desktopFlixLnkPath = Path.Combine(desktopPath, "Flix.lnk");
 
         // Delete the Flix file on the desktop if it exists
         if (File.Exists(desktopFlixPath))
@@ -167,7 +150,7 @@ class Program
 
     static void RunInstallerWithPowerShell(string filePath)
     {
-        string script = $"Start-Process -FilePath \"{filePath}\" -NoNewWindow -Wait";
+        string script = $"Start-Process -FilePath \"{filePath}\" -NoNewWindow";
         string escapedArgs = script.Replace("\"", "\\\"");
 
         var psi = new ProcessStartInfo
@@ -181,7 +164,6 @@ class Program
         try
         {
             var process = Process.Start(psi);
-            process.WaitForExit();
             Console.WriteLine("Installer executed.");
         }
         catch (Exception ex)
@@ -232,6 +214,7 @@ class Program
             return true;
         }
 
+        // 清理旧版，仅对0.5.0之前版本有效
         string batchFilePath = Path.Combine(Path.GetTempPath(), "delete_flix_files.bat");
         try
         {
