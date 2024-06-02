@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flix/utils/text/text_extension.dart';
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
@@ -116,7 +118,7 @@ class DonateUSScreenState extends State<DonateUSScreen> {
                   height: 24,
                 ),
                 const SizedBox(width: 8), // 添加一些间距
-                Text(text), // 按钮文本
+                Text(text,style: TextStyle().fix()), // 按钮文本
               ],
             )));
   }
