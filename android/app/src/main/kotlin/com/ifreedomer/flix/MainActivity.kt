@@ -8,15 +8,19 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 import android.content.Intent
 import android.content.Context
+import android.os.PowerManager
 
 
 class MainActivity : FlutterActivity() {
     companion object {
         const val MULTICAST_LOCK_CHANNEL = "com.ifreedomer.flix/multicast-lock"
         const val PAY_CHANNEL = "com.ifreedomer.flix/pay"
+        const val LOCK_CHANNEL = "com.ifreedomer.flix/lock"
     }
 
     private var multicastLock: WifiManager.MulticastLock? = null
+    private var wakeLock: PowerManager.WakeLock? = null
+    private var wifiLock: WifiManager.WifiLock? = null
 
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -46,10 +50,27 @@ class MainActivity : FlutterActivity() {
             }
         }
 
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            LOCK_CHANNEL
+        ).setMethodCallHandler { call, result ->
+            if (call.method.equals("acquireWakeLock")) {
+                result.success(acquireWakeLock());
+            } else if (call.method.equals("releaseWakeLock")) {
+                result.success(releaseWakeLock());
+            } else if (call.method.equals("acquireWifiLock")) {
+                result.success(acquireWifiLock());
+            } else if (call.method.equals("releaseWifiLock")) {
+                result.success(releaseWifiLock());
+            } else {
+                result.notImplemented();
+            }
+        }
+
     }
 
 
-    protected fun aquireMulticastLock(): Boolean {
+    private fun aquireMulticastLock(): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.DONUT) {
             return false
         }
@@ -59,7 +80,7 @@ class MainActivity : FlutterActivity() {
         return true
     }
 
-    protected fun releaseMulticastLock(): Boolean {
+    private fun releaseMulticastLock(): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.DONUT) {
             return false
         }
@@ -81,6 +102,60 @@ class MainActivity : FlutterActivity() {
             context.startActivity(intent)
         } catch (e: Exception) {
         }
+    }
+
+    private fun acquireWakeLock(): Boolean {
+        if (wakeLock != null && wakeLock?.isHeld == true) {
+            return true
+        }
+        if (wakeLock != null) {
+            wakeLock?.acquire()
+            return true
+        }
+
+        wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
+            newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "com.ifreedomer.flix:WakeLock").apply {
+                setReferenceCounted(false)
+                acquire()
+            }
+        }
+        return true
+    }
+
+    private fun releaseWakeLock(): Boolean {
+        wakeLock?.release()
+        return true
+    }
+
+    private fun acquireWifiLock(): Boolean {
+        if (wifiLock != null && wifiLock?.isHeld == true) {
+            return true
+        }
+        if (wifiLock != null) {
+            wifiLock?.acquire()
+            return true
+        }
+
+        wifiLock = (getSystemService(Context.WIFI_SERVICE) as WifiManager).run {
+            createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "com.ifreedomer.flix:WifiLock").apply {
+                setReferenceCounted(false)
+                acquire()
+            }
+        }
+        return true
+    }
+
+    private fun releaseWifiLock(): Boolean {
+        wifiLock?.release()
+        return true
+    }
+
+    private fun releaseMulticastLock(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.DONUT) {
+            return false
+        }
+        multicastLock?.release()
+        return true
     }
 
 
