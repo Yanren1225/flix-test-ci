@@ -438,10 +438,10 @@ packages:
     dependency: "direct main"
     description:
       name: downloadsfolder
-      sha256: "82940b2e0d6e0eaf1c461682b5131e63fd02168cf520a31912f734f789b816b8"
+      sha256: e9987e56b998e3788047f977d31a1b50b4af58c388aefc3d157b9ac5c5d786a2
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.0.5"
+    version: "1.1.0"
   drift:
     dependency: "direct main"
     description:

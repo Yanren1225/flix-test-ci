@@ -91,7 +91,7 @@ class ShipServiceProxy extends ApInterface {
             case 'notifyNewBubble':
               final bubble =
                   PrimitiveBubble.fromJson(jsonDecode(shipCommand.data!));
-              await BubblePool.instance.notify(bubble);
+              BubblePool.instance.notify(bubble);
               break;
             case "markTaskStarted":
               PhysicalLock.acquirePhysicalLock();

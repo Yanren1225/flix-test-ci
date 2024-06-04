@@ -1,11 +1,7 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/model/database/bubble_entity.dart';
-import 'package:flix/model/database/text_content.dart';
-import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:quiver/collection.dart';
@@ -37,7 +33,7 @@ class BubblePool {
     }
   }
 
-  Future<void> notify(PrimitiveBubble bubble) async {
+  void notify(PrimitiveBubble bubble) {
     _cache[bubble.id] = bubble;
     _buffer = bubble;
     _broadcast.add(bubble);
@@ -72,9 +68,5 @@ class BubblePool {
   Future<void> deleteBubble(UIBubble uiBubble) async {
     return await _appDatabase.bubblesDao
         .deleteBubbleById(uiBubble.shareable.id);
-  }
-
-  Future<List<String?>> getAllDeviceIdFromBubble() async {
-    return await _appDatabase.bubblesDao.getAllDeviceId();
   }
 }

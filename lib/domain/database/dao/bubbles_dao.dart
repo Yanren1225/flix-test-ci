@@ -47,7 +47,8 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
                   progress: fileBubble.content.progress,
                   speed: Value(fileBubble.content.speed),
                   width: fileBubble.content.meta.width,
-                  height: fileBubble.content.meta.height));
+                  height: fileBubble.content.meta.height,
+                  waitingForAccept: Value(fileBubble.content.waitingForAccept)));
         default:
           throw UnimplementedError();
       }
