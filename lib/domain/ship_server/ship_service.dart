@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -35,6 +36,8 @@ class ShipService {
   final ShipServiceDependency dependency;
   HttpServer? _server;
   int port = defaultPort;
+  final List<Completer> _queueLocks = [];
+  final int maxCountOfTrans = 3;
 
   ShipService({required this.did, required this.dependency}) {}
 
@@ -165,10 +168,10 @@ class ShipService {
       );
 
       if (response.statusCode == 200) {
-        talker.debug('接收成功: response: ${response.body}');
+        talker.debug('$bubbleId confirm receive: response: ${response.body}');
       } else {
         talker.error(
-            '接收失败: status code: ${response.statusCode}, ${response.body}');
+            '$bubbleId comfirm receive: status code: ${response.statusCode}, ${response.body}');
       }
     } catch (e, stackTrace) {
       talker.error('confirmReceiveFile failed: ', e, stackTrace);
@@ -387,6 +390,7 @@ class ShipService {
 
   Future<Response> _receiveFile(Request request) async {
     _addLongTask();
+    String? shareId;
     try {
       if (!request.isMultipart) {
         _removeLongTask();
@@ -397,31 +401,31 @@ class ShipService {
         await for (final formData in request.multipartFormData) {
           switch (formData.name) {
             case 'share_id':
-              final shareId = await formData.part.readString();
-              final _bubble = await _bubblePool.findLastById(shareId);
+              shareId = await formData.part.readString();
+              final _bubble = await _bubblePool.findLastById(shareId!);
               if (_bubble == null) {
                 throw StateError(
-                    'Primitive Bubble with id: $shareId should not null.');
+                    '$shareId Primitive Bubble with id: $shareId should not null.');
               }
 
               if (_bubble is! PrimitiveFileBubble) {
                 throw StateError(
-                    'Primitive Bubble should be PrimitiveFileBubble');
+                    '${_bubble.id} Primitive Bubble should be PrimitiveFileBubble');
               }
               if (_bubble.content.waitingForAccept) {
-                throw StateError('Bubble should be accept');
+                throw StateError('${_bubble.id} $_bubble Bubble should be accept');
               }
               bubble = _bubble;
               await _checkCancel(bubble.id);
               break;
             case 'file':
-              assert(bubble != null, 'bubble can\'t be null');
-              assert(formData.filename != null, 'filename can\'t be null');
+              assert(bubble != null, '$shareId bubble can\'t be null');
+              assert(formData.filename != null, '$shareId filename can\'t be null');
               await _checkCancel(bubble!.id);
               try {
                 final String desDir = await dependency.getSaveDir();
                 await resolvePathOnMacOS(desDir, (desDir) async {
-                  assert(formData.filename != null);
+                  assert(formData.filename != null, "$shareId filename can't be null");
                   await _saveFileAndAddBubble(desDir, formData, bubble!);
                 });
               } on Error catch (e) {
@@ -445,13 +449,13 @@ class ShipService {
         return Response.badRequest();
       }
     } on CancelException catch (e, stacktrace) {
-      talker.warning('_receiveFile canceled, ', e, stacktrace);
+      talker.warning('$shareId _receiveFile canceled, ', e, stacktrace);
       _removeLongTask();
-      return Response.ok('canceled');
+      return Response.ok('$shareId canceled');
     } catch (e, stackTrace) {
-      talker.error('_receiveFile failed, ', e, stackTrace);
+      talker.error('$shareId _receiveFile failed, ', e, stackTrace);
       _removeLongTask();
-      return Response.internalServerError();
+      return Response.internalServerError(body: "$shareId failed");
     }
   }
 
@@ -491,12 +495,17 @@ class ShipService {
       String desDir, FormData formData, PrimitiveFileBubble bubble) async {
     File outFile = await _saveFile(desDir, formData, bubble);
     String? path = outFile.path;
-    String? resourceId = await _saveMediaToAlbumOnIOS(outFile);
+    String? resourceId = await _saveMediaToAlbumOnIOS(outFile, tag: bubble.id);
     // 保存到相册成功，删除副本
-    if (resourceId != null) {
-      path = null;
-      await outFile.delete();
+    try {
+      if (resourceId != null) {
+        path = null;
+        await outFile.delete();
+      }
+    } catch (e, s) {
+      talker.error('${bubble.id} delete file failed', e, s);
     }
+
     final updatedBubble = bubble.copy(
         content: bubble.content.copy(
             state: FileState.receiveCompleted,
@@ -505,18 +514,18 @@ class ShipService {
     await _bubblePool.add(updatedBubble);
   }
 
-  Future<String?> _saveMediaToAlbumOnIOS(File outFile) async {
+  Future<String?> _saveMediaToAlbumOnIOS(File outFile, {String? tag}) async {
     if (Platform.isIOS) {
       try {
         final result = await ImageGallerySaver.saveFile(outFile.path, isReturnPathOfIOS: true);
-        talker.debug("ios save file result: $result");
+        talker.debug("$tag ios save file result: $result");
         if (result["isSuccess"]) {
           return result["resourceId"] as String;
         } else {
-          talker.error("ios save file failed");
+          talker.error("$tag ios save file failed");
         }
       } catch (e, s) {
-        talker.error("failed to save to gallery", e, s);
+        talker.error("$tag failed to save to gallery", e, s);
       }
     }
     return null;

@@ -61,7 +61,7 @@ Future<void> _resolvePath(String resourceId, String path,
       await callback.call(await replaceSandboxPath(path));
     }
   } else if (Platform.isIOS && path.isNotEmpty) {
-    callback.call(await replaceSandboxPath(path));
+    await callback.call(await replaceSandboxPath(path));
   } else {
     await callback.call(path);
   }
@@ -87,7 +87,7 @@ Future<void> resolvePathOnMacOS(String path, Future<void> callback(String path))
       await secureBookmarks.stopAccessingSecurityScopedResource(resolvedFile);
     }
   } else {
-    callback(path);
+    await callback(path);
   }
 
 }

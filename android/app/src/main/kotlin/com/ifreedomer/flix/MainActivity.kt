@@ -150,13 +150,4 @@ class MainActivity : FlutterActivity() {
         return true
     }
 
-    private fun releaseMulticastLock(): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.DONUT) {
-            return false
-        }
-        multicastLock?.release()
-        return true
-    }
-
-
 }

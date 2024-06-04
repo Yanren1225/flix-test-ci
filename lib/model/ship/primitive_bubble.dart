@@ -228,7 +228,7 @@ class FileTransfer {
 
   @override
   String toString() {
-    return 'progress: $progress, speed: $speed, state: $state, meta: $meta';
+    return 'progress: $progress, speed: $speed, state: $state, meta: $meta, waitingForAccept: $waitingForAccept';
   }
 }
 
