@@ -620,16 +620,15 @@ class ShipService {
       deleteExist = false;
       fileMode = FileMode.append;
     }
-    talker.debug('breakPoint=>_saveFile mode = ${fileMode.toString()} deleteExist = $deleteExist receiveBytes = ${receiveBytes}');
+    talker.debug('breakPoint=>_saveFile is append = ${fileMode == FileMode.append} deleteExist = $deleteExist receiveBytes = ${receiveBytes}');
     final outFile = await createFile(desDir, formData.filename ?? '',deleteExist: deleteExist);
     talker.debug('breakPoint=>_saveFile file.length = ${(await outFile.length())}');
     bubble.content.meta.path = outFile.path;
     final out = outFile.openWrite(mode: fileMode);
     talker.debug('writing file to ${outFile.path}');
-    final bubbleId = bubble.id;
     await formData.part
         .chain((Stream<List<int>> stream) async {
-          await _checkCancel(bubbleId);
+          await _checkCancel(bubble.id);
         })
         .progress(bubble,receiveBytes)
         .pipe(out);

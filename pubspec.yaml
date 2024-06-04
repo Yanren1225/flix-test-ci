@@ -158,7 +158,7 @@ dependency_overrides:
   image_gallery_saver:
     git:
       url: "https://github.com/heiha100/image_gallery_saver"
-      ref: "cd896dd47a00a0065bff04b214136f442b97b2c4"
+      ref: "91799664c2b21e1579b9d0e21df5ea505b50e9df"
 
 #  share_plus_platform_interface:
 

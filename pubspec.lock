@@ -966,8 +966,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: cd896dd47a00a0065bff04b214136f442b97b2c4
-      resolved-ref: cd896dd47a00a0065bff04b214136f442b97b2c4
+      ref: "91799664c2b21e1579b9d0e21df5ea505b50e9df"
+      resolved-ref: "91799664c2b21e1579b9d0e21df5ea505b50e9df"
       url: "https://github.com/heiha100/image_gallery_saver"
     source: git
     version: "2.0.3"
