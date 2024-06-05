@@ -198,7 +198,7 @@ class FileTransfer {
     state = FileState.values[json['state'] as int];
     progress = json['progress'] as double;
     speed = json['speed'] as int? ?? 0;
-    receiveBytes = json[Constants.receiveBytes] as int?? 0;
+    receiveBytes = json[Constants.receiveBytes] as int? ?? 0;
     meta = FileMeta.fromJson(json['meta'] as Map<String, dynamic>);
     waitingForAccept = json['waitingForAccept'] ?? true;
   }
