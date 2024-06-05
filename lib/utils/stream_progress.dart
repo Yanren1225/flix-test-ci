@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';

@@ -1,9 +1,5 @@
-import 'dart:io';
 import 'dart:math';
 
-import 'package:flix/presentation/widgets/bubbles/bubble_decoration_widget.dart';
-import 'package:flix/presentation/widgets/bubbles/trans_info_widget.dart';
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -13,11 +9,11 @@ import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/aspect_ratio_video.dart';
 import 'package:flix/presentation/widgets/bubbles/accept_media_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/base_file_bubble.dart';
+import 'package:flix/presentation/widgets/bubbles/bubble_decoration_widget.dart';
+import 'package:flix/presentation/widgets/bubbles/trans_info_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
-import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/preview_error_widget.dart';
-import 'package:flix/presentation/widgets/segements/resend_button.dart';
 import 'package:flix/utils/platform_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
