@@ -102,21 +102,20 @@ class DeviceManager {
   }
 
   void _watchHistory() {
-    appDatabase.devicesDao.watchDevices().listen((event) {
+    appDatabase.devicesDao.watchDevices().listen((_history) async {
       history.clear();
       talker.debug("_watchHistory start");
       // 在前端去重，当在线设备变化时，可以再次去重
       // event.removeWhere((element) => deviceList.contains(element));
-      history.addAll(event);
-      history.forEach((element) async {
+      for (int i = _history.length - 1;i >= 0; i--) {
+        var element = _history[i];
         var bubbleCount = await appDatabase.bubblesDao
             .queryDeviceBubbleCount(element.fingerprint);
-        talker.debug(
-            "_watchHistory bubbleCount $bubbleCount  event = $event  element = $element");
         if (bubbleCount == 0) {
-          deleteHistory(element.fingerprint);
+          _history.remove(element);
         }
-      });
+      }
+      history.addAll(_history);
       notifyHistoryChanged();
     });
   }

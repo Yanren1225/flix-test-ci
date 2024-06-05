@@ -7,6 +7,7 @@ import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/network/protocol/device_modal.dart';
+import 'package:flix/utils/iterable_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +17,7 @@ class MultiCastClientProvider extends ChangeNotifier {
   Set<DeviceModal> get deviceList => DeviceManager.instance.deviceList;
 
   Set<DeviceModal> get history => DeviceManager.instance.history
-      .where((e) => !deviceList.contains(e))
+      .where((e) => deviceList.find((d) => d.fingerprint == e.fingerprint) == null)
       .toSet();
   StreamSubscription? connectivitySubscription;
 

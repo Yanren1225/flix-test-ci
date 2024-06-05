@@ -7,6 +7,7 @@ import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/widgets/devices/device_list.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/utils/device/device_utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/svg.dart';
@@ -95,11 +96,13 @@ class HistoryItem extends StatelessWidget {
   final VoidCallback onTap;
   final void Function(DeviceInfo deviceInfo) onDelete;
   final SwipeActionController _swipeActionController = SwipeActionController();
+  final bool selected;
 
   HistoryItem(
       {Key? key,
       required this.index,
       required this.historyItemInfo,
+      this.selected = false,
       required this.onTap,
       required this.onDelete})
       : super(key: key);
@@ -110,14 +113,13 @@ class HistoryItem extends StatelessWidget {
       key: ValueKey(historyItemInfo.id),
       index: index,
       controller: _swipeActionController,
-      backgroundColor: Color.fromRGBO(247, 247, 247, 1),
+      backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
       trailingActions: <SwipeAction>[
         SwipeAction(
             backgroundRadius: 6,
-            color: Color.fromRGBO(255, 59, 48, 1),
+            color: const Color.fromRGBO(255, 59, 48, 1),
             title: '删除',
-            style: const TextStyle(color: Colors.white, fontSize: 14)
-                .fix(),
+            style: const TextStyle(color: Colors.white, fontSize: 14).fix(),
             onTap: (CompletionHandler handler) async {
               onDelete(historyItemInfo);
               await handler(true);
@@ -129,39 +131,47 @@ class HistoryItem extends StatelessWidget {
           _swipeActionController.openCellAt(index: index, trailing: true);
         },
         child: Padding(
-          padding:
-              const EdgeInsets.only(left: 20, right: 10, top: 10, bottom: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                'assets/images/history.svg',
-                width: 20,
-                height: 20,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: selected ? const Color.fromRGBO(230, 230, 230, 1) : null,
+              borderRadius: selected ? BorderRadius.circular(10) : null,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    'assets/images/history.svg',
+                    width: 20,
+                    height: 20,
+                  ),
+                  const SizedBox(
+                    width: 6,
+                  ),
+                  Expanded(
+                    child: Text(historyItemInfo.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500)
+                            .fix()),
+                  ),
+                  const SizedBox(
+                    width: 16,
+                  ),
+                  SvgPicture.asset(
+                    'assets/images/arrow_right.svg',
+                    width: 20,
+                    height: 20,
+                  ),
+                ],
               ),
-              const SizedBox(
-                width: 6,
-              ),
-              Expanded(
-                child: Text(historyItemInfo.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w500)
-                        .fix()),
-              ),
-              const SizedBox(
-                width: 16,
-              ),
-              SvgPicture.asset(
-                'assets/images/arrow_right.svg',
-                width: 20,
-                height: 20,
-              ),
-            ],
+            ),
           ),
         ),
       ),
