@@ -229,6 +229,9 @@ Future<Size> getImgSize(Size size, String path) async {
     } else {
       try {
         size = ImageSizeGetter.getSize(FileInput(File(path)));
+        if (size.needRotate) {
+          size = Size(size.height, size.width);
+        }
       } catch (e, stack) {
         talker.error(
             'inner: Failed to get size of image, path: ${path}: $e, $stack',
@@ -267,7 +270,12 @@ Future<Size> getVideoSize(Size size, String path) async {
 Future<Size?> getHeifImageSize2(String filePath) async {
   final properties = await FlutterNativeImage.getImageProperties(filePath);
   if (properties.width != 0 && properties.height != 0) {
-    return Size(properties.width!, properties.height!);
+    if (properties.orientation == ImageOrientation.rotate90 ||
+        properties.orientation == ImageOrientation.rotate270) {
+      return Size(properties.height!, properties.width!);
+    } else {
+      return Size(properties.width!, properties.height!);
+    }
   }
   return null;
 }
