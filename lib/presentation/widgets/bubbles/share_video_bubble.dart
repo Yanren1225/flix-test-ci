@@ -228,7 +228,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
                       max(100, min(constraints.maxWidth - 60, maxPhysicalSize)),
                   minHeight: 100,
                   maxHeight: maxPhysicalSize),
-              child: IntrinsicHeight(child: content));
+              child: IntrinsicWidth(child: IntrinsicHeight(child: content)));
         } else {
           return _aspectContent(
               maxPhysicalSize, constraints, context, sharedVideo, content);
@@ -310,20 +310,18 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
           });
     }
 
-    return IntrinsicHeight(
-      child: Stack(
-        fit: StackFit.passthrough,
-        children: [
-          previewWidget,
-          Align(
-            alignment: Alignment.center,
-            child: Visibility(
-              visible: !preview,
-              child: SvgPicture.asset('assets/images/ic_play.svg'),
-            ),
-          )
-        ],
-      ),
+    return Stack(
+      fit: StackFit.passthrough,
+      children: [
+        previewWidget,
+        Align(
+          alignment: Alignment.center,
+          child: Visibility(
+            visible: !preview,
+            child: SvgPicture.asset('assets/images/ic_play.svg'),
+          ),
+        )
+      ],
     );
   }
 

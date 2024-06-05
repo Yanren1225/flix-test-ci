@@ -3,12 +3,9 @@ import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/device_info.dart';
-import 'package:flix/network/bonjour_impl.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/iterable_extension.dart';
-import 'package:flix/utils/net/net_utils.dart';
 
-import '../../network/multicast_impl.dart';
 import '../../network/protocol/device_modal.dart';
 // DeviceProfileRepo DeviceDiscoverService DeviceManager
 // DeviceManager depends on DeviceProfileRepo and DeviceDiscover + history devices
