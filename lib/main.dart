@@ -11,6 +11,7 @@ import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/lifecycle/AppLifecycle.dart';
+import 'package:flix/domain/lifecycle/platform_state.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
@@ -116,10 +117,12 @@ Future<void> _initHighRefreshRate() async {
 void _initAppLifecycle() {
   appLifecycle.init();
   appLifecycle.addListener(logPersistence);
-  appLifecycle.addListener(ShipServiceLifecycleWatcher());
   if (Platform.isAndroid || Platform.isIOS) {
     appLifecycle.addListener(flixForegroundService);
   }
+  final shipServiceLifecycleWatcher = ShipServiceLifecycleWatcher();
+  appLifecycle.addListener(shipServiceLifecycleWatcher);
+  platformStateDispatcher.addListener(shipServiceLifecycleWatcher);
 }
 
 void _initDatabase() {
@@ -238,7 +241,6 @@ Future<void> initBootStartUp() async {
     appName: packageInfo.appName,
     appPath: Platform.resolvedExecutable,
   );
-  bool isEnabled = await launchAtStartup.isEnabled();
 }
 
 Future<void> _logAppContext(DeviceInfoResult deviceInfo) async {
