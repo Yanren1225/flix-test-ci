@@ -1,0 +1,21 @@
+display_name: flix
+icon: linux/resources/flix.png
+group: Applications/Development Tools
+vendor: zhangjian
+packager: zhangjian
+packagerEmail: 2242634757@qq.com
+license: none
+build_arch: aarch64
+requires:
+  - libnotify
+  - libappindicator-gtk3
+
+keywords:
+  - flix
+
+generic_name: flix
+categories:
+  - Development
+  - Utility
+
+startup_notify: true
