@@ -574,16 +574,20 @@ class ShipService {
     talker.debug("breakPoint=>","_saveFileAndAddBubble");
     File outFile = await _saveFile(desDir, formData, bubble);
     String? path = outFile.path;
-    String? resourceId = await _saveMediaToAlbumOnIOS(outFile, tag: bubble.id);
-    // 保存到相册成功，删除副本
-    try {
-      if (resourceId != null) {
-        path = null;
-        await outFile.delete();
+    String? resourceId = null;
+    if (bubble.type == BubbleType.Image || bubble.type == BubbleType.Video) {
+      resourceId = await _saveMediaToAlbumOnIOS(outFile, tag: bubble.id);
+      // 保存到相册成功，删除副本
+      try {
+        if (resourceId != null) {
+          path = null;
+          await outFile.delete();
+        }
+      } catch (e, s) {
+        talker.error('${bubble.id} delete file failed', e, s);
       }
-    } catch (e, s) {
-      talker.error('${bubble.id} delete file failed', e, s);
     }
+
 
     final updatedBubble = bubble.copy(
         content: bubble.content.copy(
