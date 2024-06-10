@@ -125,6 +125,7 @@ dependencies:
   flutter_displaymode: ^0.6.0
   flutter_foreground_task: ^6.2.0
   flutter_desktop_sleep: ^0.0.2
+  network_info_plus: ^5.0.3
 #  simple_native_image_compress: ^1.1.0
 # thumbnailer: ^2.2.0
 

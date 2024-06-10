@@ -1,18 +1,25 @@
-import 'package:flix/utils/text/text_extension.dart';
-import 'package:flix/domain/bubble_pool.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/BadgeService.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/multicast_client_provider.dart';
+import 'package:flix/presentation/style/colors/flix_color.dart';
+import 'package:flix/presentation/widgets/basic/icon_label.dart';
 import 'package:flix/presentation/widgets/devices/device_list.dart';
-import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
+import 'package:flix/presentation/widgets/menu/device_pair_menu.dart';
 import 'package:flix/utils/device/device_utils.dart';
+import 'package:flix/utils/flix_permission_utils.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 import 'package:lottie/lottie.dart';
+import 'package:modals/modals.dart';
+
+final _menuKey = GlobalKey(debugLabel: "pair_device_menu");
 
 class DeviceScreen extends StatefulWidget {
   final void Function(DeviceInfo deviceInfo, bool isHistory) onDeviceSelected;
@@ -34,42 +41,164 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
     final deviceProvider = MultiCastClientProvider.of(context, listen: true);
     history = deviceProvider.history.map((d) => d.toDeviceInfo()).toList();
     devices = deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
-    return Container(
-      decoration:
-          const BoxDecoration(color: Color.fromARGB(255, 247, 247, 247)),
-      child: Stack(
-        children: [
-          CupertinoNavigationScaffold(
-              title: '附近设备',
-              isSliverChild: true,
-              padding: 16,
-              enableRefresh: true,
-              child: DeviceList(
-                devices: devices,
-                onDeviceSelected: widget.onDeviceSelected,
-                showHistory: true,
-                history: history,
-                badges: _badges,
-                onHistoryDelete: (item) {
-                  deviceProvider.deleteHistory(item.id);
-                },
-              )),
-          ClipRect(
-            child: SizedBox(
-                width: double.infinity,
-                height: 140,
-                child: Lottie.asset('assets/animations/radar.json',
-                    fit: BoxFit.cover, alignment: Alignment.topRight)),
-          ),
-        ],
+    return Scaffold(
+      body: Container(
+        decoration:
+            const BoxDecoration(color: Color.fromARGB(255, 247, 247, 247)),
+        child: Stack(
+          children: [
+            ClipRect(
+              child: SizedBox(
+                  width: double.infinity,
+                  height: 140,
+                  child: Lottie.asset('assets/animations/radar.json',
+                      fit: BoxFit.cover, alignment: Alignment.topRight)),
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: 20,
+                      top: MediaQuery.paddingOf(context).top + 33,
+                      right: 20,
+                      bottom: 23),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SvgPicture.asset("assets/images/slogan.svg"),
+                      ModalAnchor(
+                        key: _menuKey,
+                        tag: "open_menu",
+                        child: SizedBox(
+                          width: 36,
+                          height: 36,
+                          child: IconButton(
+                            splashRadius: 36,
+                            padding: EdgeInsets.zero,
+                            icon: SvgPicture.asset(
+                              'assets/images/ic_open_menu.svg',
+                              width: 36,
+                              height: 36,
+                            ),
+                            onPressed: () {
+                              showDevicePairMenu(context, 'open_menu');
+                            },
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 20, right: 20, top: 10, bottom: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Flexible(
+                        child: StreamBuilder<String>(
+                            initialData: deviceProvider.deviceName,
+                            stream: deviceProvider.deviceNameStream.stream,
+                            builder: (BuildContext context,
+                                AsyncSnapshot<String> snapshot) {
+                              return IconLabel(
+                                  icon: 'assets/images/ic_device.svg',
+                                  label: snapshot.requireData);
+                            }),
+                      ),
+                      Flexible(child: _buildNetworkInfoWidget(deviceProvider))
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: EasyRefresh(
+                    callRefreshOverOffset: 1,
+                    onRefresh: () async {
+                      deviceProvider.clearDevices();
+                      deviceProvider.startScan();
+                      await Future.delayed(const Duration(seconds: 2));
+                      return IndicatorResult.success;
+                    },
+                    header: const MaterialHeader(
+                        color: Color.fromRGBO(0, 122, 255, 1)),
+                    child: CustomScrollView(
+                      slivers: [
+                        const SliverPadding(
+                            padding: EdgeInsets.only(top: 10)),
+                        DeviceList(
+                          devices: devices,
+                          onDeviceSelected: widget.onDeviceSelected,
+                          showHistory: true,
+                          history: history,
+                          badges: _badges,
+                          onHistoryDelete: (item) {
+                            deviceProvider.deleteHistory(item.id);
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  StreamBuilder<ConnectivityResult> _buildNetworkInfoWidget(
+      MultiCastClientProvider deviceProvider) {
+    return StreamBuilder<ConnectivityResult>(
+        initialData: deviceProvider.connectivityResult,
+        stream: deviceProvider.connectivityResultStream.stream,
+        builder:
+            (BuildContext context, AsyncSnapshot<ConnectivityResult> snapshot) {
+          final connectivityResult = snapshot.data;
+          if (connectivityResult == ConnectivityResult.wifi) {
+            return StreamBuilder<String>(
+                initialData: deviceProvider.wifiName,
+                stream: deviceProvider.wifiNameStream.stream,
+                builder:
+                    (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  var _wifiName = snapshot.requireData;
+                  if (_wifiName.isEmpty) {
+                    _wifiName = "已连接";
+                  }
+                  return InkWell(
+                    onTap: () {
+                  
+                    },
+                    child: IconLabel(
+                        icon: 'assets/images/ic_wifi.svg', label: _wifiName),
+                  );
+                });
+          } else if (connectivityResult == ConnectivityResult.none) {
+            return const IconLabel(
+                icon: 'assets/images/ic_no_wifi.svg', label: "网络未连接", iconColor: FlixColor.red, labelColor: FlixColor.red,);
+          } else {
+            return const IconLabel(
+                icon: 'assets/images/ic_no_wifi.svg', label: "WiFi未连接", iconColor: FlixColor.red, labelColor: FlixColor.red,);
+          }
+        });
   }
 
   @override
   void initState() {
     super.initState();
     BadgeService.instance.addOnBadgesChangedListener(_onBadgesChanged);
+    FlixPermissionUtils.checkWifiLocationPermission(context).then((value) {
+      if (value && mounted) {
+        final deviceProvider =
+            MultiCastClientProvider.of(context, listen: false);
+        deviceProvider.getWifiName();
+      }
+    });
   }
 
   @override

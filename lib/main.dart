@@ -652,7 +652,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
                 const IconThemeData(size: 26, color: Colors.black),
             unselectedIconTheme: const IconThemeData(
                 size: 26, color: Color.fromRGBO(60, 60, 67, 0.3)),
-            selectedLabelTextStyle: TextStyle(
+            selectedLabelTextStyle: const TextStyle(
               color: Colors.black,
               fontSize: 12,
               fontWeight: FontWeight.normal,
@@ -664,9 +664,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
                 .fix(),
             backgroundColor: Colors.white,
           ),
-          Flexible(flex: 1, child: secondPart()),
+          Expanded(flex: 2, child: secondPart()),
           Expanded(
-            flex: 2,
+            flex: 3,
             child: thirdPart(),
           )
         ],
