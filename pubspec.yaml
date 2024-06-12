@@ -126,6 +126,10 @@ dependencies:
   flutter_foreground_task: ^6.2.0
   flutter_desktop_sleep: ^0.0.2
   network_info_plus: ^5.0.3
+  wifi_iot: ^0.3.19
+  qr_flutter: ^4.1.0
+  qr_code_scanner: ^1.0.1
+  flutter_p2p_connection: ^1.0.3
 #  simple_native_image_compress: ^1.1.0
 # thumbnailer: ^2.2.0
 

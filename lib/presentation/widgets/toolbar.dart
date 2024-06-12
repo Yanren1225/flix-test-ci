@@ -23,7 +23,7 @@ class ToolbarState extends State<Toolbar> {
         child: Column(
           children: [
             Visibility(
-                visible: widget.showBack && !isOverMediumWidth(context),
+                visible: widget.showBack,
                 maintainSize: true,
                 maintainAnimation: true,
                 maintainState: true,

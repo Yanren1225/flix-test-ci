@@ -1,3 +1,5 @@
+import 'package:flix/presentation/screens/hotpots/hotpots_scanner_screen.dart';
+import 'package:flix/presentation/screens/hotpots/hotpots_screen.dart';
 import 'package:flix/presentation/widgets/basic/animatable_pop_menu.dart';
 import 'package:flix/presentation/widgets/menu/device_pair_menu_item.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +49,8 @@ class DevicePairMenuState extends AnimatablePopMenuState<DevicePairMenu> {
                 lable: '扫一扫',
                 icon: 'assets/images/ic_scan.svg',
                 onTap: () {
-                  // TODO
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => HotpotsScannerScreen(showBack: true)));
+
                 },
               ),
               Padding(
@@ -58,7 +61,7 @@ class DevicePairMenuState extends AnimatablePopMenuState<DevicePairMenu> {
                 lable: '我的二维码',
                 icon: 'assets/images/ic_qrcode.svg',
                 onTap:() {
-                  // TODO
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => HotpotsScreen(showBack: true)));
                 },
               ),
             ],

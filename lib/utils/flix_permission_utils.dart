@@ -18,6 +18,16 @@ class FlixPermissionUtils {
       return true;
     }
   }
+  static Future<bool> checkNearbyPermission(BuildContext? context) async {
+    if (Platform.isAndroid) {
+      // 33
+      return await checkPermission(context, [Permission.nearbyWifiDevices],
+          '访问附近的设备', '需要访问附近设备的权限，以开启热点');
+      // <= 32, fine_location
+    } else {
+      return true;
+    }
+  }
 
   static Future<bool> checkStoragePermission(BuildContext? context,
       {bool manageExternalStorage = false}) async {

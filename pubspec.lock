@@ -790,6 +790,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.0.6+1"
+  flutter_p2p_connection:
+    dependency: "direct main"
+    description:
+      name: flutter_p2p_connection
+      sha256: "076a1c635e577b82ff067aafae348ec324bf844c6ac54baece1117ea5359726c"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.3"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -1548,6 +1556,30 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.9.0"
+  qr:
+    dependency: transitive
+    description:
+      name: qr
+      sha256: "64957a3930367bf97cc211a5af99551d630f2f4625e38af10edd6b19131b64b3"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.1"
+  qr_code_scanner:
+    dependency: "direct main"
+    description:
+      name: qr_code_scanner
+      sha256: f23b68d893505a424f0bd2e324ebea71ed88465d572d26bb8d2e78a4749591fd
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.1"
+  qr_flutter:
+    dependency: "direct main"
+    description:
+      name: qr_flutter
+      sha256: "5095f0fc6e3f71d08adef8feccc8cea4f12eec18a2e31c2e8d82cb6019f4b097"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.1.0"
   quiver:
     dependency: "direct main"
     description:
@@ -2171,6 +2203,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.0"
+  wifi_iot:
+    dependency: "direct main"
+    description:
+      name: wifi_iot
+      sha256: "27a9b77ea589f089f94a65c937bcb8e2910e6cf9190583e117b76b8a8d592c03"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.19"
   win32:
     dependency: transitive
     description:

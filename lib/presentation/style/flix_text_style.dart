@@ -14,6 +14,23 @@ class FlixTextStyle {
     color: FlixColor.labels_primary
   ).fix();
 
+  static TextStyle head_secondary = const TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.normal,
+    color: FlixColor.labels_primary
+  ).fix();
+
+  static TextStyle body = const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.normal,
+      color: Colors.black
+  ).fix();
+
+  static TextStyle body_variant = const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.normal,
+      color: FlixColor.blue
+  ).fix();
   // static const TextStyle subtitle = TextStyle(
   //   fontSize: 18,
   //   fontWeight: FontWeight.bold,
