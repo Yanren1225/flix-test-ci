@@ -8,7 +8,7 @@ license: none
 build_arch: aarch64
 requires:
   - libnotify
-  - libappindicator-gtk3
+  - libayatana-appindicator3
 
 keywords:
   - flix
