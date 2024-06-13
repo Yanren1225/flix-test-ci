@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flix/presentation/screens/hotpots/hotpots_scanner_screen.dart';
-import 'package:flix/presentation/screens/hotpots/hotpots_screen.dart';
+import 'package:flix/presentation/screens/hotpots/hotspot_screen.dart';
 import 'package:flix/presentation/widgets/basic/animatable_pop_menu.dart';
 import 'package:flix/presentation/widgets/menu/device_pair_menu_item.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modals/modals.dart';
 
@@ -37,7 +40,6 @@ class DevicePairMenuState extends AnimatablePopMenuState<DevicePairMenu> {
       borderRadius: BorderRadius.circular(14),
       child: SizedBox(
         width: 170,
-        height: 112.5,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6),
           child: Column(
@@ -49,20 +51,24 @@ class DevicePairMenuState extends AnimatablePopMenuState<DevicePairMenu> {
                 lable: '扫一扫',
                 icon: 'assets/images/ic_scan.svg',
                 onTap: () {
+                  removeAllModals();
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => HotpotsScannerScreen(showBack: true)));
-
                 },
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
                 child: Container(decoration: const BoxDecoration(color: Color.fromRGBO(242, 242, 242, 1)), height: 0.5,),
               ),
-              DevicePairMenuItem(
-                lable: '我的二维码',
-                icon: 'assets/images/ic_qrcode.svg',
-                onTap:() {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => HotpotsScreen(showBack: true)));
-                },
+              Visibility(
+                visible: Platform.isAndroid,
+                child: DevicePairMenuItem(
+                  lable: '我的二维码',
+                  icon: 'assets/images/ic_qrcode.svg',
+                  onTap:() {
+                    removeAllModals();
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => HotspotScreen(showBack: true)));
+                  },
+                ),
               ),
             ],
           ),

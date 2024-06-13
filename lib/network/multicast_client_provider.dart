@@ -5,8 +5,10 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/hotspot/hotspot_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
+import 'package:flix/model/wifi_or_ap_name.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/utils/iterable_extension.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +22,8 @@ class MultiCastClientProvider extends ChangeNotifier {
   Set<DeviceModal> get deviceList => DeviceManager.instance.deviceList;
 
   Set<DeviceModal> get history => DeviceManager.instance.history
-      .where((e) => deviceList.find((d) => d.fingerprint == e.fingerprint) == null)
+      .where(
+          (e) => deviceList.find((d) => d.fingerprint == e.fingerprint) == null)
       .toSet();
   StreamSubscription? connectivitySubscription;
 
@@ -29,15 +32,81 @@ class MultiCastClientProvider extends ChangeNotifier {
   String? get selectedDeviceId => _selectedDeviceId;
 
   var deviceName = DeviceProfileRepo.instance.deviceName;
-  StreamController<String> get deviceNameStream =>  DeviceProfileRepo.instance.deviceNameBroadcast;
+
+  StreamController<String> get deviceNameStream =>
+      DeviceProfileRepo.instance.deviceNameBroadcast;
 
   final info = NetworkInfo();
 
   var wifiName = "";
-  StreamController<String> wifiNameStream = StreamController<String>.broadcast();
+  final StreamController<String> _wifiNameStreamController =
+      StreamController<String>.broadcast();
+
+  Stream<String> get wifiNameStream => _wifiNameStreamController.stream;
+
+  String get apName => hotspotManager.hotspotInfo?.ssid ?? "";
+
+  Stream<String?> get apNameStream =>
+      hotspotManager.hotspotInfoStreamController.stream
+          .map((event) => event?.ssid);
+
+  WifiOrApName get wifiOrApName {
+    if (apName?.isNotEmpty == true) {
+      return WifiOrApName(isAp: true, name: apName);
+    } else {
+      return WifiOrApName(isAp: false, name: wifiName);
+    }
+  }
+
+  Stream<WifiOrApName> get wifiOrApNameStream {
+    return combineStreams([
+      wifiNameStream.map((event) {
+        if (apName == null || apName?.isEmpty == true) {
+          return WifiOrApName(isAp: false, name: event);
+        } else {
+          return WifiOrApName(isAp: true, name: apName);
+        }
+      }),
+      apNameStream.map((event) {
+        if (event == null || event.isEmpty) {
+          return WifiOrApName(isAp: false, name: wifiName);
+        } else {
+          return WifiOrApName(isAp: true, name: event);
+        }
+    })
+
+    ]);
+  }
+
+  Stream<T> combineStreams<T>(List<Stream<T>> streams) async* {
+    List<StreamSubscription<T>> subscriptions = [];
+
+    final combinedStreamController = StreamController<T>();
+
+    // Listen to each stream and add its events to the combined stream controller
+    for (var stream in streams) {
+      final subscription = stream.listen((event) {
+        combinedStreamController.add(event);
+      }, onError: (error) {
+        combinedStreamController.addError(error);
+      }, onDone: () {
+        if (subscriptions.every((sub) => sub.isPaused)) {
+          combinedStreamController.close();
+        }
+      });
+
+      subscriptions.add(subscription);
+    }
+
+    // Yield each event from the combined stream controller
+    await for (var event in combinedStreamController.stream) {
+      yield event;
+    }
+  }
 
   var connectivityResult = ConnectivityResult.none;
-  StreamController<ConnectivityResult> connectivityResultStream = StreamController<ConnectivityResult>.broadcast();
+  StreamController<ConnectivityResult> connectivityResultStream =
+      StreamController<ConnectivityResult>.broadcast();
 
   static MultiCastClientProvider of(BuildContext context,
       {bool listen = false}) {
@@ -50,10 +119,7 @@ class MultiCastClientProvider extends ChangeNotifier {
     connectivitySubscription =
         Connectivity().onConnectivityChanged.listen((result) {
       talker.debug('connectivity changed: $result');
-      if (result == ConnectivityResult.wifi) {
-        getWifiName();
-      }
-      _setConnectivityResult(result);
+      _notifyConnectivityResult(result);
       shipService.isServerLiving().then((isServerLiving) async {
         talker.debug('isServerLiving: $isServerLiving');
         if (isServerLiving) {
@@ -76,18 +142,42 @@ class MultiCastClientProvider extends ChangeNotifier {
     });
   }
 
-  void getWifiName() {
-    info.getWifiName().then((_name) {
-      var name = _name ?? "";
-      if (Platform.isAndroid) {
+  void _notifyConnectivityResult(List<ConnectivityResult> result) async {
+    final name = await resetWifiName();
+    // ConnectivityResult 互联网连接状态，direct wifi状态下返回none
+    if (name?.isNotEmpty == true) {
+      _setConnectivityResult(ConnectivityResult.wifi);
+      return;
+    }
+    if (result.contains(ConnectivityResult.wifi) || result.contains(ConnectivityResult.p2pWifi)) {
+      resetWifiName();
+    }
+    if (result.contains(ConnectivityResult.none)) {
+      _setConnectivityResult(ConnectivityResult.none);
+    } else if (result.contains(ConnectivityResult.wifi)) {
+      _setConnectivityResult(ConnectivityResult.wifi);
+    } else if (result.contains(ConnectivityResult.p2pWifi)) {
+      _setConnectivityResult(ConnectivityResult.p2pWifi);
+    } else {
+      _setConnectivityResult(ConnectivityResult.other);
+    }
+  }
+
+  Future<String?> resetWifiName() async {
+    try {
+      var name = await info.getWifiName() ?? "";
+      talker.debug("wifi name: $name");
+      if (Platform.isAndroid && name.isNotEmpty) {
         if (name[0] == "\"" && name[name.length - 1] == "\"") {
           name = name.substring(1, name.length - 1);
         }
       }
       _setWifiName(name);
-    }).onError((error, stackTrace) {
-      talker.error('getWifiName error', error, stackTrace);
-    });
+      return name;
+    } catch (e, s) {
+      talker.error('getWifiName error', e, s);
+      return null;
+    }
   }
 
   void _onDeviceListChanged(Set<DeviceModal> deviceList) {
@@ -126,9 +216,8 @@ class MultiCastClientProvider extends ChangeNotifier {
   void _setWifiName(String? name) {
     if (name != null && name.isNotEmpty && wifiName != name) {
       wifiName = name;
-      wifiNameStream.add(name);
+      _wifiNameStreamController.add(name);
     }
-
   }
 
   void _setConnectivityResult(ConnectivityResult result) {
@@ -136,8 +225,5 @@ class MultiCastClientProvider extends ChangeNotifier {
       connectivityResult = result;
       connectivityResultStream.add(result);
     }
-
   }
-
-
 }

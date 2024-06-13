@@ -8,13 +8,26 @@ class FlixTextStyle {
   //   fontWeight: FontWeight.bold,
   // );
 
-  static TextStyle head = const TextStyle(
+  static TextStyle h1 = const TextStyle(
+      fontSize: 36,
+      fontWeight: FontWeight.w500,
+      color: FlixColor.labels_primary
+  ).fix();
+
+
+  static TextStyle h2 = const TextStyle(
+      fontSize: 30,
+      fontWeight: FontWeight.w500,
+      color: FlixColor.labels_primary
+  ).fix();
+
+  static TextStyle title = const TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.normal,
     color: FlixColor.labels_primary
   ).fix();
 
-  static TextStyle head_secondary = const TextStyle(
+  static TextStyle title_secondary = const TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.normal,
     color: FlixColor.labels_primary
@@ -30,6 +43,13 @@ class FlixTextStyle {
       fontSize: 14,
       fontWeight: FontWeight.normal,
       color: FlixColor.blue
+  ).fix();
+
+
+  static TextStyle button = const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      color: Colors.white
   ).fix();
   // static const TextStyle subtitle = TextStyle(
   //   fontSize: 18,

@@ -1,11 +1,16 @@
 import 'dart:io';
 
 import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/presentation/screens/hotpots/connect_hotpots_screen.dart';
+import 'package:flix/presentation/screens/hotpots/connect_hotspot_screen.dart';
+import 'package:flix/presentation/style/colors/flix_color.dart';
+import 'package:flix/presentation/style/flix_text_style.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
+import 'package:flix/utils/flix_permission_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
@@ -40,7 +45,13 @@ class _HotpotsScannerScreenState extends State<HotpotsScannerScreen> {
   @override
   void initState() {
     super.initState();
-    Permission.camera.request();
+    FlixPermissionUtils.checkCameraPermission(context).then((value) {
+      if (!value) {
+        talker.error("没有相机权限");
+        flixToast.alert("没有相机权限");
+        Navigator.pop(context);
+      }
+    });
   }
 
   @override
@@ -49,31 +60,44 @@ class _HotpotsScannerScreenState extends State<HotpotsScannerScreen> {
   }
 
   Widget _buildScannerWidget() {
-    return NavigationScaffold(
-        title: "我的二维码",
-        showBackButton: widget.showBack,
-        builder: (EdgeInsets padding) {
-          return Column(
-            children: <Widget>[
-              Expanded(
-                flex: 5,
-                child: QRView(
-                  key: qrKey,
-                  onQRViewCreated: _onQRViewCreated,
+    return Scaffold(
+        backgroundColor: FlixColor.surface,
+        appBar: AppBar(
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: const Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+              size: 20,
+            ),
+          ),
+          backgroundColor: FlixColor.surface,
+          surfaceTintColor: FlixColor.surface,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("扫一扫", style: FlixTextStyle.h1),
+              Text("打开 Flix 二维码，快速建立热点连接。",
+                  style: FlixTextStyle.title_secondary),
+              const SizedBox(height: 40),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: QRView(
+                    key: qrKey,
+                    onQRViewCreated: _onQRViewCreated,
+                  ),
                 ),
               ),
-              Expanded(
-                flex: 1,
-                child: Center(
-                  child: (result != null)
-                      ? Text(
-                          'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}')
-                      : Text('Scan a code'),
-                ),
-              )
             ],
-          );
-        });
+          ),
+        ));
   }
 
   void _onQRViewCreated(QRViewController controller) {
@@ -86,7 +110,7 @@ class _HotpotsScannerScreenState extends State<HotpotsScannerScreen> {
         if (uri.host == "ap" && uri.pathSegments.length >= 2) {
           result = scanData;
           Navigator.of(context).pushReplacement(CupertinoPageRoute(
-            builder: (context) => ConnectHotpotsScreen(
+            builder: (context) => ConnectHotspotScreen(
               apSSID: uri.pathSegments[0],
               apKey: uri.pathSegments[1],
             ),

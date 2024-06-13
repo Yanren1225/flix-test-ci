@@ -18,12 +18,35 @@ class FlixPermissionUtils {
       return true;
     }
   }
-  static Future<bool> checkNearbyPermission(BuildContext? context) async {
+
+  static Future<bool> checkHotspotPermission(BuildContext? context) async {
     if (Platform.isAndroid) {
       // 33
-      return await checkPermission(context, [Permission.nearbyWifiDevices],
-          '访问附近的设备', '需要访问附近设备的权限，以开启热点');
+      DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+      final androidInfo = await deviceInfoPlugin.androidInfo;
+      if (androidInfo.version.sdkInt > 32) {
+        return await checkPermission(
+            context,
+            [Permission.nearbyWifiDevices, Permission.locationWhenInUse],
+            '缺少权限',
+            '开启热点需要您授予访问附近设备和位置权限');
+      } else {
+        return await checkPermission(
+            context, [Permission.locationWhenInUse], '位置权限', '开启热点需要您授予位置权限');
+      }
       // <= 32, fine_location
+    } else if (Platform.isIOS) {
+      return await checkPermission(
+          context, [Permission.locationWhenInUse], '位置权限', '开启热点需要您授予位置权限');
+    } else {
+      return true;
+    }
+  }
+
+  static Future<bool> checkCameraPermission(BuildContext? context) async {
+    if (Platform.isAndroid) {
+      return await checkPermission(
+          context, [Permission.camera], '相机权限', '扫一扫需要您授予相机权限');
     } else {
       return true;
     }
@@ -142,14 +165,16 @@ class FlixPermissionUtils {
                       title: title,
                       subTitle: subTitle,
                       onConfirm: () async {
-                        if (requestCount >= 2 ||
-                            await isAnyPermanentlyDenied(permissions)) {
-                          await _openAppSettings();
-                        } else {
-                          await _checkPermission(
-                              context, permissions, title, subTitle,
-                              requestCount: ++requestCount);
-                        }
+                        await _openAppSettings();
+                        //
+                        // if (requestCount >= 2 ||
+                        //     await isAnyPermanentlyDenied(permissions)) {
+                        //   await _openAppSettings();
+                        // } else {
+                        //   await _checkPermission(
+                        //       context, permissions, title, subTitle,
+                        //       requestCount: ++requestCount);
+                        // }
                       });
                 });
           }
@@ -165,7 +190,8 @@ class FlixPermissionUtils {
     return true;
   }
 
-  static Future<bool> requestAllPermissions(List<Permission> permissions) async {
+  static Future<bool> requestAllPermissions(
+      List<Permission> permissions) async {
     for (var permission in permissions) {
       var permissionStatus = await permission.request();
       talker.debug('permission permissionStatus $permissionStatus');
@@ -174,7 +200,8 @@ class FlixPermissionUtils {
     return true;
   }
 
-  static Future<bool> isAnyPermanentlyDenied(List<Permission> permissions) async {
+  static Future<bool> isAnyPermanentlyDenied(
+      List<Permission> permissions) async {
     bool isPermanentlyDenied = false;
 
     for (var permission in permissions) {

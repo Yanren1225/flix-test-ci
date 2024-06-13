@@ -36,7 +36,7 @@ class DevicePairMenuItem extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 lable,
-                style: FlixTextStyle.head,
+                style: FlixTextStyle.title,
               ),
             ],
           ),

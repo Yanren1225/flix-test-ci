@@ -129,7 +129,10 @@ dependencies:
   wifi_iot: ^0.3.19
   qr_flutter: ^4.1.0
   qr_code_scanner: ^1.0.1
-  flutter_p2p_connection: ^1.0.3
+  flutter_p2p_connection:
+    git:
+      url: "https://github.com/heiha100/flutter_p2p_connection"
+      ref: "3b4a06de5dea9bfe315c6712b85c7104967d26af"
 #  simple_native_image_compress: ^1.1.0
 # thumbnailer: ^2.2.0
 
@@ -165,6 +168,18 @@ dependency_overrides:
     git:
       url: "https://github.com/heiha100/image_gallery_saver"
       ref: "91799664c2b21e1579b9d0e21df5ea505b50e9df"
+  connectivity_plus:
+    git:
+      url: "https://github.com/heiha100/plus_plugins"
+      ref: "21247263f3443f59a0c460694697cf5e0a30c507"
+      path: "packages/connectivity_plus/connectivity_plus"
+  connectivity_plus_platform_interface:
+    git:
+      url: "https://github.com/heiha100/plus_plugins"
+      ref: "21247263f3443f59a0c460694697cf5e0a30c507"
+      path: "packages/connectivity_plus/connectivity_plus_platform_interface"
+  permission_handler: ^11.3.1
+  dio: ^5.4.0
 
 #  share_plus_platform_interface:
 

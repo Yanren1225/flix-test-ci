@@ -285,19 +285,21 @@ packages:
   connectivity_plus:
     dependency: "direct main"
     description:
-      name: connectivity_plus
-      sha256: "224a77051d52a11fbad53dd57827594d3bd24f945af28bd70bab376d68d437f0"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "5.0.2"
+      path: "packages/connectivity_plus/connectivity_plus"
+      ref: "21247263f3443f59a0c460694697cf5e0a30c507"
+      resolved-ref: "21247263f3443f59a0c460694697cf5e0a30c507"
+      url: "https://github.com/heiha100/plus_plugins"
+    source: git
+    version: "6.0.3"
   connectivity_plus_platform_interface:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: connectivity_plus_platform_interface
-      sha256: cf1d1c28f4416f8c654d7dc3cd638ec586076255d407cef3ddbdaf178272a71a
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.2.4"
+      path: "packages/connectivity_plus/connectivity_plus_platform_interface"
+      ref: "21247263f3443f59a0c460694697cf5e0a30c507"
+      resolved-ref: "21247263f3443f59a0c460694697cf5e0a30c507"
+      url: "https://github.com/heiha100/plus_plugins"
+    source: git
+    version: "2.0.0"
   convert:
     dependency: transitive
     description:
@@ -793,11 +795,12 @@ packages:
   flutter_p2p_connection:
     dependency: "direct main"
     description:
-      name: flutter_p2p_connection
-      sha256: "076a1c635e577b82ff067aafae348ec324bf844c6ac54baece1117ea5359726c"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.3"
+      path: "."
+      ref: "3b4a06de5dea9bfe315c6712b85c7104967d26af"
+      resolved-ref: "3b4a06de5dea9bfe315c6712b85c7104967d26af"
+      url: "https://github.com/heiha100/flutter_p2p_connection"
+    source: git
+    version: "2.0.3"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -1219,6 +1222,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.5"
+  mime_type:
+    dependency: transitive
+    description:
+      name: mime_type
+      sha256: "2ad6e67d3d2de9ac0f8ef5352d998fd103cb21351ae8c02fb0c78b079b37d275"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.0"
   modals:
     dependency: "direct main"
     description:

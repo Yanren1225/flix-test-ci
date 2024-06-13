@@ -3,11 +3,16 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/BadgeService.dart';
 import 'package:flix/model/device_info.dart';
+import 'package:flix/model/wifi_or_ap_name.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
-import 'package:flix/presentation/widgets/basic/icon_label.dart';
+import 'package:flix/presentation/widgets/basic/icon_label_button.dart';
+import 'package:flix/presentation/widgets/device_name/name_edit_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/devices/device_list.dart';
 import 'package:flix/presentation/widgets/menu/device_pair_menu.dart';
+import 'package:flix/presentation/widgets/net/net_info_bottom_sheet.dart';
+import 'package:flix/utils/PlatformUtil.dart';
+import 'package:flix/utils/android/android_utils.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/flix_permission_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
@@ -31,7 +36,7 @@ class DeviceScreen extends StatefulWidget {
   State<StatefulWidget> createState() => _DeviceScreenState();
 }
 
-class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
+class _DeviceScreenState extends State<DeviceScreen> with RouteAware, WidgetsBindingObserver {
   final _badges = BadgeService.instance.badges;
   List<DeviceInfo> history = List.empty(growable: true);
   List<DeviceInfo> devices = List.empty(growable: true);
@@ -70,49 +75,65 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SvgPicture.asset("assets/images/slogan.svg"),
-                      ModalAnchor(
-                        key: _menuKey,
-                        tag: "open_menu",
-                        child: SizedBox(
-                          width: 36,
-                          height: 36,
-                          child: IconButton(
-                            splashRadius: 36,
-                            padding: EdgeInsets.zero,
-                            icon: SvgPicture.asset(
-                              'assets/images/ic_open_menu.svg',
-                              width: 36,
-                              height: 36,
+                      Visibility(
+                        visible: PlatformUtil.isMobile(),
+                        child: ModalAnchor(
+                          key: _menuKey,
+                          tag: "open_menu",
+                          child: SizedBox(
+                            width: 36,
+                            height: 36,
+                            child: IconButton(
+                              splashRadius: 36,
+                              padding: EdgeInsets.zero,
+                              icon: SvgPicture.asset(
+                                'assets/images/ic_open_menu.svg',
+                                width: 36,
+                                height: 36,
+                              ),
+                              onPressed: () {
+                                showDevicePairMenu(context, 'open_menu');
+                              },
                             ),
-                            onPressed: () {
-                              showDevicePairMenu(context, 'open_menu');
-                            },
                           ),
                         ),
                       )
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      left: 20, right: 20, top: 10, bottom: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Flexible(
-                        child: StreamBuilder<String>(
-                            initialData: deviceProvider.deviceName,
-                            stream: deviceProvider.deviceNameStream.stream,
-                            builder: (BuildContext context,
-                                AsyncSnapshot<String> snapshot) {
-                              return IconLabel(
+                Visibility(
+                  visible: PlatformUtil.isMobile(),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16, right: 16, top: 0, bottom: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Expanded(
+                          child: StreamBuilder<String>(
+                              initialData: deviceProvider.deviceName,
+                              stream: deviceProvider.deviceNameStream.stream,
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<String> snapshot) {
+                                return IconLabelButton(
                                   icon: 'assets/images/ic_device.svg',
-                                  label: snapshot.requireData);
-                            }),
-                      ),
-                      Flexible(child: _buildNetworkInfoWidget(deviceProvider))
-                    ],
+                                  label: snapshot.requireData,
+                                  isLeft: true,
+                                  onTap: () {
+                                    showCupertinoModalPopup(
+                                        context: context,
+                                        builder: (context) {
+                                          return NameEditBottomSheet();
+                                        });
+                                  },
+                                );
+                              }),
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(child: _buildNetworkInfoWidget(deviceProvider))
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(
@@ -128,8 +149,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
                         color: Color.fromRGBO(0, 122, 255, 1)),
                     child: CustomScrollView(
                       slivers: [
-                        const SliverPadding(
-                            padding: EdgeInsets.only(top: 10)),
+                        const SliverPadding(padding: EdgeInsets.only(top: 10)),
                         DeviceList(
                           devices: devices,
                           onDeviceSelected: widget.onDeviceSelected,
@@ -160,30 +180,50 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
         builder:
             (BuildContext context, AsyncSnapshot<ConnectivityResult> snapshot) {
           final connectivityResult = snapshot.data;
-          if (connectivityResult == ConnectivityResult.wifi) {
-            return StreamBuilder<String>(
-                initialData: deviceProvider.wifiName,
-                stream: deviceProvider.wifiNameStream.stream,
-                builder:
-                    (BuildContext context, AsyncSnapshot<String> snapshot) {
-                  var _wifiName = snapshot.requireData;
-                  if (_wifiName.isEmpty) {
-                    _wifiName = "已连接";
+          if (connectivityResult == ConnectivityResult.wifi || connectivityResult == ConnectivityResult.p2pWifi) {
+            return StreamBuilder<WifiOrApName>(
+                initialData: deviceProvider.wifiOrApName,
+                stream: deviceProvider.wifiOrApNameStream,
+                builder: (BuildContext context,
+                    AsyncSnapshot<WifiOrApName> snapshot) {
+                  final isAp = snapshot.requireData.isAp;
+                  String name = snapshot.requireData.name;
+                  if (name.isEmpty) {
+                    name = "已连接";
                   }
-                  return InkWell(
+                  return IconLabelButton(
+                    icon: isAp
+                        ? 'assets/images/ic_ap.svg'
+                        : 'assets/images/ic_wifi.svg',
+                    label: name,
+                    iconColor: FlixColor.blue,
+                    isLeft: false,
                     onTap: () {
-                  
+                      showNetInfoBottomSheet(context, deviceProvider.apName, deviceProvider.wifiName.isEmpty ? "WiFi已连接" : deviceProvider.wifiName);
                     },
-                    child: IconLabel(
-                        icon: 'assets/images/ic_wifi.svg', label: _wifiName),
                   );
                 });
           } else if (connectivityResult == ConnectivityResult.none) {
-            return const IconLabel(
-                icon: 'assets/images/ic_no_wifi.svg', label: "网络未连接", iconColor: FlixColor.red, labelColor: FlixColor.red,);
+            return IconLabelButton(
+              icon: 'assets/images/ic_no_wifi.svg',
+              label: "网络未连接",
+              iconColor: FlixColor.red,
+              labelColor: FlixColor.red,
+              isLeft: false,
+              onTap: () {
+                AndroidUtils.openWifiSettings();
+              },
+            );
           } else {
-            return const IconLabel(
-                icon: 'assets/images/ic_no_wifi.svg', label: "WiFi未连接", iconColor: FlixColor.red, labelColor: FlixColor.red,);
+            return IconLabelButton(
+                icon: 'assets/images/ic_no_wifi.svg',
+                label: "WiFi未连接",
+                iconColor: FlixColor.red,
+                labelColor: FlixColor.red,
+                isLeft: false,
+                onTap: () {
+                  AndroidUtils.openWifiSettings();
+                });
           }
         });
   }
@@ -191,20 +231,31 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     BadgeService.instance.addOnBadgesChangedListener(_onBadgesChanged);
     FlixPermissionUtils.checkWifiLocationPermission(context).then((value) {
       if (value && mounted) {
         final deviceProvider =
             MultiCastClientProvider.of(context, listen: false);
-        deviceProvider.getWifiName();
+        deviceProvider.resetWifiName();
       }
     });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     BadgeService.instance.removeOnBadgeChangedListener(_onBadgesChanged);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      final deviceProvider = MultiCastClientProvider.of(context, listen: false);
+      deviceProvider.resetWifiName();
+    }
   }
 
   void _onBadgesChanged(Map<String, int> badges) {

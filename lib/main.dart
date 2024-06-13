@@ -10,6 +10,7 @@ import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/hotspot/hotspot_manager.dart';
 import 'package:flix/domain/lifecycle/AppLifecycle.dart';
 import 'package:flix/domain/lifecycle/platform_state.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -123,6 +124,7 @@ void _initAppLifecycle() {
   final shipServiceLifecycleWatcher = ShipServiceLifecycleWatcher();
   appLifecycle.addListener(shipServiceLifecycleWatcher);
   platformStateDispatcher.addListener(shipServiceLifecycleWatcher);
+  appLifecycle.addListener(hotspotManager);
 }
 
 void _initDatabase() {
