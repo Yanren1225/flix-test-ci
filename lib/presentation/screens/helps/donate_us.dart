@@ -43,7 +43,7 @@ class DonateUSScreenState extends State<DonateUSScreen> {
     var width = MediaQuery.of(context).size.width;
     return NavigationScaffold(
       title: "捐赠",
-      showBackButton: true,
+      showBackButton: widget.showBack,
       builder: (EdgeInsets padding) {
         return Container(
           margin: const EdgeInsets.only(left: 16, right: 16, top: 20),

@@ -9,9 +9,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 class FlixToast {
   FlixToast.privateConstructor();
 
+  FlixToast.withContext(BuildContext context) {
+    init(context);
+  }
+
   static final FlixToast instance = FlixToast.privateConstructor();
 
   late FToast _fToast;
+
+
 
   void init(BuildContext context) {
     _fToast = FToast();

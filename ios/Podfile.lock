@@ -4,7 +4,7 @@ PODS:
     - FlutterMacOS
   - connectivity_plus (0.0.1):
     - Flutter
-    - ReachabilitySwift
+    - FlutterMacOS
   - device_info_plus (0.0.1):
     - Flutter
   - DKImagePickerController/Core (4.3.4):
@@ -138,11 +138,14 @@ PODS:
   - Mantle (2.2.0):
     - Mantle/extobjc (= 2.2.0)
   - Mantle/extobjc (2.2.0)
+  - MTBBarcodeScanner (5.0.11)
   - nanopb (2.30910.0):
     - nanopb/decode (= 2.30910.0)
     - nanopb/encode (= 2.30910.0)
   - nanopb/decode (2.30910.0)
   - nanopb/encode (2.30910.0)
+  - network_info_plus (0.0.1):
+    - Flutter
   - open_filex (0.0.2):
     - Flutter
   - package_info_plus (0.4.5):
@@ -160,7 +163,9 @@ PODS:
   - PromisesObjC (2.4.0)
   - PromisesSwift (2.4.0):
     - PromisesObjC (= 2.4.0)
-  - ReachabilitySwift (5.0.0)
+  - qr_code_scanner (0.2.0):
+    - Flutter
+    - MTBBarcodeScanner
   - SDWebImage (5.18.10):
     - SDWebImage/Core (= 5.18.10)
   - SDWebImage/Core (5.18.10)
@@ -206,10 +211,12 @@ PODS:
     - FlutterMacOS
   - wakelock_plus (0.0.1):
     - Flutter
+  - wifi_iot (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - bonsoir_darwin (from `.symlinks/plugins/bonsoir_darwin/darwin`)
-  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/darwin`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - downloadsfolder (from `.symlinks/plugins/downloadsfolder/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
@@ -224,12 +231,14 @@ DEPENDENCIES:
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - image_gallery_saver (from `.symlinks/plugins/image_gallery_saver/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - network_info_plus (from `.symlinks/plugins/network_info_plus/ios`)
   - open_filex (from `.symlinks/plugins/open_filex/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - pasteboard (from `.symlinks/plugins/pasteboard/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - photo_manager (from `.symlinks/plugins/photo_manager/ios`)
+  - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
   - share (from `.symlinks/plugins/share/ios`)
   - share_handler_ios (from `.symlinks/plugins/share_handler_ios/ios`)
   - share_handler_ios_models (from `.symlinks/plugins/share_handler_ios/ios/Models`)
@@ -239,6 +248,7 @@ DEPENDENCIES:
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
   - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
+  - wifi_iot (from `.symlinks/plugins/wifi_iot/ios`)
 
 SPEC REPOS:
   trunk:
@@ -256,10 +266,10 @@ SPEC REPOS:
     - GoogleUtilities
     - libwebp
     - Mantle
+    - MTBBarcodeScanner
     - nanopb
     - PromisesObjC
     - PromisesSwift
-    - ReachabilitySwift
     - SDWebImage
     - SDWebImageWebPCoder
     - sqlite3
@@ -270,7 +280,7 @@ EXTERNAL SOURCES:
   bonsoir_darwin:
     :path: ".symlinks/plugins/bonsoir_darwin/darwin"
   connectivity_plus:
-    :path: ".symlinks/plugins/connectivity_plus/ios"
+    :path: ".symlinks/plugins/connectivity_plus/darwin"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
   downloadsfolder:
@@ -299,6 +309,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_gallery_saver/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
+  network_info_plus:
+    :path: ".symlinks/plugins/network_info_plus/ios"
   open_filex:
     :path: ".symlinks/plugins/open_filex/ios"
   package_info_plus:
@@ -311,6 +323,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   photo_manager:
     :path: ".symlinks/plugins/photo_manager/ios"
+  qr_code_scanner:
+    :path: ".symlinks/plugins/qr_code_scanner/ios"
   share:
     :path: ".symlinks/plugins/share/ios"
   share_handler_ios:
@@ -329,10 +343,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/video_player_avfoundation/darwin"
   wakelock_plus:
     :path: ".symlinks/plugins/wakelock_plus/ios"
+  wifi_iot:
+    :path: ".symlinks/plugins/wifi_iot/ios"
 
 SPEC CHECKSUMS:
   bonsoir_darwin: e3b8526c42ca46a885142df84229131dfabea842
-  connectivity_plus: bf0076dd84a130856aa636df1c71ccaff908fa1d
+  connectivity_plus: ddd7f30999e1faaef5967c23d5b6d503d10434db
   device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
@@ -361,7 +377,9 @@ SPEC CHECKSUMS:
   image_picker_ios: b545a5f16c0fa88e3ecbbce3ed4de45567a8ec18
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
+  MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
+  network_info_plus: 9d930145451916919786087c4173226363616071
   open_filex: 6e26e659846ec990262224a12ef1c528bb4edbe4
   package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
   pasteboard: 982969ebaa7c78af3e6cc7761e8f5e77565d9ce0
@@ -370,7 +388,7 @@ SPEC CHECKSUMS:
   photo_manager: 4f6810b7dfc4feb03b461ac1a70dacf91fba7604
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
-  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
+  qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
   SDWebImage: fc8f2d48bbfd72ef39d70e981bd24a3f3be53fec
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   share: 0b2c3e82132f5888bccca3351c504d0003b3b410
@@ -385,6 +403,7 @@ SPEC CHECKSUMS:
   url_launcher_ios: 6116280ddcfe98ab8820085d8d76ae7449447586
   video_player_avfoundation: 02011213dab73ae3687df27ce441fbbcc82b5579
   wakelock_plus: 78ec7c5b202cab7761af8e2b2b3d0671be6c4ae1
+  wifi_iot: b5aafd6f9b52f8a357383a1deabab45f31cd602d
 
 PODFILE CHECKSUM: 10d82bfe15c1549ac17958b7d171326be1d4e622
 
