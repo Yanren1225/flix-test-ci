@@ -28,7 +28,7 @@ class ConnectHotspotScreenState extends State<ConnectHotspotScreen>
   void initState() {
     super.initState();
     appLifecycle.addListener(this);
-    _initWifi();
+    _initWifi(false);
   }
 
   @override
@@ -37,10 +37,17 @@ class ConnectHotspotScreenState extends State<ConnectHotspotScreen>
     super.dispose();
   }
 
-  _initWifi() async {
-    _setWifiState(WifiConnectionState.init);
+  _initWifi(bool refresh) async {
+    if (refresh && (_state == WifiConnectionState.init || _state == WifiConnectionState.connecting)) {
+      return;
+    }
+    if (!refresh) {
+      _setWifiState(WifiConnectionState.init);
+    }
     if (Platform.isIOS || await WiFiForIoTPlugin.isEnabled()) {
-      _setWifiState(WifiConnectionState.connecting);
+      if (!refresh) {
+        _setWifiState(WifiConnectionState.connecting);
+      }
       if (await directWifiManager.connect(widget.apSSID,
           widget.apKey)) {
         _setWifiState(WifiConnectionState.connected);
@@ -112,10 +119,10 @@ class ConnectHotspotScreenState extends State<ConnectHotspotScreen>
         onTap: () async {
           await WiFiForIoTPlugin.setEnabled(true, shouldOpenSettings: true);
           await Future.delayed(const Duration(seconds: 1));
-          await _initWifi();
+          await _initWifi(false);
           if (_state == WifiConnectionState.wifiDisabled) {
             await Future.delayed(const Duration(seconds: 1));
-            await _initWifi();
+            await _initWifi(false);
           }
         });
   }
@@ -140,14 +147,14 @@ class ConnectHotspotScreenState extends State<ConnectHotspotScreen>
         color: FlixColor.red,
         action: "重试",
         onTap: () {
-          _initWifi();
+          _initWifi(false);
         });
   }
 
   @override
   void onLifecycleChanged(AppLifecycleState state) {
     if (AppLifecycleState.resumed == state) {
-      _initWifi();
+      _initWifi(true);
     }
   }
 }

@@ -59,7 +59,8 @@ class _NetInfoListState extends State<NetInfoList> {
         onTap: () async {
           if (await hotspotManager.disableHotspot()) {
             hotspotManager.getHotspotInfo();
-            flixToast.info("热点已关闭");
+            FlixToast.withContext(context).info("热点已关闭");
+            Navigator.of(context).pop();
           }
         },
       ));

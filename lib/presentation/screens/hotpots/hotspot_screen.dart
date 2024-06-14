@@ -31,7 +31,7 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
   void initState() {
     super.initState();
     appLifecycle.addListener(this);
-    _initAp();
+    _initAp(false);
   }
 
   @override
@@ -41,8 +41,10 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
   }
 
 
-  _initAp() {
-    _setApState(ApState.checking);
+  _initAp(bool refresh) {
+    if (!refresh) {
+      _setApState(ApState.checking);
+    }
     FlixPermissionUtils.checkHotspotPermission(context).then((value) async {
       if (value) {
         if (!await WiFiForIoTPlugin.isEnabled()) {
@@ -51,7 +53,9 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
         }
         // 尝试获取Ap信息，若失败说明hotspot未开启
         if (!(await _initApInfos())) {
-          _setApState(ApState.enabling);
+          if (!refresh) {
+            _setApState(ApState.enabling);
+          }
 
           if (await hotspotManager.enableHotspot()) {
             if (!(await _initApInfos())) {
@@ -70,7 +74,7 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
   _retry() async {
     _setApState(ApState.checking);
     await hotspotManager.disableHotspot();
-    _initAp();
+    _initAp(false);
   }
 
   _setApState(ApState state) {
@@ -201,7 +205,7 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
         color: FlixColor.red,
         action: "授予必要权限",
         onTap: () {
-          _initAp();
+          _initAp(false);
         });
   }
 
@@ -211,7 +215,7 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
         color: FlixColor.red,
         action: "重试",
         onTap: () {
-          _initAp();
+          _initAp(false);
         });
   }
 
@@ -221,7 +225,7 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
         color: FlixColor.red,
         action: "重新开启",
         onTap: () {
-          _initAp();
+          _initAp(false);
         });
   }
 
@@ -242,10 +246,10 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
         onTap: () async {
           await WiFiForIoTPlugin.setEnabled(true, shouldOpenSettings: true);
           await Future.delayed(const Duration(seconds: 1));
-          await _initAp();
+          await _initAp(false);
           if (_apState == ApState.wifiDisabled) {
             await Future.delayed(const Duration(seconds: 1));
-            await _initAp;
+            await _initAp(false);
           }
         });
   }
@@ -253,7 +257,7 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
   @override
   void onLifecycleChanged(AppLifecycleState state) {
     if (AppLifecycleState.resumed == state) {
-      _initAp();
+      _initAp(true);
     }
   }
 
@@ -339,7 +343,7 @@ Widget buildApInfoWidget(BuildContext context, String ssid, String ssidKey) {
   return Align(
     alignment: Alignment.topCenter,
     child: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
             mainAxisSize: MainAxisSize.min,
