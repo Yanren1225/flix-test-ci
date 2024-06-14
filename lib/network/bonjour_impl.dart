@@ -42,6 +42,7 @@ class BonjourImpl extends MultiCastApi {
             "deviceModal": deviceModal.deviceModel ?? '',
             "deviceType": (deviceModal.deviceType ?? DeviceType.mobile).name,
             "fingerprint": deviceModal.fingerprint,
+            "version": deviceModal.version.toString()
           });
     // }
 
@@ -141,6 +142,7 @@ class BonjourImpl extends MultiCastApi {
                 final deviceType = serviceAttributes['deviceType'];
                 final deviceModel = serviceAttributes['deviceModal'];
                 final fingerprint = serviceAttributes['fingerprint'];
+                final version = int.parse(serviceAttributes['version'].toString());
                 if (alias == null || deviceType == null || deviceModel == null || fingerprint == null) {
                   talker.error('mDns Service resolved error: $serviceAttributes');
                   return;
@@ -155,6 +157,7 @@ class BonjourImpl extends MultiCastApi {
                             .find((element) => element.name == deviceType),
                         fingerprint: fingerprint,
                         port: port,
+                        version: version,
                         deviceModel: deviceModel,
                         host: host),
                     false);

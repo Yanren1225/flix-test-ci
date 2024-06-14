@@ -137,6 +137,7 @@ class DeviceDiscover {
             deviceModel: device.deviceModel,
             deviceType: device.deviceType,
             fingerprint: device.fingerprint,
+            version: device.version,
             port: port,
             ip: ip,
             host: host);
