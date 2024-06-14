@@ -152,7 +152,7 @@ dependency_overrides:
       url: "https://github.com/heiha100/talker"
       ref: "cb6306e089c707e3a3387b897ddc09b2f1bbc1c4"
       path: "packages/talker"
-  share_plus: ^8.0.2
+  share_plus: ^9.0.0
   bonsoir_darwin:
     git:
       url: "https://github.com/heiha100/Bonsoir"
