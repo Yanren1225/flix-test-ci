@@ -22,7 +22,11 @@ class HotspotManager implements LifecycleListener {
   Future<bool> enableHotspot() async {
     try {
       await _initCompleter.future;
-      return await _flutterP2pConnectionPlugin.createGroup();
+      final code = await _flutterP2pConnectionPlugin.createGroup();
+      if (code != -1) {
+        talker.error("enableHotspot failed with code $code");
+      }
+      return true;
     } catch (e, s) {
       talker.error('enableHotspot failed', e, s);
       return false;
@@ -32,7 +36,11 @@ class HotspotManager implements LifecycleListener {
   Future<bool> disableHotspot() async {
     try {
       await _initCompleter.future;
-      return await _flutterP2pConnectionPlugin.removeGroup();
+      final code = await _flutterP2pConnectionPlugin.removeGroup();
+      if (code != -1) {
+        talker.error("disableHotspot failed with code $code");
+      }
+      return true;
     } catch (e, s) {
       talker.error('disableHotspot failed', e, s);
       return false;

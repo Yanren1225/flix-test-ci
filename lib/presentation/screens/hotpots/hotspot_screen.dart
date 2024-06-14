@@ -207,11 +207,11 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
 
   Widget _buildGetApInfoFailedContent() {
     return buildHotspotContent(
-        label: "未能获取热点信息，请尝试手动开启并连接",
+        label: "未能获取热点信息",
         color: FlixColor.red,
-        action: "手动开启",
+        action: "重试",
         onTap: () {
-          AndroidUtils.openSettings();
+          _initAp();
         });
   }
 
