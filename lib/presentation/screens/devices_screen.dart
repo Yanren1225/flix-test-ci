@@ -40,6 +40,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware, WidgetsBin
   final _badges = BadgeService.instance.badges;
   List<DeviceInfo> history = List.empty(growable: true);
   List<DeviceInfo> devices = List.empty(growable: true);
+  final _refreshController = EasyRefreshController();
 
   @override
   Widget build(BuildContext context) {
@@ -138,6 +139,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware, WidgetsBin
                 ),
                 Expanded(
                   child: EasyRefresh(
+                    controller: _refreshController,
                     callRefreshOverOffset: 1,
                     onRefresh: () async {
                       deviceProvider.clearDevices();
@@ -238,6 +240,12 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware, WidgetsBin
         final deviceProvider =
             MultiCastClientProvider.of(context, listen: false);
         deviceProvider.resetWifiName();
+      }
+    });
+    final deviceProvider = MultiCastClientProvider.of(context, listen: false);
+    deviceProvider.connectivityResultStream.stream.listen((event) {
+      if (event != ConnectivityResult.none && event != ConnectivityResult.mobile) {
+        _refreshController.callRefresh(overOffset: 6);
       }
     });
   }

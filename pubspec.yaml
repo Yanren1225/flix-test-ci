@@ -172,7 +172,7 @@ dependency_overrides:
   connectivity_plus:
     git:
       url: "https://github.com/heiha100/plus_plugins"
-      ref: "21247263f3443f59a0c460694697cf5e0a30c507"
+      ref: "efa3f74eab6df852c63b56f4d33ab0734809f9dd"
       path: "packages/connectivity_plus/connectivity_plus"
   connectivity_plus_platform_interface:
     git:

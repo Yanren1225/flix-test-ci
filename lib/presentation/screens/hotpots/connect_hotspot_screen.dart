@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flix/domain/hotspot/direct_wifi_manager.dart';
 import 'package:flix/domain/lifecycle/AppLifecycle.dart';
 import 'package:flix/presentation/screens/hotpots/hotspot_screen.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
@@ -40,9 +41,8 @@ class ConnectHotspotScreenState extends State<ConnectHotspotScreen>
     _setWifiState(WifiConnectionState.init);
     if (Platform.isIOS || await WiFiForIoTPlugin.isEnabled()) {
       _setWifiState(WifiConnectionState.connecting);
-      if (await WiFiForIoTPlugin.connect(widget.apSSID,
-          password: widget.apKey, security: NetworkSecurity.WPA)) {
-        WiFiForIoTPlugin.forceWifiUsage(true);
+      if (await directWifiManager.connect(widget.apSSID,
+          widget.apKey)) {
         _setWifiState(WifiConnectionState.connected);
       } else {
         _setWifiState(WifiConnectionState.failed);

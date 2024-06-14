@@ -5,6 +5,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/hotspot/direct_wifi_manager.dart';
 import 'package:flix/domain/hotspot/hotspot_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
@@ -13,7 +14,6 @@ import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/utils/iterable_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 enum MultiState { idle, scanning, connect, failure }
@@ -116,23 +116,14 @@ class MultiCastClientProvider extends ChangeNotifier {
   MultiCastClientProvider() {
     DeviceManager.instance.addDeviceListChangeListener(_onDeviceListChanged);
     DeviceManager.instance.addHistoryChangeListener(_onHistoryListChanged);
+    directWifiManager.hotspotInfoStreamController.stream.listen((event) {
+      if (event != null) {
+        _onConnectivityChanged([ConnectivityResult.p2pWifi]);
+      }
+    });
     connectivitySubscription =
         Connectivity().onConnectivityChanged.listen((result) {
-      talker.debug('connectivity changed: $result');
-      _notifyConnectivityResult(result);
-      shipService.isServerLiving().then((isServerLiving) async {
-        talker.debug('isServerLiving: $isServerLiving');
-        if (isServerLiving) {
-          startScan();
-        } else {
-          if (await shipService.restartShipServer()) {
-            startScan();
-          } else {
-            talker.error('restartShipServer failed');
-          }
-        }
-      }).catchError((error, stackTrace) =>
-          talker.error('isServerLiving error', error, stackTrace));
+        _onConnectivityChanged(result);
     });
     DeviceProfileRepo.instance.deviceNameBroadcast.stream.listen((event) async {
       if (deviceName != event) {
@@ -225,5 +216,23 @@ class MultiCastClientProvider extends ChangeNotifier {
       connectivityResult = result;
       connectivityResultStream.add(result);
     }
+  }
+
+  void _onConnectivityChanged(List<ConnectivityResult> result) {
+    talker.debug('connectivity changed: $result');
+    _notifyConnectivityResult(result);
+    shipService.isServerLiving().then((isServerLiving) async {
+      talker.debug('isServerLiving: $isServerLiving');
+      if (isServerLiving) {
+        startScan();
+      } else {
+        if (await shipService.restartShipServer()) {
+          startScan();
+        } else {
+          talker.error('restartShipServer failed');
+        }
+      }
+    }).catchError((error, stackTrace) =>
+        talker.error('isServerLiving error', error, stackTrace));
   }
 }
