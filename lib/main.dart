@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:chinese_font_library/chinese_font_library.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flix/domain/analytics/flix_analytics.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/database/database.dart';
@@ -93,8 +95,8 @@ Future<void> main() async {
   } catch (e, s) {
     talker.error('launch error', e, s);
 
-    runApp( MaterialApp(
-    home: Center(
+    runApp(MaterialApp(
+        home: Center(
       child: Text(
         '启动失败, $e\n$s',
         style: TextStyle(fontSize: 16),
@@ -185,6 +187,8 @@ Future<void> initFireBase() async {
       }
       return true;
     };
+
+    flixAnalytics.logAppOpen();
   }
 }
 
@@ -560,11 +564,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
           selectedFontSize: 12,
           unselectedFontSize: 12,
           selectedLabelStyle:
-              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)
-                  .fix(),
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
           unselectedLabelStyle:
-              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)
-                  .fix(),
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
           backgroundColor: Colors.white,
           elevation: 0,
           onTap: (value) => setSelectedIndex(value),
@@ -591,12 +593,20 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
       case 2:
         return HelpScreen(
           goVersionScreen: () {
-            Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => AboutUSScreen(showBack: true,)));
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => AboutUSScreen(
+                          showBack: true,
+                        )));
           },
           goDonateCallback: () {
-            Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => DonateUSScreen(showBack: true,)));
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => DonateUSScreen(
+                          showBack: true,
+                        )));
           },
         );
       default:
@@ -697,7 +707,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
         return HelpScreen(
           goVersionScreen: () {
             setState(() {
-              thirdWidget = AboutUSScreen(showBack: false,);
+              thirdWidget = AboutUSScreen(
+                showBack: false,
+              );
             });
           },
           goDonateCallback: () {
