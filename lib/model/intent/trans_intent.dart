@@ -10,7 +10,7 @@ class TransIntent with TransIntentMappable {
   final String deviceId;
   final String bubbleId;
   final TransAction action;
-  Map<String,Object> extra = HashMap<String,Object>();
+  Map<String,Object>? extra = HashMap<String,Object>();
   TransIntent(
       {required this.deviceId, required this.bubbleId, required this.action,required this.extra});
 

@@ -42,7 +42,7 @@ class BonjourImpl extends MultiCastApi {
             "deviceModal": deviceModal.deviceModel ?? '',
             "deviceType": (deviceModal.deviceType ?? DeviceType.mobile).name,
             "fingerprint": deviceModal.fingerprint,
-            "version": deviceModal.version.toString()
+            "version": (deviceModal.version ?? -1).toString()
           });
     // }
 

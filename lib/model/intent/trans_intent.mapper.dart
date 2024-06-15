@@ -84,7 +84,7 @@ class TransIntentMapper extends ClassMapperBase<TransIntent> {
   static TransAction _$action(TransIntent v) => v.action;
   static const Field<TransIntent, TransAction> _f$action =
       Field('action', _$action);
-  static Map<String, Object> _$extra(TransIntent v) => v.extra;
+  static Map<String, Object>? _$extra(TransIntent v) => v.extra;
   static const Field<TransIntent, Map<String, Object>> _f$extra =
       Field('extra', _$extra);
 
@@ -157,7 +157,8 @@ extension TransIntentValueCopy<$R, $Out>
 
 abstract class TransIntentCopyWith<$R, $In extends TransIntent, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  MapCopyWith<$R, String, Object, ObjectCopyWith<$R, Object, Object>> get extra;
+  MapCopyWith<$R, String, Object, ObjectCopyWith<$R, Object, Object>>?
+      get extra;
   $R call(
       {String? deviceId,
       String? bubbleId,
@@ -175,20 +176,22 @@ class _TransIntentCopyWithImpl<$R, $Out>
   late final ClassMapperBase<TransIntent> $mapper =
       TransIntentMapper.ensureInitialized();
   @override
-  MapCopyWith<$R, String, Object, ObjectCopyWith<$R, Object, Object>>
-      get extra => MapCopyWith($value.extra,
-          (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(extra: v));
+  MapCopyWith<$R, String, Object, ObjectCopyWith<$R, Object, Object>>?
+      get extra => $value.extra != null
+          ? MapCopyWith($value.extra!,
+              (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(extra: v))
+          : null;
   @override
   $R call(
           {String? deviceId,
           String? bubbleId,
           TransAction? action,
-          Map<String, Object>? extra}) =>
+          Object? extra = $none}) =>
       $apply(FieldCopyWithData({
         if (deviceId != null) #deviceId: deviceId,
         if (bubbleId != null) #bubbleId: bubbleId,
         if (action != null) #action: action,
-        if (extra != null) #extra: extra
+        if (extra != $none) #extra: extra
       }));
   @override
   TransIntent $make(CopyWithData data) => TransIntent(

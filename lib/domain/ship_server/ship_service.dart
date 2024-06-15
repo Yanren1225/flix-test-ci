@@ -13,6 +13,7 @@ import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
+import 'package:flix/utils/compat/CompatUtil.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/stream_cancelable.dart';
@@ -229,7 +230,8 @@ class ShipService {
     //已经发送过，c/s都有此记录
     talker.debug("resend",
         "getBreakPoint receiveBytes = ${bubble.content.progress}");
-    if (bubble.content.progress > 0) {
+    if (CompatUtil.supportBreakPoint(bubble.from) &&
+        bubble.content.progress > 0) {
       talker.debug("breakPoint", "start ask");
       askBreakPoint(bubble);
       return;
@@ -552,7 +554,7 @@ class ShipService {
           final updatedBubble = await updateFileShareState(
                   _bubblePool, intent.bubbleId, FileState.inTransit)
               as PrimitiveFileBubble;
-          var receiveBytes = intent.extra[Constants.receiveBytes];
+          var receiveBytes = intent.extra?[Constants.receiveBytes];
           updatedBubble.content.waitingForAccept = false;
           updatedBubble.content.receiveBytes = receiveBytes as int;
           _sendFileReal(updatedBubble);

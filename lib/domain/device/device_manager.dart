@@ -98,6 +98,10 @@ class DeviceManager {
         ?.toDeviceInfo();
   }
 
+  DeviceModal? getDeviceModalById(String id) {
+    return deviceList.find((element) => element.fingerprint == id);
+  }
+
   void _watchHistory() {
     appDatabase.devicesDao.watchDevices().listen((_history) async {
       history.clear();
