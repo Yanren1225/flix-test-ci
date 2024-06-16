@@ -192,7 +192,7 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
         action: "重新尝试",
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Text("请关闭系统热点并打开WiFi后重试。", style: FlixTextStyle.body),
+          child: Text("请关闭系统热点\n重新打开WiFi后重试。", style: FlixTextStyle.body),
         ),
         onTap: () {
           _retry();

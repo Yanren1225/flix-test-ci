@@ -25,6 +25,7 @@ class HotspotManager implements LifecycleListener {
       final code = await _flutterP2pConnectionPlugin.createGroup();
       if (code != -1) {
         talker.error("enableHotspot failed with code $code");
+        return false;
       }
       return true;
     } catch (e, s) {
@@ -39,6 +40,7 @@ class HotspotManager implements LifecycleListener {
       final code = await _flutterP2pConnectionPlugin.removeGroup();
       if (code != -1) {
         talker.error("disableHotspot failed with code $code");
+        return false;
       }
       return true;
     } catch (e, s) {
