@@ -45,7 +45,7 @@ jobs:
           cd ..
         shell: bash
       - name: build ipa
-        uses: heiha100/action-flutter-build-ios@v3
+        uses: heiha100/action-flutter-build-ios@main
         with:
           # always use --export-options-plist=ios/GithubActionsExportOptions.plist
           build-cmd: flutter build ipa --release --export-options-plist=ios/GithubActionsExportOptions.plist
