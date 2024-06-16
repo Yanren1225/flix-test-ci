@@ -230,7 +230,7 @@ class ShipService {
     //已经发送过，c/s都有此记录
     talker.debug("resend",
         "getBreakPoint receiveBytes = ${bubble.content.progress}");
-    if (await dependency.supportBreakPoint(bubble.from) &&
+    if (await dependency.supportBreakPoint(bubble.to) &&
         bubble.content.progress > 0) {
       talker.debug("breakPoint", "start ask");
       askBreakPoint(bubble);
@@ -404,11 +404,16 @@ class ShipService {
 
       request.fields['share_id'] = fileBubble.id;
       request.fields['file_name'] = shardFile.name;
-      var receiveBytes = fileBubble.content.receiveBytes;
-      if (receiveBytes > 0) {
-        request.fields['mode'] = FileMode.append.toString();
-      } else {
-        request.fields['mode'] = FileMode.write.toString();
+      var receiveBytes = 0;
+      var supportBreakPoint = await dependency.supportBreakPoint(fileBubble.to);
+      talker.debug("breakPoint","supportBreakPoint = $supportBreakPoint");
+      if (supportBreakPoint) {
+        receiveBytes = fileBubble.content.receiveBytes;
+        if (receiveBytes > 0) {
+          request.fields['mode'] = FileMode.append.toString();
+        } else {
+          request.fields['mode'] = FileMode.write.toString();
+        }
       }
       await shardFile.resolvePath((path) async {
         var fileSize = shardFile.size;
