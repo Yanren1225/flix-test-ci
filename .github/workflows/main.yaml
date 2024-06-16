@@ -45,13 +45,14 @@ jobs:
           cd ..
         shell: bash
       - name: build ipa
-        uses: cedvdb/action-flutter-build-ios@v1
+        uses: heiha100/action-flutter-build-ios@v3
         with:
           # always use --export-options-plist=ios/GithubActionsExportOptions.plist
           build-cmd: flutter build ipa --release --export-options-plist=ios/GithubActionsExportOptions.plist
           certificate-base64: ${{ secrets.IOS_DISTRIBUTE_CERTIFICATION }}
           certificate-password: ${{ secrets.IOS_DISTRIBUTE_PASSWORD }}
           provisioning-profile-base64: ${{ secrets.IOS_DISTRIBUTE_PROVISION_PROFILE }}
+          extension-provisioning-profile-base64: ${{ secrets.IOS_DISTRIBUTE_SHARE_EXTENSION_PROVISION_PROFILE }}
           keychain-password: ${{ secrets.IOS_DISTRIBUTE_PASSWORD }}
       - name: Upload artifact
         uses: actions/upload-artifact@v2
