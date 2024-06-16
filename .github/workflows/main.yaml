@@ -1,6 +1,7 @@
 name: Flutter Build
 
 on:
+  workflow_dispatch:
   push:
     branches: ['deploy']
   pull_request:
