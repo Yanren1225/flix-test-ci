@@ -4,13 +4,16 @@ import 'dart:io';
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flix/domain/analytics/flix_analytics.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/hotspot/hotspot_manager.dart';
 import 'package:flix/domain/lifecycle/AppLifecycle.dart';
+import 'package:flix/domain/lifecycle/platform_state.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
@@ -40,13 +43,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:flutter_foreground_task/models/android_foreground_service_type.dart';
-import 'package:flutter_foreground_task/models/android_notification_options.dart';
-import 'package:flutter_foreground_task/models/foreground_task_options.dart';
-import 'package:flutter_foreground_task/models/ios_notification_options.dart';
-import 'package:flutter_foreground_task/models/notification_channel_importance.dart';
-import 'package:flutter_foreground_task/models/notification_icon_data.dart';
-import 'package:flutter_foreground_task/models/notification_priority.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -91,8 +87,8 @@ Future<void> main() async {
   } catch (e, s) {
     talker.error('launch error', e, s);
 
-    runApp( MaterialApp(
-    home: Center(
+    runApp(MaterialApp(
+        home: Center(
       child: Text(
         '启动失败, $e\n$s',
         style: TextStyle(fontSize: 16),
@@ -116,10 +112,13 @@ Future<void> _initHighRefreshRate() async {
 void _initAppLifecycle() {
   appLifecycle.init();
   appLifecycle.addListener(logPersistence);
-  appLifecycle.addListener(ShipServiceLifecycleWatcher());
   if (Platform.isAndroid || Platform.isIOS) {
     appLifecycle.addListener(flixForegroundService);
   }
+  final shipServiceLifecycleWatcher = ShipServiceLifecycleWatcher();
+  appLifecycle.addListener(shipServiceLifecycleWatcher);
+  platformStateDispatcher.addListener(shipServiceLifecycleWatcher);
+  appLifecycle.addListener(hotspotManager);
 }
 
 void _initDatabase() {
@@ -180,6 +179,8 @@ Future<void> initFireBase() async {
       }
       return true;
     };
+
+    flixAnalytics.logAppOpen();
   }
 }
 
@@ -238,7 +239,6 @@ Future<void> initBootStartUp() async {
     appName: packageInfo.appName,
     appPath: Platform.resolvedExecutable,
   );
-  bool isEnabled = await launchAtStartup.isEnabled();
 }
 
 Future<void> _logAppContext(DeviceInfoResult deviceInfo) async {
@@ -556,11 +556,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
           selectedFontSize: 12,
           unselectedFontSize: 12,
           selectedLabelStyle:
-              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)
-                  .fix(),
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
           unselectedLabelStyle:
-              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)
-                  .fix(),
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
           backgroundColor: Colors.white,
           elevation: 0,
           onTap: (value) => setSelectedIndex(value),
@@ -587,12 +585,20 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
       case 2:
         return HelpScreen(
           goVersionScreen: () {
-            Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => AboutUSScreen(showBack: true,)));
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => AboutUSScreen(
+                          showBack: true,
+                        )));
           },
           goDonateCallback: () {
-            Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => DonateUSScreen(showBack: true,)));
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => DonateUSScreen(
+                          showBack: true,
+                        )));
           },
         );
       default:
@@ -650,7 +656,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
                 const IconThemeData(size: 26, color: Colors.black),
             unselectedIconTheme: const IconThemeData(
                 size: 26, color: Color.fromRGBO(60, 60, 67, 0.3)),
-            selectedLabelTextStyle: TextStyle(
+            selectedLabelTextStyle: const TextStyle(
               color: Colors.black,
               fontSize: 12,
               fontWeight: FontWeight.normal,
@@ -662,9 +668,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
                 .fix(),
             backgroundColor: Colors.white,
           ),
-          Flexible(flex: 1, child: secondPart()),
+          Expanded(flex: 2, child: secondPart()),
           Expanded(
-            flex: 2,
+            flex: 3,
             child: thirdPart(),
           )
         ],
@@ -693,7 +699,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
         return HelpScreen(
           goVersionScreen: () {
             setState(() {
-              thirdWidget = AboutUSScreen(showBack: false,);
+              thirdWidget = AboutUSScreen(
+                showBack: false,
+              );
             });
           },
           goDonateCallback: () {

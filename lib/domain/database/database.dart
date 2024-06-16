@@ -25,7 +25,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? e]) : super(e ?? _openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   static LazyDatabase _openConnection() {
     // the LazyDatabase util lets us find the right location for the file async.
@@ -70,10 +70,18 @@ class AppDatabase extends _$AppDatabase {
         if (from < 5) {
           await migration4_5(m);
         }
+        if (from < 6){
+          await migration5_6(m);
+        }
       },
     );
   }
 
+  Future<void> migration5_6(Migrator m) async {
+    if (!(await _checkIfColumnExists(persistenceDevices.actualTableName, persistenceDevices.version.name))) {
+      await m.addColumn(persistenceDevices, persistenceDevices.version);
+    }
+  }
 
   Future<void> migration4_5(Migrator m) async {
     if (!(await _checkIfColumnExists(persistenceDevices.actualTableName, persistenceDevices.host.name))) {

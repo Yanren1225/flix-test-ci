@@ -72,6 +72,10 @@ class ShipServiceBridge extends ShipServiceDependency {
           final data = jsonDecode(shipCommand.data!);
           await _shipService.confirmReceiveFile(data['from'], data['bubbleId']);
           break;
+        case 'confirmBreakPoint':
+          final data = jsonDecode(shipCommand.data!);
+          await _shipService.confirmBreakPoint(data['from'], data['bubbleId']);
+          break;
         case 'resend':
           final data = PrimitiveFileBubble.fromJson(jsonDecode(shipCommand.data!));
           await _shipService.resend(data);

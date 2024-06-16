@@ -10,6 +10,7 @@ class DeviceModal with DeviceModalMappable {
   final DeviceType? deviceType; // nullable since v2
   final String fingerprint;
   final int? port;
+  final int? version;
   String ip = "";
   String host = "";
 
@@ -19,6 +20,7 @@ class DeviceModal with DeviceModalMappable {
     required this.deviceType,
     required this.fingerprint,
     required this.port,
+    required this.version,
     this.ip = '',
     this.host = ''
   });

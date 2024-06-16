@@ -1,3 +1,4 @@
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/utils/meida/media_utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,7 +23,7 @@ class ToolbarState extends State<Toolbar> {
         child: Column(
           children: [
             Visibility(
-                visible: widget.showBack && !isOverMediumWidth(context),
+                visible: widget.showBack,
                 maintainSize: true,
                 maintainAnimation: true,
                 maintainState: true,
@@ -43,7 +44,7 @@ class ToolbarState extends State<Toolbar> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     widget.title,
-                    style: TextStyle(fontSize: 36),
+                    style: TextStyle(fontSize: 36).fix(),
                   ),
                 ))
           ],

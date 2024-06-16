@@ -18,6 +18,7 @@ import 'package:flix/utils/platform_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class ShareImageBubble extends BaseFileBubble {
@@ -224,7 +225,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
                       max(100, min(constraints.maxWidth - 60, maxPhysicalSize)),
                   minHeight: 100,
                   maxHeight: maxPhysicalSize),
-              child: IntrinsicHeight(child: content(null, null)));
+              child: IntrinsicWidth(child: IntrinsicHeight(child: content(null, null))));
         } else {
           return _aspectContent(
               maxPhysicalSize, constraints, context, sharedImage, content);

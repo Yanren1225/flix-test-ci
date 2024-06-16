@@ -34,6 +34,8 @@
 	<string>我们需要访问您的网络磁盘目录来储存和读取文件。</string>
 	<key>NSRemovableVolumesUsageDescription</key>
 	<string>我们需要访问您的移动磁盘目录来储存和读取文件。</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>我们需要获取WiFi名称并展示在Flix首页，以便您确认当前网络，此过程需要您的位置权限。</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSMainNibFile</key>

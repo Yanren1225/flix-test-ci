@@ -12,6 +12,7 @@
 #include <downloadsfolder/downloadsfolder_plugin_c_api.h>
 #include <file_selector_windows/file_selector_windows.h>
 #include <firebase_core/firebase_core_plugin_c_api.h>
+#include <flutter_desktop_sleep/flutter_desktop_sleep_plugin_c_api.h>
 #include <local_notifier/local_notifier_plugin.h>
 #include <open_dir_windows/open_dir_windows_plugin_c_api.h>
 #include <pasteboard/pasteboard_plugin.h>
@@ -37,6 +38,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("FileSelectorWindows"));
   FirebaseCorePluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FirebaseCorePluginCApi"));
+  FlutterDesktopSleepPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("FlutterDesktopSleepPluginCApi"));
   LocalNotifierPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("LocalNotifierPlugin"));
   OpenDirWindowsPluginCApiRegisterWithRegistrar(

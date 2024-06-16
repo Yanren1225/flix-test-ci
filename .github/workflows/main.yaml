@@ -1,0 +1,93 @@
+name: Flutter Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['deploy']
+  pull_request:
+    branches: [ "deploy" ]
+
+jobs:
+#  android:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Clone repository
+#        uses: actions/checkout@v4
+#      - name: Set up Flutter
+#        uses: subosito/flutter-action@v2
+#        with:
+#          flutter-version: 3.19.2
+#      - run: flutter pub get
+#      - run: flutter build apk
+#      - run: flutter build appbundle
+#      - name: Upload artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: android
+#          path: /home/runner/work/androp/build/app/outputs/flutter-apk
+
+  ios:
+    runs-on: macos-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.19.2
+      - name: Install flutter dependencies
+        run: flutter pub get
+      - name: Install ios Dependencies
+        run: |
+          cd ios
+          pod install --repo-update
+          cd ..
+        shell: bash
+      - name: build ipa
+        uses: heiha100/action-flutter-build-ios@main
+        with:
+          # always use --export-options-plist=ios/GithubActionsExportOptions.plist
+          build-cmd: flutter build ipa --release --export-options-plist=ios/GithubActionsExportOptions.plist
+          certificate-base64: ${{ secrets.IOS_DISTRIBUTE_CERTIFICATION }}
+          certificate-password: ${{ secrets.IOS_DISTRIBUTE_PASSWORD }}
+          provisioning-profile-base64: ${{ secrets.IOS_DISTRIBUTE_PROVISION_PROFILE }}
+          extension-provisioning-profile-base64: ${{ secrets.IOS_DISTRIBUTE_SHARE_EXTENSION_PROVISION_PROFILE }}
+          keychain-password: ${{ secrets.IOS_DISTRIBUTE_PASSWORD }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-ipa
+          path: build/ios/ipa/App.ipa
+
+#  windows:
+#    runs-on: windows-latest
+#    steps:
+#      - name: Clone repository
+#        uses: actions/checkout@v4
+#      - name: Set up Flutter
+#        uses: subosito/flutter-action@v2
+#        with:
+#          flutter-version: 3.19.2
+#      - run: flutter build windows
+#      - name: Upload artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: windwos
+#          path: ./build/windows/x64/runner/Release
+
+#  macos:
+#    runs-on: macos-latest
+#    steps:
+#      - name: Clone repository
+#        uses: actions/checkout@v4
+#      - name: Set up Flutter
+#        uses: subosito/flutter-action@v2
+#        with:
+#          channel: stable
+#      - run: flutter build macos
+#      - name: Upload artifact
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: macos
+#          path: /Users/runner/work/androp/androp/build/macos/Build/Products/Release

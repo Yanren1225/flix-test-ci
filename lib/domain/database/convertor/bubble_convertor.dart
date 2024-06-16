@@ -37,6 +37,8 @@ FileTransfer fromFileContent(FileContent fileContent) {
       state: FileState.values[fileContent.state],
       progress: fileContent.progress,
       speed: fileContent.speed,
+      waitingForAccept: fileContent.waitingForAccept,
+      receiveBytes: fileContent.size,
       meta: FileMeta(
           resourceId: fileContent.resourceId,
           name: fileContent.name,

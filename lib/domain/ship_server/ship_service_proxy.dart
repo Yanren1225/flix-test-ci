@@ -12,6 +12,7 @@ import 'package:flix/domain/foreground_service/flix_foreground_service.dart';
 import 'package:flix/domain/isolate/isolate_communication.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
+import 'package:flix/domain/physical_lock.dart';
 import 'package:flix/domain/settings/SettingsRepo.dart';
 import 'package:flix/model/isolate/isolate_command.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
@@ -90,16 +91,16 @@ class ShipServiceProxy extends ApInterface {
             case 'notifyNewBubble':
               final bubble =
                   PrimitiveBubble.fromJson(jsonDecode(shipCommand.data!));
-              await BubblePool.instance.notify(bubble);
+              BubblePool.instance.notify(bubble);
               break;
-            // case "markTaskStarted":
-            //   await flixForegroundService.start();
-            //   sendPort.send(IsolateCommand('returnMarkTaskStarted').toJson());
-            //   break;
-            // case "markTaskStopped":
-            //   await flixForegroundService.stop();
-            //   sendPort.send(IsolateCommand('returnMarkTaskStopped').toJson());
-            //   break;
+            case "markTaskStarted":
+              PhysicalLock.acquirePhysicalLock();
+              sendPort.send(IsolateCommand('returnMarkTaskStarted').toJson());
+              break;
+            case "markTaskStopped":
+              PhysicalLock.releasePhysicalLock();
+              sendPort.send(IsolateCommand('returnMarkTaskStopped').toJson());
+              break;
           }
         }
       });
