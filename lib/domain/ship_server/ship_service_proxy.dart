@@ -23,6 +23,7 @@ import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/utils/bubble_convert.dart';
+import 'package:flix/utils/compat/CompatUtil.dart';
 import 'package:flutter/services.dart';
 
 class ShipServiceProxy extends ApInterface {
@@ -100,6 +101,9 @@ class ShipServiceProxy extends ApInterface {
             case "markTaskStopped":
               PhysicalLock.releasePhysicalLock();
               sendPort.send(IsolateCommand('returnMarkTaskStopped').toJson());
+              break;
+            case "supportBreakPoint":
+              sendPort.send(IsolateCommand('returnSupportBreakPoint', _supportBreakPoint(shipCommand.data!)).toJson());
               break;
           }
         }
@@ -198,6 +202,10 @@ class ShipServiceProxy extends ApInterface {
 
   Future<bool> _awaitServerReady() async {
     return _serverReadyTask.future;
+  }
+
+  bool _supportBreakPoint(String fingerprint) {
+    return CompatUtil.supportBreakPoint(fingerprint);
   }
 }
 
