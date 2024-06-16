@@ -29,6 +29,8 @@ abstract class ShipServiceDependency {
   Future<void> markTaskStarted();
 
   Future<void> markTaskStopped();
+
+  Future<bool> supportBreakPoint(String deviceId);
 }
 
 class ShipServiceBridge extends ShipServiceDependency {
@@ -112,6 +114,9 @@ class ShipServiceBridge extends ShipServiceDependency {
         case "returnMarkTaskStopped":
           callback<void>(syncTasks, "markTaskStopped", null);
           break;
+        case "returnSupportBreakPoint":
+          callback(syncTasks, 'supportBreakPoint', shipCommand.data as bool);
+          break;
       }
     });
   }
@@ -165,6 +170,13 @@ class ShipServiceBridge extends ShipServiceDependency {
   Future<void> markTaskStopped() async {
     return await executeTask(syncTasks, "markTaskStopped", () {
       sendPort.send(IsolateCommand("markTaskStopped").toJson());
+    }, (msg, error, stack) { });
+  }
+
+  @override
+  Future<bool> supportBreakPoint(String deviceId) async {
+    return await executeTask(syncTasks, "supportBreakPoint", () {
+      sendPort.send(IsolateCommand("supportBreakPoint", deviceId).toJson());
     }, (msg, error, stack) { });
   }
 }

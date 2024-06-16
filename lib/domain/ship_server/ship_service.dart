@@ -230,7 +230,7 @@ class ShipService {
     //已经发送过，c/s都有此记录
     talker.debug("resend",
         "getBreakPoint receiveBytes = ${bubble.content.progress}");
-    if (CompatUtil.supportBreakPoint(bubble.from) &&
+    if (await dependency.supportBreakPoint(bubble.from) &&
         bubble.content.progress > 0) {
       talker.debug("breakPoint", "start ask");
       askBreakPoint(bubble);
