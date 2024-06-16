@@ -36,8 +36,14 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.19.2
-      - name: Install dependencies
+      - name: Install flutter dependencies
         run: flutter pub get
+      - name: Install ios Dependencies
+        run: |
+          cd ios
+          pod install --repo-update
+          cd ..
+        shell: bash
       - name: build ipa
         uses: cedvdb/action-flutter-build-ios@v1
         with:
