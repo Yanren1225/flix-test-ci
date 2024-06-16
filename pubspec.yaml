@@ -124,7 +124,7 @@ dependencies:
   windows_system_info: ^0.0.4
   archive: ^3.5.0
   flutter_displaymode: ^0.6.0
-  flutter_foreground_task: ^6.2.0
+  flutter_foreground_task: 6.2.0
   flutter_desktop_sleep: ^0.0.2
   network_info_plus: ^5.0.3
   wifi_iot: ^0.3.19
