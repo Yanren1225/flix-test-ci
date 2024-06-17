@@ -117,7 +117,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   Widget participate() {
     return Padding(
       padding: EdgeInsets.only(left: 10, top: 10, right: 80, bottom: 10),
-      child: Text('Flix 制作小组\n------\n✅设计：\nlemo\n\n✅开发：\nMovenLecker\nEava_wu\n炎忍\nMashiro.\n浩洋\n张建\n广靓\nChengi',
+      child: Text('Flix 制作小组\n------\n✅设计：\nlemo\n\n✅开发：\nMovenLecker\nEava_wu\n炎忍\nMashiro.\n皓洋\n张建\n广靓\nChengi',
           style: const TextStyle(
                   color: Colors.black,
                   fontSize: 16,
