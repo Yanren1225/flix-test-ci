@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flix/domain/hotspot/hotspot_manager.dart';
 import 'package:flix/domain/lifecycle/AppLifecycle.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
@@ -47,30 +49,34 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
     }
     if (!refresh) {
       _setApState(ApState.checking);
+    } else if (_apState == ApState.noPermission) {
+      _setApState(ApState.checking);
     }
-    FlixPermissionUtils.checkHotspotPermission(context).then((value) async {
-      if (value) {
-        if (!await WiFiForIoTPlugin.isEnabled()) {
-          _setApState(ApState.wifiDisabled);
-          return;
-        }
-        // 尝试获取Ap信息，若失败说明hotspot未开启
-        if (!(await _initApInfos())) {
-          if (!refresh) {
-            _setApState(ApState.enabling);
+    Future.delayed(Duration.zero).then((value) {
+      FlixPermissionUtils.checkHotspotPermission(context).then((value) async {
+        if (value) {
+          if (!await WiFiForIoTPlugin.isEnabled()) {
+            _setApState(ApState.wifiDisabled);
+            return;
           }
-
-          if (await hotspotManager.enableHotspot()) {
-            if (!(await _initApInfos())) {
-              _setApState(ApState.getApInfoFailed);
+          // 尝试获取Ap信息，若失败说明hotspot未开启
+          if (!(await _initApInfos())) {
+            if (!refresh) {
+              _setApState(ApState.enabling);
             }
-          } else {
-            _setApState(ApState.enableFailed);
+
+            if (await hotspotManager.enableHotspot()) {
+              if (!(await _initApInfos())) {
+                _setApState(ApState.getApInfoFailed);
+              }
+            } else {
+              _setApState(ApState.enableFailed);
+            }
           }
+        } else {
+          _setApState(ApState.noPermission);
         }
-      } else {
-        _setApState(ApState.noPermission);
-      }
+      });
     });
   }
 
