@@ -42,6 +42,9 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
 
 
   _initAp(bool refresh) {
+    if (refresh && _apState == ApState.checking || _apState == ApState.enabling) {
+      return;
+    }
     if (!refresh) {
       _setApState(ApState.checking);
     }
@@ -84,7 +87,7 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
   }
 
   Future<bool> _initApInfos() async {
-    await Future.delayed(const Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 1));
     final hotspotInfo = await hotspotManager.getHotspotInfo();
     if (hotspotInfo == null) return false;
     setState(() {
