@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
 import 'package:flix/presentation/widgets/helps/QA.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/settings/clickable_item.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -52,16 +55,19 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
               },
             ),
           ),
-          Padding(
-            padding:
-            const EdgeInsets.only(left: 16, top: 8, right: 16, bottom: 16),
-            child: ValueListenableBuilder<String>(
-              valueListenable: version,
-              builder: (BuildContext context, String value, Widget? child) {
-                return ClickableItem(
-                    label: '❤️捐赠支持我们',
-                    onClick: widget.goDonateCallback);
-              },
+          Visibility(
+            visible: !Platform.isIOS,
+            child: Padding(
+              padding:
+              const EdgeInsets.only(left: 16, top: 8, right: 16, bottom: 16),
+              child: ValueListenableBuilder<String>(
+                valueListenable: version,
+                builder: (BuildContext context, String value, Widget? child) {
+                  return ClickableItem(
+                      label: '❤️捐赠支持我们',
+                      onClick: widget.goDonateCallback);
+                },
+              ),
             ),
           ),
 
