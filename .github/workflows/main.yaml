@@ -59,7 +59,42 @@ jobs:
         with:
           name: release-ipa
           path: build/ios/ipa/App.ipa
-
+  linux-deb:
+    runs-on: ubuntu-latest
+    container:
+      image: registry.cn-hangzhou.aliyuncs.com/tekton/linux-flutter-build:ubuntu-22.04-amd64
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@main
+      - name: install rust
+        run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf > rustup.sh && sh rustup.sh -y && echo 'source $HOME/.cargo/env' >> /etc/bash.bashrc
+      - run: flutter pub get
+      - run: flutter build linux -vv
+        name: flutter debug compile
+      - run: flutter_distributor package --platform linux --targets deb
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux
+          path: ./dist
+  linux-rpm:
+    runs-on: ubuntu-latest
+    container:
+      image: registry.cn-hangzhou.aliyuncs.com/tekton/linux-flutter-build:fedora-38-amd64
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@main
+      - name: install rust
+        run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf > rustup.sh && sh rustup.sh -y && echo 'source $HOME/.cargo/env' >> /etc/bash.bashrc
+      - run: flutter pub get
+      - run: flutter build linux -vv
+        name: flutter debug compile
+      - run: flutter_distributor package --platform linux --targets rpm
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux
+          path: ./dist
 #  windows:
 #    runs-on: windows-latest
 #    steps:

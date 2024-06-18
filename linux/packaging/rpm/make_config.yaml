@@ -5,7 +5,7 @@ vendor: zhangjian
 packager: zhangjian
 packagerEmail: 2242634757@qq.com
 license: none
-build_arch: aarch64
+build_arch: x86_64
 requires:
   - libnotify
   - libayatana-appindicator3
