@@ -221,7 +221,8 @@ class FlixPermissionUtils {
 
     for (var permission in permissions) {
       isGranted = isGranted & await permission.isGranted;
-      talker.debug('permission: $permission to $isGranted');
+
+      talker.debug('permission: $permission to $isGranted, isDenied: ${await permission.isDenied}, isPermanentlyDenied: ${await permission.isPermanentlyDenied}, isRestricted: ${await permission.isRestricted}, isLimited: ${await permission.isLimited}, isProvisional: ${await permission.isProvisional}');
       if (!isGranted) {
         break;
       }
@@ -231,13 +232,17 @@ class FlixPermissionUtils {
 
   static Future<void> _openAppSettings() async {
     try {
-      final info = await PackageInfo.fromPlatform();
-      AndroidIntent intent = AndroidIntent(
-        action: "android.settings.APPLICATION_DETAILS_SETTINGS",
-        package: info.packageName,
-        data: "package:${info.packageName}",
-      );
-      await intent.launch();
+      if (Platform.isAndroid) {
+        final info = await PackageInfo.fromPlatform();
+        AndroidIntent intent = AndroidIntent(
+          action: "android.settings.APPLICATION_DETAILS_SETTINGS",
+          package: info.packageName,
+          data: "package:${info.packageName}",
+        );
+        await intent.launch();
+      } else {
+        await openAppSettings();
+      }
     } catch (e, stackTrace) {
       talker.error('failed to launch settings', e, stackTrace);
     }
