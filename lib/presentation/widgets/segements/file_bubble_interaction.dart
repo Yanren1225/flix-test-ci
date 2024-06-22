@@ -6,6 +6,7 @@ import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/segements/bubble_context_menu.dart';
 import 'package:flix/utils/file/file_helper.dart';
@@ -69,7 +70,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
 
     return ModalAnchor(
       tag: contextMenuTag,
-      child: ClipRRect(
+      child: FlixClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
             radius: 12,
@@ -124,7 +125,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
             },
             child: ScaleTransition(
                 scale: _animation,
-                child: ClipRRect(
+                child: FlixClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: widget.child))),
       ),

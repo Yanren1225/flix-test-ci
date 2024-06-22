@@ -1,3 +1,4 @@
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +47,7 @@ class MaskLoadingState extends State<MaskLoading> with RouteAware {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.45)),
+      decoration: FlixDecoration(color: const Color.fromRGBO(0, 0, 0, 0.45)),
       child: Visibility(
         visible: showLoading,
         child: Center(

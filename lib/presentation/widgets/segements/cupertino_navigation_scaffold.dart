@@ -1,3 +1,4 @@
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flix/network/multicast_client_provider.dart';
@@ -47,7 +48,7 @@ class CupertinoNavigationScalffoldState
     final slivers = [
       SliverPinnedHeader(
           child: DecoratedBox(
-            decoration: BoxDecoration(
+            decoration: FlixDecoration(
                 color: const Color.fromARGB(255, 247, 247, 247)),
             child: SafeArea(
               child: Center(

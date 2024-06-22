@@ -1,3 +1,4 @@
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/utils/void_future_callback.dart';
 import 'package:flutter/cupertino.dart';
@@ -54,7 +55,7 @@ class FlixBottomSheet extends StatelessWidget {
                 child: Container(
                   margin:
                       const EdgeInsets.only(left: 16, right: 16, bottom: 20),
-                  decoration: BoxDecoration(
+                  decoration: FlixDecoration(
                     borderRadius: BorderRadius.circular(30),
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,

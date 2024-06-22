@@ -1,3 +1,4 @@
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -43,7 +44,7 @@ class FlixToast {
   Container _body(String icon, String message) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 17.0),
-      decoration: BoxDecoration(
+      decoration: FlixDecoration(
         borderRadius: BorderRadius.circular(25.0),
         color: Colors.white,
         boxShadow: [

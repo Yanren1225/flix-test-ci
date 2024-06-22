@@ -24,7 +24,7 @@ class ProgressPainter extends CustomPainter {
     if (color != null) {
       paint.color = color!;
     }
-    // canvas.clipRRect(RRect.fromRectAndRadius(
+    // canvas.FlixClipRRect(RRect.fromRectAndRadius(
     //     Offset.zero & size, Radius.circular(size.height / 2)));
     // canvas.drawRRect(
     //     RRect.fromRectAndRadius(
