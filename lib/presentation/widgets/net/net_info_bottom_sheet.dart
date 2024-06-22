@@ -10,11 +10,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-showNetInfoBottomSheet(BuildContext context, String apName, String wifiName) async {
+showNetInfoBottomSheet(
+    BuildContext context, String apName, String wifiName) async {
   await showCupertinoModalPopup(
       context: context,
       builder: (_context) {
-        return NetInfoBottomSheet(apName: apName, wifiName: wifiName,);
+        return NetInfoBottomSheet(
+          apName: apName,
+          wifiName: wifiName,
+        );
       });
 }
 
@@ -22,7 +26,8 @@ class NetInfoBottomSheet extends StatelessWidget {
   final String apName;
   final String wifiName;
 
-  const NetInfoBottomSheet({Key? key, required this.apName, required this.wifiName})
+  const NetInfoBottomSheet(
+      {Key? key, required this.apName, required this.wifiName})
       : super(key: key);
 
   @override
@@ -31,7 +36,10 @@ class NetInfoBottomSheet extends StatelessWidget {
       title: "网络连接信息",
       child: Padding(
           padding: EdgeInsets.only(top: 24, bottom: 28),
-          child: NetInfoList(apName: apName, wifiName: wifiName,)),
+          child: NetInfoList(
+            apName: apName,
+            wifiName: wifiName,
+          )),
     );
   }
 }
@@ -110,7 +118,8 @@ class NetInfoListTile extends StatelessWidget {
                   icon,
                   width: 20,
                   height: 20,
-                  colorFilter: const ColorFilter.mode(FlixColor.blue, BlendMode.srcIn),
+                  colorFilter:
+                      const ColorFilter.mode(FlixColor.blue, BlendMode.srcIn),
                 ),
                 const SizedBox(
                   width: 4,
@@ -129,14 +138,20 @@ class NetInfoListTile extends StatelessWidget {
               visible: action != null,
               child: InkWell(
                   onTap: onTap,
-                  child: DecoratedBox(
-                      decoration: FlixDecoration(color: FlixColor.red, borderRadius: const BorderRadius.all(Radius.circular(100))),
+                  child: Container(
+                      height: 26,
+                      decoration: FlixDecoration(
+                          color: FlixColor.red,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(13))),
                       child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 6),
-                          child: Text(
-                            action ?? "",
-                            style: FlixTextStyle.button,
+                              horizontal: 16),
+                          child: Center(
+                            child: Text(
+                              action ?? "",
+                              style: FlixTextStyle.button,
+                            ),
                           ))))),
         ],
       ),
