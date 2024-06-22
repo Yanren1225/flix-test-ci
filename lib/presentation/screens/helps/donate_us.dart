@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -102,7 +104,7 @@ class DonateUSScreenState extends State<DonateUSScreen> {
         },
         child: Container(
             height: 44,
-            decoration: BoxDecoration(
+            decoration: FlixDecoration(
               color: isSelectButton
                   ? const Color.fromRGBO(42, 174, 103, 0.1)
                   : Colors.transparent, // 设置背景颜色
@@ -127,7 +129,7 @@ class DonateUSScreenState extends State<DonateUSScreen> {
     return Container(
         margin: const EdgeInsets.only(top: 30),
         height: 370,
-        child: ClipRRect(
+        child: FlixClipRRect(
             borderRadius: BorderRadius.circular(10.0),
             child: Image.asset(
               isWx()

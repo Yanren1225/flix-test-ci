@@ -1,3 +1,4 @@
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -18,7 +19,7 @@ class SettingsItemWrapper extends StatelessWidget {
     return Column(
       children: [
         DecoratedBox(
-          decoration: BoxDecoration(
+          decoration: FlixDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(topRadius ? 14 : 0),

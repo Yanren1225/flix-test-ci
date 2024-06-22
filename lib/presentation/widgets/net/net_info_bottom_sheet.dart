@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flix/domain/hotspot/hotspot_manager.dart';
 import 'package:flix/network/multicast_client_provider.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/style/flix_text_style.dart';
 import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
@@ -129,7 +130,7 @@ class NetInfoListTile extends StatelessWidget {
               child: InkWell(
                   onTap: onTap,
                   child: DecoratedBox(
-                      decoration: const BoxDecoration(color: FlixColor.red, borderRadius: BorderRadius.all(Radius.circular(100))),
+                      decoration: FlixDecoration(color: FlixColor.red, borderRadius: const BorderRadius.all(Radius.circular(100))),
                       child: Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 6),

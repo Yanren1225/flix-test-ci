@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flix/domain/hotspot/hotspot_manager.dart';
 import 'package:flix/domain/lifecycle/AppLifecycle.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/style/flix_text_style.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
@@ -332,7 +333,7 @@ Widget buildHotspotContent(
                   child: Container(
                     width: double.infinity,
                       height: 54,
-                      decoration: const BoxDecoration(
+                      decoration: FlixDecoration(
                           color: FlixColor.blue,
                           borderRadius: BorderRadius.all(Radius.circular(16))),
                       child: Center(

@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:flix/domain/androp_context.dart';
@@ -211,7 +213,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
     }
 
     final _innerBubble = Container(
-      decoration: const BoxDecoration(color: backgroundColor),
+      decoration: FlixDecoration(color: backgroundColor),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return SizedBox(
@@ -329,7 +331,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
     Widget innerBubble;
     if (!entity.isFromMe(andropContext.deviceId) &&
         sharedFile.state == FileState.waitToAccepted) {
-      innerBubble = ClipRRect(
+      innerBubble = FlixClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           radius: 12,

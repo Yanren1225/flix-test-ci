@@ -1,3 +1,4 @@
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 
@@ -23,19 +24,19 @@ class SearchBoxState extends State<SearchBox> {
           width: screenWidth,
           height: 54,
           margin: EdgeInsets.only(left: marginLeft.toDouble(),right: marginLeft.toDouble(),top: 10,bottom: 10),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),color: Colors.white),
+          decoration: FlixDecoration(borderRadius: BorderRadius.circular(8),color: Colors.white),
           child: TextField(
             cursorColor: Colors.black,
             decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: '搜索',
-                hintStyle: TextStyle(
+                hintStyle: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: Color.fromRGBO(102, 102, 102, 1)).fix(),
                 contentPadding:
-                    EdgeInsets.only(left: 48, top: 14, right: 12, bottom: 14),
-                prefixIcon: Icon(
+                    const EdgeInsets.only(left: 48, top: 14, right: 12, bottom: 14),
+                prefixIcon: const Icon(
                   Icons.search_rounded,
                   size: 20,
                 ),

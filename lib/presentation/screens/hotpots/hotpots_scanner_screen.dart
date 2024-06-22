@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/presentation/screens/hotpots/connect_hotspot_screen.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/style/flix_text_style.dart';
@@ -85,7 +86,7 @@ class _HotpotsScannerScreenState extends State<HotpotsScannerScreen> {
               Text("打开 Flix 二维码，快速建立热点连接。",
                   style: FlixTextStyle.title_secondary),
               const SizedBox(height: 40),
-              ClipRRect(
+              FlixClipRRect(
                 borderRadius: BorderRadius.circular(30),
                 child: AspectRatio(
                   aspectRatio: 1,

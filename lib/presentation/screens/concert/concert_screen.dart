@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flix/domain/settings/SettingsRepo.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:file_selector/file_selector.dart';
@@ -373,12 +375,13 @@ class InputAreaState extends State<InputArea> {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
-          decoration: const BoxDecoration(
+          decoration: FlixDecoration(
               color: Color.fromRGBO(242, 242, 242, 0.8),
-              border: Border(
-                  top: BorderSide(
-                color: Color.fromRGBO(240, 240, 240, 1),
-              ))),
+              // border: Border(
+              //     top: BorderSide(
+              //   color: Color.fromRGBO(240, 240, 240, 1),
+              // ))
+          ),
           child: Padding(
             padding:
                 EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
@@ -527,9 +530,9 @@ class InputAreaState extends State<InputArea> {
                             backgroundColor: MaterialStateColor.resolveWith(
                                 (states) =>
                                     const Color.fromRGBO(0, 122, 255, 1)),
-                            shape: MaterialStatePropertyAll<
-                                RoundedRectangleBorder>(RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
+                            shape: const MaterialStatePropertyAll<
+                                SmoothRectangleBorder>(SmoothRectangleBorder(
+                              borderRadius: SmoothBorderRadius.all(SmoothRadius(cornerRadius: 10, cornerSmoothing: 0.6, )),
                             ))),
                         icon: const Icon(
                           Icons.arrow_upward_sharp,

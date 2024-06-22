@@ -4,6 +4,7 @@ import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/basic/flix_thumbnail_provider.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/aspect_ratio_video.dart';
@@ -110,10 +111,10 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
-          content = const AspectRatio(
+          content = AspectRatio(
             aspectRatio: 1.333333,
             child: DecoratedBox(
-              decoration: BoxDecoration(color: Colors.white),
+              decoration: FlixDecoration(color: Colors.white),
               child: PreviewErrorWidget(),
             ),
           );
@@ -139,9 +140,9 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
     return Stack(
       fit: StackFit.passthrough,
       children: [
-        const DecoratedBox(
-          decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
-          child: Center(
+        DecoratedBox(
+          decoration: FlixDecoration(color: const Color.fromRGBO(0, 0, 0, 0.5)),
+          child: const Center(
             child: SizedBox(
                 width: 18,
                 height: 18,
@@ -166,7 +167,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
       children: [
         _buildInlineVideoPlayer(true, sharedVideo, true),
         Container(
-          decoration: BoxDecoration(color: Colors.black.withOpacity(0.5)),
+          decoration: FlixDecoration(color: Colors.black.withOpacity(0.5)),
           width: double.infinity,
           height: double.infinity,
         ),
@@ -195,7 +196,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
       children: [
         _buildInlineVideoPlayer(true, sharedVideo, true),
         Container(
-          decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+          decoration: FlixDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
           width: double.infinity,
           height: double.infinity,
           child: const SizedBox(),
@@ -211,7 +212,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
   Container _buildAspectContent(
       Color backgroundColor, SharedFile sharedVideo, Widget content) {
     return Container(
-      decoration: BoxDecoration(color: backgroundColor),
+      decoration: FlixDecoration(color: backgroundColor),
       child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
         const maxPhysicalSize = 250.0;

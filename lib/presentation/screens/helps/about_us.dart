@@ -1,3 +1,5 @@
+import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
@@ -67,7 +69,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
                       child: Align(
                         alignment: Alignment.topLeft,
                         child: DecoratedBox(
-                            decoration: BoxDecoration(
+                            decoration: FlixDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(10)),
                             child: widgets[index]),
@@ -91,7 +93,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   }
 
   Widget logo() {
-    return ClipRRect(
+    return FlixClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Image.asset(
         'assets/images/logo.jpg',

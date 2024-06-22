@@ -4,21 +4,18 @@ import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/basic/flix_thumbnail_provider.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/bubbles/accept_media_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/base_file_bubble.dart';
 import 'package:flix/presentation/widgets/bubbles/bubble_decoration_widget.dart';
-import 'package:flix/presentation/widgets/bubbles/state_progress_bar.dart';
 import 'package:flix/presentation/widgets/bubbles/trans_info_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/preview_error_widget.dart';
 import 'package:flix/utils/platform_utils.dart';
-import 'package:flix/utils/text/text_extension.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class ShareImageBubble extends BaseFileBubble {
@@ -122,7 +119,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
     return AspectRatio(
       aspectRatio: 1.333333,
       child: DecoratedBox(
-        decoration: const BoxDecoration(color: Colors.white),
+        decoration: FlixDecoration(color: Colors.white),
         child: _imageErrorWidget(),
       ),
     );
@@ -132,8 +129,8 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
     return Stack(
       fit: StackFit.passthrough,
       children: [
-        const DecoratedBox(
-          decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+        DecoratedBox(
+          decoration: FlixDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
           child: Center(
             child: SizedBox(
                 width: 18,
@@ -164,7 +161,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
       fit: StackFit.passthrough,
       children: [
         Container(
-          decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+          decoration: FlixDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
           width: double.infinity,
           height: double.infinity,
           child: _normalContent(sharedImage, _w, _h),
@@ -182,7 +179,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
       fit: StackFit.passthrough,
       children: [
         Container(
-          decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+          decoration: FlixDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
           width: double.infinity,
           height: double.infinity,
           child: _normalContent(sharedImage, _w, _h),
@@ -211,7 +208,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
       SharedFile sharedImage,
       Widget Function(int? cacheWidth, int? cacheHeight) content) {
     return DecoratedBox(
-      decoration: BoxDecoration(color: backgroundColor),
+      decoration: FlixDecoration(color: backgroundColor),
       child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
         const maxPhysicalSize = 250.0;

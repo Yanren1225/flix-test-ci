@@ -5,6 +5,7 @@ import 'package:flix/domain/notification/BadgeService.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/wifi_or_ap_name.dart';
 import 'package:flix/network/multicast_client_provider.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/widgets/basic/icon_label_button.dart';
 import 'package:flix/presentation/widgets/device_name/name_edit_bottom_sheet.dart';
@@ -50,7 +51,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware, WidgetsBin
     return Scaffold(
       body: Container(
         decoration:
-            const BoxDecoration(color: Color.fromARGB(255, 247, 247, 247)),
+            FlixDecoration(color: Color.fromARGB(255, 247, 247, 247)),
         child: Stack(
           children: [
             ClipRect(
@@ -321,7 +322,7 @@ class HistoryItem extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: DecoratedBox(
-            decoration: BoxDecoration(
+            decoration: FlixDecoration(
               color: selected ? const Color.fromRGBO(230, 230, 230, 1) : null,
               borderRadius: selected ? BorderRadius.circular(10) : null,
             ),
