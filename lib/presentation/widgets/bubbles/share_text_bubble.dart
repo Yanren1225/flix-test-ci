@@ -220,7 +220,7 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
       BubbleContextMenuItemType.Delete: () {
         showCupertinoModalPopup(
             context: context,
-            builder: (context) => DeleteMessageBottomSheet(onConfirm: () {
+            builder: (context) => DeleteMessageBottomSheet(onConfirm: () async {
               concertProvider.deleteBubble(entity);
             }));
       },

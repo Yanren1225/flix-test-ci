@@ -6,7 +6,7 @@ import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/style/flix_text_style.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
-import 'package:flix/utils/flix_permission_utils.dart';
+import 'package:flix/utils/permission/flix_permission_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

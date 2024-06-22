@@ -271,7 +271,7 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
                   showCupertinoModalPopup(
                       context: context,
                       builder: (context) {
-                        return DeleteMessageBottomSheet(onConfirm: () {
+                        return DeleteMessageBottomSheet(onConfirm: () async {
                           if (concertProvider.selectedItems.isEmpty) {
                             return;
                           }

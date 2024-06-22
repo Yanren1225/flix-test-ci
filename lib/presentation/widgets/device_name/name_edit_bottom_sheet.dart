@@ -58,7 +58,7 @@ class NameEditBottomSheetState extends State<NameEditBottomSheet> {
           ),
         ),
         buttonText: '完成',
-        onClick: () {
+        onClick: () async {
           _rename(name);
         },
       ),

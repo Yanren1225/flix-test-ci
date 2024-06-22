@@ -142,11 +142,7 @@ Future<bool> _checkPermission(BuildContext? context, List<Permission> permission
               context: context,
               builder: (_context) {
                 return PermissionBottomSheet(title: title, subTitle: subTitle, onConfirm: () async {
-                  if (requestCount >= 2 || await isAnyPermanentlyDenied(permissions)) {
                     await _openAppSettings();
-                  } else {
-                    await _checkPermission(context, permissions, title, subTitle, requestCount: ++requestCount);
-                  }
                 });
               });
         }

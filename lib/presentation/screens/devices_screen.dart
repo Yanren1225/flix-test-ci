@@ -14,7 +14,7 @@ import 'package:flix/presentation/widgets/net/net_info_bottom_sheet.dart';
 import 'package:flix/utils/PlatformUtil.dart';
 import 'package:flix/utils/android/android_utils.dart';
 import 'package:flix/utils/device/device_utils.dart';
-import 'package:flix/utils/flix_permission_utils.dart';
+import 'package:flix/utils/permission/flix_permission_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -235,7 +235,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware, WidgetsBin
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     BadgeService.instance.addOnBadgesChangedListener(_onBadgesChanged);
-    FlixPermissionUtils.checkWifiLocationPermission(context).then((value) {
+    FlixPermissionUtils.checkAccessWifiNamePermission(context).then((value) {
       if (value && mounted) {
         final deviceProvider =
             MultiCastClientProvider.of(context, listen: false);

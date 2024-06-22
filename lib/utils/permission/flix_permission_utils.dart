@@ -4,19 +4,34 @@ import 'package:android_intent/android_intent.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/permission/permission_bottom_sheet.dart';
+import 'package:flix/utils/permission/flix_permission_tape.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class FlixPermissionUtils {
-  static Future<bool> checkWifiLocationPermission(BuildContext? context) async {
-    if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
-      return await checkPermission(context, [Permission.locationWhenInUse],
-          '位置权限', '获取当前WiFi名称等信息，需要获取设备的精确位置权限');
+  static Future<bool> checkAccessWifiNamePermission(
+      BuildContext context) async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      final permissions = [Permission.locationWhenInUse];
+      bool isGranted = await isAllGranted(permissions);
+      if (isGranted) return true;
+      if (await FlixPermissionTape.isApplied(ApplyPermissionReason.wifiName)) return false;
+      await _showPermissionPromptPopup(
+          context, '位置权限', '获取当前WiFi名称信息，需要获取设备的精确位置权限', () async {
+            if (await isAnyPermanentlyDenied(permissions)) {
+              await _openAppSettings();
+            } else {
+              await requestAllPermissions(permissions);
+            }
+      });
+      FlixPermissionTape.applied(ApplyPermissionReason.wifiName);
+      return await isAllGranted(permissions);
     } else {
       return true;
     }
+
   }
 
   static Future<bool> checkHotspotPermission(BuildContext? context) async {
@@ -25,18 +40,18 @@ class FlixPermissionUtils {
       DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
       final androidInfo = await deviceInfoPlugin.androidInfo;
       if (androidInfo.version.sdkInt > 32) {
-        return await checkPermission(
+        return await checkNecessaryPermissions(
             context,
             [Permission.nearbyWifiDevices, Permission.locationWhenInUse],
             '缺少权限',
             '开启热点需要您授予访问附近设备和位置权限');
       } else {
-        return await checkPermission(
+        return await checkNecessaryPermissions(
             context, [Permission.locationWhenInUse], '位置权限', '开启热点需要您授予位置权限');
       }
       // <= 32, fine_location
     } else if (Platform.isIOS) {
-      return await checkPermission(
+      return await checkNecessaryPermissions(
           context, [Permission.locationWhenInUse], '位置权限', '开启热点需要您授予位置权限');
     } else {
       return true;
@@ -45,7 +60,7 @@ class FlixPermissionUtils {
 
   static Future<bool> checkCameraPermission(BuildContext? context) async {
     if (Platform.isAndroid) {
-      return await checkPermission(
+      return await checkNecessaryPermissions(
           context, [Permission.camera], '相机权限', '扫一扫需要您授予相机权限');
     } else {
       return true;
@@ -77,7 +92,7 @@ class FlixPermissionUtils {
 
   static Future<bool> checkStoragePermissionOnOldPlatform(
       BuildContext? context) async {
-    return await checkPermission(
+    return await checkNecessaryPermissions(
         context, [Permission.storage], '存储权限', '接收文件需要设备的存储权限');
   }
 
@@ -86,13 +101,13 @@ class FlixPermissionUtils {
       DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
       final androidInfo = await deviceInfoPlugin.androidInfo;
       if (androidInfo.version.sdkInt >= 33) {
-        return await checkPermission(
+        return await checkNecessaryPermissions(
             context,
             [Permission.photos, Permission.accessMediaLocation],
             '访问照片权限',
             '选择照片需要获取设备的访问照片权限');
       } else if (androidInfo.version.sdkInt >= 29) {
-        return await checkPermission(
+        return await checkNecessaryPermissions(
             context,
             [Permission.storage, Permission.accessMediaLocation],
             '访问照片权限',
@@ -110,13 +125,13 @@ class FlixPermissionUtils {
       DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
       final androidInfo = await deviceInfoPlugin.androidInfo;
       if (androidInfo.version.sdkInt >= 33) {
-        return await checkPermission(
+        return await checkNecessaryPermissions(
             context,
             [Permission.videos, Permission.accessMediaLocation],
             '访问视频权限',
             '选择视频需要获取设备的访问视频权限');
       } else if (androidInfo.version.sdkInt >= 29) {
-        return await checkPermission(
+        return await checkNecessaryPermissions(
             context,
             [Permission.storage, Permission.accessMediaLocation],
             '访问视频权限',
@@ -129,12 +144,18 @@ class FlixPermissionUtils {
     }
   }
 
-  static Future<bool> checkPermission(BuildContext? context,
-      List<Permission> permissions, String title, String subTitle) async {
-    return await _checkPermission(context, permissions, title, subTitle);
+  static Future<bool> checkPermissions(
+      BuildContext? context, List<Permission> permissions) async {
+    return await requestAllPermissions(permissions);
   }
 
-  static Future<bool> _checkPermission(BuildContext? context,
+  static Future<bool> checkNecessaryPermissions(BuildContext? context,
+      List<Permission> permissions, String title, String subTitle) async {
+    return await _checkNecessaryPermissions(
+        context, permissions, title, subTitle);
+  }
+
+  static Future<bool> _checkNecessaryPermissions(BuildContext? context,
       List<Permission> permissions, String title, String subTitle,
       {int requestCount = 0}) async {
     if (Platform.isAndroid || Platform.isIOS || Platform.isWindows) {
@@ -158,25 +179,10 @@ class FlixPermissionUtils {
         if (!isGranted) {
           talker.error('$permissions permission permanently denied');
           if (context != null) {
-            await showCupertinoModalPopup(
-                context: context,
-                builder: (_context) {
-                  return PermissionBottomSheet(
-                      title: title,
-                      subTitle: subTitle,
-                      onConfirm: () async {
-                        await _openAppSettings();
-                        //
-                        // if (requestCount >= 2 ||
-                        //     await isAnyPermanentlyDenied(permissions)) {
-                        //   await _openAppSettings();
-                        // } else {
-                        //   await _checkPermission(
-                        //       context, permissions, title, subTitle,
-                        //       requestCount: ++requestCount);
-                        // }
-                      });
-                });
+            await _showPermissionPromptPopup(context, title, subTitle,
+                () async {
+              await _openAppSettings();
+            });
           }
 
           return false;
@@ -188,6 +194,18 @@ class FlixPermissionUtils {
       }
     }
     return true;
+  }
+
+  static Future<void> _showPermissionPromptPopup(BuildContext context,
+      String title, String subTitle, Future<void> Function() onConfirm) async {
+    await showCupertinoModalPopup(
+        context: context,
+        builder: (_context) {
+          return PermissionBottomSheet(
+              title: title,
+              subTitle: subTitle,
+              onConfirm: onConfirm);
+        });
   }
 
   static Future<bool> requestAllPermissions(
@@ -222,7 +240,8 @@ class FlixPermissionUtils {
     for (var permission in permissions) {
       isGranted = isGranted & await permission.isGranted;
 
-      talker.debug('permission: $permission to $isGranted, isDenied: ${await permission.isDenied}, isPermanentlyDenied: ${await permission.isPermanentlyDenied}, isRestricted: ${await permission.isRestricted}, isLimited: ${await permission.isLimited}, isProvisional: ${await permission.isProvisional}');
+      talker.debug(
+          'permission: $permission to $isGranted, isDenied: ${await permission.isDenied}, isPermanentlyDenied: ${await permission.isPermanentlyDenied}, isRestricted: ${await permission.isRestricted}, isLimited: ${await permission.isLimited}, isProvisional: ${await permission.isProvisional}');
       if (!isGranted) {
         break;
       }

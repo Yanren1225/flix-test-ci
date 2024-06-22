@@ -167,7 +167,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
       BubbleContextMenuItemType.Delete: () {
         showCupertinoModalPopup(
             context: context,
-            builder: (context) => DeleteMessageBottomSheet(onConfirm: () {
+            builder: (context) => DeleteMessageBottomSheet(onConfirm: () async {
                   concertProvider.deleteBubble(widget.bubble);
                 }));
       },

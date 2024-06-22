@@ -53,7 +53,7 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
                 return ReadSendFileItem(file: file);
               }),
         ),
-        onClick: () {
+        onClick: () async {
           _sendFiles(files);
         });
   }
