@@ -53,6 +53,10 @@ class ConcertService {
     return await shipService.confirmReceiveFile(uiBubble.from, uiBubble.shareable.id);
   }
 
+  Future<void> confirmReceiveDirectory(UIBubble uiBubble) async {
+    return await shipService.confirmReceiveDirectory(uiBubble.from, uiBubble.shareable.id);
+  }
+
   Future<void> cancelSend(UIBubble uiBubble) async {
     return await shipService.cancelSend(uiBubble);
   }

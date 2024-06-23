@@ -22,24 +22,24 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
-class FileBubbleInteraction extends StatefulWidget {
+class BubbleInteraction extends StatefulWidget {
   final UIBubble bubble;
-  String filePath;
+  String path;
   final Widget child;
   final bool clickable;
 
-  FileBubbleInteraction(
+  BubbleInteraction(
       {super.key,
       required this.bubble,
-      required this.filePath,
+      required this.path,
       required this.child,
       required this.clickable});
 
   @override
-  State<StatefulWidget> createState() => FileBubbleIneractionState();
+  State<StatefulWidget> createState() => BubbleInteractionState();
 }
 
-class FileBubbleIneractionState extends State<FileBubbleInteraction>
+class BubbleInteractionState extends State<BubbleInteraction>
     with TickerProviderStateMixin {
   var tapDownTime = 0;
   Offset? tapDown = null;
@@ -66,7 +66,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
         // setState(() {});
       });
 
-    final sharedFile = widget.bubble.shareable as SharedFile;
+    final sharedRes = widget.bubble.shareable;
 
     return ModalAnchor(
       tag: contextMenuTag,
@@ -105,11 +105,16 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
             onTap: () async {
               if (!widget.clickable) return;
               // _controller.forward().whenComplete(() => _controller.reverse());
-              _openFile(sharedFile.content.resourceId, widget.filePath).then((isSuccess) {
-                if (!isSuccess) {
-                  _openDir();
-                }
-              });
+              if (SharedFile is SharedFile) {
+                _openFile(sharedRes.content.resourceId, widget.path)
+                    .then((isSuccess) {
+                  if (!isSuccess) {
+                    _openFileDir();
+                  }
+                });
+              } else {
+                _openDirectoryDir();
+              }
             },
             onSecondaryTapDown: (detials) {
               _showBubbleContextMenu(context, detials.localPosition,
@@ -160,7 +165,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
         widget.bubble,
         items, {
       BubbleContextMenuItemType.Location: () {
-        _openDir();
+        _openFileDir();
       },
       BubbleContextMenuItemType.MultiSelect: () {
         concertProvider.enterEditing();
@@ -186,7 +191,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
           final file = await asset.originFile;
           filePath =  file?.path ?? '';
           setState(() {
-            widget.filePath = filePath;
+            widget.path = filePath;
           });
         }
       }
@@ -196,12 +201,12 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
     if (result.type == ResultType.done) {
       return true;
     } else {
-      talker.error('Failed open file: ${widget.filePath}, result: $result');
+      talker.error('Failed open file: ${widget.path}, result: $result');
       return false;
     }
   }
 
-  void _openDir() {
+  void _openFileDir() {
     // fixme 打开android目录
     if (!(widget.bubble.shareable is SharedFile)) return;
     final sharedFile = widget.bubble.shareable as SharedFile;
@@ -217,15 +222,31 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
       _openDownloadDir();
     } else {
       if (Platform.isWindows) {
-        openFileDirectoryOnWindows(widget.filePath);
+        openFileDirectoryOnWindows(widget.path);
       } else {
         OpenDir()
             .openNativeDir(
-            path: widget.filePath)
+            path: widget.path)
             .catchError(
                 (error) => print('Failed to open download folder: $error'));
       }
 
+    }
+  }
+
+  void _openDirectoryDir() {
+    if (Platform.isIOS || Platform.isAndroid) {
+      _openDownloadDir();
+    } else {
+      if (Platform.isWindows) {
+        openFileDirectoryOnWindows(widget.path);
+      } else {
+        OpenDir()
+            .openNativeDir(
+            path: widget.path)
+            .catchError(
+                (error) => print('Failed to open download folder: $error'));
+      }
     }
   }
 

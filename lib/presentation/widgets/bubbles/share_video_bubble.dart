@@ -126,10 +126,10 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
     return BubbleDecorationWidget(
       key: ValueKey(entity.shareable.id),
       entity: entity,
-      child: FileBubbleInteraction(
+      child: BubbleInteraction(
         key: ValueKey(entity.shareable.id),
         bubble: entity,
-        filePath: sharedVideo.content.path ?? '',
+        path: sharedVideo.content.path ?? '',
         clickable: clickable,
         child: _buildAspectContent(backgroundColor, sharedVideo, content),
       ),

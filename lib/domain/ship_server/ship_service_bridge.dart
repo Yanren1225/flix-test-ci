@@ -5,6 +5,7 @@ import 'dart:isolate';
 import 'package:drift/isolate.dart';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/database/database.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
 import 'package:flix/model/isolate/isolate_command.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
@@ -52,6 +53,7 @@ class ShipServiceBridge extends ShipServiceDependency {
   void _listenIsolateMessage() {
     receivePort.listen((message) async {
       final shipCommand = IsolateCommand.fromJson(message);
+      talker.debug("listen cmd：${shipCommand.command}");
       switch (shipCommand.command) {
         case 'isServerLiving':
           final result = await _shipService.isServerLiving();
@@ -71,19 +73,20 @@ class ShipServiceBridge extends ShipServiceDependency {
           await _shipService.send(bubble);
           break;
         case 'confirmReceiveFile':
+        case 'confirmReceiveDirectory':
           final data = jsonDecode(shipCommand.data!);
-          await _shipService.confirmReceiveFile(data['from'], data['bubbleId']);
+          await _shipService.confirmReceiveBubble(data['from'], data['bubbleId']);
           break;
         case 'confirmBreakPoint':
           final data = jsonDecode(shipCommand.data!);
           await _shipService.confirmBreakPoint(data['from'], data['bubbleId']);
           break;
         case 'resend':
-          final data = PrimitiveFileBubble.fromJson(jsonDecode(shipCommand.data!));
+          final data = PrimitiveBubble.fromJson(jsonDecode(shipCommand.data!));
           await _shipService.resend(data);
           break;
         case 'cancelSend':
-          final data = PrimitiveFileBubble.fromJson(jsonDecode(shipCommand.data!));
+          final data = PrimitiveBubble.fromJson(jsonDecode(shipCommand.data!));
           await _shipService.cancelSend(data);
           break;
         case 'pong':

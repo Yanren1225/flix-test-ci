@@ -154,6 +154,16 @@ class ShipServiceProxy extends ApInterface {
         })).toJson());
   }
 
+  Future<void> confirmReceiveDirectory(String from, String bubbleId) async {
+    await _awaitServerReady();
+    sendPort.send(IsolateCommand(
+        'confirmReceiveDirectory',
+        jsonEncode({
+          'from': from,
+          'bubbleId': bubbleId,
+        })).toJson());
+  }
+
   Future<int> getPort() async {
     await _awaitServerReady();
     return await executeTaskWithTalker(syncTasks, 'getPort', () {
@@ -163,7 +173,7 @@ class ShipServiceProxy extends ApInterface {
 
   Future<void> cancelReceive(UIBubble uiBubble) async {
     final bubble = fromUIBubble(uiBubble) as PrimitiveFileBubble;
-    await updateFileShareState(
+    await updateBubbleShareState(
         BubblePool.instance, bubble.id, FileState.cancelled,
         create: bubble);
   }

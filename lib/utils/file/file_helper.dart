@@ -115,6 +115,19 @@ extension PlatformFileConvert on PlatformFile {
   }
 }
 
+extension FileConvert on File {
+  Future<FileMeta> toFileMeta() async {
+    await authPersistentAccess(this.path);
+    return FileMeta(
+        resourceId: '',
+        name: this.path,
+        path: this.path,
+        mimeType: lookupMimeType(this.path) ?? 'application/octet-stream',
+        nameWithSuffix: this.path,
+        size: lengthSync());
+  }
+}
+
 extension ApplicationConvert on Application {
   Future<FileMeta> toFileMeta() async {
     if (this.apkFilePath == null) {
@@ -307,6 +320,9 @@ String mimeIcon(String filePath) {
   } else if (mimeType.startsWith('audio')) {
     return 'assets/images/ic_audio.svg';
   } else if (mimeType.startsWith('application/vnd.android.package-archive')) {
+    return 'assets/images/ic_apk.svg';
+  } else if (mimeType == "/") {
+    // todo wgl
     return 'assets/images/ic_apk.svg';
   } else {
     return 'assets/images/ic_unknown_type.svg';

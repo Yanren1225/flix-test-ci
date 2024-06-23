@@ -140,6 +140,8 @@ class ShipService {
         case BubbleType.App:
           await _sendFileBubble(primitiveBubble as PrimitiveFileBubble);
           break;
+        case BubbleType.Directory:
+          await _sendDirectoryBubble(primitiveBubble as PrimitiveDirectoryBubble);
         default:
           throw UnimplementedError();
       }
@@ -152,7 +154,7 @@ class ShipService {
 
   Future<void> confirmBreakPoint(String from, String bubbleId) async {
     try {
-      await updateFileShareState(_bubblePool, bubbleId, FileState.inTransit,
+      await updateBubbleShareState(_bubblePool, bubbleId, FileState.inTransit,
           waitingForAccept: false);
       var uri = Uri.parse(await _intentUrl(from));
       var fileBubble =
@@ -189,10 +191,10 @@ class ShipService {
     }
   }
 
-  Future<void> confirmReceiveFile(String from, String bubbleId) async {
+  Future<void> confirmReceiveBubble(String from, String bubbleId) async {
     try {
       // 更新接收方状态为接收中
-      await updateFileShareState(_bubblePool, bubbleId, FileState.inTransit,
+      await updateBubbleShareState(_bubblePool, bubbleId, FileState.inTransit,
           waitingForAccept: false);
       var uri = Uri.parse(await _intentUrl(from));
 
@@ -218,31 +220,37 @@ class ShipService {
     }
   }
 
-  Future<void> cancelSend(PrimitiveFileBubble bubble) async {
-    await updateFileShareState(_bubblePool, bubble.id, FileState.cancelled,
+  Future<void> cancelSend(PrimitiveBubble bubble) async {
+    await updateBubbleShareState(_bubblePool, bubble.id, FileState.cancelled,
         create: bubble);
     await _sendCancelMessage(bubble.id, bubble.to);
   }
 
-  Future<void> resend(PrimitiveFileBubble bubble) async {
-    await updateFileShareState(_bubblePool, bubble.id, FileState.waitToAccepted,
+  Future<void> resend(PrimitiveBubble bubble) async {
+    await updateBubbleShareState(
+        _bubblePool, bubble.id, FileState.waitToAccepted,
         create: bubble);
     //已经发送过，c/s都有此记录
     talker.debug("resend",
         "getBreakPoint receiveBytes = ${bubble.content.progress}");
-    if (await dependency.supportBreakPoint(bubble.to) &&
-        bubble.content.progress > 0) {
-      talker.debug("breakPoint", "start ask");
-      askBreakPoint(bubble);
-      return;
+    if (bubble is PrimitiveFileBubble) {
+      if (await dependency.supportBreakPoint(bubble.to) &&
+          bubble.content.progress > 0) {
+        talker.debug("breakPoint", "start ask");
+        askBreakPoint(bubble);
+        return;
+      }
+      await _sendBasicBubble(bubble.copy(
+          content: bubble.content.copy(state: FileState.waitToAccepted)));
+    } else if (bubble is PrimitiveDirectoryBubble) {
+      await _sendBasicBubble(bubble.copy(
+          content: bubble.content.copy(state: FileState.waitToAccepted)));
     }
-    await _sendBasicBubble(bubble.copy(
-        content: bubble.content.copy(state: FileState.waitToAccepted)));
   }
 
   Future<void> _sendCancelMessage(String bubbleId, String to) async {
     try {
-      await updateFileShareState(_bubblePool, bubbleId, FileState.cancelled);
+      await updateBubbleShareState(_bubblePool, bubbleId, FileState.cancelled);
       var uri = Uri.parse(await _intentUrl(to));
 
       var response = await http.post(
@@ -341,7 +349,25 @@ class ShipService {
       talker.warning('取消发送文件: ', e, stackTrace);
     } catch (e, stackTrace) {
       talker.error('发送异常: ', e, stackTrace);
-      updateFileShareState(_bubblePool, fileBubble.id, FileState.sendFailed);
+      updateBubbleShareState(_bubblePool, fileBubble.id, FileState.sendFailed);
+    }
+  }
+
+  Future<void> _sendDirectoryBubble(PrimitiveDirectoryBubble directoryBubble) async {
+    try {
+      var _directoryBubble = directoryBubble.copy(
+          content: await directoryBubble.content.copy(state: FileState.waitToAccepted));
+      await _bubblePool.add(_directoryBubble);
+      await _checkCancel(directoryBubble.id);
+      // todo wgl send with 相对路径
+      await _sendBasicBubble(_directoryBubble.copy(
+          content: _directoryBubble.content
+              .copy(meta: _directoryBubble.content.meta.copy(path: null))));
+    } on CancelException catch (e, stackTrace) {
+      talker.warning('取消发送文件夹: ', e, stackTrace);
+    } catch (e, stackTrace) {
+      talker.error('发送异常: ', e, stackTrace);
+      updateBubbleShareState(_bubblePool, directoryBubble.id, FileState.sendFailed);
     }
   }
 
@@ -349,6 +375,11 @@ class ShipService {
       [void Function()? onCanceled]) async {
     final bubble = await _bubblePool.findLastById(bubbleId);
     if (bubble is PrimitiveFileBubble) {
+      if (bubble.content.state == FileState.cancelled) {
+        onCanceled?.call();
+        throw CancelException();
+      }
+    } else if (bubble is PrimitiveDirectoryBubble) {
       if (bubble.content.state == FileState.cancelled) {
         onCanceled?.call();
         throw CancelException();
@@ -367,18 +398,21 @@ class ShipService {
       _notifyNewBubble(bubble);
       if (await dependency.isAutoReceive() && bubble is PrimitiveFileBubble) {
         await _bubblePool.add(bubble);
-        await confirmReceiveFile(bubble.from, bubble.id);
+        await confirmReceiveBubble(bubble.from, bubble.id);
       } else if (bubble is PrimitiveFileBubble) {
         final before = await _bubblePool.findLastById(bubble.id);
         if (before is PrimitiveFileBubble) {
           // 如果是重新发送，判断是否已经接收，已经接受直接确认接受，否则继续等待接受。
           if (!before.content.waitingForAccept) {
             await _bubblePool.add(bubble);
-            await confirmReceiveFile(bubble.from, bubble.id);
+            await confirmReceiveBubble(bubble.from, bubble.id);
           } else {
             await _bubblePool.add(bubble.copy(
                 content: bubble.content.copy(state: FileState.waitToAccepted)));
           }
+        } else if (bubble is PrimitiveDirectoryBubble) {
+          await _bubblePool.add(bubble);
+          await confirmReceiveBubble(bubble.from, bubble.id);
         } else {
           await _bubblePool.add(bubble);
         }
@@ -433,13 +467,13 @@ class ShipService {
         final response = await request.send();
         if (response.statusCode == 200) {
           talker.debug('发送成功 ${await response.stream.bytesToString()}');
-          updateFileShareState(
+          updateBubbleShareState(
               _bubblePool, fileBubble.id, FileState.sendCompleted);
           _deleteCachedFile(fileBubble, path);
         } else {
           talker.error(
               '发送失败: status code: ${response.statusCode}, ${await response.stream.bytesToString()}');
-          updateFileShareState(
+          updateBubbleShareState(
               _bubblePool, fileBubble.id, FileState.sendFailed);
         }
       });
@@ -447,7 +481,7 @@ class ShipService {
       talker.warning('发送取消: ', e, stackTrace);
     } catch (e, stackTrace) {
       talker.error('发送异常: ', e, stackTrace);
-      updateFileShareState(_bubblePool, fileBubble.id, FileState.sendFailed);
+      updateBubbleShareState(_bubblePool, fileBubble.id, FileState.sendFailed);
     }
     _removeLongTask();
   }
@@ -538,25 +572,36 @@ class ShipService {
       final body = await request.readAsString();
       final intent = TransIntent.fromJson(body);
       final bubble = await _bubblePool.findLastById(intent.bubbleId);
-      if (bubble == null || bubble is! PrimitiveFileBubble) {
+      if (bubble == null ||
+          (bubble is! PrimitiveFileBubble &&
+              bubble is! PrimitiveDirectoryBubble)) {
         return Response.notFound('bubble not found');
       }
       talker.debug("_receiveIntent","action = ${intent.action}");
       switch (intent.action) {
         case TransAction.confirmReceive:
+          if (bubble is PrimitiveFileBubble) {
+            final updatedBubble = await updateBubbleShareState(
+                    _bubblePool, intent.bubbleId, FileState.inTransit)
+                as PrimitiveFileBubble;
+            _sendFileReal(updatedBubble);
+          } else if (bubble is PrimitiveDirectoryBubble) {
+            final updatedBubble = await updateBubbleShareState(
+                    _bubblePool, intent.bubbleId, FileState.inTransit)
+                as PrimitiveDirectoryBubble;
+            for (var element in updatedBubble.content.fileBubbles) {
+              _sendFileBubble(element);
+            }
+          }
           await _checkCancel(bubble.id);
-          final updatedBubble = await updateFileShareState(
-                  _bubblePool, intent.bubbleId, FileState.inTransit)
-              as PrimitiveFileBubble;
-          _sendFileReal(updatedBubble);
           break;
         case TransAction.cancel:
-          await updateFileShareState(
+          await updateBubbleShareState(
               _bubblePool, intent.bubbleId, FileState.cancelled);
           await _checkCancel(intent.bubbleId);
           break;
         case TransAction.confirmBreakPoint:
-          final updatedBubble = await updateFileShareState(
+          final updatedBubble = await updateBubbleShareState(
                   _bubblePool, intent.bubbleId, FileState.inTransit)
               as PrimitiveFileBubble;
           var receiveBytes = intent.extra?[Constants.receiveBytes];
@@ -717,7 +762,7 @@ class ShipService {
     try {
       talker.debug("breakPoint=>","askBreakPoint = ${bubble.to}");
       // 更新接收方状态为接收中
-      await updateFileShareState(_bubblePool, bubble.id, FileState.inTransit,
+      await updateBubbleShareState(_bubblePool, bubble.id, FileState.inTransit,
           waitingForAccept: true);
       var uri = Uri.parse(await _intentUrl(bubble.to));
 
@@ -744,30 +789,46 @@ class ShipService {
   }
 }
 
-Future<PrimitiveBubble> updateFileShareState(
-    BubblePool _bubblePool, String bubbleId, FileState state,
-    {PrimitiveFileBubble? create = null, bool? waitingForAccept = null}) async {
-  var _bubble = await _bubblePool.findLastById(bubbleId);
-  if (_bubble == null) {
+Future<PrimitiveBubble> updateBubbleShareState(
+    BubblePool bubblePool, String bubbleId, FileState state,
+    {PrimitiveBubble? create, bool? waitingForAccept}) async {
+  var bubble = await bubblePool.findLastById(bubbleId);
+  if (bubble == null) {
     if (create != null) {
-      _bubble = create;
+      bubble = create;
     } else {
       throw StateError('Can\'t find bubble by id: $bubbleId');
     }
   }
 
-  if (!(_bubble is PrimitiveFileBubble)) {
+  if (bubble is PrimitiveFileBubble) {
+    final PrimitiveFileBubble copyBubble;
+    if (waitingForAccept == null) {
+      copyBubble = bubble.copy(content: bubble.content.copy(state: state));
+    } else {
+      copyBubble = bubble.copy(
+          content: bubble.content
+              .copy(state: state, waitingForAccept: waitingForAccept));
+    }
+    await bubblePool.add(copyBubble);
+    return copyBubble;
+  } else if (bubble is PrimitiveDirectoryBubble) {
+    final PrimitiveDirectoryBubble copyBubble;
+    if (waitingForAccept == null) {
+      copyBubble =
+          bubble.copy(content: bubble.content.copy(state: state));
+    } else {
+      copyBubble = bubble.copy(
+          content: bubble.content
+              .copy(state: state, waitingForAccept: waitingForAccept));
+    }
+    await bubblePool.add(copyBubble);
+    // 更新子气泡状态
+    copyBubble.content.fileBubbles.forEach((element) async {
+      await bubblePool.add(element);
+    });
+    return copyBubble;
+  } else {
     throw StateError('The Bubble with id: $bubbleId is not a file bubble');
   }
-
-  final copyBubble;
-  if (waitingForAccept == null) {
-    copyBubble = _bubble.copy(content: _bubble.content.copy(state: state));
-  } else {
-    copyBubble = _bubble.copy(
-        content: _bubble.content
-            .copy(state: state, waitingForAccept: waitingForAccept));
-  }
-  await _bubblePool.add(copyBubble);
-  return copyBubble;
 }

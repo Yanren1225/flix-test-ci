@@ -105,10 +105,10 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
     return BubbleDecorationWidget(
       key: ValueKey(entity.shareable.id),
       entity: entity,
-      child: FileBubbleInteraction(
+      child: BubbleInteraction(
         key: ValueKey(entity.shareable.id),
         bubble: entity,
-        filePath: sharedImage.content.path ?? '',
+        path: sharedImage.content.path ?? '',
         clickable: clickable,
         child: _buildAspectContent(backgroundColor, sharedImage, content),
       ),

@@ -9,7 +9,9 @@ import 'package:flix/utils/text/text_extension.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/BadgeService.dart';
+import 'package:flix/domain/settings/SettingsRepo.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/pickable.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
@@ -22,13 +24,13 @@ import 'package:flix/presentation/screens/concert/files_confirm_bottom_sheet.dar
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/multi_select_actions.dart';
 import 'package:flix/presentation/widgets/pick_actions.dart';
-import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/segements/navigation_appbar_scaffold.dart';
+import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:modals/modals.dart';
 import 'package:pasteboard/pasteboard.dart';
 import 'package:provider/provider.dart';
@@ -347,6 +349,23 @@ class InputAreaState extends State<InputArea> {
         BubbleType.File);
   }
 
+  void submitDirectory(DirectoryMeta meta, List<FileMeta> files) async {
+    final directoryId = const Uuid().v4();
+    onSubmit(
+        SharedDirectory(
+            id: directoryId,
+            state: FileState.picked,
+            meta: meta,
+            content: files
+                .map((e) => SharedFile(
+                    id: const Uuid().v4(),
+                    groupId: directoryId,
+                    state: FileState.picked,
+                    content: e))
+                .toList()),
+        BubbleType.Directory);
+  }
+
   void onPicked(List<Pickable> pickables) {
     for (var element in pickables) {
       switch (element.type) {
@@ -361,6 +380,10 @@ class InputAreaState extends State<InputArea> {
           break;
         case PickedFileType.File:
           submitFile((element as PickableFile).content);
+          break;
+        case PickedFileType.Directory:
+          final directory = (element as PickableDirectory);
+          submitDirectory(directory.meta, directory.content);
           break;
         default:
       }

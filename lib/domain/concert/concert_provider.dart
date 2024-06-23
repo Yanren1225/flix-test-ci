@@ -1,5 +1,6 @@
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/model/device_info.dart';
+import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/utils/device/device_utils.dart';
@@ -44,6 +45,9 @@ class ConcertProvider extends ChangeNotifier {
   }
 
   Future<void> confirmReceive(UIBubble uiBubble) async {
+    if (uiBubble.type == BubbleType.Directory) {
+      return await _concertService.confirmReceiveDirectory(uiBubble);
+    }
     return await _concertService.confirmReceiveFile(uiBubble);
   }
 
