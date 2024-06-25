@@ -20,9 +20,12 @@ import 'package:flix/domain/notification/NotificationService.dart';
 import 'package:flix/domain/notification/flix_notification.dart';
 import 'package:flix/domain/ship_server/ship_service_lifecycle_watcher.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
+import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/domain/window/FlixWindowManager.dart';
 import 'package:flix/model/device_info.dart';
+import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/network/multicast_client_provider.dart';
+import 'package:flix/presentation/dialog/new_version_bottomsheet.dart';
 import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
@@ -338,7 +341,8 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
+class _MyHomePageState extends BaseScreenState<MyHomePage>
+    with WindowListener, WidgetsBindingObserver {
   var selectedIndex = 0;
 
   // DeviceInfo? selectedDevice;
@@ -430,11 +434,22 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     flixToast.init(navigatorKey.currentContext!);
     initPlatformState();
     initWindowClose();
     _initNotificationListener();
+    VersionChecker.checkNewVersion(context);
   }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      VersionChecker.checkNewVersion(context);
+    }
+  }
+
 
   void _initNotificationListener() {
     flixNotification.receptionNotificationStream.stream
@@ -477,6 +492,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
   @override
   void dispose() {
     flixNotification.receptionNotificationStream.close();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 

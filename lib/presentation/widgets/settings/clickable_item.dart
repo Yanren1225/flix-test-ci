@@ -7,6 +7,7 @@ class ClickableItem extends StatelessWidget {
   final String label;
   final String? des;
   final String? tail;
+  final Color? tailColor;
   final bool topRadius;
   final bool bottomRadius;
 
@@ -17,6 +18,7 @@ class ClickableItem extends StatelessWidget {
       required this.label,
       this.des,
       this.tail,
+      this.tailColor,
       this.topRadius = true,
       this.bottomRadius = true,
       required this.onClick});
@@ -51,10 +53,10 @@ class ClickableItem extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 6),
                           child: Text(tail ?? "",
-                              style: const TextStyle(
+                              style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
-                                      color: Color.fromRGBO(60, 60, 67, 0.6))
+                                      color: tailColor ?? const Color.fromRGBO(60, 60, 67, 0.6))
                                   .fix()),
                         )),
                     const Icon(Icons.arrow_forward_ios_rounded,
