@@ -28,6 +28,7 @@ import 'package:shelf_multipart/form_data.dart';
 import 'package:shelf_multipart/multipart.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 class ShipService {
   final String did;
@@ -583,7 +584,7 @@ class ShipService {
     String? path = outFile.path;
     String? resourceId = null;
     if (bubble.type == BubbleType.Image || bubble.type == BubbleType.Video) {
-      resourceId = await _saveMediaToAlbumOnIOS(outFile, tag: bubble.id);
+      resourceId = await _saveMediaToAlbumOnMobile(outFile, bubble.type == BubbleType.Image, tag: bubble.id);
       // 保存到相册成功，删除副本
       try {
         if (resourceId != null) {
@@ -604,9 +605,22 @@ class ShipService {
     await _bubblePool.add(updatedBubble);
   }
 
-  Future<String?> _saveMediaToAlbumOnIOS(File outFile, {String? tag}) async {
-    if (Platform.isIOS) {
-      try {
+  Future<String?> _saveMediaToAlbumOnMobile(File outFile, bool isImage, {String? tag}) async {
+    try {
+      if (Platform.isAndroid) {
+        final AssetEntity? entity;
+        if (isImage) {
+          entity = await PhotoManager.plugin.saveImageWithPath(outFile.path, title: outFile.path.split("/").last);
+        } else {
+          entity = await PhotoManager.plugin.saveVideo(outFile, title: outFile.path.split("/").last);
+        }
+        if (entity == null) {
+          talker.error("save to gallery failed");
+          return null;
+        } else {
+          return entity.id;
+        }
+      } else if (Platform.isIOS) {
         final result = await ImageGallerySaver.saveFile(outFile.path, isReturnPathOfIOS: true);
         talker.debug("$tag ios save file result: $result");
         if (result["isSuccess"]) {
@@ -614,9 +628,9 @@ class ShipService {
         } else {
           talker.error("$tag ios save file failed");
         }
-      } catch (e, s) {
-        talker.error("$tag failed to save to gallery", e, s);
       }
+    } catch (e, s) {
+      talker.error("$tag failed to save to gallery", e, s);
     }
     return null;
   }

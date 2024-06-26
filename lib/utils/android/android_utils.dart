@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:android_intent/android_intent.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_app_installer/flutter_app_installer.dart';
 
 class AndroidUtils {
@@ -35,5 +36,20 @@ class AndroidUtils {
       talker.error('install apk failed: ', e, stackTrace);
       return false;
     }
+  }
+
+  static launchGallery() async {
+    try {
+      if (Platform.isAndroid) {
+        AndroidIntent intent = const AndroidIntent(
+            action: 'android.intent.action.VIEW',
+            type: 'vnd.android.cursor.dir/image'
+        );
+        await intent.launch();
+      }
+    } catch (e, s) {
+      talker.error("launch gallery failed", e, s);
+    }
+
   }
 }
