@@ -99,26 +99,32 @@ class VersionChecker {
 
   static Future<void> openDownloadUrl(String version, Function() onDone,
       Function(String errorTips) onError) async {
-    final String url;
-    // https://fl1x.mashiro.asia/download/android
-    // https://fl1x.mashiro.asia/download/mac
-    // https://fl1x.mashiro.asia/download/deb
-    // https://fl1x.mashiro.asia/download/rpm
-    // https://fl1x.mashiro.asia/download/windows
-    if (Platform.isAndroid) {
-      url = 'https://fl1x.mashiro.asia/download/android';
-    } else if (Platform.isWindows) {
-      url = 'https://fl1x.mashiro.asia/download/windows';
-    } else if (Platform.isMacOS) {
-      url = 'https://fl1x.mashiro.asia/download/mac';
-    } else {
-      url = 'https://flix.center';
-    }
-    if (await launchUrlString(url, mode: LaunchMode.externalApplication)) {
-      onDone();
-    } else {
+    try {
+      final String url;
+      // https://fl1x.mashiro.asia/download/android
+      // https://fl1x.mashiro.asia/download/mac
+      // https://fl1x.mashiro.asia/download/deb
+      // https://fl1x.mashiro.asia/download/rpm
+      // https://fl1x.mashiro.asia/download/windows
+      if (Platform.isAndroid) {
+        url = 'https://fl1x.mashiro.asia/download/android';
+      } else if (Platform.isWindows) {
+        url = 'https://fl1x.mashiro.asia/download/windows';
+      } else if (Platform.isMacOS) {
+        url = 'https://fl1x.mashiro.asia/download/mac';
+      } else {
+        url = 'https://flix.center';
+      }
+      if (await launchUrlString(url, mode: LaunchMode.externalApplication)) {
+        onDone();
+      } else {
+        onError('下载安装包失败。下载链接已赋值到剪切板，请手动打开浏览器，并粘贴下载链接');
+      }
+    } catch (e, s) {
+      talker.error("failed to open download url", e, s );
       onError('下载安装包失败。下载链接已赋值到剪切板，请手动打开浏览器，并粘贴下载链接');
     }
+
   }
 
   static Future<void> _downloadPackage(

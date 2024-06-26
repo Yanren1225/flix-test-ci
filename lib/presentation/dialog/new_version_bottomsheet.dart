@@ -16,8 +16,8 @@ class NewVersionBottomSheet extends StatelessWidget {
       subTitle: '建议升级到新版本，获得更好的体验哦～',
       buttonText: '升级',
       onClick: () async {
-        Navigator.of(context).pop();
-        await VersionChecker.openDownloadUrl(version, () => null, (errorTips) => null);
+        VersionChecker.openDownloadUrl(version, () => null, (errorTips) => null);
+        // Navigator.of(context).pop();
       },
       child: Padding(
           padding: const EdgeInsets.only(top: 16, bottom: 24),
