@@ -4,6 +4,7 @@ import 'dart:ffi';
 import 'package:flix/domain/constants.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
+import 'package:flix/utils/file/file_helper.dart';
 
 abstract class PrimitiveBubble<Content> {
   String get id;
@@ -40,7 +41,7 @@ abstract class PrimitiveBubble<Content> {
     }
   }
 
-  Map<String, dynamic> toJson({bool full = false});
+  Map<String, dynamic> toJson({required FilePathSaveType pathSaveType});
 }
 
 class PrimitiveTextBubble extends PrimitiveBubble<String> {
@@ -78,7 +79,7 @@ class PrimitiveTextBubble extends PrimitiveBubble<String> {
   }
 
   @override
-  Map<String, dynamic> toJson({bool full = false}) {
+  Map<String, dynamic> toJson({FilePathSaveType pathSaveType = FilePathSaveType.none}) {
     return {
       'id': id,
       'from': from,
@@ -139,13 +140,13 @@ class PrimitiveFileBubble extends PrimitiveBubble<FileTransfer> {
   }
 
   @override
-  Map<String, dynamic> toJson({bool full = false}) {
+  Map<String, dynamic> toJson({required FilePathSaveType pathSaveType}) {
     return {
       'id': id,
       'from': from,
       'to': to,
       'type': type.index,
-      'content': content.toJson(full: full),
+      'content': content.toJson(pathSaveType: pathSaveType),
       'time': time,
       'groupId': groupId
     };
@@ -223,13 +224,13 @@ class PrimitiveDirectoryBubble extends PrimitiveBubble<DirectoryTransfer> {
   }
 
   @override
-  Map<String, dynamic> toJson({bool full = false}) {
+  Map<String, dynamic> toJson({required FilePathSaveType pathSaveType}) {
     return {
       'id': id,
       'from': from,
       'to': to,
       'type': type.index,
-      'content': content.toJson(full: full),
+      'content': content.toJson(pathSaveType: pathSaveType),
       'time': time,
       'groupId': groupId
     };
@@ -304,15 +305,15 @@ class FileTransfer {
     waitingForAccept = json['waitingForAccept'] ?? true;
   }
 
-  Map<String, dynamic> toJson({bool full = false}) {
+  Map<String, dynamic> toJson({required FilePathSaveType pathSaveType}) {
     final map = {
       'state': state.index,
       'progress': progress,
       'speed': speed,
       'receiveBytes': receiveBytes,
-      'meta': meta.toJson(full: full)
+      'meta': meta.toJson(pathSaveType: pathSaveType)
     };
-    if (full) {
+    if (pathSaveType != FilePathSaveType.none) {
       map['waitingForAccept'] = waitingForAccept;
     }
     return map;
@@ -367,23 +368,28 @@ class DirectoryTransfer {
   }
 
   factory DirectoryTransfer.fromJson(Map<String, dynamic> json) {
+    final meta = DirectoryMeta.fromJson(json['meta'] as Map<String, dynamic>);
     return DirectoryTransfer(
         state: FileState.values[json['state'] ?? FileState.unknown.index],
-        meta: DirectoryMeta.fromJson(json['meta'] as Map<String, dynamic>),
+        meta: meta,
         waitingForAccept: json['waitingForAccept'] ?? true,
-        fileBubbles: (json['fileBubbles'] as List<dynamic>)
-            .map((m) => PrimitiveFileBubble.fromJson(m))
-            .toList()
-    );
+        fileBubbles: (json['fileBubbles'] as List<dynamic>).map((m) {
+          final fileBubble = PrimitiveFileBubble.fromJson(m);
+          return fileBubble.copy(
+              content: fileBubble.content
+                  .copy(meta: fileBubble.content.meta.copy(parent: meta)));
+        }).toList());
   }
 
-  Map<String, dynamic> toJson({bool full = false}) {
+  Map<String, dynamic> toJson({required FilePathSaveType pathSaveType}) {
     final map = {
       'state': state.index,
-      'meta': meta.toJson(full: full),
-      'fileBubbles': _fileBubbles.map((fileBubble) => fileBubble.toJson(full: full)).toList(),
+      'meta': meta.toJson(pathSaveType: pathSaveType),
+      'fileBubbles': _fileBubbles
+          .map((fileBubble) => fileBubble.toJson(pathSaveType: pathSaveType))
+          .toList(),
     };
-    if (full) {
+    if (pathSaveType != FilePathSaveType.none) {
       map['waitingForAccept'] = waitingForAccept;
     }
     return map;
@@ -514,7 +520,7 @@ class UpdateFileStateBubble extends InVisibleBubble<FileState> {
   }
 
   @override
-  Map<String, dynamic> toJson({bool full = false}) {
+  Map<String, dynamic> toJson({required FilePathSaveType pathSaveType}) {
     return {
       'id': id,
       'from': from,

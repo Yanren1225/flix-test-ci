@@ -12,6 +12,7 @@ import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
+import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/services.dart';
 
 import '../isolate/isolate_communication.dart';
@@ -154,7 +155,9 @@ class ShipServiceBridge extends ShipServiceDependency {
 
   @override
   void notifyNewBubble(PrimitiveBubble bubble) {
-    sendPort.send(IsolateCommand('notifyNewBubble', jsonEncode(bubble.toJson(full: true))).toJson());
+    sendPort.send(IsolateCommand('notifyNewBubble',
+            jsonEncode(bubble.toJson(pathSaveType: FilePathSaveType.full)))
+        .toJson());
   }
 
   @override

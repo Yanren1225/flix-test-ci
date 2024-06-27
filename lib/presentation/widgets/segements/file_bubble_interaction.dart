@@ -9,6 +9,7 @@ import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/segements/bubble_context_menu.dart';
+import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -234,7 +235,22 @@ class BubbleInteractionState extends State<BubbleInteraction>
     }
   }
 
-  void _openDirectoryDir() {
+  Future<void> _openDirectoryDir() async {
+    if (widget.bubble.shareable is SharedDirectory) {
+      final p = joinPaths((await getDownloadDirectory()).path,
+          (widget.bubble.shareable as SharedDirectory).meta.name ?? '');
+      try {
+        final Uri uri = Uri.file(p);
+        if (await canLaunchUrl(uri)) {
+          if (await launchUrl(uri)) {
+            return;
+          }
+        }
+      } catch (e) {
+        talker.debug("open err, path=$p");
+      }
+    }
+
     if (Platform.isIOS || Platform.isAndroid) {
       _openDownloadDir();
     } else {

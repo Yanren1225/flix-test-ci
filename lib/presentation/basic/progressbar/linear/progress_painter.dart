@@ -17,6 +17,9 @@ class ProgressPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    if(size.isEmpty || size.width.isNaN || value.isNaN || size.height.isNaN) {
+      return;
+    }
     Paint paint = Paint();
     if (gradient != null) {
       paint.shader = gradient?.createShader(Offset.zero & Size(size.width * value, size.height));

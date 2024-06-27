@@ -23,7 +23,7 @@ Future<PrimitiveBubble?> fromDBEntity(BubbleEntity bubbleEntity, dynamic content
           from: bubbleEntity.fromDevice,
           to: bubbleEntity.toDevice,
           type: BubbleType.values[bubbleEntity.type],
-          content: fromFileContent(content as FileContent),
+          content: fromFileContent(content as FileContent, null),
           groupId: bubbleEntity.groupId);
     case BubbleType.Directory:
       final fileList = await appDatabase.bubblesDao.getContentsByGroupId(
@@ -44,7 +44,7 @@ String fromTextContent(TextContent textContent) {
   return textContent.content;
 }
 
-FileTransfer fromFileContent(FileContent fileContent) {
+FileTransfer fromFileContent(FileContent fileContent, DirectoryMeta? directoryMeta) {
   return FileTransfer(
       state: FileState.values[fileContent.state],
       progress: fileContent.progress,
@@ -59,16 +59,18 @@ FileTransfer fromFileContent(FileContent fileContent) {
           size: fileContent.size,
           path: fileContent.path,
           width: fileContent.width,
-          height: fileContent.height));
+          height: fileContent.height,
+          parent: directoryMeta));
 }
 
 DirectoryTransfer fromDirectoryContent(DirectoryContent content,
     List<FileContent> fileList, BubbleEntity bubbleEntity) {
+  final meta =
+      DirectoryMeta(name: content.name, size: content.size, path: content.path);
   return DirectoryTransfer(
       waitingForAccept: content.waitingForAccept,
       state: FileState.values[content.state],
-      meta: DirectoryMeta(
-          name: content.name, size: content.size, path: content.path),
+      meta: meta,
       fileBubbles: fileList
           .map((e) => PrimitiveFileBubble(
               time: bubbleEntity.time,
@@ -77,6 +79,6 @@ DirectoryTransfer fromDirectoryContent(DirectoryContent content,
               to: bubbleEntity.toDevice,
               groupId: bubbleEntity.id,
               type: BubbleType.File,
-              content: fromFileContent(e)))
+              content: fromFileContent(e, meta)))
           .toList());
 }

@@ -316,9 +316,12 @@ class ShipService {
       await _checkCancel(primitiveBubble.id);
       var uri = Uri.parse(await _getSendBubbleUrl(primitiveBubble));
 
+      final body = jsonEncode(
+          primitiveBubble.toJson(pathSaveType: FilePathSaveType.relative));
+      talker.debug("_sendBasicBubble body=$body");
       var response = await http.post(
         uri,
-        body: jsonEncode(primitiveBubble.toJson()),
+        body: body,
         headers: {"Content-type": "application/json; charset=UTF-8"},
       );
 
@@ -335,16 +338,18 @@ class ShipService {
     }
   }
 
-  Future<void> _sendFileBubble(PrimitiveFileBubble fileBubble) async {
+  Future<void> _sendFileBubble(PrimitiveFileBubble fileBubble,
+      {FileState? fileState = FileState.waitToAccepted}) async {
     try {
       var _fileBubble = fileBubble.copy(
-          content: fileBubble.content.copy(state: FileState.waitToAccepted));
+          content: fileBubble.content.copy(state: fileState));
       await _bubblePool.add(_fileBubble);
       await _checkCancel(fileBubble.id);
       // send with no path
       await _sendBasicBubble(_fileBubble.copy(
-          content: _fileBubble.content
-              .copy(meta: _fileBubble.content.meta.copy(path: null))));
+          content: _fileBubble.content.copy(
+              meta: _fileBubble.content.meta
+                  .copy(path: _fileBubble.content.meta.path))));
     } on CancelException catch (e, stackTrace) {
       talker.warning('取消发送文件: ', e, stackTrace);
     } catch (e, stackTrace) {
@@ -361,8 +366,9 @@ class ShipService {
       await _checkCancel(directoryBubble.id);
       // todo wgl send with 相对路径
       await _sendBasicBubble(_directoryBubble.copy(
-          content: _directoryBubble.content
-              .copy(meta: _directoryBubble.content.meta.copy(path: null))));
+          content: _directoryBubble.content.copy(
+              meta: _directoryBubble.content.meta
+                  .copy(path: _directoryBubble.content.meta.path))));
     } on CancelException catch (e, stackTrace) {
       talker.warning('取消发送文件夹: ', e, stackTrace);
     } catch (e, stackTrace) {
@@ -524,8 +530,12 @@ class ShipService {
               try {
                 final String desDir = await dependency.getSaveDir();
                 await resolvePathOnMacOS(desDir, (desDir) async {
-                  assert(formData.filename != null, "$shareId filename can't be null");
-                  await _saveFileAndAddBubble(desDir, formData, bubble!);
+                  assert(formData.filename != null,
+                      "$shareId filename can't be null");
+                  await _saveFileAndAddBubble(
+                      joinPaths(desDir, bubble!.content.meta.path ?? ''),
+                      formData,
+                      bubble!);
                 });
               } on Error catch (e) {
                 talker.error('receive file error: ', e);

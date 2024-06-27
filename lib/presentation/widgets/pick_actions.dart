@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import 'package:path/path.dart' as path_utils;
 
 import '../../model/ui_bubble/shared_file.dart';
 
@@ -81,7 +82,7 @@ class PickActionAreaState extends State<PickActionsArea> {
           ),
           ProgressAction(
             showProgress: _isDirectoryLoading,
-            icon: 'assets/images/ic_file.svg',
+            icon: 'assets/images/ic_dir.svg',
             onTap: _onDirectoryButtonPressed,
           ),
         ],
@@ -241,22 +242,23 @@ class PickActionAreaState extends State<PickActionsArea> {
 
           if (result != null) {
             var directory = Directory(result);
+            final directoryMeta = DirectoryMeta(
+                name: path_utils.basenameWithoutExtension(directory.path),
+                size: directory.statSync().size,
+                path: directory.path);
             List<FileSystemEntity> entities =
                 directory.listSync(recursive: true);
             List<FileMeta> picks = [];
             for (FileSystemEntity entity in entities) {
               if (entity is File) {
-                final sf = await entity.toFileMeta();
+                final sf = await entity.toFileMeta(parent: directoryMeta);
                 picks.add(sf);
               }
             }
             onPicked([
               PickableDirectory(
                   content: picks,
-                  meta: DirectoryMeta(
-                      name: directory.path.split(Platform.pathSeparator).last,
-                      size: directory.statSync().size,
-                      path: directory.path))
+                  meta: directoryMeta)
             ]);
           }
         }

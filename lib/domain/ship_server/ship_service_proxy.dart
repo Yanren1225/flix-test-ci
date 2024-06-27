@@ -24,6 +24,7 @@ import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/utils/bubble_convert.dart';
 import 'package:flix/utils/compat/CompatUtil.dart';
+import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/services.dart';
 
 class ShipServiceProxy extends ApInterface {
@@ -139,9 +140,11 @@ class ShipServiceProxy extends ApInterface {
   Future<void> send(UIBubble uiBubble) async {
     await _awaitServerReady();
     final primitiveBubble = fromUIBubble(uiBubble);
-    sendPort.send(
-        IsolateCommand('send', jsonEncode(primitiveBubble.toJson(full: true)))
-            .toJson());
+    sendPort.send(IsolateCommand(
+            'send',
+            jsonEncode(
+                primitiveBubble.toJson(pathSaveType: FilePathSaveType.full)))
+        .toJson());
   }
 
   Future<void> confirmReceiveFile(String from, String bubbleId) async {
@@ -181,7 +184,9 @@ class ShipServiceProxy extends ApInterface {
   Future<void> resend(UIBubble uiBubble) async {
     await _awaitServerReady();
     sendPort.send(IsolateCommand(
-            'resend', jsonEncode(fromUIBubble(uiBubble).toJson(full: true)))
+            'resend',
+            jsonEncode(fromUIBubble(uiBubble)
+                .toJson(pathSaveType: FilePathSaveType.full)))
         .toJson());
   }
 
@@ -202,7 +207,9 @@ class ShipServiceProxy extends ApInterface {
   Future<void> cancelSend(UIBubble uiBubble) async {
     await _awaitServerReady();
     sendPort.send(IsolateCommand(
-            'cancelSend', jsonEncode(fromUIBubble(uiBubble).toJson(full: true)))
+            'cancelSend',
+            jsonEncode(fromUIBubble(uiBubble)
+                .toJson(pathSaveType: FilePathSaveType.full)))
         .toJson());
   }
 

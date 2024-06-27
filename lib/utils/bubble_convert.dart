@@ -50,7 +50,7 @@ PrimitiveBubble fromUIBubble(UIBubble bubbleEntity) {
                       time: bubbleEntity.time,
                       groupId: sharedDirectory.id,
                       content: FileTransfer(
-                          meta: e.content,
+                          meta: e.content.copy(parent: sharedDirectory.meta),
                           progress: e.progress,
                           state: e.state)))
                   .toList()));
