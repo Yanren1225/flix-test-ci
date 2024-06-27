@@ -62,6 +62,8 @@
 	<string>我们需要访问您的麦克风，以便您可以录制音频进行分享。</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>我们需要获取WiFi名称并展示在Flix首页，以便您确认当前网络，此过程需要您的位置权限。</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>我们使用的某些第三方组件可能需要访问您的音乐媒体信息。</string>
 	<key>UIFileSharingEnabled</key>
     <true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
