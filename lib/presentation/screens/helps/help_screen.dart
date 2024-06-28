@@ -127,8 +127,57 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                     padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
                     child: QA(question: '传输文件会消耗流量吗？', answer: '不会。'),
                   ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                    child: QA(question: 'Windows端无法接收/发送文件？', answer: trimMultilineString('''
+                    请先按照以下步骤，尝试将flix添加到Windows网络防火墙白名单中：
+                    1. 搜索「允许应用通过Windows防火墙」
+                    2. 点击「更改设置」
+                    3. 点击「允许其他应用」
+                    4. 添加flix.exe路径（C:\\Users\\[用户名]\\AppData\\Roaming\\Flix\\Flix\\flix.exe或C:\\Program Files\\Flix\\flix.exe）
+                    5. 点击「添加」返回到上一页面
+                    6. 查看列表中的flix项，勾选「专用」和「公用」
+                    7. 保存
+                    尝试上述步骤仍旧无法接收，请联系我们。
+                    ''')),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                    child: QA(question: 'PC使用网线时无法接收/发送文件？', answer: '请保证PC和其他设备在一个子网下，即它们的直接上层设备是同一个路由器。若PC通过连接的光猫，其他设备通过Wifi连接的路由器是无法正常接收文件的。'),
+                  ),
                 ],
               )),
     );
+  }
+
+
+  String trimMultilineString(String input) {
+    // 分割成行
+    List<String> lines = input.split('\n');
+
+    // 移除前后空白行
+    while (lines.isNotEmpty && lines.first.trim().isEmpty) {
+      lines.removeAt(0);
+    }
+    while (lines.isNotEmpty && lines.last.trim().isEmpty) {
+      lines.removeLast();
+    }
+
+    if (lines.isEmpty) {
+      return '';
+    }
+
+    // 找到最小的缩进量
+    int minIndent = lines
+        .where((line) => line.trim().isNotEmpty)
+        .map((line) => line.indexOf(RegExp(r'\S')))
+        .reduce((min, indent) => indent < min ? indent : min);
+
+    // 去除每行的缩进
+    String trimmedString = lines
+        .map((line) => line.length > minIndent ? line.substring(minIndent) : line)
+        .join('\n');
+
+    return trimmedString;
   }
 }
