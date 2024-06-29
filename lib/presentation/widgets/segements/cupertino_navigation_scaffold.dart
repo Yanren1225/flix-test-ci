@@ -1,3 +1,4 @@
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flix/network/multicast_client_provider.dart';
@@ -15,7 +16,7 @@ class CupertinoNavigationScaffold extends StatefulWidget {
   final double padding;
   final bool enableRefresh;
 
-  CupertinoNavigationScaffold(
+  const CupertinoNavigationScaffold(
       {super.key,
       required this.title,
       required this.child,
@@ -40,39 +41,38 @@ class CupertinoNavigationScalffoldState
   double get padding => widget.padding;
   var isFolded = ValueNotifier(false);
 
-
   @override
   Widget build(BuildContext context) {
     final deviceProvider = MultiCastClientProvider.of(context, listen: true);
     final slivers = [
       SliverPinnedHeader(
           child: DecoratedBox(
-            decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 247, 247, 247)),
-            child: SafeArea(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: ValueListenableBuilder<bool>(
-                    valueListenable: isFolded,
-                    builder: (context, value, child) {
-                      return AnimatedOpacity(
-                        opacity: value ? 1 : 0,
-                        duration: const Duration(milliseconds: 200),
-                        child: child,
-                      );
-                    },
-                    child: Text(title,
-                        style: const TextStyle(
-                            color: Colors.black,
+        decoration: BoxDecoration(
+            color: Theme.of(context).flixColors.background.secondary),
+        child: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: ValueListenableBuilder<bool>(
+                valueListenable: isFolded,
+                builder: (context, value, child) {
+                  return AnimatedOpacity(
+                    opacity: value ? 1 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: child,
+                  );
+                },
+                child: Text(title,
+                    style: TextStyle(
+                            color: Theme.of(context).flixColors.text.primary,
                             fontSize: 18,
                             fontWeight: FontWeight.w500)
-                            .fix()),
-                  ),
-                ),
+                        .fix()),
               ),
             ),
-          )),
+          ),
+        ),
+      )),
 
       CustomSliverHeader(
         lagerTitle: Padding(
@@ -80,6 +80,7 @@ class CupertinoNavigationScalffoldState
           child: SuperTitle(title: title),
         ),
         height: 40 + MediaQuery.of(context).textScaler.scale(36),
+        // ignore: no_leading_underscores_for_local_identifiers
         onFolded: (_isFolded) {
           if (_isFolded != isFolded.value) {
             isFolded.value = _isFolded;
@@ -91,30 +92,33 @@ class CupertinoNavigationScalffoldState
           sliver: isSliverChild
               ? child
               : SliverFillRemaining(
-            child: child,
-          )),
+                  child: child,
+                )),
       // SliverFillRemaining()
     ];
     return CupertinoPageScaffold(
         // backgroundColor: Colors.transparent,
-        backgroundColor: const Color.fromARGB(255, 247, 247, 247),
-        child: widget.enableRefresh ? EasyRefresh(
-          callRefreshOverOffset: 1,
-          onRefresh: () async {
-            deviceProvider.clearDevices();
-            deviceProvider.startScan();
-            await Future.delayed(const Duration(seconds: 2));
-            return IndicatorResult.success;
-          },
-          header: const MaterialHeader(color: Color.fromRGBO(0, 122, 255, 1)),
-          child: CustomScrollView(
-            slivers: slivers,
-          ),
-        ) : CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics(
-                  decelerationRate: ScrollDecelerationRate.fast)),
-          slivers: slivers,
-        ));
+        backgroundColor: Theme.of(context).flixColors.background.secondary,
+        child: widget.enableRefresh
+            ? EasyRefresh(
+                callRefreshOverOffset: 1,
+                onRefresh: () async {
+                  deviceProvider.clearDevices();
+                  deviceProvider.startScan();
+                  await Future.delayed(const Duration(seconds: 2));
+                  return IndicatorResult.success;
+                },
+                header:
+                    const MaterialHeader(color: Color.fromRGBO(0, 122, 255, 1)),
+                child: CustomScrollView(
+                  slivers: slivers,
+                ),
+              )
+            : CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(
+                        decelerationRate: ScrollDecelerationRate.fast)),
+                slivers: slivers,
+              ));
   }
 }

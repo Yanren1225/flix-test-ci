@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:ffi';
 
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/app_icon.dart';
@@ -40,15 +41,17 @@ class AppsScreenState extends State<AppsScreen> {
     final appBar = AppBar(
       leading: GestureDetector(
         onTap: _back,
-        child: const Icon(
+        child: Icon(
           Icons.arrow_back_ios,
-          color: Colors.black,
+          color: Theme.of(context).flixColors.text.primary,
           size: 20,
         ),
       ),
       title: const Text('选择本机应用'),
-      titleTextStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500)
+      titleTextStyle: TextStyle(
+              color: Theme.of(context).flixColors.text.primary,
+              fontSize: 18,
+              fontWeight: FontWeight.w500)
           .fix(),
       actions: [
         ValueListenableBuilder(
@@ -56,8 +59,10 @@ class AppsScreenState extends State<AppsScreen> {
             builder: (_, selectedApps, __) =>
                 confirmButton(selectedApps.length))
       ],
-      backgroundColor: const Color.fromRGBO(247, 247, 247, 0.8),
-      surfaceTintColor: const Color.fromRGBO(247, 247, 247, 0.8),
+      backgroundColor:
+          Theme.of(context).flixColors.background.secondary.withOpacity(0.8),
+      surfaceTintColor:
+          Theme.of(context).flixColors.background.secondary.withOpacity(0.8),
     );
 
     final appBarHeight =
@@ -75,7 +80,7 @@ class AppsScreenState extends State<AppsScreen> {
       },
       child: Scaffold(
           extendBodyBehindAppBar: true,
-          backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+          backgroundColor: Theme.of(context).flixColors.background.secondary,
           appBar: BlurAppBar(
             appBar: appBar,
             cpreferredSize: appBar.preferredSize,
@@ -100,7 +105,7 @@ class AppsScreenState extends State<AppsScreen> {
     return ListView.builder(
         itemCount: sortedPackageNames.length,
         itemBuilder: (context, index) {
-          final packageName = sortedPackageNames[index]!;
+          final packageName = sortedPackageNames[index];
           final Application app = package2AppMap[packageName]!;
           return AppItem(
               application: app,
@@ -122,7 +127,10 @@ class AppsScreenState extends State<AppsScreen> {
       onPressed: () {
         Navigator.pop(context, selectedApps.value.toList());
       },
-      child: Text('发送 ($count)', style: const TextStyle().fix(),),
+      child: Text(
+        '发送 ($count)',
+        style: const TextStyle().fix(),
+      ),
     );
   }
 
@@ -131,8 +139,8 @@ class AppsScreenState extends State<AppsScreen> {
     super.initState();
     getInstalledApps().then((apps) async {
       talker.debug('loaded apps size: ${apps.length}');
-      final _sortedPackageName = await compute((_appNames) {
-        final letters = _appNames.map((e) {
+      final sortedPackageName = await compute((appNames) {
+        final letters = appNames.map((e) {
           var letter = PinyinHelper.getPinyinE(e.value).toLowerCase();
           if (letter.isEmpty) {
             letter = e.value.toLowerCase();
@@ -140,21 +148,21 @@ class AppsScreenState extends State<AppsScreen> {
           // talker.debug('name: ${e.value}, letter: $letter');
           return letter;
         }).toList();
-        return (_appNames.asMap().entries.toList()
+        return (appNames.asMap().entries.toList()
               ..sort((MapEntry<int, MapEntry<String, String>> a,
                       MapEntry<int, MapEntry<String, String>> b) =>
-                  letters[a.key]!.compareTo(letters[b.key]!)))
+                  letters[a.key].compareTo(letters[b.key])))
             .map((e) => e.value.key)
             .toList();
       }, apps.map((e) => MapEntry(e.packageName, e.appName)).toList());
       if (mounted) {
         setState(() {
-          this.sortedPackageNames = _sortedPackageName;
-          this.originSortPackageNames = _sortedPackageName;
-          this.package2AppMap = apps
+          sortedPackageNames = sortedPackageName;
+          originSortPackageNames = sortedPackageName;
+          package2AppMap = apps
               .asMap()
               .map((key, value) => MapEntry(value.packageName, value));
-          this.name2AppMap =
+          name2AppMap =
               apps.asMap().map((key, value) => MapEntry(value.appName, value));
         });
       }
@@ -187,10 +195,13 @@ typedef OnChecked = void Function(bool checked);
 class AppItem extends StatefulWidget {
   final Application application;
   final OnChecked onChecked;
-  late ValueNotifier<bool> _checked = ValueNotifier<bool>(false);
+  late final ValueNotifier<bool> _checked = ValueNotifier<bool>(false);
 
   AppItem(
-      {super.key, required this.application, required bool checked, required this.onChecked}) {
+      {super.key,
+      required this.application,
+      required bool checked,
+      required this.onChecked}) {
     _checked.value = checked;
   }
 
@@ -238,18 +249,19 @@ class AppItemState extends State<AppItem> {
                   children: [
                     Text(
                       application.appName,
-                      style: const TextStyle(
+                      style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
-                              color: Colors.black)
+                              color: Theme.of(context).flixColors.text.primary)
                           .fix(),
                     ),
                     Text(
                       application.packageName,
-                      style: const TextStyle(
+                      style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
-                              color: Color.fromRGBO(60, 60, 67, 0.6))
+                              color:
+                                  Theme.of(context).flixColors.text.secondary)
                           .fix(),
                     )
                   ],

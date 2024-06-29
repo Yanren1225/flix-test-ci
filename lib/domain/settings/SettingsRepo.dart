@@ -12,6 +12,8 @@ class SettingsRepo {
       _setAutoReceive(sp.getBool(autoReceiveKey) ?? false);
       _setEnableMdns(sp.getBool(enableMdnsKey) ?? true);
       _setMinimizedMode(sp.getBool(isMinimizedKey) ?? true);
+      _setDarkFollowSystem(sp.getBool(darkFollowSystemKey) ?? false);
+      _setDarkMode(sp.getBool(darkModeKey) ?? false);
       final dir = sp.getString(savedDirKey);
       if (dir == null || dir.isEmpty) {
         getDefaultDestinationDirectory().then((desDir) {
@@ -32,6 +34,8 @@ class SettingsRepo {
   static const isMinimizedKey = "isMinimized";
   static const savedDirKey = "savedDir";
   static const enableMdnsKey = "enableMdns";
+  static const darkFollowSystemKey = "darkFollowSystem";
+  static const darkModeKey = "darkMode";
 
   bool _isMinimized = true;
   StreamController<bool> isMinimizedStream = StreamController.broadcast();
@@ -48,6 +52,14 @@ class SettingsRepo {
   bool _enableMdns = true;
   bool get enableMdns => _enableMdns;
   StreamController<bool> enableMdnsStream = StreamController.broadcast();
+
+  bool _darkFollowSystem = false;
+  bool get darkFollowSystem => _darkFollowSystem;
+  StreamController<bool> darkFollowSystemStream = StreamController.broadcast();
+
+  bool _darkMode = false;
+  bool get darkMode => _darkMode;
+  StreamController<bool> darkModeStream = StreamController.broadcast();
 
   Future<void> setAutoReceive(bool autoReceive) async {
     _setAutoReceive(autoReceive);
@@ -109,5 +121,37 @@ class SettingsRepo {
   Future<bool> isMinimizedMode() async {
     var sharePreference = await SharedPreferences.getInstance();
     return sharePreference.getBool(isMinimizedKey) ?? _isMinimized;
+  }
+
+  Future<void> setDarkFollowSystem(bool darkFollowSystem) async {
+    _setDarkFollowSystem(darkFollowSystem);
+    var sharePreference = await SharedPreferences.getInstance();
+    await sharePreference.setBool(darkFollowSystemKey, _darkFollowSystem);
+  }
+
+  void _setDarkFollowSystem(bool darkFollowSystem) {
+    _darkFollowSystem = darkFollowSystem;
+    darkFollowSystemStream.add(_darkFollowSystem);
+  }
+
+  Future<bool> isDarkFollowSystem() async {
+    var sharePreference = await SharedPreferences.getInstance();
+    return sharePreference.getBool(darkFollowSystemKey) ?? _darkFollowSystem;
+  }
+
+  Future<void> setDarkMode(bool darkMode) async {
+    _setDarkMode(darkMode);
+    var sharePreference = await SharedPreferences.getInstance();
+    await sharePreference.setBool(darkModeKey, _darkMode);
+  }
+
+  void _setDarkMode(bool darkMode) {
+    _darkMode = darkMode;
+    darkModeStream.add(_darkMode);
+  }
+
+  Future<bool> isDarkMode() async {
+    var sharePreference = await SharedPreferences.getInstance();
+    return sharePreference.getBool(darkModeKey) ?? _darkMode;
   }
 }

@@ -1,6 +1,6 @@
 {
   "java.compile.nullAnalysis.mode": "automatic",
   "java.configuration.updateBuildConfiguration": "interactive",
-  "dart.flutterSdkPath": "/Users/drunk/.puro/envs/flix/flutter",
-    "dart.sdkPath": "/Users/drunk/.puro/envs/flix/flutter/bin/cache/dart-sdk"
+  "dart.flutterSdkPath": "C:\\Users\\nihaocun\\.puro\\envs\\3.19.2\\flutter",
+    "dart.sdkPath": "C:\\Users\\nihaocun\\.puro\\envs\\3.19.2\\flutter\\bin\\cache\\dart-sdk"
 }

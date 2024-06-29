@@ -15,6 +15,7 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
 import 'package:flix/domain/notification/flix_notification.dart';
+import 'package:flix/domain/settings/SettingsRepo.dart';
 import 'package:flix/domain/ship_server/ship_service_lifecycle_watcher.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/domain/window/FlixWindowManager.dart';
@@ -29,6 +30,8 @@ import 'package:flix/presentation/screens/pick_device_screen.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/setting/setting_provider.dart';
+import 'package:flix/theme/theme.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/device_info_helper.dart';
 import 'package:flix/utils/iterable_extension.dart';
@@ -87,15 +90,15 @@ Future<void> main() async {
     _logAppContext(deviceInfo);
     _initAppLifecycle();
     _initSystemChrome();
-    runApp(const WithForegroundTask(child: MaterialApp(home: MyApp())));
+    runApp(const WithForegroundTask(child: MyApp()));
   } catch (e, s) {
     talker.error('launch error', e, s);
 
-    runApp( MaterialApp(
-    home: Center(
+    runApp(MaterialApp(
+        home: Center(
       child: Text(
         '启动失败, $e\n$s',
-        style: TextStyle(fontSize: 16),
+        style: const TextStyle(fontSize: 16),
       ),
     )));
   }
@@ -166,7 +169,7 @@ Future<void> initFireBase() async {
 
     FlutterError.onError = (FlutterErrorDetails details) async {
       if (kReleaseMode) {
-        await FirebaseCrashlytics.instance.recordFlutterFatalError;
+        FirebaseCrashlytics.instance.recordFlutterFatalError;
       } else {
         talker.critical(details);
       }
@@ -188,13 +191,13 @@ Future<void> initSystemManager() async {
   if (!(Platform.isMacOS || Platform.isWindows || Platform.isLinux)) {
     return;
   }
-  const String _iconPathWin = 'assets/images/tray_logo.ico';
-  const String _iconPathOther = 'assets/images/tray_logo_no_color.png';
+  const String iconPathWin = 'assets/images/tray_logo.ico';
+  const String iconPathOther = 'assets/images/tray_logo_no_color.png';
   final SystemTray systemTray = SystemTray();
 
   // We first init the systray menu
   await systemTray.initSystemTray(
-    iconPath: Platform.isWindows ? _iconPathWin : _iconPathOther,
+    iconPath: Platform.isWindows ? iconPathWin : iconPathOther,
     isTemplate: Platform.isMacOS,
   );
 
@@ -279,43 +282,42 @@ class MyAppState extends State<MyApp> {
             create: (_) => MultiCastClientProvider()),
         ChangeNotifierProvider(create: (context) => AndropContext())
       ],
-      child: MaterialApp(
-        title: 'Flix',
-        navigatorObservers: [modalsRouteObserver],
-        navigatorKey: navigatorKey,
-        localizationsDelegates: <LocalizationsDelegate<dynamic>>[
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: [
-          Locale.fromSubtags(
-              languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN'),
-        ],
-        theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // TRY THIS: Try running your application with "flutter run". You'll see
-          // the application has a purple toolbar. Then, without quitting the app,
-          // try changing the seedColor in the colorScheme below to Colors.green
-          // and then invoke "hot reload" (save your changes or press the "hot
-          // reload" button in a Flutter-supported IDE, or press "r" if you used
-          // the command line to start the app).
-          //
-          // Notice that the counter didn't reset back to zero; the application
-          // state is not lost during the reload. To reset the state, use hot
-          // restart instead.
-          //
-          // This works for code too, not just values: Most code changes can be
-          // tested with just a hot reload.
-          colorScheme: const ColorScheme.light(
-              primary: Color.fromRGBO(0, 122, 255, 1), onPrimary: Colors.white),
-          useMaterial3: true,
-        ).useSystemChineseFont(Brightness.light),
-        // initialRoute: 'home',
-        builder: FToastBuilder(),
-        home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      ),
+      child: StreamBuilder<bool>(
+          initialData: SettingsRepo.instance.darkFollowSystem,
+          stream: SettingsRepo.instance.darkFollowSystemStream.stream,
+          builder: (context, followSystem) {
+            return StreamBuilder<bool>(
+                initialData: SettingsRepo.instance.darkMode,
+                stream: SettingsRepo.instance.darkModeStream.stream,
+                builder: (context, darkMode) {
+                  bool userDarkMode = followSystem.data ?? false
+                      ? MediaQuery.of(context).platformBrightness ==
+                          Brightness.dark
+                      : darkMode.data ?? false;
+
+                  return MaterialApp(
+                    title: 'Flix',
+                    navigatorObservers: [modalsRouteObserver],
+                    navigatorKey: navigatorKey,
+                    localizationsDelegates: const <LocalizationsDelegate<
+                        dynamic>>[
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                    ],
+                    supportedLocales: const [
+                      Locale.fromSubtags(
+                          languageCode: 'zh',
+                          scriptCode: 'Hans',
+                          countryCode: 'CN'),
+                    ],
+                    theme: userDarkMode ? flixDark() : flixLight(),
+                    // initialRoute: 'home',
+                    builder: FToastBuilder(),
+                    home: const MyHomePage(title: 'Flutter Demo Home Page'),
+                  );
+                });
+          }),
     );
   }
 }
@@ -356,10 +358,10 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
           ),
           Text(
             '请选择设备',
-            style: const TextStyle(
+            style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.normal,
-                    color: Colors.black)
+                    color: Theme.of(context).flixColors.text.primary)
                 .fix(),
           )
         ],
@@ -492,10 +494,10 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
   //   });
   // }
 
-  Color getColor(int index, int selectedIndex) {
+  Color getColor(BuildContext context, int index, int selectedIndex) {
     return index == selectedIndex
-        ? Colors.black
-        : const Color.fromRGBO(60, 60, 67, 0.3);
+        ? Theme.of(context).flixColors.text.primary
+        : Theme.of(context).flixColors.text.tertiary;
   }
 
   @override
@@ -515,7 +517,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
 
   Widget NarrowLayout() {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+      backgroundColor: Theme.of(context).flixColors.background.secondary,
       body: NarrowBody(),
       bottomNavigationBar: ConstrainedBox(
         constraints: BoxConstraints(
@@ -528,7 +530,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
                   height: 26,
                   'assets/images/ic_share.svg',
                   colorFilter: ColorFilter.mode(
-                      getColor(0, selectedIndex), BlendMode.srcIn),
+                      getColor(context, 0, selectedIndex), BlendMode.srcIn),
                 ),
                 label: '互传'),
             BottomNavigationBarItem(
@@ -537,7 +539,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
                   height: 26,
                   'assets/images/ic_config.svg',
                   colorFilter: ColorFilter.mode(
-                      getColor(1, selectedIndex), BlendMode.srcIn),
+                      getColor(context, 1, selectedIndex), BlendMode.srcIn),
                 ),
                 label: '配置'),
             BottomNavigationBarItem(
@@ -546,22 +548,20 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
                   height: 26,
                   'assets/images/ic_help.svg',
                   colorFilter: ColorFilter.mode(
-                      getColor(2, selectedIndex), BlendMode.srcIn),
+                      getColor(context, 2, selectedIndex), BlendMode.srcIn),
                 ),
                 label: '帮助'),
           ],
           currentIndex: selectedIndex,
-          selectedItemColor: Colors.black,
-          unselectedItemColor: const Color.fromRGBO(60, 60, 67, 0.3),
+          selectedItemColor: Theme.of(context).flixColors.text.primary,
+          unselectedItemColor: Theme.of(context).flixColors.text.secondary,
           selectedFontSize: 12,
           unselectedFontSize: 12,
           selectedLabelStyle:
-              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)
-                  .fix(),
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
           unselectedLabelStyle:
-              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)
-                  .fix(),
-          backgroundColor: Colors.white,
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
+          backgroundColor: Theme.of(context).flixColors.background.primary,
           elevation: 0,
           onTap: (value) => setSelectedIndex(value),
         ),
@@ -583,7 +583,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
                       ))),
         );
       case 1:
-        return SettingsScreen();
+        return const SettingsScreen();
       case 2:
         return HelpScreen(
           goVersionScreen: () {
@@ -596,13 +596,13 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
           },
         );
       default:
-        return Placeholder();
+        return const Placeholder();
     }
   }
 
   Widget WideLayout() {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+      backgroundColor: Theme.of(context).flixColors.background.secondary,
       body: Row(
         children: [
           NavigationRail(
@@ -616,51 +616,51 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
                     width: 26,
                     height: 26,
                     colorFilter: ColorFilter.mode(
-                        getColor(0, selectedIndex), BlendMode.srcIn),
+                        getColor(context, 0, selectedIndex), BlendMode.srcIn),
                   ),
-                  label: Text('互传')),
+                  label: const Text('互传')),
               NavigationRailDestination(
                   icon: SvgPicture.asset(
                     'assets/images/ic_config.svg',
                     width: 26,
                     height: 26,
                     colorFilter: ColorFilter.mode(
-                        getColor(1, selectedIndex), BlendMode.srcIn),
+                        getColor(context, 1, selectedIndex), BlendMode.srcIn),
                   ),
-                  label: Text('配置')),
+                  label: const Text('配置')),
               NavigationRailDestination(
                   icon: SvgPicture.asset(
                     'assets/images/ic_help.svg',
                     width: 26,
                     height: 26,
                     colorFilter: ColorFilter.mode(
-                        getColor(2, selectedIndex), BlendMode.srcIn),
+                        getColor(context, 2, selectedIndex), BlendMode.srcIn),
                   ),
-                  label: Text('帮助'))
+                  label: const Text('帮助'))
             ],
             minWidth: 60,
             labelType: NavigationRailLabelType.all,
             useIndicator: true,
-            indicatorColor: Colors.white,
+            indicatorColor: Theme.of(context).flixColors.background.primary,
             groupAlignment: 0.0,
             extended: false,
             elevation: null,
             selectedIndex: selectedIndex,
-            selectedIconTheme:
-                const IconThemeData(size: 26, color: Colors.black),
-            unselectedIconTheme: const IconThemeData(
-                size: 26, color: Color.fromRGBO(60, 60, 67, 0.3)),
+            selectedIconTheme: IconThemeData(
+                size: 26, color: Theme.of(context).flixColors.text.primary),
+            unselectedIconTheme: IconThemeData(
+                size: 26, color: Theme.of(context).flixColors.text.tertiary),
             selectedLabelTextStyle: TextStyle(
-              color: Colors.black,
+              color: Theme.of(context).flixColors.text.primary,
               fontSize: 12,
               fontWeight: FontWeight.normal,
             ).fix(),
-            unselectedLabelTextStyle: const TextStyle(
-                    color: Color.fromRGBO(60, 60, 67, 0.3),
+            unselectedLabelTextStyle: TextStyle(
+                    color: Theme.of(context).flixColors.text.tertiary,
                     fontSize: 12,
                     fontWeight: FontWeight.normal)
                 .fix(),
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).flixColors.background.primary,
           ),
           Flexible(flex: 1, child: secondPart()),
           Expanded(
@@ -688,7 +688,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
           },
         );
       case 1:
-        return SettingsScreen();
+        return const SettingsScreen();
       case 2:
         return HelpScreen(
           goVersionScreen: () {
@@ -705,7 +705,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
           },
         );
       default:
-        return Placeholder();
+        return const Placeholder();
     }
   }
 

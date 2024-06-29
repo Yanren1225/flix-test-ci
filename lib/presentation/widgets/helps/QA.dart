@@ -1,3 +1,4 @@
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 
@@ -16,38 +17,40 @@ class QAState extends State<QA> {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(14)),
+          color: Theme.of(context).flixColors.background.primary,
+          borderRadius: BorderRadius.circular(14)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         child: ExpansionTile(
           tilePadding: EdgeInsets.zero,
           expandedAlignment: Alignment.topLeft,
           expandedCrossAxisAlignment: CrossAxisAlignment.start,
-          backgroundColor: Colors.white,
-          collapsedBackgroundColor: Colors.white,
-          textColor: Colors.black,
-          collapsedTextColor: Colors.black,
-          iconColor: const Color.fromRGBO(60, 60, 67, 0.6),
-          collapsedIconColor: const Color.fromRGBO(60, 60, 67, 0.6),
+          backgroundColor: Theme.of(context).flixColors.background.primary,
+          collapsedBackgroundColor:
+              Theme.of(context).flixColors.background.primary,
+          textColor: Theme.of(context).flixColors.text.primary,
+          collapsedTextColor: Theme.of(context).flixColors.text.primary,
+          iconColor: Theme.of(context).flixColors.text.secondary,
+          collapsedIconColor: Theme.of(context).flixColors.text.secondary,
           shape: InputBorder.none,
           collapsedShape: InputBorder.none,
           title: Text(
             widget.question,
-            style: const TextStyle(
+            style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.normal,
-                    color: Colors.black)
+                    color: Theme.of(context).flixColors.text.primary)
                 .fix(),
           ),
           children: [
             Padding(
-              padding: EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.only(bottom: 8),
               child: Text(
                 widget.answer,
-                style: const TextStyle(
+                style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.normal,
-                        color: Color.fromRGBO(60, 60, 67, 0.6))
+                        color: Theme.of(context).flixColors.text.secondary)
                     .fix(),
               ),
             )

@@ -4,6 +4,7 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/toolbar.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/PlatformUtil.dart';
 import 'package:flix/utils/pay/pay_util.dart';
 import 'package:flutter/cupertino.dart';
@@ -68,7 +69,7 @@ class DonateUSScreenState extends State<DonateUSScreen> {
         Flexible(
           flex: 1,
           fit: FlexFit.tight,
-          child: Container(
+          child: SizedBox(
               width: width / 2,
               height: 44,
               child: Center(
@@ -81,7 +82,7 @@ class DonateUSScreenState extends State<DonateUSScreen> {
         Flexible(
           flex: 1,
           fit: FlexFit.tight,
-          child: Container(
+          child: SizedBox(
               width: width / 2,
               height: 44,
               child: Center(

@@ -1,3 +1,4 @@
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
@@ -24,7 +25,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   var versionTapCount = 0;
   int lastTapTime = 0;
 
-  ValueNotifier<String> _version = ValueNotifier('');
+  final ValueNotifier<String> _version = ValueNotifier('');
 
   @override
   void initState() {
@@ -50,39 +51,39 @@ class AboutUSScreenState extends State<AboutUSScreen> {
             // donate(),
             version()
           ];
-          return Container(
-              child: ListView.builder(
-                  physics: const AlwaysScrollableScrollPhysics(
-                      parent: BouncingScrollPhysics(
-                          decelerationRate: ScrollDecelerationRate.fast)),
-                  padding: padding.copyWith(
-                      bottom: padding.bottom +
-                          MediaQuery.of(context).padding.bottom +
-                          20),
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16.0, right: 80.0, top: 12, bottom: 12),
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: DecoratedBox(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: widgets[index]),
-                      ),
-                    );
-                  },
-                  itemCount: widgets.length));
+          return ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(
+                      decelerationRate: ScrollDecelerationRate.fast)),
+              padding: padding.copyWith(
+                  bottom: padding.bottom +
+                      MediaQuery.of(context).padding.bottom +
+                      20),
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(
+                      left: 16.0, right: 80.0, top: 12, bottom: 12),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: DecoratedBox(
+                        decoration: BoxDecoration(
+                            color:
+                                Theme.of(context).flixColors.background.primary,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: widgets[index]),
+                  ),
+                );
+              },
+              itemCount: widgets.length);
         });
   }
 
   Widget niceToMeetU() {
     return Padding(
-      padding: EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(10.0),
       child: Text('👋 你好，很高兴认识你！',
-          style: const TextStyle(
-                  color: Colors.black,
+          style: TextStyle(
+                  color: Theme.of(context).flixColors.text.primary,
                   fontSize: 16,
                   fontWeight: FontWeight.w400)
               .fix()),
@@ -103,10 +104,10 @@ class AboutUSScreenState extends State<AboutUSScreen> {
 
   Widget brief() {
     return Padding(
-      padding: EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(10.0),
       child: Text('这里是 Flix，一个快速简洁的多端互传软件，希望你能喜欢 😆',
-          style: const TextStyle(
-                  color: Colors.black,
+          style: TextStyle(
+                  color: Theme.of(context).flixColors.text.primary,
                   fontSize: 16,
                   fontWeight: FontWeight.w400)
               .fix()),
@@ -115,10 +116,10 @@ class AboutUSScreenState extends State<AboutUSScreen> {
 
   Widget participate() {
     return Padding(
-      padding: EdgeInsets.only(left: 10, top: 10, right: 80, bottom: 10),
+      padding: const EdgeInsets.only(left: 10, top: 10, right: 80, bottom: 10),
       child: Text('Flix 制作小组\n------\n✅设计：\nlemo\n\n✅开发：\nMovenLecker\nEava_wu',
-          style: const TextStyle(
-                  color: Colors.black,
+          style: TextStyle(
+                  color: Theme.of(context).flixColors.text.primary,
                   fontSize: 16,
                   fontWeight: FontWeight.w400)
               .fix()),
@@ -130,11 +131,11 @@ class AboutUSScreenState extends State<AboutUSScreen> {
       padding: const EdgeInsets.all(10.0),
       child: Text.rich(TextSpan(
           children: [
-            TextSpan(text: '如果你有任何想法，欢迎你'),
+            const TextSpan(text: '如果你有任何想法，欢迎你'),
             ClickableSpan('点我进入官方QQ群 🌸', () {
-              final Uri _url = Uri.parse(
+              final Uri url = Uri.parse(
                   'http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=sLHZTbK8nxPPoKl2BWApIKoO9TBBGua8&authKey=XBVLWiLqFFt5UD72Gc8tOhyj2Y02J%2FF%2Bw4ijEv%2FsWrYVPy8Y%2B5lbbxvLyx6EQwMP&noverify=0&group_code=539943326');
-              launchUrl(_url).then((value) {
+              launchUrl(url).then((value) {
                 if (!value) {
                   talker.error('join qq error');
                 }
@@ -144,7 +145,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
             }),
           ],
           style: TextStyle(
-                  color: Colors.black,
+                  color: Theme.of(context).flixColors.text.primary,
                   fontSize: 16,
                   fontWeight: FontWeight.w400)
               .fix())),
@@ -156,12 +157,12 @@ class AboutUSScreenState extends State<AboutUSScreen> {
       padding: const EdgeInsets.all(10.0),
       child: Text.rich(TextSpan(
           children: [
-            TextSpan(text: '最后，你也可以'),
+            const TextSpan(text: '最后，你也可以'),
             ClickableSpan('点我进入捐赠渠道', () {}),
-            TextSpan(text: '，非常感谢你来支持我们的持续开发 🙏'),
+            const TextSpan(text: '，非常感谢你来支持我们的持续开发 🙏'),
           ],
-          style: const TextStyle(
-                  color: Colors.black,
+          style: TextStyle(
+                  color: Theme.of(context).flixColors.text.primary,
                   fontSize: 16,
                   fontWeight: FontWeight.w400)
               .fix())),
@@ -185,12 +186,12 @@ class AboutUSScreenState extends State<AboutUSScreen> {
           }
         },
         child: Padding(
-          padding: EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(10.0),
           child: ValueListenableBuilder(
             valueListenable: _version,
-            builder: (_, _version, child) => Text('当前软件版本：v$_version',
+            builder: (_, version, child) => Text('当前软件版本：v$version',
                 style: TextStyle(
-                        color: Colors.black,
+                        color: Theme.of(context).flixColors.text.primary,
                         fontSize: 16,
                         fontWeight: FontWeight.w400)
                     .fix()),
@@ -203,8 +204,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   TextSpan ClickableSpan(String text, GestureTapCallback onTap) {
     return TextSpan(
         text: text,
-        style: const TextStyle(color: Color.fromRGBO(0, 122, 255, 1))
-            .fix(),
+        style: const TextStyle(color: Color.fromRGBO(0, 122, 255, 1)).fix(),
         recognizer: TapGestureRecognizer()..onTap = onTap);
   }
 }
