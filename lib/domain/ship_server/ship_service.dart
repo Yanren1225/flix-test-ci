@@ -6,7 +6,8 @@ import 'dart:io';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/constants.dart';
 import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/domain/ship_server/ship_service_bridge.dart';
+import 'package:flix/domain/settings/SettingsRepo.dart';
+import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/model/intent/trans_intent.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
@@ -36,26 +37,27 @@ class ShipService {
   final syncTasks = <String, Completer>{};
   final lock = Mutex();
   var _longTaskCount = 0;
-  final ShipServiceDependency dependency;
   HttpServer? _server;
   int port = defaultPort;
 
-  ShipService({required this.did, required this.dependency}) {}
+  ShipService({required this.did}) {
+    talker.debug("ShipService","did = $did");
+  }
 
   Future<String> _pongUrl(String deviceId) async {
-    return 'http://${await dependency.getNetAddressById(deviceId)}/pong';
+    return 'http://${shipService.getAddressByDeviceId(deviceId)}/pong';
   }
 
   Future<String> _intentUrl(String deviceId) async {
-    return 'http://${await dependency.getNetAddressById(deviceId)}/intent';
+    return 'http://${shipService.getAddressByDeviceId(deviceId)}/intent';
   }
 
   Future<String> _getSendBubbleUrl(
           PrimitiveBubble<dynamic> primitiveBubble) async =>
-      'http://${await dependency.getNetAddressById(primitiveBubble.to)}/bubble';
+      'http://${shipService.getAddressByDeviceId(primitiveBubble.to)}/bubble';
 
   Future<String> _getSendFileUrl(PrimitiveFileBubble fileBubble) async =>
-      'http://${await dependency.getNetAddressById(fileBubble.to)}/file';
+      'http://${shipService.getAddressByDeviceId(fileBubble.to)}/file';
 
   Future<bool> startShipService() async {
     try {
@@ -231,7 +233,7 @@ class ShipService {
     //已经发送过，c/s都有此记录
     talker.debug("resend",
         "getBreakPoint receiveBytes = ${bubble.content.progress}");
-    if (await dependency.supportBreakPoint(bubble.to) &&
+    if (CompatUtil.supportBreakPoint(bubble.to) &&
         bubble.content.progress > 0) {
       talker.debug("breakPoint", "start ask");
       askBreakPoint(bubble);
@@ -366,7 +368,7 @@ class ShipService {
       var bubble = PrimitiveBubble.fromJson(data);
       talker.debug("_receiveBubble===>", data);
       _notifyNewBubble(bubble);
-      if (await dependency.isAutoReceive() && bubble is PrimitiveFileBubble) {
+      if (await SettingsRepo.instance.getAutoReceiveAsync() && bubble is PrimitiveFileBubble) {
         await _bubblePool.add(bubble);
         await confirmReceiveFile(bubble.from, bubble.id);
       } else if (bubble is PrimitiveFileBubble) {
@@ -406,7 +408,7 @@ class ShipService {
       request.fields['share_id'] = fileBubble.id;
       request.fields['file_name'] = shardFile.name;
       var receiveBytes = 0;
-      var supportBreakPoint = await dependency.supportBreakPoint(fileBubble.to);
+      var supportBreakPoint = CompatUtil.supportBreakPoint(fileBubble.to);
       talker.debug("breakPoint","supportBreakPoint = $supportBreakPoint");
       if (supportBreakPoint) {
         receiveBytes = fileBubble.content.receiveBytes;
@@ -489,7 +491,7 @@ class ShipService {
               bubble = (await _bubblePool.findLastById(bubble!.id)) as PrimitiveFileBubble?;
               await _checkCancel(bubble!.id);
               try {
-                final String desDir = await dependency.getSaveDir();
+                final String desDir = SettingsRepo.instance.savedDir;
                 await resolvePathOnMacOS(desDir, (desDir) async {
                   assert(formData.filename != null, "$shareId filename can't be null");
                   await _saveFileAndAddBubble(desDir, formData, bubble!);
@@ -686,7 +688,7 @@ class ShipService {
       if (ip != null) {
         pong.from.ip = ip;
         talker.debug('receive tcp pong: $pong');
-        dependency.notifyPong(pong);
+        shipService.receivePong(pong);
       } else {
         talker.error('receive tcp pong, but can\'t get ip');
       }
@@ -702,7 +704,7 @@ class ShipService {
   }
 
   void _notifyNewBubble(PrimitiveBubble bubble) {
-    dependency.notifyNewBubble(bubble);
+    shipService.notifyNewBubble(bubble);
   }
 
   Future<void> _addLongTask() async {
@@ -710,7 +712,7 @@ class ShipService {
     if (!(await WakelockPlus.enabled)) {
       await WakelockPlus.enable();
     }
-    dependency.markTaskStarted();
+    shipService.markTaskStarted();
   }
 
   Future<void> _removeLongTask() async {
@@ -722,7 +724,7 @@ class ShipService {
         await WakelockPlus.disable();
       }
       if (_longTaskCount <= 0) {
-        dependency.markTaskStopped();
+        shipService.markTaskStopped();
       }
     }
   }

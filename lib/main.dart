@@ -147,9 +147,9 @@ void _initSystemChrome() {
 Future<DeviceInfoResult> _initDeviceManager() async {
   final deviceInfo = await DeviceProfileRepo.instance.initDeviceInfo();
   DeviceManager.instance.init();
-  shipService.startShipServer().then((isSuccess) async {
+   shipService.startShipServer().then((isSuccess) async {
     if (isSuccess) {
-      DeviceDiscover.instance.start(shipService, await shipService.getPort());
+      await DeviceDiscover.instance.start(shipService, await shipService.getPort());
     }
   });
   return deviceInfo;
