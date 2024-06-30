@@ -12,6 +12,7 @@ import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_size_getter/file_input.dart';
 import 'package:image_size_getter/image_size_getter.dart';
 import 'package:mime/mime.dart';
+import 'package:open_dir/open_dir.dart';
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_handler/share_handler.dart';
@@ -376,6 +377,18 @@ Future<File> createFile(String desDir, String fileName,
   }
 
   return await createFile(desDir, fileName, copyIndex: copyIndex + 1);
+}
+
+Future<void> openDir(String path) async {
+  if (Platform.isWindows) {
+    openFileDirectoryOnWindows(path);
+  } else {
+    OpenDir()
+        .openNativeDir(
+        path: path)
+        .catchError(
+            (e, s) => talker.error('Failed to open folder: ', e, s));
+  }
 }
 
 

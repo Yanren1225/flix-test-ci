@@ -1,6 +1,9 @@
 import 'dart:io';
 
 import 'package:android_intent/android_intent.dart';
+import 'package:flix/domain/log/flix_log.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_app_installer/flutter_app_installer.dart';
 
 class AndroidUtils {
   static openSettings() async {
@@ -19,5 +22,34 @@ class AndroidUtils {
       );
       await intent.launch();
     }
+  }
+
+  static installApk(String path) async {
+    try {
+      // 请求安装权限
+      final result = await FlutterAppInstaller().installApk(filePath: path);
+      if (!result) {
+        talker.error('install apk failed');
+      }
+      return result;
+    } catch (e, stackTrace) {
+      talker.error('install apk failed: ', e, stackTrace);
+      return false;
+    }
+  }
+
+  static launchGallery() async {
+    try {
+      if (Platform.isAndroid) {
+        AndroidIntent intent = const AndroidIntent(
+            action: 'android.intent.action.VIEW',
+            type: 'vnd.android.cursor.dir/image'
+        );
+        await intent.launch();
+      }
+    } catch (e, s) {
+      talker.error("launch gallery failed", e, s);
+    }
+
   }
 }
