@@ -32,7 +32,7 @@ class NameEditBottomSheetState extends State<NameEditBottomSheet> {
       child: FlixBottomSheet(
         title: '输入本机名称',
         buttonText: '完成',
-        onClick: () async {
+        onClickFuture: () async {
           _rename(name);
         },
         child: Padding(

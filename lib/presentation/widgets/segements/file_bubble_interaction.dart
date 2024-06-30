@@ -7,6 +7,7 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
+import 'package:flix/presentation/widgets/bubble_context_menu/delete_bottom_sheet_util.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/bubbles/share_dir_detail_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/segements/bubble_context_menu.dart';
@@ -74,7 +75,7 @@ class BubbleInteractionState extends State<BubbleInteraction>
 
     return ModalAnchor(
       tag: contextMenuTag,
-      child: FlixClipRRect(
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
             radius: 12,
@@ -182,11 +183,9 @@ class BubbleInteractionState extends State<BubbleInteraction>
         concertProvider.enterEditing();
       },
       BubbleContextMenuItemType.Delete: () {
-        showCupertinoModalPopup(
-            context: context,
-            builder: (context) => DeleteMessageBottomSheet(onConfirm: () async {
-                  concertProvider.deleteBubble(widget.bubble);
-                }));
+        BottomSheetUtil.showMessageDelete(context, () {
+          concertProvider.deleteBubble(widget.bubble);
+        });
       },
     });
   }
@@ -229,8 +228,6 @@ class BubbleInteractionState extends State<BubbleInteraction>
       }).catchError((e) {
         talker.error("failed to open ios album: $e");
       });
-    } else if (Platform.isAndroid && sharedFile.content.resourceId.isNotEmpty) {
-      AndroidUtils.launchGallery();
     } else if (Platform.isIOS || Platform.isAndroid) {
       _openDownloadDir();
     } else {

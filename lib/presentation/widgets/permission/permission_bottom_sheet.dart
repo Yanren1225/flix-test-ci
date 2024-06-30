@@ -18,7 +18,7 @@ class PermissionBottomSheet extends StatelessWidget {
       title: title,
       subTitle: subTitle,
       buttonText: '确认',
-      onClick: onConfirm,
+      onClickFuture: onConfirm,
       child: Padding(
           padding: const EdgeInsets.only(top: 16, bottom: 24),
           child: Align(

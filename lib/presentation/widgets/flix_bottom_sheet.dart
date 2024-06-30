@@ -14,9 +14,10 @@ class FlixBottomSheet extends StatelessWidget {
   final List<Color> backgroundGradient;
   final Color buttonColor;
   final Widget child;
-  final VoidFutureCallback? onClick;
+  final VoidFutureCallback? onClickFuture;
+  VoidCallback? onClick;
 
-  const FlixBottomSheet(
+   FlixBottomSheet(
       {super.key,
       required this.title,
       this.subTitle,
@@ -24,6 +25,7 @@ class FlixBottomSheet extends StatelessWidget {
       this.backgroundGradient = const [],
       this.buttonColor = const Color.fromRGBO(0, 122, 255, 1),
       required this.child,
+      this.onClickFuture,
       this.onClick});
 
   @override
@@ -116,7 +118,12 @@ class FlixBottomSheet extends StatelessWidget {
                               width: double.infinity,
                               child: CupertinoButton(
                                 onPressed: () async {
-                                  await onClick?.call();
+                                  if(onClickFuture != null){
+                                    await onClickFuture?.call();
+                                  }
+                                  if(onClick != null){
+                                    onClick?.call();
+                                  }
                                   Navigator.of(context).pop();
                                 },
                                 color: buttonColor,

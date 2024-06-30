@@ -224,3 +224,4 @@ class DeviceDiscover {
 }
 
 typedef OnDeviceListChanged = void Function(Set<DeviceModal>);
+

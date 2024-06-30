@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flix/domain/bubble_pool.dart';
+import 'package:flix/domain/constants.dart';
+import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -69,6 +71,17 @@ class ShipServiceProxy extends ApInterface {
   Future<void> resend(UIBubble uiBubble) async {
     await _awaitServerReady();
     _shipService.resend(fromUIBubble(uiBubble));
+  }
+
+  Future<void> askPairDevice(String deviceId, String code) async {
+    await _shipService.askPairDevice(deviceId, code);
+  }
+
+
+  Future<void> deletePairDevice(String deleteDeviceId) async {
+    talker.debug('pairDevice', "deletePairDevice deleteDeviceId = $deleteDeviceId ");
+    await _awaitServerReady();
+    _shipService.askDeletePairDevice(deleteDeviceId);
   }
 
   Future<bool> isServerLiving() async {

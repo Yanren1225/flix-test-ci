@@ -5,8 +5,10 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flix/domain/database/dao/bubbles_dao.dart';
 import 'package:flix/domain/database/dao/devices_dao.dart';
+import 'package:flix/domain/database/dao/pair_devices_dao.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/database/bubble_entity.dart';
+import 'package:flix/model/database/device/pair_devices.dart';
 import 'package:flix/model/database/device/persistence_devices.dart';
 import 'package:flix/model/database/directory_content.dart';
 import 'package:flix/model/database/file_content.dart';
@@ -18,9 +20,17 @@ import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 
 part 'database.g.dart'; // the generated code will be there
 
-@DriftDatabase(
-    tables: [BubbleEntities, TextContents, FileContents, PersistenceDevices, DirectoryContents],
-    daos: [BubblesDao, DevicesDao])
+@DriftDatabase(tables: [
+  BubbleEntities,
+  TextContents,
+  FileContents,
+  PersistenceDevices,
+  PairDevices
+], daos: [
+  BubblesDao,
+  DevicesDao,
+  PairDevicesDao
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? e]) : super(e ?? _openConnection());
 
@@ -50,7 +60,7 @@ class AppDatabase extends _$AppDatabase {
       // Explicitly tell it about the correct temporary directory.
       sqlite3.tempDirectory = cachebase;
 
-      return NativeDatabase.createInBackground(file);
+      return NativeDatabase.createInBackground(file, logStatements: true);
     });
   }
 
@@ -71,7 +81,7 @@ class AppDatabase extends _$AppDatabase {
         if (from < 5) {
           await migration4_5(m);
         }
-        if (from < 6){
+        if (from < 6) {
           await migration5_6(m);
         }
         if (from < 7) {
@@ -90,31 +100,36 @@ class AppDatabase extends _$AppDatabase {
     }
   }
   Future<void> migration5_6(Migrator m) async {
-    if (!(await _checkIfColumnExists(persistenceDevices.actualTableName, persistenceDevices.version.name))) {
+    if (!(await _checkIfColumnExists(
+        persistenceDevices.actualTableName, persistenceDevices.version.name))) {
       await m.addColumn(persistenceDevices, persistenceDevices.version);
     }
   }
 
   Future<void> migration4_5(Migrator m) async {
-    if (!(await _checkIfColumnExists(persistenceDevices.actualTableName, persistenceDevices.host.name))) {
+    if (!(await _checkIfColumnExists(
+        persistenceDevices.actualTableName, persistenceDevices.host.name))) {
       await m.addColumn(persistenceDevices, persistenceDevices.host);
     }
   }
 
   Future<void> migration3_4(Migrator m) async {
-    if (!(await _checkIfColumnExists(fileContents.actualTableName, fileContents.speed.name))) {
+    if (!(await _checkIfColumnExists(
+        fileContents.actualTableName, fileContents.speed.name))) {
       await m.addColumn(fileContents, fileContents.speed);
     }
   }
 
   Future<void> migration2_3(Migrator m) async {
-    if (!(await _checkIfColumnExists(bubbleEntities.actualTableName, bubbleEntities.time.name))) {
+    if (!(await _checkIfColumnExists(
+        bubbleEntities.actualTableName, bubbleEntities.time.name))) {
       await m.addColumn(bubbleEntities, bubbleEntities.time);
     }
   }
 
   Future<void> migration1_2(Migrator m) async {
-    if (!(await _checkIfColumnExists(fileContents.actualTableName, fileContents.resourceId.name))) {
+    if (!(await _checkIfColumnExists(
+        fileContents.actualTableName, fileContents.resourceId.name))) {
       await m.addColumn(fileContents, fileContents.resourceId);
     }
   }
@@ -122,7 +137,9 @@ class AppDatabase extends _$AppDatabase {
   Future<bool> _checkIfColumnExists(String tableName, String columnName) async {
     final result = await customSelect(
       'PRAGMA table_info($tableName)',
-      readsFrom: { /* 这里应该列出你的表作为依赖 */ },
+      readsFrom: {
+        /* 这里应该列出你的表作为依赖 */
+      },
     ).get();
 
     for (final row in result) {
@@ -131,6 +148,10 @@ class AppDatabase extends _$AppDatabase {
       }
     }
     return false;
+  }
+
+  Future<void> migration6_7(Migrator m) async {
+    await m.createTable(pairDevices);
   }
 }
 

@@ -11,7 +11,7 @@ class TransIntent with TransIntentMappable {
   final TransAction action;
   Map<String,Object>? extra = HashMap<String,Object>();
   TransIntent(
-      {required this.deviceId, required this.bubbleId, required this.action,required this.extra});
+      {required this.deviceId, required this.bubbleId, required this.action,this.extra});
 
   static const fromJson = TransIntentMapper.fromJson;
 }
@@ -22,6 +22,10 @@ enum TransAction {
   confirmReceive,
   askBreakPoint,
   confirmBreakPoint,
+  askPairDevice,
+  confirmPairDevice,
+  deletePairDevice,
+  confirmDeletePairDevice,
   // resend,
   cancel,
 }

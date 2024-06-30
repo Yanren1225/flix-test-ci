@@ -1,6 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/presentation/screens/settings/cross_device_clipboard_screen.dart';
+import 'package:flix/utils/drawin_file_security_extension.dart';
+import 'package:flix/utils/text/text_extension.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -24,7 +29,9 @@ import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  VoidCallback crossDeviceCallback;
+
+  SettingsScreen({required this.crossDeviceCallback});
 
   @override
   State<StatefulWidget> createState() {
@@ -156,11 +163,44 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
+
+            Padding(
+              padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
+              child: Text(
+                '进阶功能',
+                style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.normal,
+                    color: Color.fromRGBO(60, 60, 67, 0.6)).fix(),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
+              child: SettingsItemWrapper(
+                topRadius: true,
+                bottomRadius: true,
+                child: StreamBuilder<bool>(
+                  initialData: SettingsRepo.instance.autoReceive,
+                  stream: SettingsRepo.instance.autoReceiveStream.stream,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                    return ClickableItem(
+                      label: '跨设备复制粘贴',
+                      des: '复制文字、图片后，可共享数据',
+                      onClick: () {
+                        widget.crossDeviceCallback();
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
+            // 高度1pt的分割线
             Padding(
               padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
               child: Text(
                 '接收设置',
-                style: TextStyle(
+                style:  TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.normal,
                         color: Theme.of(context).flixColors.text.secondary)

@@ -9,4 +9,8 @@ class CompatUtil {
         deviceInfo.version != null &&
         deviceInfo.version! >= 20;
   }
+
+  static bool supportPairDevice(DeviceInfo deviceInfo) {
+    return deviceInfo.version != null && deviceInfo.version! >= 20;
+  }
 }

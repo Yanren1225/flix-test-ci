@@ -18,7 +18,7 @@ class ConfirmExitAppBottomSheet extends StatelessWidget {
       title: '退出软件',
       subTitle: '退出后，将无法被附近设备发现。',
       buttonText: '退出',
-      onClick: () async {
+      onClickFuture: () async {
       Navigator.of(context).pop();
       await windowManager.destroy();
     },

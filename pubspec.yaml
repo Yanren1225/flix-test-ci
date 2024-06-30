@@ -81,6 +81,7 @@ dependencies:
   connectivity_plus: ^5.0.2
   quiver: ^3.2.1
   chinese_font_library: ^1.1.0
+  flutter_verification_code: ^1.1.7
   talker: ^4.1.0
   talker_flutter: 4.1.0
   firebase_crashlytics: ^4.0.1

@@ -1,7 +1,12 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:figma_squircle/figma_squircle.dart';
+import 'package:flix/presentation/widgets/bubble_context_menu/delete_bottom_sheet_util.dart';
+import 'package:flix/utils/drawin_file_security_extension.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
@@ -269,19 +274,15 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
               ),
               secondChild: MultiSelectActions(
                 onDelete: () {
-                  showCupertinoModalPopup(
-                      context: context,
-                      builder: (context) {
-                        return DeleteMessageBottomSheet(onConfirm: () async {
-                          if (concertProvider.selectedItems.isEmpty) {
-                            return;
-                          }
-                          for (var uiBubble in concertProvider.selectedItems) {
-                            concertProvider.existEditing();
-                            concertProvider.deleteBubble(uiBubble);
-                          }
-                        });
-                      });
+                  BottomSheetUtil.showMessageDelete(context, () {
+                    if (concertProvider.selectedItems.isEmpty) {
+                      return;
+                    }
+                    for (var uiBubble in concertProvider.selectedItems) {
+                      concertProvider.existEditing();
+                      concertProvider.deleteBubble(uiBubble);
+                    }
+                  });
                 },
               ),
               duration: const Duration(milliseconds: 100),
@@ -556,11 +557,9 @@ class InputAreaState extends State<InputArea> {
                             backgroundColor: MaterialStateColor.resolveWith(
                                 (states) =>
                                     const Color.fromRGBO(0, 122, 255, 1)),
-                            shape: const MaterialStatePropertyAll<SmoothRectangleBorder>(SmoothRectangleBorder(
-                              borderRadius: SmoothBorderRadius.all(SmoothRadius(
-                                cornerRadius: 10,
-                                cornerSmoothing: 0.6,
-                              )),
+                            shape: MaterialStatePropertyAll<
+                                RoundedRectangleBorder>(RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
                             ))),
                         icon: const Icon(
                           Icons.arrow_upward_sharp,

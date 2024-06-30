@@ -47,6 +47,6 @@ extension DeviceUtils on DeviceModal {
       name = deviceModel ?? "Unknown";
     }
 
-    return DeviceInfo(fingerprint, type, name, icon);
+    return DeviceInfo(fingerprint, type, name, icon,version ?? -1);
   }
 }

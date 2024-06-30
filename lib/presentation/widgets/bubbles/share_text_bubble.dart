@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
+import 'package:flix/presentation/widgets/bubble_context_menu/delete_bottom_sheet_util.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
@@ -227,11 +228,9 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
         _startFreeCopyScreen(context);
       },
       BubbleContextMenuItemType.Delete: () {
-        showCupertinoModalPopup(
-            context: context,
-            builder: (context) => DeleteMessageBottomSheet(onConfirm: () async {
-                  concertProvider.deleteBubble(entity);
-                }));
+        BottomSheetUtil.showMessageDelete(context, () {
+          concertProvider.deleteBubble(entity);
+        });
       },
     };
   }

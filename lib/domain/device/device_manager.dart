@@ -2,11 +2,13 @@ import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/model/database/device/pair_devices.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/iterable_extension.dart';
 
 import '../../network/protocol/device_modal.dart';
+
 // DeviceProfileRepo DeviceDiscoverService DeviceManager
 // DeviceManager depends on DeviceProfileRepo and DeviceDiscover + history devices
 // DeviceDiscover depends on DeviceProfileRepo
@@ -24,13 +26,15 @@ class DeviceManager {
 
   final deviceList = <DeviceModal>{};
   final history = <DeviceModal>{};
-
+  final pairDevices = <PairDevice>{};
   final deviceListChangeListeners = <OnDeviceListChanged>{};
   final historyChangeListeners = <OnDeviceListChanged>{};
+  final pairDeviceChangeListeners = <OnPairDeviceListChanged>{};
 
   void init() {
     _watchHistory();
     _watchLiveDevices();
+    _watchPairDevices();
   }
 
   void _watchLiveDevices() {
@@ -69,6 +73,12 @@ class DeviceManager {
     }
   }
 
+  void notifyPairDeviceListChanged() {
+    for (var element in pairDeviceChangeListeners) {
+      element(pairDevices);
+    }
+  }
+
   void addDeviceListChangeListener(OnDeviceListChanged onDeviceListChanged) {
     onDeviceListChanged(deviceList);
     deviceListChangeListeners.add(onDeviceListChanged);
@@ -85,6 +95,14 @@ class DeviceManager {
 
   void removeHistoryChangeListener(OnDeviceListChanged onDeviceListChanged) {
     historyChangeListeners.remove(onDeviceListChanged);
+  }
+
+  void addPairDeviceChangeListener(OnPairDeviceListChanged onPairDeviceListChanged){
+    pairDeviceChangeListeners.add(onPairDeviceListChanged);
+  }
+
+  void removePairDeviceChangeListener(OnPairDeviceListChanged onPairDeviceListChanged){
+    pairDeviceChangeListeners.remove(onPairDeviceListChanged);
   }
 
   String? getNetAdressByDeviceId(String id) {
@@ -120,9 +138,34 @@ class DeviceManager {
     });
   }
 
+  Future<void> _watchPairDevices() async {
+    appDatabase.pairDevicesDao.watchDevices().listen((_pairDevices) async {
+      talker.debug("_watchPairDevices start");
+      // 在前端去重，当在线设备变化时，可以再次去重
+      // event.removeWhere((element) => deviceList.contains(element));
+      pairDevices.clear();
+      pairDevices.addAll(_pairDevices);
+      notifyPairDeviceListChanged();
+    });
+  }
+
   Future<void> deleteHistory(String deviceId) async {
     talker.debug("deleteHistory = $deviceId");
     await appDatabase.bubblesDao.deleteBubblesByDeviceId(deviceId);
     await appDatabase.devicesDao.deleteDevice(deviceId);
   }
+
+  Future<List<PairDevice>> getAllPairDevice() async {
+    return await appDatabase.pairDevicesDao.getAll();
+  }
+
+  Future<int> addPairDevice(String fingerPrint, String code) async {
+    return await appDatabase.pairDevicesDao.insert(fingerPrint, code);
+  }
+
+  Future<void> deletePairDevice(String deviceId) async {
+      return await appDatabase.pairDevicesDao.deletePairDevice(deviceId);
+  }
 }
+
+typedef OnPairDeviceListChanged = void Function(Set<PairDevice>);

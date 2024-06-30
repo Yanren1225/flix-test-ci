@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/utils/device_info_helper.dart' as device_utils;
@@ -9,6 +10,7 @@ import 'package:uuid/uuid.dart';
 
 class DeviceProfileRepo {
   static const deviceNameKey = 'device_name_key';
+  static const devicePairKey = 'device_pair_key';
 
   DeviceProfileRepo._privateConstructor();
 
@@ -82,4 +84,14 @@ class DeviceProfileRepo {
     return result;
   }
 
+  Future<String> getPairCode() async {
+    final sp = await SharedPreferences.getInstance();
+    var pairKey = sp.getString(devicePairKey);
+    if (pairKey?.isNotEmpty == true) {
+      return pairKey!;
+    }
+    var randomCode = Random().nextInt(9000) + 1000;
+    await sp.setString(devicePairKey, randomCode.toString());
+    return randomCode.toString();
+  }
 }

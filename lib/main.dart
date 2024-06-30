@@ -30,6 +30,7 @@ import 'package:flix/presentation/screens/helps/about_us.dart';
 import 'package:flix/presentation/screens/helps/donate_us.dart';
 import 'package:flix/presentation/screens/helps/help_screen.dart';
 import 'package:flix/presentation/screens/pick_device_screen.dart';
+import 'package:flix/presentation/screens/settings/cross_device_clipboard_screen.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/setting/setting_provider.dart';
@@ -604,7 +605,14 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                       ))),
         );
       case 1:
-        return const SettingsScreen();
+        return SettingsScreen(
+            crossDeviceCallback:(){
+              Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (context) => CrossDeviceClipboardScreen()));
+            }
+        );
       case 2:
         return HelpScreen(
           goVersionScreen: () {
@@ -717,7 +725,13 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           },
         );
       case 1:
-        return const SettingsScreen();
+        return SettingsScreen(
+            crossDeviceCallback:(){
+              setState(() {
+                thirdWidget = CrossDeviceClipboardScreen();
+              });
+            }
+        );
       case 2:
         return HelpScreen(
           goVersionScreen: () {

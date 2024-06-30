@@ -31,6 +31,14 @@ class TransActionMapper extends EnumMapper<TransAction> {
         return TransAction.askBreakPoint;
       case 'confirmBreakPoint':
         return TransAction.confirmBreakPoint;
+      case 'askPairDevice':
+        return TransAction.askPairDevice;
+      case 'confirmPairDevice':
+        return TransAction.confirmPairDevice;
+      case 'deletePairDevice':
+        return TransAction.deletePairDevice;
+      case 'confirmDeletePairDevice':
+        return TransAction.confirmDeletePairDevice;
       case 'cancel':
         return TransAction.cancel;
       default:
@@ -47,6 +55,14 @@ class TransActionMapper extends EnumMapper<TransAction> {
         return 'askBreakPoint';
       case TransAction.confirmBreakPoint:
         return 'confirmBreakPoint';
+      case TransAction.askPairDevice:
+        return 'askPairDevice';
+      case TransAction.confirmPairDevice:
+        return 'confirmPairDevice';
+      case TransAction.deletePairDevice:
+        return 'deletePairDevice';
+      case TransAction.confirmDeletePairDevice:
+        return 'confirmDeletePairDevice';
       case TransAction.cancel:
         return 'cancel';
     }
@@ -86,7 +102,7 @@ class TransIntentMapper extends ClassMapperBase<TransIntent> {
       Field('action', _$action);
   static Map<String, Object>? _$extra(TransIntent v) => v.extra;
   static const Field<TransIntent, Map<String, Object>> _f$extra =
-      Field('extra', _$extra);
+      Field('extra', _$extra, opt: true);
 
   @override
   final Map<Symbol, Field<TransIntent, dynamic>> fields = const {

@@ -8,6 +8,7 @@ import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/constants.dart';
 import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/physical_lock.dart';
 import 'package:flix/domain/settings/settings_repo.dart';
@@ -623,7 +624,66 @@ class ShipService implements ApInterface {
           _sendFileReal(updatedBubble);
           break;
         case TransAction.askBreakPoint:
+          final bubble = await _bubblePool.findLastById(intent.bubbleId);
+          if (bubble == null || bubble is! PrimitiveFileBubble) {
+            return Response.notFound('bubble not found');
+          }
           confirmBreakPoint(bubble.from, bubble.id);
+          break;
+        case TransAction.askPairDevice:
+          var verifyCode = intent.extra?[Constants.verifyCode].toString();
+          var verifyDevice = intent.extra?[Constants.verifyDevice].toString();
+          var askCode = intent.extra?[Constants.askCode].toString();
+          var askDevice = intent.extra?[Constants.askDevice].toString();
+          talker.debug('pairDevice',
+              'askPairDevice verifyDevice = $verifyDevice verifyCode = $verifyCode askCode = $askCode  askDevice = $askDevice' );
+          if(verifyDevice == null || verifyDevice != did){
+            return Response.forbidden('device not match return  verifyDevice = $verifyDevice did = $did');
+          }
+          var curDevicePairCode = await DeviceProfileRepo.instance.getPairCode();
+          if(verifyCode == null || curDevicePairCode != verifyCode){
+            talker.debug('pairDevice','code = $verifyCode verifyCode = $curDevicePairCode');
+            return Response.forbidden('verifyCode not match return  verifyCode = $verifyCode code = $curDevicePairCode');
+          }
+          if(askCode == null || askDevice == null){
+            return Response.forbidden('code value is not match  askCode = $askCode  askDevice = $askDevice');
+          }
+          //接收方匹配成功，保存询问的设备
+          await DeviceManager.instance.addPairDevice(askDevice, askCode);
+          //确认成功，并返回请求的验证信息
+          await _replyPairDevice(intent.deviceId,verifyDevice,verifyCode);
+          break;
+        case TransAction.confirmPairDevice:
+          var verifyCode = intent.extra?[Constants.verifyCode].toString();
+          var verifyDevice = intent.extra?[Constants.verifyDevice].toString();
+          talker.debug('pairDevice',
+              'confirmPairDevice verifyDevice = ${verifyDevice}  verifyCode = $verifyCode');
+          //发起方确认匹配成功
+          if (verifyCode != null && verifyDevice != null) {
+             await DeviceManager.instance.addPairDevice(verifyDevice, verifyCode);
+          }
+          break;
+        case TransAction.deletePairDevice:
+          var deleteDeviceId = intent.extra?[Constants.deleteDeviceId].toString();
+          talker.debug("deletePairDevice","deletePairDevice deleteDeviceId = $deleteDeviceId");
+          if (deleteDeviceId == null) {
+            return Response.forbidden(
+                'askDevice is invalid  askDevice = $deleteDeviceId ');
+          }
+          //接收端删除发送者的 id
+          await DeviceManager.instance.deletePairDevice(intent.deviceId);
+          //告诉发送端自己的 id
+          _replyDeletePairDevice(intent.deviceId,deleteDeviceId);
+          break;
+        case TransAction.confirmDeletePairDevice:
+          talker.debug("deletePairDevice","confirmDeletePairDevice");
+          var deleteDeviceId = intent.extra?[Constants.deleteDeviceId].toString();
+          if(deleteDeviceId == null){
+            return Response.forbidden(
+                'device not match return  verifyDevice = $deleteDeviceId did = $did');
+          }
+          //发送端收到确认删除
+          await DeviceManager.instance.deletePairDevice(deleteDeviceId);
           break;
       }
 
@@ -792,6 +852,65 @@ class ShipService implements ApInterface {
     }
   }
 
+  Future<void> askPairDevice(String deviceId, String code) async {
+    try {
+      talker.debug("pairDevice askPairDevice net", "deviceId = $deviceId askPairDevice = $code");
+      // 更新接收方状态为接收中
+      var uri = Uri.parse(await _intentUrl(deviceId));
+      var response = await http.post(
+        uri,
+        body: TransIntent(
+                deviceId: did,
+                bubbleId: '',
+                action: TransAction.askPairDevice,
+                extra: HashMap<String, String>()
+                  ..[Constants.verifyCode] = code
+                  ..[Constants.askCode] = await DeviceProfileRepo.instance.getPairCode()
+                  ..[Constants.askDevice] = did
+                  ..[Constants.verifyDevice] = deviceId)
+            .toJson(),
+        headers: {"Content-type": "application/json; charset=UTF-8"},
+      );
+      if (response.statusCode == 200) {
+        talker.debug('请求配对成功: response: ${response.body}');
+      } else {
+        talker.error(
+            '请求配对失败: status code: ${response.statusCode}, ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      talker.error('askPairDevice failed: ', e, stackTrace);
+    }
+  }
+
+
+  Future<void> askDeletePairDevice(String deleteDeviceId) async {
+    try {
+      talker.debug("pairDevice deletePairDevice net", "deleteDeviceId = $deleteDeviceId");
+      // 更新接收方状态为接收中
+      var uri = Uri.parse(await _intentUrl(deleteDeviceId));
+      var response = await http.post(
+        uri,
+        body: TransIntent(
+                deviceId: did,
+                bubbleId: '',
+                action: TransAction.deletePairDevice,
+                extra: HashMap<String, String>()
+                  ..[Constants.deleteDeviceId] = deleteDeviceId)
+            .toJson(),
+        headers: {"Content-type": "application/json; charset=UTF-8"},
+      );
+      if (response.statusCode == 200) {
+        talker.debug('删除配对成功: response: ${response.body}');
+      } else {
+        talker.error(
+            '删除配对失败: status code: ${response.statusCode}, ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      talker.error('askPairDevice failed: ', e, stackTrace);
+    }
+  }
+
+
   Future<void> askBreakPoint(PrimitiveFileBubble bubble) async {
     try {
       talker.debug("breakPoint=>", "askBreakPoint = ${bubble.to}");
@@ -821,6 +940,59 @@ class ShipService implements ApInterface {
       talker.error('confirmReceiveFile failed: ', e, stackTrace);
     }
   }
+
+  Future<void> _replyPairDevice(String from, String verifyDevice,String verifyCode) async {
+    try {
+      talker.debug("pairDevice","_replyPairDevice from = $from verifyDevice = $verifyDevice verifyCode = $verifyCode");
+      var uri = Uri.parse(await _intentUrl(from));
+      var response = await http.post(
+        uri,
+        body: TransIntent(
+          bubbleId: '',
+          action: TransAction.confirmPairDevice,
+          deviceId: did,
+          extra: HashMap<String,String>()..[Constants.verifyCode] = verifyCode ..[Constants.verifyDevice] = verifyDevice
+
+        ).toJson(),
+        headers: {"Content-type": "application/json; charset=UTF-8"},
+      );
+      if (response.statusCode == 200) {
+        talker.debug('剪贴板配对请求回复成功: response: ${response.body}');
+      } else {
+        talker.error(
+            '剪贴板配对请求回复失败: status code: ${response.statusCode}, ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      talker.error('_replyPairDevice failed: ', e, stackTrace);
+    }
+  }
+
+
+  Future<void> _replyDeletePairDevice(String toDeviceId, String deleteDeviceId) async {
+    try {
+      talker.debug("pairDevice","_replyPairDevice from = $toDeviceId verifyDevice = $deleteDeviceId");
+      var uri = Uri.parse(await _intentUrl(toDeviceId));
+      var response = await http.post(
+        uri,
+        body: TransIntent(
+            bubbleId: '',
+            action: TransAction.confirmDeletePairDevice,
+            deviceId: did,
+                extra: HashMap<String, String>()
+                  ..[Constants.deleteDeviceId] = deleteDeviceId).toJson(),
+        headers: {"Content-type": "application/json; charset=UTF-8"},
+      );
+      if (response.statusCode == 200) {
+        talker.debug('删除配对请求回复成功: response: ${response.body}');
+      } else {
+        talker.error(
+            '删除请求回复失败: status code: ${response.statusCode}, ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      talker.error('_replyPairDevice failed: ', e, stackTrace);
+    }
+  }
+}
 
   String getAddressByDeviceId(String deviceId) {
     return '${DeviceManager.instance.getNetAdressByDeviceId(deviceId)}';
