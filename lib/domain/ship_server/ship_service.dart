@@ -3,11 +3,14 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart' as dio;
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/constants.dart';
+import 'package:flix/domain/device/ap_interface.dart';
+import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/domain/physical_lock.dart';
 import 'package:flix/domain/settings/SettingsRepo.dart';
-import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/model/intent/trans_intent.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
@@ -20,44 +23,45 @@ import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/stream_cancelable.dart';
 import 'package:flix/utils/stream_progress.dart';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:mutex/mutex.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
-import 'package:shelf_multipart/form_data.dart';
-import 'package:shelf_multipart/multipart.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
-class ShipService {
+class ShipService implements ApInterface {
   final String did;
   final _bubblePool = BubblePool.instance;
-  final syncTasks = <String, Completer>{};
   final lock = Mutex();
   var _longTaskCount = 0;
   HttpServer? _server;
   int port = defaultPort;
+  PongListener? _pongListener;
 
   ShipService({required this.did}) {
-    talker.debug("ShipService","did = $did");
+    talker.debug("ShipService", "did = $did");
   }
 
   Future<String> _pongUrl(String deviceId) async {
-    return 'http://${shipService.getAddressByDeviceId(deviceId)}/pong';
+    return 'http://${getAddressByDeviceId(deviceId)}/pong';
   }
 
   Future<String> _intentUrl(String deviceId) async {
-    return 'http://${shipService.getAddressByDeviceId(deviceId)}/intent';
+    return 'http://${getAddressByDeviceId(deviceId)}/intent';
   }
 
   Future<String> _getSendBubbleUrl(
           PrimitiveBubble<dynamic> primitiveBubble) async =>
-      'http://${shipService.getAddressByDeviceId(primitiveBubble.to)}/bubble';
+      'http://${getAddressByDeviceId(primitiveBubble.to)}/bubble';
 
   Future<String> _getSendFileUrl(PrimitiveFileBubble fileBubble) async =>
-      'http://${shipService.getAddressByDeviceId(fileBubble.to)}/file';
+      'http://${getAddressByDeviceId(fileBubble.to)}/file';
+
+  String _getBaseUrl(String deviceId) {
+    return 'http://${getAddressByDeviceId(deviceId)}';
+  }
 
   Future<bool> startShipService() async {
     try {
@@ -163,8 +167,12 @@ class ShipService {
       var receiveBytesMap = HashMap<String, Object>();
       var filePath = fileBubble.content.meta.path;
       if (filePath?.isNotEmpty == true) {
-        var fileLen = await File(filePath!).length();
-        receiveBytesMap[Constants.receiveBytes] =fileLen;
+        final file = File(filePath!);
+        int fileLen = 0;
+        if (await file.exists()) {
+          fileLen = await File(filePath!).length();
+        }
+        receiveBytesMap[Constants.receiveBytes] = fileLen;
         fileBubble.content.receiveBytes = fileLen;
         _bubblePool.add(fileBubble);
       }
@@ -231,8 +239,8 @@ class ShipService {
     await updateFileShareState(_bubblePool, bubble.id, FileState.waitToAccepted,
         create: bubble);
     //已经发送过，c/s都有此记录
-    talker.debug("resend",
-        "getBreakPoint receiveBytes = ${bubble.content.progress}");
+    talker.debug(
+        "resend", "getBreakPoint receiveBytes = ${bubble.content.progress}");
     if (CompatUtil.supportBreakPoint(bubble.to) &&
         bubble.content.progress > 0) {
       talker.debug("breakPoint", "start ask");
@@ -251,8 +259,10 @@ class ShipService {
       var response = await http.post(
         uri,
         body: TransIntent(
-                deviceId: did, bubbleId: bubbleId, action: TransAction.cancel, extra: {})
-            .toJson(),
+            deviceId: did,
+            bubbleId: bubbleId,
+            action: TransAction.cancel,
+            extra: {}).toJson(),
         headers: {"Content-type": "application/json; charset=UTF-8"},
       );
 
@@ -368,7 +378,8 @@ class ShipService {
       var bubble = PrimitiveBubble.fromJson(data);
       talker.debug("_receiveBubble===>", data);
       _notifyNewBubble(bubble);
-      if (await SettingsRepo.instance.getAutoReceiveAsync() && bubble is PrimitiveFileBubble) {
+      if (await SettingsRepo.instance.getAutoReceiveAsync() &&
+          bubble is PrimitiveFileBubble) {
         await _bubblePool.add(bubble);
         await confirmReceiveFile(bubble.from, bubble.id);
       } else if (bubble is PrimitiveFileBubble) {
@@ -399,49 +410,51 @@ class ShipService {
     _addLongTask();
     try {
       await _checkCancel(fileBubble.id);
-
       final shardFile = fileBubble.content.meta;
-
-      var request = http.MultipartRequest(
-          'POST', Uri.parse(await _getSendFileUrl(fileBubble)));
-
-      request.fields['share_id'] = fileBubble.id;
-      request.fields['file_name'] = shardFile.name;
-      var receiveBytes = 0;
-      var supportBreakPoint = CompatUtil.supportBreakPoint(fileBubble.to);
-      talker.debug("breakPoint","supportBreakPoint = $supportBreakPoint");
-      if (supportBreakPoint) {
-        receiveBytes = fileBubble.content.receiveBytes;
-        if (receiveBytes > 0) {
-          request.fields['mode'] = FileMode.append.toString();
-        } else {
-          request.fields['mode'] = FileMode.write.toString();
-        }
-      }
       await shardFile.resolvePath((path) async {
         var fileSize = shardFile.size;
-        talker.debug("breakPoint=>_sendFileReal receiveBytes", "=receiveBytes:$receiveBytes===shardFileSize = ${shardFile.size}  offset = ${fileSize - receiveBytes}");
 
-        var multipartFile = http.MultipartFile(
-            'file',
-            File(path)
-                .openRead(receiveBytes,fileSize)
-                .chain((stream) async {
-              await _checkCancel(fileBubble.id);
-            }).progress(fileBubble,receiveBytes),
-            fileSize - receiveBytes,
-            filename: shardFile.name,
-            contentType: MediaType.parse(shardFile.mimeType));
-        request.files.add(multipartFile);
-        final response = await request.send();
+        final parameters = {
+          'share_id': fileBubble.id,
+          'file_name': shardFile.name,
+        };
+
+        var receiveBytes = 0;
+        var supportBreakPoint = CompatUtil.supportBreakPoint(fileBubble.to);
+        talker.debug("breakPoint", "supportBreakPoint = $supportBreakPoint");
+        if (supportBreakPoint) {
+          final String mode;
+          receiveBytes = fileBubble.content.receiveBytes;
+          if (receiveBytes > 0) {
+            mode = FileMode.append.toString();
+          } else {
+            mode = FileMode.write.toString();
+          }
+          parameters['mode'] = mode;
+        }
+
+        talker.debug("breakPoint=>_sendFileReal receiveBytes",
+            "=receiveBytes:$receiveBytes===shardFileSize = ${shardFile.size}  offset = ${fileSize - receiveBytes}");
+
+        final response =
+            await dio.Dio(dio.BaseOptions(baseUrl: _getBaseUrl(fileBubble.to)))
+                .post(
+          '/file',
+          queryParameters: parameters,
+          data:
+              File(path).openRead(receiveBytes, fileSize).chain((stream) async {
+            await _checkCancel(fileBubble.id);
+          }).progress(fileBubble, receiveBytes),
+        );
+
         if (response.statusCode == 200) {
-          talker.debug('发送成功 ${await response.stream.bytesToString()}');
+          talker.debug('发送成功 ${response.data.toString()}');
           updateFileShareState(
               _bubblePool, fileBubble.id, FileState.sendCompleted);
           _deleteCachedFile(fileBubble, path);
         } else {
           talker.error(
-              '发送失败: status code: ${response.statusCode}, ${await response.stream.bytesToString()}');
+              '发送失败: status code: ${response.statusCode}, ${response.data.toString()}');
           updateFileShareState(
               _bubblePool, fileBubble.id, FileState.sendFailed);
         }
@@ -460,77 +473,62 @@ class ShipService {
     PrimitiveFileBubble? bubble;
     String? shareId;
     try {
-      if (!request.isMultipart) {
-        _removeLongTask();
-        return Response.badRequest();
-      } else if (request.isMultipartForm) {
-        final description = StringBuffer('Parsed form multipart request\n');
-        await for (final formData in request.multipartFormData) {
-          switch (formData.name) {
-            case 'share_id':
-              shareId = await formData.part.readString();
-              final _bubble = await _bubblePool.findLastById(shareId!);
-              if (_bubble == null) {
-                throw StateError(
-                    '$shareId Primitive Bubble with id: $shareId should not null.');
-              }
-
-              if (_bubble is! PrimitiveFileBubble) {
-                throw StateError(
-                    '${_bubble.id} Primitive Bubble should be PrimitiveFileBubble');
-              }
-              if (_bubble.content.waitingForAccept) {
-                throw StateError('${_bubble.id} $_bubble Bubble should be accept');
-              }
-              bubble = _bubble;
-              await _checkCancel(bubble.id);
-              break;
-            case 'file':
-              assert(bubble != null, '$shareId bubble can\'t be null');
-              assert(formData.filename != null, '$shareId filename can\'t be null');
-              bubble = (await _bubblePool.findLastById(bubble!.id)) as PrimitiveFileBubble?;
-              await _checkCancel(bubble!.id);
-              try {
-                final String desDir = SettingsRepo.instance.savedDir;
-                await resolvePathOnMacOS(desDir, (desDir) async {
-                  assert(formData.filename != null, "$shareId filename can't be null");
-                  await _saveFileAndAddBubble(desDir, formData, bubble!);
-                });
-              } on Error catch (e) {
-                talker.error('receive file error: ', e);
-                final updatedBubble = bubble.copy(
-                    content: bubble.content
-                        .copy(state: FileState.receiveFailed, progress: 1.0));
-                // removeBubbleById(updatedBubble.id);
-                await _bubblePool.add(updatedBubble);
-                _removeLongTask();
-                return Response.internalServerError();
-              }
-              break;
-          }
-        }
-
-        _removeLongTask();
-        return Response.ok(description.toString());
-      } else {
-        _removeLongTask();
-        return Response.badRequest();
+      shareId = request.requestedUri.queryParameters['share_id'];
+      assert(shareId != null, 'shareId can\'t be null');
+      final _bubble = await _bubblePool.findLastById(shareId!);
+      if (_bubble == null) {
+        throw StateError(
+            '$shareId Primitive Bubble with id: $shareId should not null.');
       }
+
+      if (_bubble is! PrimitiveFileBubble) {
+        throw StateError(
+            '${_bubble.id} Primitive Bubble should be PrimitiveFileBubble');
+      }
+      if (_bubble.content.waitingForAccept) {
+        throw StateError('${_bubble.id} $_bubble Bubble should be accept');
+      }
+      bubble = _bubble;
+      await _checkCancel(bubble.id);
+      final fileName = request.requestedUri.queryParameters['file_name'];
+      assert(fileName != null, '$shareId filename can\'t be null');
+      bubble =
+          (await _bubblePool.findLastById(bubble!.id)) as PrimitiveFileBubble?;
+      await _checkCancel(bubble!.id);
+      try {
+        final String desDir = SettingsRepo.instance.savedDir;
+        await resolvePathOnMacOS(desDir, (desDir) async {
+          assert(fileName != null, "$shareId filename can't be null");
+          await _saveFileAndAddBubble(desDir, request, bubble!);
+        });
+      } on Error catch (e) {
+        talker.error('receive file error: ', e);
+        final updatedBubble = bubble.copy(
+            content: bubble.content
+                .copy(state: FileState.receiveFailed, progress: 1.0));
+        // removeBubbleById(updatedBubble.id);
+        await _bubblePool.add(updatedBubble);
+        _removeLongTask();
+        return Response.internalServerError();
+      }
+
+      _removeLongTask();
+      return Response.ok('${shareId} ${fileName} received');
     } on CancelException catch (e, stacktrace) {
       talker.warning('$shareId _receiveFile canceled, ', e, stacktrace);
-      setBubbleReceiveFailed(bubble,FileState.cancelled);
+      setBubbleReceiveFailed(bubble, FileState.cancelled);
       _removeLongTask();
       return Response.ok('$shareId canceled');
     } catch (e, stackTrace) {
       talker.error('$shareId _receiveFile failed, ', e, stackTrace);
       _removeLongTask();
-      setBubbleReceiveFailed(bubble,FileState.receiveFailed);
+      setBubbleReceiveFailed(bubble, FileState.receiveFailed);
       return Response.internalServerError(body: "$shareId failed");
     }
   }
 
-  void setBubbleReceiveFailed(PrimitiveFileBubble? bubble,FileState state) {
-    if(bubble != null){
+  void setBubbleReceiveFailed(PrimitiveFileBubble? bubble, FileState state) {
+    if (bubble != null) {
       bubble.content.state = state;
       _bubblePool.add(bubble);
     }
@@ -544,7 +542,7 @@ class ShipService {
       if (bubble == null || bubble is! PrimitiveFileBubble) {
         return Response.notFound('bubble not found');
       }
-      talker.debug("_receiveIntent","action = ${intent.action}");
+      talker.debug("_receiveIntent", "action = ${intent.action}");
       switch (intent.action) {
         case TransAction.confirmReceive:
           await _checkCancel(bubble.id);
@@ -580,13 +578,15 @@ class ShipService {
   }
 
   Future<void> _saveFileAndAddBubble(
-      String desDir, FormData formData, PrimitiveFileBubble bubble) async {
-    talker.debug("breakPoint=>","_saveFileAndAddBubble");
-    File outFile = await _saveFile(desDir, formData, bubble);
+      String desDir, Request request, PrimitiveFileBubble bubble) async {
+    talker.debug("breakPoint=>", "_saveFileAndAddBubble");
+    File outFile = await _saveFile(desDir, request, bubble);
     String? path = outFile.path;
     String? resourceId = null;
     if (bubble.type == BubbleType.Image || bubble.type == BubbleType.Video) {
-      resourceId = await _saveMediaToAlbumOnMobile(outFile, bubble.type == BubbleType.Image, tag: bubble.id);
+      resourceId = await _saveMediaToAlbumOnMobile(
+          outFile, bubble.type == BubbleType.Image,
+          tag: bubble.id);
       // 保存到相册成功，删除副本
       try {
         if (resourceId != null) {
@@ -598,23 +598,26 @@ class ShipService {
       }
     }
 
-
     final updatedBubble = bubble.copy(
         content: bubble.content.copy(
             state: FileState.receiveCompleted,
             progress: 1.0,
-            meta: bubble.content.meta.copy(resourceId: resourceId ,path: path)));
+            meta:
+                bubble.content.meta.copy(resourceId: resourceId, path: path)));
     await _bubblePool.add(updatedBubble);
   }
 
-  Future<String?> _saveMediaToAlbumOnMobile(File outFile, bool isImage, {String? tag}) async {
+  Future<String?> _saveMediaToAlbumOnMobile(File outFile, bool isImage,
+      {String? tag}) async {
     try {
       if (Platform.isAndroid) {
         final AssetEntity? entity;
         if (isImage) {
-          entity = await PhotoManager.plugin.saveImageWithPath(outFile.path, title: outFile.path.split("/").last);
+          entity = await PhotoManager.plugin.saveImageWithPath(outFile.path,
+              title: outFile.path.split("/").last);
         } else {
-          entity = await PhotoManager.plugin.saveVideo(outFile, title: outFile.path.split("/").last);
+          entity = await PhotoManager.plugin
+              .saveVideo(outFile, title: outFile.path.split("/").last);
         }
         if (entity == null) {
           talker.error("save to gallery failed");
@@ -623,7 +626,8 @@ class ShipService {
           return entity.id;
         }
       } else if (Platform.isIOS) {
-        final result = await ImageGallerySaver.saveFile(outFile.path, isReturnPathOfIOS: true);
+        final result = await ImageGallerySaver.saveFile(outFile.path,
+            isReturnPathOfIOS: true);
         talker.debug("$tag ios save file result: $result");
         if (result["isSuccess"]) {
           return result["resourceId"] as String;
@@ -638,26 +642,29 @@ class ShipService {
   }
 
   Future<File> _saveFile(
-      String desDir, FormData formData, PrimitiveFileBubble bubble) async {
-
+      String desDir, Request request, PrimitiveFileBubble bubble) async {
     var deleteExist = true;
     var fileMode = FileMode.write;
     var receiveBytes = bubble.content.receiveBytes;
-    if(receiveBytes > 0){
+    if (receiveBytes > 0) {
       deleteExist = false;
       fileMode = FileMode.append;
     }
-    talker.debug('breakPoint=>_saveFile is append = ${fileMode == FileMode.append} deleteExist = $deleteExist receiveBytes = ${receiveBytes}');
-    final outFile = await createFile(desDir, formData.filename ?? '',deleteExist: deleteExist);
-    talker.debug('breakPoint=>_saveFile file.length = ${(await outFile.length())}');
+    talker.debug(
+        'breakPoint=>_saveFile is append = ${fileMode == FileMode.append} deleteExist = $deleteExist receiveBytes = ${receiveBytes}');
+    final outFile = await createFile(desDir, bubble.content.meta.name ?? '',
+        deleteExist: deleteExist);
+    talker.debug(
+        'breakPoint=>_saveFile file.length = ${(await outFile.length())}');
     bubble.content.meta.path = outFile.path;
     final out = outFile.openWrite(mode: fileMode);
     talker.debug('writing file to ${outFile.path}');
-    await formData.part
+    await request
+        .read()
         .chain((Stream<List<int>> stream) async {
           await _checkCancel(bubble.id);
         })
-        .progress(bubble,receiveBytes)
+        .progress(bubble, receiveBytes)
         .pipe(out);
     out.flush();
     out.close();
@@ -688,7 +695,7 @@ class ShipService {
       if (ip != null) {
         pong.from.ip = ip;
         talker.debug('receive tcp pong: $pong');
-        shipService.receivePong(pong);
+        notifyPong(pong);
       } else {
         talker.error('receive tcp pong, but can\'t get ip');
       }
@@ -704,7 +711,7 @@ class ShipService {
   }
 
   void _notifyNewBubble(PrimitiveBubble bubble) {
-    shipService.notifyNewBubble(bubble);
+    BubblePool.instance.notify(bubble);
   }
 
   Future<void> _addLongTask() async {
@@ -712,26 +719,26 @@ class ShipService {
     if (!(await WakelockPlus.enabled)) {
       await WakelockPlus.enable();
     }
-    shipService.markTaskStarted();
+    markTaskStarted();
   }
 
   Future<void> _removeLongTask() async {
     _longTaskCount--;
     if (_longTaskCount <= 0) {
       _longTaskCount = 0;
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
       if (_longTaskCount <= 0 && await WakelockPlus.enabled) {
         await WakelockPlus.disable();
       }
       if (_longTaskCount <= 0) {
-        shipService.markTaskStopped();
+        markTaskStopped();
       }
     }
   }
 
   Future<void> askBreakPoint(PrimitiveFileBubble bubble) async {
     try {
-      talker.debug("breakPoint=>","askBreakPoint = ${bubble.to}");
+      talker.debug("breakPoint=>", "askBreakPoint = ${bubble.to}");
       // 更新接收方状态为接收中
       await updateFileShareState(_bubblePool, bubble.id, FileState.inTransit,
           waitingForAccept: true);
@@ -757,6 +764,27 @@ class ShipService {
     } catch (e, stackTrace) {
       talker.error('confirmReceiveFile failed: ', e, stackTrace);
     }
+  }
+
+  String getAddressByDeviceId(String deviceId) {
+    return '${DeviceManager.instance.getNetAdressByDeviceId(deviceId)}';
+  }
+
+  Future<void> markTaskStarted() async {
+    PhysicalLock.acquirePhysicalLock();
+  }
+
+  Future<void> markTaskStopped() async {
+    PhysicalLock.releasePhysicalLock();
+  }
+
+  @override
+  void listenPong(PongListener listener) {
+    _pongListener = listener;
+  }
+
+  void notifyPong(Pong pong) {
+    _pongListener?.call(pong);
   }
 }
 
