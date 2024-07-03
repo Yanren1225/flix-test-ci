@@ -1,6 +1,7 @@
 import 'package:extended_text/extended_text.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/basic/progressbar/linear/animated_progress_bar.dart';
@@ -91,7 +92,8 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
             const Color.fromRGBO(0, 122, 255, 1),
             const Color.fromRGBO(81, 181, 252, 1)
           ];
-          stateDes = sharedDirectory.speed.formatSpeed();
+          stateDes = '${sharedDirectory.speed.formatSpeed()} '
+              '(${sharedDirectory.receiveNum}/${sharedDirectory.sendNum})';
           stateDesGradient = [
             const Color.fromRGBO(0, 122, 255, 1),
             const Color.fromRGBO(81, 181, 252, 1)

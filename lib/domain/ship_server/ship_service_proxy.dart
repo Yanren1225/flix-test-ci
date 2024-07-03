@@ -151,19 +151,9 @@ class ShipServiceProxy extends ApInterface {
     _shipService.send(primitiveBubble);
   }
 
-  Future<void> confirmReceiveFile(String from, String bubbleId) async {
+  Future<void> confirmReceive(String from, String bubbleId) async {
     await _awaitServerReady();
-    _shipService.confirmReceiveFile(from, bubbleId);
-  }
-
-  Future<void> confirmReceiveDirectory(String from, String bubbleId) async {
-    await _awaitServerReady();
-    sendPort.send(IsolateCommand(
-        'confirmReceiveDirectory',
-        jsonEncode({
-          'from': from,
-          'bubbleId': bubbleId,
-        })).toJson());
+    _shipService.confirmReceiveBubble(from, bubbleId);
   }
 
   Future<int> getPort() async {
@@ -180,11 +170,7 @@ class ShipServiceProxy extends ApInterface {
 
   Future<void> resend(UIBubble uiBubble) async {
     await _awaitServerReady();
-    var primitiveFileBubbleJson =
-            jsonEncode(fromUIBubble(uiBubble)
-                .toJson(pathSaveType: FilePathSaveType.full));
-    final primitiveFileBubble = PrimitiveFileBubble.fromJson(jsonDecode(primitiveFileBubbleJson));
-    _shipService.resend(primitiveFileBubble);
+    _shipService.resend(fromUIBubble(uiBubble));
   }
 
   Future<bool> isServerLiving() async {
@@ -202,11 +188,7 @@ class ShipServiceProxy extends ApInterface {
 
   Future<void> cancelSend(UIBubble uiBubble) async {
     await _awaitServerReady();
-    var primitiveFileBubbleJson =
-            jsonEncode(fromUIBubble(uiBubble)
-                .toJson(pathSaveType: FilePathSaveType.full));
-    final primitiveFileBubble = PrimitiveFileBubble.fromJson(jsonDecode(primitiveFileBubbleJson));
-    _shipService.cancelSend(primitiveFileBubble);
+    _shipService.cancelSend(fromUIBubble(uiBubble));
   }
 
   void receivePong(Pong pong) {

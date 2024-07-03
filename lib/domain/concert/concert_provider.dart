@@ -45,10 +45,7 @@ class ConcertProvider extends ChangeNotifier {
   }
 
   Future<void> confirmReceive(UIBubble uiBubble) async {
-    if (uiBubble.type == BubbleType.Directory) {
-      return await _concertService.confirmReceiveDirectory(uiBubble);
-    }
-    return await _concertService.confirmReceiveFile(uiBubble);
+    return await _concertService.confirmReceive(uiBubble);
   }
 
   Future<void> cancelSend(UIBubble uiBubble) async {

@@ -249,12 +249,15 @@ class PickActionAreaState extends State<PickActionsArea> {
             List<FileSystemEntity> entities =
                 directory.listSync(recursive: true);
             List<FileMeta> picks = [];
+            int totalSize = 0;
             for (FileSystemEntity entity in entities) {
               if (entity is File) {
                 final sf = await entity.toFileMeta(parent: directoryMeta);
+                totalSize += entity.lengthSync();
                 picks.add(sf);
               }
             }
+            directoryMeta.size = totalSize;
             onPicked([
               PickableDirectory(
                   content: picks,

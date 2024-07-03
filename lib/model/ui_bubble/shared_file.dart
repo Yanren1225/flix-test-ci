@@ -43,6 +43,10 @@ class SharedDirectory extends Shareable<List<SharedFile>> {
 
   int speed;
 
+  int sendNum;
+
+  int receiveNum;
+
   @override
   List<SharedFile> content;
 
@@ -55,20 +59,18 @@ class SharedDirectory extends Shareable<List<SharedFile>> {
     required this.state,
     this.progress = 0,
     this.speed = 0,
+    this.sendNum = 0,
+    this.receiveNum = 0,
   });
 }
 
 class DirectoryMeta {
   final String name;
-  final int size;
+  int size;
   String? path;
   String? groupId;
 
-  DirectoryMeta(
-      {required this.name,
-      required this.size,
-      this.path,
-      this.groupId});
+  DirectoryMeta({required this.name, this.size = 0, this.path, this.groupId});
 
   DirectoryMeta fromJson(Map<String, dynamic> json){
     return DirectoryMeta.fromJson(json);
@@ -144,7 +146,7 @@ class FileMeta with DrawinFileSecurityExtension {
   FileMeta.fromJson(Map<String, dynamic> json)
       : resourceId = json['resourceId'] ?? '',
         name = json['name'],
-        mimeType = json['mimeType'],
+        mimeType = json['mimeType'] ?? '',
         nameWithSuffix = json['nameWithSuffix'],
         size = json['size'],
         path = json['path'],

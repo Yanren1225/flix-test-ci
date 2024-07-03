@@ -418,24 +418,16 @@ class DirectoryTransfer {
   @override
   String toString() {
     return 'DirectoryTransfer = progress=$progress, speed=$speed, state=$state, '
-        'receiveBytes=$receiveBytes, sendSize=$sendSize, '
-        'receiveSize=$receiveSize, fileBubbles=${fileBubbles.length}';
+        'receiveBytes=$receiveBytes, sendSize=$sendNum, '
+        'receiveSize=$receiveNum, fileBubbles=${fileBubbles.length}';
   }
 
   double get progress=> ((fileBubbles.fold(0.0,
-          (previousValue, element) => previousValue + element.content.progress)) /sendSize);
+          (previousValue, element) => previousValue + element.content.progress)) /sendNum);
 
-  int get speed {
-    int inTransitSize = 0;
-    int s = 0;
-    for (var element in fileBubbles) {
-      if (s != 0 || element.content.state == FileState.inTransit) {
-        inTransitSize++;
-        s += s;
-      }
-    }
-    return inTransitSize == 0 ? 0 : s ~/ inTransitSize;
-  }
+  int get speed => fileBubbles.fold(
+      0, (previousValue, element) =>
+          previousValue + (element.content.state == FileState.inTransit ? element.content.speed : 0));
 
   FileState get state {
     FileState state = _state;
@@ -443,16 +435,11 @@ class DirectoryTransfer {
     bool stateSingle = true;
     // 当发送被取消或者已经传输完成时，不再通过子气泡更新状态
     bool nonCheckState = (state == FileState.cancelled ||
-        state == FileState.completed || state == FileState.picked);
-
-    for (var bubble in fileBubbles) {
-      if (!nonCheckState) {
-        // 只保存批量状态
-        if (bubble.content.state == FileState.picked ||
-            bubble.content.state == FileState.waitToAccepted ||
-            bubble.content.state == FileState.inTransit) {
-          state = bubble.content.state;
-        }
+        state == FileState.waitToAccepted ||
+        state == FileState.completed ||
+        state == FileState.picked);
+    if (!nonCheckState) {
+      for (var bubble in fileBubbles) {
         if (lastState == null) {
           lastState = bubble.content.state;
         } else if (lastState != bubble.content.state) {
@@ -470,9 +457,9 @@ class DirectoryTransfer {
   int get receiveBytes => fileBubbles.fold(0,
       (previousValue, element) => previousValue + element.content.receiveBytes);
 
-  int get sendSize => fileBubbles.length;
+  int get sendNum => fileBubbles.length;
 
-  int get receiveSize => fileBubbles.fold(
+  int get receiveNum => fileBubbles.fold(
       0, (previousValue, element) => previousValue +
       ((element.content.state == FileState.completed ||
           element.content.state == FileState.receiveCompleted ||

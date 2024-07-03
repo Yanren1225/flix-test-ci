@@ -101,7 +101,6 @@ UIBubble toUIBubble(PrimitiveBubble bubble) {
       currentBubble.time = primitive.time;
       return currentBubble;
     case BubbleType.Directory:
-      // todo wgl 优化 transfer
       final primitive = (bubble as PrimitiveDirectoryBubble);
       var currentBubble = UIBubble(
           time: bubble.time,
@@ -113,6 +112,8 @@ UIBubble toUIBubble(PrimitiveBubble bubble) {
               state: bubble.content.state,
               progress: bubble.content.progress,
               speed: bubble.content.speed,
+              sendNum: bubble.content.sendNum,
+              receiveNum: bubble.content.receiveNum,
               meta: primitive.content.meta,
               content: primitive.content.fileBubbles
                   .map((e) => SharedFile(
