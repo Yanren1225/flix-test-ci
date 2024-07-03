@@ -188,17 +188,19 @@ class PickActionAreaState extends State<PickActionsArea> {
           final result = await FilePicker.platform.pickFiles(
               allowMultiple: true,
               onFileLoading: (FilePickerStatus pickerStatus) {
-                switch (pickerStatus) {
-                  case FilePickerStatus.picking:
-                    setState(() {
-                      _isFileLoading = true;
-                    });
-                    break;
-                  case FilePickerStatus.done:
-                    setState(() {
-                      _isFileLoading = false;
-                    });
-                    break;
+                if (mounted) {
+                  switch (pickerStatus) {
+                    case FilePickerStatus.picking:
+                      setState(() {
+                        _isFileLoading = true;
+                      });
+                      break;
+                    case FilePickerStatus.done:
+                      setState(() {
+                        _isFileLoading = false;
+                      });
+                      break;
+                  }
                 }
               });
           if (result != null) {
