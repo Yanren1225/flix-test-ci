@@ -64,8 +64,8 @@ class CupertinoNavigationScalffoldState
                   );
                 },
                 child: Text(title,
-                    style: const TextStyle(
-                            color: Colors.black,
+                    style: TextStyle(
+                            color: Theme.of(context).flixColors.text.primary,
                             fontSize: 18,
                             fontWeight: FontWeight.w500)
                         .fix()),

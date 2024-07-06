@@ -146,7 +146,7 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
       child: FlixClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: LayoutBuilder(
-          builder: (_context, _) => Material(
+          builder: (context, _) => Material(
             color: backgroundColor,
             child: ModalAnchor(
               key: ValueKey(entity.shareable.id),

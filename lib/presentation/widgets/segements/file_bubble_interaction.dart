@@ -127,7 +127,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
                   concertProvider, !widget.clickable);
             },
             child: ScaleTransition(
-                scale: _animation,
+                scale: animation,
                 child: FlixClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: widget.child))),

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
@@ -113,10 +114,11 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                         left: 20, top: 20, right: 20, bottom: 4),
                     child: Text(
                       '关于连接',
-                      style: const TextStyle(
+                      style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.normal,
-                              color: Color.fromRGBO(60, 60, 67, 0.6))
+                              color:
+                                  Theme.of(context).flixColors.text.secondary)
                           .fix(),
                     ),
                   ),

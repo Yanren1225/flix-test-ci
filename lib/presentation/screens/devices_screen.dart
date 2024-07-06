@@ -54,8 +54,8 @@ class _DeviceScreenState extends State<DeviceScreen>
     devices = deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
     return Scaffold(
       body: Container(
-        decoration:
-            FlixDecoration(color: const Color.fromARGB(255, 247, 247, 247)),
+        decoration: FlixDecoration(
+            color: Theme.of(context).flixColors.background.secondary),
         child: Stack(
           children: [
             ClipRect(
@@ -334,7 +334,9 @@ class HistoryItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: DecoratedBox(
             decoration: FlixDecoration(
-              color: selected ? const Color.fromRGBO(230, 230, 230, 1) : null,
+              color: selected
+                  ? Theme.of(context).flixColors.background.primary
+                  : null,
               borderRadius: selected ? BorderRadius.circular(10) : null,
             ),
             child: Padding(
@@ -358,9 +360,10 @@ class HistoryItem extends StatelessWidget {
                     child: Text(historyItemInfo.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.black,
+                                color:
+                                    Theme.of(context).flixColors.text.primary,
                                 fontWeight: FontWeight.w500)
                             .fix()),
                   ),

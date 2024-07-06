@@ -381,8 +381,9 @@ class InputAreaState extends State<InputArea> {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
-          decoration: BoxDecoration(
-              color: Theme.of(context).flixColors.background.tertiary,
+          decoration: FlixDecoration(
+            color: Theme.of(context).flixColors.background.tertiary,
+          ),
           child: Padding(
             padding:
                 EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
@@ -500,7 +501,7 @@ class InputAreaState extends State<InputArea> {
                                     fillColor: Theme.of(context)
                                         .flixColors
                                         .background
-                                        .primary,
+                                        .secondary,
                                     hoverColor: Theme.of(context)
                                         .flixColors
                                         .background
@@ -546,7 +547,10 @@ class InputAreaState extends State<InputArea> {
                                     const Color.fromRGBO(0, 122, 255, 1)),
                             shape: const MaterialStatePropertyAll<
                                 SmoothRectangleBorder>(SmoothRectangleBorder(
-                              borderRadius: SmoothBorderRadius.all(SmoothRadius(cornerRadius: 10, cornerSmoothing: 0.6, )),
+                              borderRadius: SmoothBorderRadius.all(SmoothRadius(
+                                cornerRadius: 10,
+                                cornerSmoothing: 0.6,
+                              )),
                             ))),
                         icon: const Icon(
                           Icons.arrow_upward_sharp,
