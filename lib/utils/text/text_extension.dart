@@ -8,6 +8,8 @@ extension TextStyleExtension on TextStyle {
   TextStyle fix() {
     if (Platform.isWindows) {
       return useSystemChineseFont();
+    } else if (Platform.isLinux){
+      return this.copyWith(fontFamily: 'custom-sans');;
     } else {
       return this;
     }

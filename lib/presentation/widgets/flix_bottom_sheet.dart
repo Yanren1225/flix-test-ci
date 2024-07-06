@@ -1,5 +1,7 @@
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
+import 'package:flix/utils/void_future_callback.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -13,7 +15,7 @@ class FlixBottomSheet extends StatelessWidget {
   final List<Color> backgroundGradient;
   final Color buttonColor;
   final Widget child;
-  final VoidCallback? onClick;
+  final VoidFutureCallback? onClick;
 
   const FlixBottomSheet(
       {super.key,
@@ -50,7 +52,7 @@ class FlixBottomSheet extends StatelessWidget {
                 child: Container(
                   margin:
                       const EdgeInsets.only(left: 16, right: 16, bottom: 20),
-                  decoration: BoxDecoration(
+                  decoration: FlixDecoration(
                     borderRadius: BorderRadius.circular(30),
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -114,8 +116,8 @@ class FlixBottomSheet extends StatelessWidget {
                             child: SizedBox(
                               width: double.infinity,
                               child: CupertinoButton(
-                                onPressed: () {
-                                  onClick?.call();
+                                onPressed: () async {
+                                  await onClick?.call();
                                   Navigator.of(context).pop();
                                 },
                                 color: buttonColor,

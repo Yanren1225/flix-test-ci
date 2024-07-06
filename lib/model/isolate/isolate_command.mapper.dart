@@ -60,8 +60,9 @@ mixin IsolateCommandMappable {
         .encodeMap<IsolateCommand>(this as IsolateCommand);
   }
 
-  IsolateCommandCopyWith<IsolateCommand, IsolateCommand, IsolateCommand> get copyWith =>
-      _IsolateCommandCopyWithImpl(this as IsolateCommand, $identity, $identity);
+  IsolateCommandCopyWith<IsolateCommand, IsolateCommand, IsolateCommand>
+      get copyWith => _IsolateCommandCopyWithImpl(
+          this as IsolateCommand, $identity, $identity);
   @override
   String toString() {
     return IsolateCommandMapper.ensureInitialized()
@@ -78,7 +79,8 @@ mixin IsolateCommandMappable {
 
   @override
   int get hashCode {
-    return IsolateCommandMapper.ensureInitialized().hashValue(this as IsolateCommand);
+    return IsolateCommandMapper.ensureInitialized()
+        .hashValue(this as IsolateCommand);
   }
 }
 
@@ -91,7 +93,8 @@ extension IsolateCommandValueCopy<$R, $Out>
 abstract class IsolateCommandCopyWith<$R, $In extends IsolateCommand, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call({String? command, dynamic data});
-  IsolateCommandCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
+  IsolateCommandCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+      Then<$Out2, $R2> t);
 }
 
 class _IsolateCommandCopyWithImpl<$R, $Out>

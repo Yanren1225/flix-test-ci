@@ -6,8 +6,11 @@ import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
+import 'package:flix/presentation/basic/flix_thumbnail_provider.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/segements/bubble_context_menu.dart';
+import 'package:flix/utils/android/android_utils.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +72,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
 
     return ModalAnchor(
       tag: contextMenuTag,
-      child: ClipRRect(
+      child: FlixClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
             radius: 12,
@@ -124,8 +127,8 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
                   concertProvider, !widget.clickable);
             },
             child: ScaleTransition(
-                scale: animation,
-                child: ClipRRect(
+                scale: _animation,
+                child: FlixClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: widget.child))),
       ),
@@ -168,7 +171,7 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
       BubbleContextMenuItemType.Delete: () {
         showCupertinoModalPopup(
             context: context,
-            builder: (context) => DeleteMessageBottomSheet(onConfirm: () {
+            builder: (context) => DeleteMessageBottomSheet(onConfirm: () async {
                   concertProvider.deleteBubble(widget.bubble);
                 }));
       },
@@ -213,6 +216,8 @@ class FileBubbleIneractionState extends State<FileBubbleInteraction>
       }).catchError((e) {
         talker.error("failed to open ios album: $e");
       });
+    } else if (Platform.isAndroid && sharedFile.content.resourceId.isNotEmpty) {
+      AndroidUtils.launchGallery();
     } else if (Platform.isIOS || Platform.isAndroid) {
       _openDownloadDir();
     } else {

@@ -1,3 +1,4 @@
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
@@ -53,7 +54,7 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
                 return ReadSendFileItem(file: file);
               }),
         ),
-        onClick: () {
+        onClick: () async {
           _sendFiles(files);
         });
   }
@@ -117,7 +118,7 @@ class ReadSendFileItemState extends State<ReadSendFileItem> {
           Container(
             width: 44,
             height: 44,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
+            decoration: FlixDecoration(borderRadius: BorderRadius.circular(6)),
             alignment: Alignment.center,
             child: SvgPicture.asset(mimeIcon(widget.file.path)),
           ),

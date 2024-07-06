@@ -1,4 +1,5 @@
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flix/network/multicast_client_provider.dart';
@@ -47,7 +48,7 @@ class CupertinoNavigationScalffoldState
     final slivers = [
       SliverPinnedHeader(
           child: DecoratedBox(
-        decoration: BoxDecoration(
+        decoration: FlixDecoration(
             color: Theme.of(context).flixColors.background.secondary),
         child: SafeArea(
           child: Center(
@@ -63,8 +64,8 @@ class CupertinoNavigationScalffoldState
                   );
                 },
                 child: Text(title,
-                    style: TextStyle(
-                            color: Theme.of(context).flixColors.text.primary,
+                    style: const TextStyle(
+                            color: Colors.black,
                             fontSize: 18,
                             fontWeight: FontWeight.w500)
                         .fix()),

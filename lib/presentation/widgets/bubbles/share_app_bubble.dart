@@ -1,3 +1,4 @@
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/model/ui_bubble/shareable.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
@@ -39,7 +40,7 @@ class ShareAppBubble extends StatelessWidget {
     return Align(
       alignment: alignment,
       child: Container(
-        decoration: BoxDecoration(
+        decoration: FlixDecoration(
             color: backgroundColor,
             borderRadius: const BorderRadius.all(Radius.circular(10))),
         child: LayoutBuilder(

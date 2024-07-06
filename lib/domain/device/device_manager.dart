@@ -3,12 +3,9 @@ import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/device_info.dart';
-import 'package:flix/network/bonjour_impl.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/iterable_extension.dart';
-import 'package:flix/utils/net/net_utils.dart';
 
-import '../../network/multicast_impl.dart';
 import '../../network/protocol/device_modal.dart';
 // DeviceProfileRepo DeviceDiscoverService DeviceManager
 // DeviceManager depends on DeviceProfileRepo and DeviceDiscover + history devices
@@ -101,27 +98,26 @@ class DeviceManager {
         ?.toDeviceInfo();
   }
 
-
+  DeviceModal? getDeviceModalById(String id) {
+    return deviceList.find((element) => element.fingerprint == id);
+  }
 
   void _watchHistory() {
-    appDatabase.devicesDao.watchDevices().listen((event) {
+    appDatabase.devicesDao.watchDevices().listen((_history) async {
       history.clear();
+      talker.debug("_watchHistory start");
       // 在前端去重，当在线设备变化时，可以再次去重
       // event.removeWhere((element) => deviceList.contains(element));
-      history.addAll(event);
-
-      appDatabase.bubblesDao.getAllDeviceId().then((value) {
-        talker.debug("_watchHistory  bubbleDeviceid = $value");
-        talker.debug("_watchHistory history = $history");
-        history.removeWhere((element) {
-          var hasMessageDevice = value.contains(element.fingerprint);
-          if (!hasMessageDevice) {
-            deleteHistory(element.fingerprint);
-          }
-          return !hasMessageDevice;
-        });
-        notifyHistoryChanged();
-      });
+      for (int i = _history.length - 1;i >= 0; i--) {
+        var element = _history[i];
+        var bubbleCount = await appDatabase.bubblesDao
+            .queryDeviceBubbleCount(element.fingerprint);
+        if (bubbleCount == 0) {
+          _history.remove(element);
+        }
+      }
+      history.addAll(_history);
+      notifyHistoryChanged();
     });
   }
 

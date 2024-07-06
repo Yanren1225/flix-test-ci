@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/utils/platform_utils.dart';
@@ -190,14 +192,14 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0),
         child: DecoratedBox(
-          decoration: const BoxDecoration(boxShadow: [
+          decoration: FlixDecoration(boxShadow: const [
             BoxShadow(
               color: Color.fromRGBO(0, 0, 0, 0.1),
               offset: Offset(2, 10),
               blurRadius: 20,
             ),
           ]),
-          child: ClipRRect(
+          child: FlixClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),

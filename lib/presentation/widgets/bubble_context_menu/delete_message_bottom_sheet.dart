@@ -1,10 +1,11 @@
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
+import 'package:flix/utils/void_future_callback.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class DeleteMessageBottomSheet extends StatelessWidget {
-  final VoidCallback onConfirm;
+  final VoidFutureCallback onConfirm;
 
   const DeleteMessageBottomSheet({Key? key, required this.onConfirm})
       : super(key: key);

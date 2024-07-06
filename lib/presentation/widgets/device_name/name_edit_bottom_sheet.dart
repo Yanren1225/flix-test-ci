@@ -1,4 +1,5 @@
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
@@ -34,7 +35,7 @@ class NameEditBottomSheetState extends State<NameEditBottomSheet> {
       child: FlixBottomSheet(
         title: '输入本机名称',
         buttonText: '完成',
-        onClick: () {
+        onClick: () async {
           _rename(name);
         },
         child: Padding(

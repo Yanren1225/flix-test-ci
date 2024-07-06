@@ -2,6 +2,10 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:figma_squircle/figma_squircle.dart';
+import 'package:flix/domain/settings/SettingsRepo.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
+import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
@@ -55,8 +59,11 @@ class ConcertScreen extends StatefulWidget {
 class _ConcertScreenState extends State<ConcertScreen>
     with SingleTickerProviderStateMixin {
   DeviceInfo get deviceInfo => widget.deviceInfo;
+
   String? get anchor => widget.anchor;
+
   bool get showBackButton => widget.showBackButton;
+
   bool get playable => widget.playable;
   bool _isContentReady = false;
 
@@ -77,11 +84,17 @@ class _ConcertScreenState extends State<ConcertScreen>
       });
       _controller.forward();
     });
+    startAccessPathOnMacos(SettingsRepo.instance.savedDir).then((value) {
+      if (_isContentReady && mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    stopAccessPathOnMacos(SettingsRepo.instance.savedDir);
     super.dispose();
   }
 
@@ -261,7 +274,7 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
                   showCupertinoModalPopup(
                       context: context,
                       builder: (context) {
-                        return DeleteMessageBottomSheet(onConfirm: () {
+                        return DeleteMessageBottomSheet(onConfirm: () async {
                           if (concertProvider.selectedItems.isEmpty) {
                             return;
                           }
@@ -369,11 +382,7 @@ class InputAreaState extends State<InputArea> {
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           decoration: BoxDecoration(
-              color: Theme.of(context).flixColors.background.secondary,
-              border: Border(
-                  top: BorderSide(
-                color: Theme.of(context).flixColors.background.tertiary,
-              ))),
+              color: Theme.of(context).flixColors.background.tertiary,
           child: Padding(
             padding:
                 EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
@@ -535,9 +544,9 @@ class InputAreaState extends State<InputArea> {
                             backgroundColor: MaterialStateColor.resolveWith(
                                 (states) =>
                                     const Color.fromRGBO(0, 122, 255, 1)),
-                            shape: MaterialStatePropertyAll<
-                                RoundedRectangleBorder>(RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
+                            shape: const MaterialStatePropertyAll<
+                                SmoothRectangleBorder>(SmoothRectangleBorder(
+                              borderRadius: SmoothBorderRadius.all(SmoothRadius(cornerRadius: 10, cornerSmoothing: 0.6, )),
                             ))),
                         icon: const Icon(
                           Icons.arrow_upward_sharp,

@@ -1,0 +1,1 @@
+1.编译mapper:dart pub run build_runner build

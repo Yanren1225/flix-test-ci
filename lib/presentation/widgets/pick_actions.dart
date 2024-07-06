@@ -2,13 +2,11 @@ import 'dart:io';
 
 import 'package:device_apps/device_apps.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/pickable.dart';
 import 'package:flix/presentation/screens/android_apps_screen.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/actions/progress_action.dart';
-import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,6 +14,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+
+// 同时发送的数量100左右，但是没有错误信息，失败表现为接收到的文件大小未0
+const MAX_ASSETS = 60;
 
 class PickActionsArea extends StatefulWidget {
   final OnPicked onPicked;
@@ -92,7 +93,7 @@ class PickActionAreaState extends State<PickActionsArea> {
             final List<AssetEntity>? result = await AssetPicker.pickAssets(
               context,
               pickerConfig: const AssetPickerConfig(
-                  requestType: RequestType.image, maxAssets: 100),
+                  requestType: RequestType.image, maxAssets: MAX_ASSETS),
             );
             _isImageLoading = true;
             for (final f in (result ?? <AssetEntity>[])) {
@@ -104,8 +105,8 @@ class PickActionAreaState extends State<PickActionsArea> {
 
             _isImageLoading = false;
           } else {
-            final List<XFile> pickedFileList =
-                await _picker.pickMultiImage(requestFullMetadata: true);
+            final List<XFile> pickedFileList = await _picker.pickMultiImage(
+                requestFullMetadata: true, limit: MAX_ASSETS);
             onPicked([
               for (final f in pickedFileList)
                 PickableFile(
@@ -135,7 +136,7 @@ class PickActionAreaState extends State<PickActionsArea> {
               context,
               pickerConfig: AssetPickerConfig(
                   requestType: RequestType.video,
-                  maxAssets: 100,
+                  maxAssets: MAX_ASSETS,
                   filterOptions: FilterOptionGroup(containsLivePhotos: false)),
             );
             _isVideoLoading = true;
@@ -193,17 +194,19 @@ class PickActionAreaState extends State<PickActionsArea> {
           final result = await FilePicker.platform.pickFiles(
               allowMultiple: true,
               onFileLoading: (FilePickerStatus pickerStatus) {
-                switch (pickerStatus) {
-                  case FilePickerStatus.picking:
-                    setState(() {
-                      _isFileLoading = true;
-                    });
-                    break;
-                  case FilePickerStatus.done:
-                    setState(() {
-                      _isFileLoading = false;
-                    });
-                    break;
+                if (mounted) {
+                  switch (pickerStatus) {
+                    case FilePickerStatus.picking:
+                      setState(() {
+                        _isFileLoading = true;
+                      });
+                      break;
+                    case FilePickerStatus.done:
+                      setState(() {
+                        _isFileLoading = false;
+                      });
+                      break;
+                  }
                 }
               });
           if (result != null) {

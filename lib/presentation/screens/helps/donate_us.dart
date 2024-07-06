@@ -1,5 +1,9 @@
 import 'dart:io';
 
+import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
+import 'package:flix/utils/text/text_extension.dart';
+import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
@@ -19,7 +23,7 @@ class DonateUSScreen extends StatefulWidget {
   int lastTapTime = 0;
   bool showBack = true;
 
-  DonateUSScreen({super.key, this.showBack = true});
+  DonateUSScreen({super.key, required this.showBack});
 
   @override
   State<StatefulWidget> createState() => DonateUSScreenState();
@@ -41,8 +45,8 @@ class DonateUSScreenState extends State<DonateUSScreen> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     return NavigationScaffold(
-      title: "捐赠我们",
-      showBackButton: PlatformUtil.isMobile(),
+      title: "捐赠",
+      showBackButton: widget.showBack,
       builder: (EdgeInsets padding) {
         return Container(
           margin: const EdgeInsets.only(left: 16, right: 16, top: 20),
@@ -101,7 +105,7 @@ class DonateUSScreenState extends State<DonateUSScreen> {
         },
         child: Container(
             height: 44,
-            decoration: BoxDecoration(
+            decoration: FlixDecoration(
               color: isSelectButton
                   ? const Color.fromRGBO(42, 174, 103, 0.1)
                   : Colors.transparent, // 设置背景颜色
@@ -117,18 +121,22 @@ class DonateUSScreenState extends State<DonateUSScreen> {
                   height: 24,
                 ),
                 const SizedBox(width: 8), // 添加一些间距
-                Text(text), // 按钮文本
+                Text(text,style: TextStyle().fix()), // 按钮文本
               ],
             )));
   }
 
   createPayPicture() {
     return Container(
-        height: 360,
-        margin: const EdgeInsets.only(top: 40),
-        child: Image.asset(isWx()
-            ? 'assets/images/donate_wechat.png'
-            : 'assets/images/donate_alipay.png'));
+        margin: const EdgeInsets.only(top: 30),
+        height: 370,
+        child: FlixClipRRect(
+            borderRadius: BorderRadius.circular(10.0),
+            child: Image.asset(
+              isWx()
+                  ? 'assets/images/donate_wechat.png'
+                  : 'assets/images/donate_alipay.png',
+            )));
   }
 
   createDonateButton() {
@@ -141,6 +149,7 @@ class DonateUSScreenState extends State<DonateUSScreen> {
             PayUtil.startAlipayQrCode();
           }
         },
+        elevation: 0,
         color: isWx()
             ? const Color.fromRGBO(42, 174, 103, 1)
             : const Color.fromRGBO(0, 122, 255, 1),

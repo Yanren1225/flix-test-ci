@@ -4,13 +4,16 @@ import 'dart:io';
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flix/domain/analytics/flix_analytics.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/hotspot/hotspot_manager.dart';
 import 'package:flix/domain/lifecycle/AppLifecycle.dart';
+import 'package:flix/domain/lifecycle/platform_state.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
 import 'package:flix/domain/notification/NotificationService.dart';
@@ -18,9 +21,12 @@ import 'package:flix/domain/notification/flix_notification.dart';
 import 'package:flix/domain/settings/SettingsRepo.dart';
 import 'package:flix/domain/ship_server/ship_service_lifecycle_watcher.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
+import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/domain/window/FlixWindowManager.dart';
 import 'package:flix/model/device_info.dart';
+import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/network/multicast_client_provider.dart';
+import 'package:flix/presentation/dialog/new_version_bottomsheet.dart';
 import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
@@ -43,13 +49,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:flutter_foreground_task/models/android_foreground_service_type.dart';
-import 'package:flutter_foreground_task/models/android_notification_options.dart';
-import 'package:flutter_foreground_task/models/foreground_task_options.dart';
-import 'package:flutter_foreground_task/models/ios_notification_options.dart';
-import 'package:flutter_foreground_task/models/notification_channel_importance.dart';
-import 'package:flutter_foreground_task/models/notification_icon_data.dart';
-import 'package:flutter_foreground_task/models/notification_priority.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -119,10 +118,13 @@ Future<void> _initHighRefreshRate() async {
 void _initAppLifecycle() {
   appLifecycle.init();
   appLifecycle.addListener(logPersistence);
-  appLifecycle.addListener(ShipServiceLifecycleWatcher());
   if (Platform.isAndroid || Platform.isIOS) {
     appLifecycle.addListener(flixForegroundService);
   }
+  final shipServiceLifecycleWatcher = ShipServiceLifecycleWatcher();
+  appLifecycle.addListener(shipServiceLifecycleWatcher);
+  platformStateDispatcher.addListener(shipServiceLifecycleWatcher);
+  appLifecycle.addListener(hotspotManager);
 }
 
 void _initDatabase() {
@@ -150,7 +152,8 @@ Future<DeviceInfoResult> _initDeviceManager() async {
   DeviceManager.instance.init();
   shipService.startShipServer().then((isSuccess) async {
     if (isSuccess) {
-      DeviceDiscover.instance.start(shipService, await shipService.getPort());
+      await DeviceDiscover.instance
+          .start(shipService, await shipService.getPort());
     }
   });
   return deviceInfo;
@@ -183,6 +186,8 @@ Future<void> initFireBase() async {
       }
       return true;
     };
+
+    flixAnalytics.logAppOpen();
   }
 }
 
@@ -241,7 +246,6 @@ Future<void> initBootStartUp() async {
     appName: packageInfo.appName,
     appPath: Platform.resolvedExecutable,
   );
-  bool isEnabled = await launchAtStartup.isEnabled();
 }
 
 Future<void> _logAppContext(DeviceInfoResult deviceInfo) async {
@@ -340,7 +344,8 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
+class _MyHomePageState extends BaseScreenState<MyHomePage>
+    with WindowListener, WidgetsBindingObserver {
   var selectedIndex = 0;
 
   // DeviceInfo? selectedDevice;
@@ -432,10 +437,20 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     flixToast.init(navigatorKey.currentContext!);
     initPlatformState();
     initWindowClose();
     _initNotificationListener();
+    VersionChecker.checkNewVersion(context);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      VersionChecker.checkNewVersion(context);
+    }
   }
 
   void _initNotificationListener() {
@@ -479,6 +494,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
   @override
   void dispose() {
     flixNotification.receptionNotificationStream.close();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -587,12 +603,20 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
       case 2:
         return HelpScreen(
           goVersionScreen: () {
-            Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => AboutUSScreen()));
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => AboutUSScreen(
+                          showBack: true,
+                        )));
           },
           goDonateCallback: () {
-            Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => DonateUSScreen()));
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => DonateUSScreen(
+                          showBack: true,
+                        )));
           },
         );
       default:
@@ -662,9 +686,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
                 .fix(),
             backgroundColor: Theme.of(context).flixColors.background.primary,
           ),
-          Flexible(flex: 1, child: secondPart()),
+          Expanded(flex: 2, child: secondPart()),
           Expanded(
-            flex: 2,
+            flex: 3,
             child: thirdPart(),
           )
         ],
@@ -693,13 +717,15 @@ class _MyHomePageState extends BaseScreenState<MyHomePage> with WindowListener {
         return HelpScreen(
           goVersionScreen: () {
             setState(() {
-              thirdWidget = AboutUSScreen();
+              thirdWidget = AboutUSScreen(
+                showBack: false,
+              );
             });
           },
           goDonateCallback: () {
             setState(() {
               thirdWidget = DonateUSScreen(
-                showBack: true,
+                showBack: false,
               );
             });
           },

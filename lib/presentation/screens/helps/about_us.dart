@@ -1,4 +1,6 @@
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
@@ -14,8 +16,9 @@ import 'package:url_launcher/url_launcher.dart';
 class AboutUSScreen extends StatefulWidget {
   var versionTapCount = 0;
   int lastTapTime = 0;
+  bool showBack = true;
 
-  AboutUSScreen({super.key});
+  AboutUSScreen({super.key, required this.showBack});
 
   @override
   State<StatefulWidget> createState() => AboutUSScreenState();
@@ -38,7 +41,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   @override
   Widget build(BuildContext context) {
     return NavigationScaffold(
-        showBackButton: PlatformUtil.isMobile(),
+        showBackButton: widget.showBack,
         toolbarCoverBody: true,
         title: '关于我们',
         builder: (padding) {
@@ -91,7 +94,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   }
 
   Widget logo() {
-    return ClipRRect(
+    return FlixClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Image.asset(
         'assets/images/logo.jpg',
@@ -117,7 +120,8 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   Widget participate() {
     return Padding(
       padding: const EdgeInsets.only(left: 10, top: 10, right: 80, bottom: 10),
-      child: Text('Flix 制作小组\n------\n✅设计：\nlemo\n\n✅开发：\nMovenLecker\nEava_wu',
+      child: Text(
+          'Flix 制作小组\n------\n✅设计：\nlemo\n\n✅开发：\nMovenLecker\nEava_wu\n炎忍\nMashiro.\n皓洋\n张建\n广靓\nChengi',
           style: TextStyle(
                   color: Theme.of(context).flixColors.text.primary,
                   fontSize: 16,

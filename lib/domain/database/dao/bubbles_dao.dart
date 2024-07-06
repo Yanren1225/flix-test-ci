@@ -47,7 +47,8 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
                   progress: fileBubble.content.progress,
                   speed: Value(fileBubble.content.speed),
                   width: fileBubble.content.meta.width,
-                  height: fileBubble.content.meta.height));
+                  height: fileBubble.content.meta.height,
+                  waitingForAccept: Value(fileBubble.content.waitingForAccept)));
         default:
           throw UnimplementedError();
       }
@@ -226,5 +227,10 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
       await (delete(textContents)..where((tbl) => tbl.id.isIn(ids))).go();
       await (delete(fileContents)..where((tbl) => tbl.id.isIn(ids))).go();
     });
+  }
+
+  Future<int> queryDeviceBubbleCount(String fingerprint) async {
+    final query = select(bubbleEntities)..where((tbl) => tbl.fromDevice.equals(fingerprint) | tbl.toDevice.equals(fingerprint));
+    return (await query.get()).length;
   }
 }

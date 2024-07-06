@@ -12,6 +12,7 @@ import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_size_getter/file_input.dart';
 import 'package:image_size_getter/image_size_getter.dart';
 import 'package:mime/mime.dart';
+import 'package:open_dir/open_dir.dart';
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_handler/share_handler.dart';
@@ -229,6 +230,9 @@ Future<Size> getImgSize(Size size, String path) async {
     } else {
       try {
         size = ImageSizeGetter.getSize(FileInput(File(path)));
+        if (size.needRotate) {
+          size = Size(size.height, size.width);
+        }
       } catch (e, stack) {
         talker.error(
             'inner: Failed to get size of image, path: ${path}: $e, $stack',
@@ -267,7 +271,12 @@ Future<Size> getVideoSize(Size size, String path) async {
 Future<Size?> getHeifImageSize2(String filePath) async {
   final properties = await FlutterNativeImage.getImageProperties(filePath);
   if (properties.width != 0 && properties.height != 0) {
-    return Size(properties.width!, properties.height!);
+    if (properties.orientation == ImageOrientation.rotate90 ||
+        properties.orientation == ImageOrientation.rotate270) {
+      return Size(properties.height!, properties.width!);
+    } else {
+      return Size(properties.width!, properties.height!);
+    }
   }
   return null;
 }
@@ -318,7 +327,7 @@ FileType getFileType(String filePath) {
 }
 
 Future<File> createFile(String desDir, String fileName,
-    {int copyIndex = 0}) async {
+    {int copyIndex = 0,bool deleteExist = true}) async {
   final dotIndex = fileName.lastIndexOf('.');
   final String fileSuffix;
   final String fileNameWithoutSuffix;
@@ -334,6 +343,9 @@ Future<File> createFile(String desDir, String fileName,
   String filePath = '$desDir${Platform.pathSeparator}$fileNameWithoutSuffix$tag$fileSuffix';
   final outFile = File(filePath);
   if (await outFile.exists()) {
+    if (!deleteExist) {
+      return outFile;
+    }
     try {
       await outFile.delete();
     } catch (e, stackTrace) {
@@ -347,6 +359,18 @@ Future<File> createFile(String desDir, String fileName,
   }
 
   return await createFile(desDir, fileName, copyIndex: copyIndex + 1);
+}
+
+Future<void> openDir(String path) async {
+  if (Platform.isWindows) {
+    openFileDirectoryOnWindows(path);
+  } else {
+    OpenDir()
+        .openNativeDir(
+        path: path)
+        .catchError(
+            (e, s) => talker.error('Failed to open folder: ', e, s));
+  }
 }
 
 

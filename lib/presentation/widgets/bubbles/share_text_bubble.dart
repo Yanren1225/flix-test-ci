@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
@@ -142,21 +143,23 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
     );
     return Align(
       alignment: alignment,
-      child: LayoutBuilder(
-        builder: (context, _) => Material(
-          color: backgroundColor,
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          child: ModalAnchor(
-            key: ValueKey(entity.shareable.id),
-            tag: contextMenuTag,
-            child: isDesktop()
-                ? content
-                : GestureDetector(
-                    onDoubleTap: () {
-                      _startFreeCopyScreen(context);
-                    },
-                    child: content,
-                  ),
+      child: FlixClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: LayoutBuilder(
+          builder: (_context, _) => Material(
+            color: backgroundColor,
+            child: ModalAnchor(
+              key: ValueKey(entity.shareable.id),
+              tag: contextMenuTag,
+              child: isDesktop()
+                  ? content
+                  : GestureDetector(
+                      onDoubleTap: () {
+                        _startFreeCopyScreen(context);
+                      },
+                      child: content,
+                    ),
+            ),
           ),
         ),
       ),
@@ -226,7 +229,7 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
       BubbleContextMenuItemType.Delete: () {
         showCupertinoModalPopup(
             context: context,
-            builder: (context) => DeleteMessageBottomSheet(onConfirm: () {
+            builder: (context) => DeleteMessageBottomSheet(onConfirm: () async {
                   concertProvider.deleteBubble(entity);
                 }));
       },

@@ -1,23 +1,20 @@
-import 'dart:io';
 import 'dart:math';
 
-import 'package:flix/presentation/widgets/bubbles/bubble_decoration_widget.dart';
-import 'package:flix/presentation/widgets/bubbles/trans_info_widget.dart';
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/basic/flix_thumbnail_provider.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/aspect_ratio_video.dart';
 import 'package:flix/presentation/widgets/bubbles/accept_media_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/base_file_bubble.dart';
+import 'package:flix/presentation/widgets/bubbles/bubble_decoration_widget.dart';
+import 'package:flix/presentation/widgets/bubbles/trans_info_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
-import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/preview_error_widget.dart';
-import 'package:flix/presentation/widgets/segements/resend_button.dart';
 import 'package:flix/utils/platform_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -114,10 +111,10 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
-          content = const AspectRatio(
+          content = AspectRatio(
             aspectRatio: 1.333333,
             child: DecoratedBox(
-              decoration: BoxDecoration(color: Colors.white),
+              decoration: FlixDecoration(color: Colors.white),
               child: PreviewErrorWidget(),
             ),
           );
@@ -143,9 +140,9 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
     return Stack(
       fit: StackFit.passthrough,
       children: [
-        const DecoratedBox(
-          decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
-          child: Center(
+        DecoratedBox(
+          decoration: FlixDecoration(color: const Color.fromRGBO(0, 0, 0, 0.5)),
+          child: const Center(
             child: SizedBox(
                 width: 18,
                 height: 18,
@@ -170,7 +167,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
       children: [
         _buildInlineVideoPlayer(true, sharedVideo, true),
         Container(
-          decoration: BoxDecoration(color: Colors.black.withOpacity(0.5)),
+          decoration: FlixDecoration(color: Colors.black.withOpacity(0.5)),
           width: double.infinity,
           height: double.infinity,
         ),
@@ -199,7 +196,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
       children: [
         _buildInlineVideoPlayer(true, sharedVideo, true),
         Container(
-          decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+          decoration: FlixDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
           width: double.infinity,
           height: double.infinity,
           child: const SizedBox(),
@@ -215,7 +212,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
   Container _buildAspectContent(
       Color backgroundColor, SharedFile sharedVideo, Widget content) {
     return Container(
-      decoration: BoxDecoration(color: backgroundColor),
+      decoration: FlixDecoration(color: backgroundColor),
       child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
         const maxPhysicalSize = 250.0;
@@ -228,7 +225,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
                       max(100, min(constraints.maxWidth - 60, maxPhysicalSize)),
                   minHeight: 100,
                   maxHeight: maxPhysicalSize),
-              child: IntrinsicHeight(child: content));
+              child: IntrinsicWidth(child: IntrinsicHeight(child: content)));
         } else {
           return _aspectContent(
               maxPhysicalSize, constraints, context, sharedVideo, content);
@@ -310,20 +307,18 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
           });
     }
 
-    return IntrinsicHeight(
-      child: Stack(
-        fit: StackFit.passthrough,
-        children: [
-          previewWidget,
-          Align(
-            alignment: Alignment.center,
-            child: Visibility(
-              visible: !preview,
-              child: SvgPicture.asset('assets/images/ic_play.svg'),
-            ),
-          )
-        ],
-      ),
+    return Stack(
+      fit: StackFit.passthrough,
+      children: [
+        previewWidget,
+        Align(
+          alignment: Alignment.center,
+          child: Visibility(
+            visible: !preview,
+            child: SvgPicture.asset('assets/images/ic_play.svg'),
+          ),
+        )
+      ],
     );
   }
 

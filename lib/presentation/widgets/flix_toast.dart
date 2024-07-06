@@ -1,14 +1,17 @@
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class FlixToast {
   FlixToast.privateConstructor();
+
+  FlixToast.withContext(BuildContext context) {
+    init(context);
+  }
 
   static final FlixToast instance = FlixToast.privateConstructor();
 
@@ -38,7 +41,7 @@ class FlixToast {
   Container _body(String icon, String message) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 17.0),
-      decoration: BoxDecoration(
+      decoration: FlixDecoration(
         borderRadius: BorderRadius.circular(25.0),
         color: Theme.of(_fToast.context!).flixColors.background.primary,
         boxShadow: [

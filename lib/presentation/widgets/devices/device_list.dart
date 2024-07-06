@@ -42,8 +42,6 @@ class _DeviceListState extends State<DeviceList> {
 
   Map<String, int> get badges => widget.badges;
 
-  var selectedIndex = -1;
-
   @override
   Widget build(BuildContext context) {
     final deviceProvider = MultiCastClientProvider.of(context, listen: true);
@@ -86,8 +84,12 @@ class _DeviceListState extends State<DeviceList> {
         return HistoryItem(
           index: index,
           historyItemInfo: historyItemInfo,
+          selected: isOverMediumWidth(context)
+              ? deviceProvider.selectedDeviceId == historyItemInfo.id
+              : false,
           onTap: () {
             onDeviceSelected(historyItemInfo, true);
+            deviceProvider.setSelectedDeviceId(historyItemInfo.id);
           },
           onDelete: (item) {
             widget.onHistoryDelete?.call(item);

@@ -9,6 +9,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   downloadsfolder
   file_selector_windows
   firebase_core
+  flutter_desktop_sleep
   local_notifier
   open_dir_windows
   pasteboard

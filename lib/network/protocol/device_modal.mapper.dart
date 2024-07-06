@@ -92,6 +92,8 @@ class DeviceModalMapper extends ClassMapperBase<DeviceModal> {
       Field('fingerprint', _$fingerprint);
   static int? _$port(DeviceModal v) => v.port;
   static const Field<DeviceModal, int> _f$port = Field('port', _$port);
+  static int? _$version(DeviceModal v) => v.version;
+  static const Field<DeviceModal, int> _f$version = Field('version', _$version);
   static String _$ip(DeviceModal v) => v.ip;
   static const Field<DeviceModal, String> _f$ip =
       Field('ip', _$ip, opt: true, def: '');
@@ -106,6 +108,7 @@ class DeviceModalMapper extends ClassMapperBase<DeviceModal> {
     #deviceType: _f$deviceType,
     #fingerprint: _f$fingerprint,
     #port: _f$port,
+    #version: _f$version,
     #ip: _f$ip,
     #host: _f$host,
   };
@@ -117,6 +120,7 @@ class DeviceModalMapper extends ClassMapperBase<DeviceModal> {
         deviceType: data.dec(_f$deviceType),
         fingerprint: data.dec(_f$fingerprint),
         port: data.dec(_f$port),
+        version: data.dec(_f$version),
         ip: data.dec(_f$ip),
         host: data.dec(_f$host));
   }
@@ -180,6 +184,7 @@ abstract class DeviceModalCopyWith<$R, $In extends DeviceModal, $Out>
       DeviceType? deviceType,
       String? fingerprint,
       int? port,
+      int? version,
       String? ip,
       String? host});
   DeviceModalCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
@@ -200,6 +205,7 @@ class _DeviceModalCopyWithImpl<$R, $Out>
           Object? deviceType = $none,
           String? fingerprint,
           Object? port = $none,
+          Object? version = $none,
           String? ip,
           String? host}) =>
       $apply(FieldCopyWithData({
@@ -208,6 +214,7 @@ class _DeviceModalCopyWithImpl<$R, $Out>
         if (deviceType != $none) #deviceType: deviceType,
         if (fingerprint != null) #fingerprint: fingerprint,
         if (port != $none) #port: port,
+        if (version != $none) #version: version,
         if (ip != null) #ip: ip,
         if (host != null) #host: host
       }));
@@ -218,6 +225,7 @@ class _DeviceModalCopyWithImpl<$R, $Out>
       deviceType: data.get(#deviceType, or: $value.deviceType),
       fingerprint: data.get(#fingerprint, or: $value.fingerprint),
       port: data.get(#port, or: $value.port),
+      version: data.get(#version, or: $value.version),
       ip: data.get(#ip, or: $value.ip),
       host: data.get(#host, or: $value.host));
 

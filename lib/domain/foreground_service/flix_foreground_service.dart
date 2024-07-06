@@ -62,8 +62,8 @@ class FlixForegroundService extends LifecycleListener {
         interval: 5000,
         isOnceEvent: true,
         autoRunOnBoot: false,
-        allowWakeLock: true,
-        allowWifiLock: true,
+        allowWakeLock: false,
+        allowWifiLock: false,
       ),
     );
 

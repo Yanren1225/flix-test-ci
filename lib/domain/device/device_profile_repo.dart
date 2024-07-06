@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/utils/device_info_helper.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flix/utils/device_info_helper.dart' as deviceUtils;
@@ -59,12 +60,14 @@ class DeviceProfileRepo {
   }
 
   Future<DeviceModal> getDeviceModal(int port) async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
     var deviceInfo = await getDeviceInfo();
     var deviceModal = DeviceModal(
         alias: deviceInfo.alias ?? '',
         deviceType: deviceInfo.deviceType,
         fingerprint: DeviceProfileRepo.instance.did,
         port: port,
+        version: int.parse(packageInfo.buildNumber),
         deviceModel: deviceInfo.deviceModel);
     return deviceModal;
   }

@@ -1,3 +1,4 @@
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class FreeCopyScreenState extends State<FreeCopyScreen> {
         child: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(
+          decoration: FlixDecoration(
             color: Colors.white,
           ),
           child: Center(

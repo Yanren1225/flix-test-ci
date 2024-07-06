@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/widgets/segements/bubble_context_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -34,14 +35,14 @@ class MultiSelectActions extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
         child: Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  color: Color.fromRGBO(228, 228, 228, 1),
-                  width: 0.5,
+            decoration: FlixDecoration(
+                // border: Border(
+                //   top: BorderSide(
+                //     color: const Color.fromRGBO(228, 228, 228, 1),
+                //     width: 0.5,
+                //   ),
+                // ),
                 ),
-              ),
-            ),
             padding: EdgeInsets.only(
                 top: 6, bottom: 10 + MediaQuery.paddingOf(context).bottom),
             child: Align(

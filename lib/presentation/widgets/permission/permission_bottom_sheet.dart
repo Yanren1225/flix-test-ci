@@ -10,7 +10,7 @@ class PermissionBottomSheet extends StatelessWidget {
 
   final String title;
   final String subTitle;
-  final VoidCallback onConfirm;
+  final Future<void> Function() onConfirm;
 
   PermissionBottomSheet({Key? key, required this.title, required this.subTitle, required this.onConfirm})
       : super(key: key);

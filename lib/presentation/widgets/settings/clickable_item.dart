@@ -1,4 +1,5 @@
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/presentation/widgets/settings/settings_label.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ class ClickableItem extends StatelessWidget {
   final String label;
   final String? des;
   final String? tail;
+  final Color? tailColor;
   final bool topRadius;
   final bool bottomRadius;
 
@@ -17,6 +19,7 @@ class ClickableItem extends StatelessWidget {
       required this.label,
       this.des,
       this.tail,
+      this.tailColor,
       this.topRadius = true,
       this.bottomRadius = true,
       required this.onClick});
@@ -28,7 +31,7 @@ class ClickableItem extends StatelessWidget {
           onClick?.call();
         },
         child: DecoratedBox(
-            decoration: BoxDecoration(
+            decoration: FlixDecoration(
                 color: Theme.of(context).flixColors.background.primary,
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(topRadius ? 14 : 0),
@@ -54,10 +57,11 @@ class ClickableItem extends StatelessWidget {
                               style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
-                                      color: Theme.of(context)
-                                          .flixColors
-                                          .text
-                                          .secondary)
+                                      color: tailColor ??
+                                          Theme.of(context)
+                                              .flixColors
+                                              .text
+                                              .secondary)
                                   .fix()),
                         )),
                     Icon(Icons.arrow_forward_ios_rounded,

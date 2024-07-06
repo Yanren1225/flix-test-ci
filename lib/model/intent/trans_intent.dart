@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
@@ -8,9 +10,9 @@ class TransIntent with TransIntentMappable {
   final String deviceId;
   final String bubbleId;
   final TransAction action;
-
+  Map<String,Object>? extra = HashMap<String,Object>();
   TransIntent(
-      {required this.deviceId, required this.bubbleId, required this.action});
+      {required this.deviceId, required this.bubbleId, required this.action,required this.extra});
 
   static const fromJson = TransIntentMapper.fromJson;
 }
@@ -19,6 +21,8 @@ class TransIntent with TransIntentMappable {
 @MappableEnum()
 enum TransAction {
   confirmReceive,
+  askBreakPoint,
+  confirmBreakPoint,
   // resend,
   cancel,
 }
