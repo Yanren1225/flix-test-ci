@@ -1,7 +1,9 @@
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ShareTimeBubble extends StatefulWidget {
@@ -26,9 +28,12 @@ class ShareTimeBubbleState extends State<ShareTimeBubble> {
   Widget build(BuildContext context) {
     return Align(
         alignment: Alignment.center,
-        child: Text(
-            formatTime(entity.time!),
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Color.fromRGBO(60, 60, 67, 0.6)).fix()));
+        child: Text(formatTime(entity.time),
+            style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: Theme.of(context).flixColors.text.secondary)
+                .fix()));
   }
 
   String formatTime(int time) {
@@ -40,16 +45,17 @@ class ShareTimeBubbleState extends State<ShareTimeBubble> {
       final yesterdayStart = DateTime(now.year, now.month, now.day - 1);
       final twoDaysAgoStart = DateTime(now.year, now.month, now.day - 2);
 
-      if (dateTime.millisecondsSinceEpoch >= todayStart.millisecondsSinceEpoch) {
+      if (dateTime.millisecondsSinceEpoch >=
+          todayStart.millisecondsSinceEpoch) {
         // 当天的时间，只显示分钟和秒
         return formatter.format(dateTime).substring(11); // 截取"HH:mm:ss"部分
       } else if (dateTime.millisecondsSinceEpoch >=
-          yesterdayStart.millisecondsSinceEpoch &&
+              yesterdayStart.millisecondsSinceEpoch &&
           dateTime.millisecondsSinceEpoch < todayStart.millisecondsSinceEpoch) {
         // 昨天的时间，显示"昨天 HH:mm:ss"
         return '昨天 ${formatter.format(dateTime).substring(11)}';
       } else if (dateTime.millisecondsSinceEpoch >=
-          twoDaysAgoStart.millisecondsSinceEpoch &&
+              twoDaysAgoStart.millisecondsSinceEpoch &&
           dateTime.millisecondsSinceEpoch <
               yesterdayStart.millisecondsSinceEpoch) {
         // 前天的时间，只显示日期
@@ -62,6 +68,5 @@ class ShareTimeBubbleState extends State<ShareTimeBubble> {
       talker.error('failed to format time', e, s);
       return "";
     }
-
   }
 }

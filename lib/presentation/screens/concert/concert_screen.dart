@@ -370,9 +370,9 @@ class InputAreaState extends State<InputArea> {
         child: Container(
           decoration: BoxDecoration(
               color: Theme.of(context).flixColors.background.secondary,
-              border: const Border(
+              border: Border(
                   top: BorderSide(
-                color: Color.fromRGBO(240, 240, 240, 1),
+                color: Theme.of(context).flixColors.background.tertiary,
               ))),
           child: Padding(
             padding:

@@ -1,3 +1,4 @@
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -110,14 +111,13 @@ class HistoryItem extends StatelessWidget {
       key: ValueKey(historyItemInfo.id),
       index: index,
       controller: _swipeActionController,
-      backgroundColor: Color.fromRGBO(247, 247, 247, 1),
+      backgroundColor: Theme.of(context).flixColors.background.secondary,
       trailingActions: <SwipeAction>[
         SwipeAction(
             backgroundRadius: 6,
-            color: Color.fromRGBO(255, 59, 48, 1),
+            color: const Color.fromRGBO(255, 59, 48, 1),
             title: '删除',
-            style: const TextStyle(color: Colors.white, fontSize: 14)
-                .fix(),
+            style: const TextStyle(color: Colors.white, fontSize: 14).fix(),
             onTap: (CompletionHandler handler) async {
               onDelete(historyItemInfo);
               await handler(true);
@@ -135,11 +135,12 @@ class HistoryItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SvgPicture.asset(
-                'assets/images/history.svg',
-                width: 20,
-                height: 20,
-              ),
+              SvgPicture.asset('assets/images/history.svg',
+                  width: 20,
+                  height: 20,
+                  colorFilter: ColorFilter.mode(
+                      Theme.of(context).flixColors.text.secondary,
+                      BlendMode.srcIn)),
               const SizedBox(
                 width: 6,
               ),
@@ -147,9 +148,9 @@ class HistoryItem extends StatelessWidget {
                 child: Text(historyItemInfo.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: Theme.of(context).flixColors.text.primary,
                             fontWeight: FontWeight.w500)
                         .fix()),
               ),
@@ -160,6 +161,9 @@ class HistoryItem extends StatelessWidget {
                 'assets/images/arrow_right.svg',
                 width: 20,
                 height: 20,
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).flixColors.text.secondary,
+                    BlendMode.srcIn),
               ),
             ],
           ),

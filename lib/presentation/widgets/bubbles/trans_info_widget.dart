@@ -1,6 +1,7 @@
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/basic/progressbar/linear/animated_progress_bar.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/file/size_utils.dart';
 import 'package:flix/utils/file/speed_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
@@ -68,13 +69,12 @@ class TransInfoWidgetState extends State<TransInfoWidget> {
               Flexible(
                 child: Visibility(
                   visible: showProgressBar,
-                  child:GradientText(
+                  child: GradientText(
                     text: sharedFile.speed.formatSpeed(),
-                    gradient: LinearGradient(
-                        colors: speedTextColors),
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400).fix(),
+                    gradient: LinearGradient(colors: speedTextColors),
+                    style: const TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.w400)
+                        .fix(),
                   ),
                 ),
               ),
@@ -91,7 +91,8 @@ class TransInfoWidgetState extends State<TransInfoWidget> {
               duration: const Duration(milliseconds: 200),
               width: double.infinity,
               height: 6,
-              backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+              backgroundColor:
+                  Theme.of(context).flixColors.background.secondary,
               gradient: LinearGradient(colors: progressBarColors)),
           secondChild: const SizedBox(
             height: 6,

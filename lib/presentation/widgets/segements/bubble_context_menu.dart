@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/utils/platform_utils.dart';
@@ -28,13 +29,13 @@ void showBubbleContextMenu(
   int itemTotalWidth = _getMenuWidth(itemTypes);
   final globalOffset =
       currentWidget.localToGlobal(clickPosition, ancestor: relativeWidget);
-  final showTop;
+  final bool showTop;
   if (globalOffset.dy > 100) {
     showTop = true;
   } else {
     showTop = false;
   }
-  final showLeft;
+  final bool showLeft;
 
   if (globalOffset.dx > relativeWidget.size.width - 200) {
     showLeft = true;
@@ -42,7 +43,7 @@ void showBubbleContextMenu(
     showLeft = false;
   }
 
-  final modalAlignment;
+  final Alignment modalAlignment;
   if (showTop && showLeft) {
     modalAlignment = Alignment.bottomRight;
   } else if (showTop && !showLeft) {
@@ -84,9 +85,9 @@ void showBubbleContextMenu(
 }
 
 int _getMenuWidth(List<BubbleContextMenuItemType> itemTypes) {
-  final itemWidth = 55;
-  final horizontalMargin = 20;
-  final itemGap = 8;
+  const itemWidth = 55;
+  const horizontalMargin = 20;
+  const itemGap = 8;
   final itemTotalWidth = itemWidth * itemTypes.length +
       itemGap * (itemTypes.length - 1) +
       horizontalMargin;
@@ -118,7 +119,7 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 80),
+      duration: const Duration(milliseconds: 80),
     );
     _animation = Tween<double>(begin: 0.0, end: 1.0)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
@@ -128,7 +129,7 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
   @override
   Widget build(BuildContext context) {
     final List<Widget> items = [];
-    for (final type in widget.itemTypes)
+    for (final type in widget.itemTypes) {
       switch (type) {
         case BubbleContextMenuItemType.Copy:
           items.add(BubbleContextMenuItem(
@@ -162,7 +163,7 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
           items.add(BubbleContextMenuItem(
             title: '删除',
             icon: 'assets/images/ic_delete.svg',
-            color: Color.fromRGBO(255, 59, 48, 1),
+            color: const Color.fromRGBO(255, 59, 48, 1),
             onTap: onTap(type),
           ));
           break;
@@ -174,6 +175,7 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
           ));
           break;
       }
+    }
     return AnimatedBuilder(
       animation: _animation,
       builder: (BuildContext context, Widget? child) {
@@ -188,7 +190,7 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0),
         child: DecoratedBox(
-          decoration: BoxDecoration(boxShadow: const [
+          decoration: const BoxDecoration(boxShadow: [
             BoxShadow(
               color: Color.fromRGBO(0, 0, 0, 0.1),
               offset: Offset(2, 10),
@@ -201,7 +203,11 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
               filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: const Color.fromRGBO(255, 255, 255, 0.9),
+                  color: Theme.of(context)
+                      .flixColors
+                      .background
+                      .primary
+                      .withOpacity(0.9),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(
@@ -239,12 +245,13 @@ class BubbleContextMenuItem extends StatelessWidget {
   final String title;
   final String icon;
   final VoidCallback onTap;
-  final Color color;
+  final Color? color;
 
-  BubbleContextMenuItem(
-      {required this.title,
+  const BubbleContextMenuItem(
+      {super.key,
+      required this.title,
       required this.icon,
-      this.color = Colors.black,
+      this.color,
       required this.onTap});
 
   @override
@@ -261,7 +268,9 @@ class BubbleContextMenuItem extends StatelessWidget {
           children: [
             SvgPicture.asset(
               icon,
-              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+              colorFilter: ColorFilter.mode(
+                  color ?? Theme.of(context).flixColors.text.primary,
+                  BlendMode.srcIn),
             ),
             const SizedBox(
               height: 2,
@@ -270,7 +279,7 @@ class BubbleContextMenuItem extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  color: color,
+                  color: color ?? Theme.of(context).flixColors.text.primary,
                 ).fix()),
           ],
         ),
@@ -282,8 +291,9 @@ class BubbleContextMenuItem extends StatelessWidget {
 class BubbleContextMenuWithMask extends BubbleContextMenu {
   final TextSelectionToolbarAnchors anchors;
 
-  BubbleContextMenuWithMask(
-      {required this.anchors,
+  const BubbleContextMenuWithMask(
+      {super.key,
+      required this.anchors,
       required super.itemTypes,
       required super.itemActions});
 
@@ -297,9 +307,12 @@ class BubbleContextMenuWithMaskState extends BubbleContextMenuState {
   @override
   Widget build(BuildContext context) {
     final anchors = (widget as BubbleContextMenuWithMask).anchors;
-    final margin = 13.0;
-    final appBarHeight = 60.0;
-    final availableHeight = anchors.primaryAnchor.dy - margin - MediaQuery.paddingOf(context).top - appBarHeight;
+    const margin = 13.0;
+    const appBarHeight = 60.0;
+    final availableHeight = anchors.primaryAnchor.dy -
+        margin -
+        MediaQuery.paddingOf(context).top -
+        appBarHeight;
     final fitsAbove = _getMenuHeight(widget.itemTypes) <= availableHeight;
     return CustomSingleChildLayout(
         delegate: isDesktop()
@@ -307,10 +320,11 @@ class BubbleContextMenuWithMaskState extends BubbleContextMenuState {
                 anchor: anchors.primaryAnchor,
               )
             : TextSelectionToolbarLayoutDelegate(
-                anchorAbove: anchors.primaryAnchor - Offset(0, margin),
+                anchorAbove: anchors.primaryAnchor - const Offset(0, margin),
                 anchorBelow: (anchors.secondaryAnchor == null
-                    ? anchors.primaryAnchor
-                    : anchors.secondaryAnchor!) + Offset(0, margin),
+                        ? anchors.primaryAnchor
+                        : anchors.secondaryAnchor!) +
+                    const Offset(0, margin),
                 fitsAbove: fitsAbove,
               ),
         child: super.build(context));

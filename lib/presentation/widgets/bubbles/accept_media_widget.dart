@@ -1,8 +1,11 @@
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AcceptMediaWidget extends StatelessWidget {
+  const AcceptMediaWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
@@ -12,15 +15,17 @@ class AcceptMediaWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SvgPicture.asset('assets/images/ic_receive.svg'),
-          const SizedBox(height: 6,),
+          const SizedBox(
+            height: 6,
+          ),
           Text('点击接收',
-              style:const TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.normal).fix())
+              style: TextStyle(
+                      color: Theme.of(context).flixColors.text.primary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal)
+                  .fix())
         ],
       ),
     );
   }
-
 }

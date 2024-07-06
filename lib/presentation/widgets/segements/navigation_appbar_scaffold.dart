@@ -49,15 +49,17 @@ class NavigationAppbarScaffold extends StatelessWidget {
       leadingWidth: 40,
       centerTitle: false,
       title: Text(editTitle ?? '',
-          style: const TextStyle(
-                  color: Colors.black,
+          style: TextStyle(
+                  color: Theme.of(context).flixColors.text.primary,
                   fontSize: 18,
                   fontWeight: FontWeight.w500)
               .fix()),
       backgroundColor: Theme.of(context).flixColors.background.secondary,
       surfaceTintColor: Theme.of(context).flixColors.background.secondary,
-      titleTextStyle: const TextStyle(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500)
+      titleTextStyle: TextStyle(
+              color: Theme.of(context).flixColors.text.primary,
+              fontSize: 18,
+              fontWeight: FontWeight.w500)
           .fix(),
       titleSpacing: 6,
     );

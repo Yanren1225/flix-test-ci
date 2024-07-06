@@ -34,15 +34,16 @@ class MultiSelectActions extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
         child: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               border: Border(
                 top: BorderSide(
-                  color: const Color.fromRGBO(228, 228, 228, 1),
+                  color: Color.fromRGBO(228, 228, 228, 1),
                   width: 0.5,
                 ),
               ),
             ),
-            padding: EdgeInsets.only(top: 6, bottom: 10 + MediaQuery.paddingOf(context).bottom),
+            padding: EdgeInsets.only(
+                top: 6, bottom: 10 + MediaQuery.paddingOf(context).bottom),
             child: Align(
               heightFactor: 1,
               child: BubbleContextMenuItem(
@@ -51,8 +52,7 @@ class MultiSelectActions extends StatelessWidget {
                 color: const Color.fromRGBO(255, 59, 48, 1),
                 onTap: onDelete,
               ),
-            )
-            ),
+            )),
       ),
     );
   }

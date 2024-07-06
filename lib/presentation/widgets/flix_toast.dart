@@ -1,3 +1,4 @@
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -39,10 +40,14 @@ class FlixToast {
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 17.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
-        color: Colors.white,
+        color: Theme.of(_fToast.context!).flixColors.background.primary,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Theme.of(_fToast.context!)
+                .flixColors
+                .background
+                .tertiary
+                .withOpacity(0.1),
             spreadRadius: 2,
             blurRadius: 4,
             offset: const Offset(2, 4),
@@ -64,8 +69,8 @@ class FlixToast {
           ),
           Text(
             message,
-            style: const TextStyle(
-              color: Colors.black,
+            style: TextStyle(
+              color: Theme.of(_fToast.context!).flixColors.text.primary,
               fontSize: 14.0,
               fontWeight: FontWeight.w400,
             ).fix(),
