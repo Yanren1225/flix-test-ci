@@ -245,13 +245,14 @@ class BubbleInteractionState extends State<BubbleInteraction>
           (widget.bubble.shareable as SharedDirectory).meta.name ?? '');
       try {
         final Uri uri = Uri.file(p);
-        if (await canLaunchUrl(uri)) {
-          if (await launchUrl(uri)) {
-            return;
-          }
+        if (!Directory(uri.toFilePath(windows: Platform.isWindows)).existsSync()) {
+          throw Exception('$uri does not exist!');
+        }
+        if (!await launchUrl(uri)) {
+          throw Exception('Could not launch $uri');
         }
       } catch (e) {
-        talker.debug("open err, path=$p");
+        talker.debug("open err =$e, path=$p");
       }
     }
 

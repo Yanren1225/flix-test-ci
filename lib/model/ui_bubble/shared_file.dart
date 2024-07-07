@@ -173,7 +173,6 @@ class FileMeta with DrawinFileSecurityExtension {
         map['path'] = getRelativePath(path!, parent!.rootPath);
       }
     }
-    talker.debug("path 111 pathSaveType=$pathSaveType mp=${map['path']} , path=$path rootPath=${parent?.rootPath} , map=${map}");
     return map;
   }
 

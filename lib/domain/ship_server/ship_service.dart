@@ -367,7 +367,6 @@ class ShipService {
           content: directoryBubble.content.copy(state: FileState.waitToAccepted));
       await _bubblePool.add(_directoryBubble);
       await _checkCancel(directoryBubble.id);
-      // todo wgl send with 相对路径
       await _sendBasicBubble(_directoryBubble.copy(
           content: _directoryBubble.content.copy(
               meta: _directoryBubble.content.meta
