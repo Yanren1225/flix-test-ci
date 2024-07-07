@@ -21,7 +21,7 @@ extension StreamProgress on Stream<List<int>> {
               .copy(progress: (byteCount.toDouble()+receiveBytes) / bubble.content.meta.size,receiveBytes: byteCount, speed: (byteDiff / timeDiff * 1000).ceil()),
         );
         talker.debug(
-            "file transfer, byteCount: $byteCount ,receiveBytes = $receiveBytes, , size: ${bubble.content.meta.size}");
+            "file transfer,path=${bubble.content.meta.path} byteCount: $byteCount ,receiveBytes = $receiveBytes, , size: ${bubble.content.meta.size}");
 
         // 异步插入，减少对发送和接收的阻塞
         BubblePool.instance.add(updatedBubble);

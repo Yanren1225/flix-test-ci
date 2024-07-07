@@ -29,10 +29,11 @@ class NotificationService {
         if (bubble is PrimitiveTextBubble) {
           notified(notification);
           requestPermission(() => showTextNotification(bubble, notification));
-        } else if (bubble is PrimitiveFileBubble &&
+        } else if ((bubble is PrimitiveFileBubble ||
+                bubble is PrimitiveDirectoryBubble) &&
             bubble.content.state == FileState.waitToAccepted) {
           notified(notification);
-          requestPermission(() => showFileNotification(bubble, notification));
+          requestPermission(() => showResNotification(bubble, notification));
         }
       }
     });
@@ -63,11 +64,19 @@ class NotificationService {
         notification);
   }
 
-  void showFileNotification(
+  void showResNotification(
       PrimitiveBubble bubble, MessageNotification notification) {
-    flixNotification.showFileNotification(
-        DeviceManager.instance.getDeviceInfoById(bubble.from)?.name ?? "",
-        notification);
+    if (bubble is PrimitiveFileBubble) {
+      flixNotification.showFileNotification(
+          DeviceManager.instance.getDeviceInfoById(bubble.from)?.name ?? "",
+          notification);
+    } else if (bubble is PrimitiveDirectoryBubble) {
+      flixNotification.showDirectoryNotification(
+          DeviceManager.instance.getDeviceInfoById(bubble.from)?.name ?? "",
+          notification);
+    } else {
+      talker.error('showFileNotification type error');
+    }
   }
 
   void notified(MessageNotification notification) {

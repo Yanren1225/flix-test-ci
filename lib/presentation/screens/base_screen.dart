@@ -32,7 +32,8 @@ abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
         subscription = BubblePool.instance.listen((bubble) async {
           if (mounted &&
               bubble.to == DeviceProfileRepo.instance.did &&
-              bubble is PrimitiveFileBubble &&
+              (bubble is PrimitiveFileBubble ||
+                  bubble is PrimitiveDirectoryBubble) &&
               bubble.content.state == FileState.waitToAccepted) {
             if (!isCheckingPermission) {
               isCheckingPermission = true;

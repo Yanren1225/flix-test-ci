@@ -169,7 +169,7 @@ dependency_overrides:
   image_gallery_saver:
     git:
       url: "https://github.com/heiha100/image_gallery_saver"
-      ref: "9667d899bed18b2ae5c2e7de026ed2692a429d5b"
+      ref: "91799664c2b21e1579b9d0e21df5ea505b50e9df"
   connectivity_plus:
     git:
       url: "https://github.com/heiha100/plus_plugins"

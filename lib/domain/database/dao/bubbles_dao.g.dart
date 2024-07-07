@@ -7,4 +7,6 @@ mixin _$BubblesDaoMixin on DatabaseAccessor<AppDatabase> {
   $BubbleEntitiesTable get bubbleEntities => attachedDatabase.bubbleEntities;
   $TextContentsTable get textContents => attachedDatabase.textContents;
   $FileContentsTable get fileContents => attachedDatabase.fileContents;
+  $DirectoryContentsTable get directoryContents =>
+      attachedDatabase.directoryContents;
 }

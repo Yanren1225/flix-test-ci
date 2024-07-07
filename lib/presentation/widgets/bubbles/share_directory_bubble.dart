@@ -1,15 +1,11 @@
-import 'dart:math';
-
-import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
-import 'package:flix/presentation/basic/corner/flix_decoration.dart';
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
+import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/basic/progressbar/linear/animated_progress_bar.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
-import 'package:flix/presentation/widgets/bubbles/base_file_bubble.dart';
 import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/receive_button.dart';
@@ -17,30 +13,36 @@ import 'package:flix/presentation/widgets/segements/resend_button.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/file/size_utils.dart';
 import 'package:flix/utils/file/speed_utils.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gradient_txt/gradient_text.dart';
 import 'package:provider/provider.dart';
 
-class ShareFileBubble extends BaseFileBubble {
-  const ShareFileBubble({super.key, required super.entity});
+class ShareDirectoryBubble extends StatefulWidget {
+  final UIBubble entity;
+
+  const ShareDirectoryBubble({Key? key, required this.entity})
+      : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => ShareFileBubbleState();
+  State<StatefulWidget> createState() => ShareDirectoryBubbleState();
 }
 
-class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
+class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
+    extends State<T> {
+  UIBubble get entity => widget.entity;
   final _cancelSendButtonKey = GlobalKey();
   final _resendButtonKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     AndropContext andropContext = context.watch();
+    // final concertProvider = Provider.of<ConcertProvider>(context, listen: true);
+    // final items = concertProvider.bubbles.reversed.toList();
     ConcertProvider concertProvider = context.watch();
 
-    final SharedFile sharedFile = entity.shareable as SharedFile;
+    final SharedDirectory sharedDirectory = entity.shareable as SharedDirectory;
 
     const Color backgroundColor = Colors.white;
     const Color contentColor = Colors.black;
@@ -56,12 +58,12 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
     Widget stateIcon = const SizedBox(width: 20, height: 20);
     final showProgressBar;
     final progressBarColors;
-    final size = sharedFile.content.size.formateBinarySize();
+    final size = sharedDirectory.meta.size.formateBinarySize();
     String? stateDes = null;
     Color? stateDesColor = null;
     List<Color>? stateDesGradient = null;
     if (entity.isFromMe(andropContext.deviceId)) {
-      switch (sharedFile.state) {
+      switch (sharedDirectory.state) {
         case FileState.picked:
           showProgressBar = true;
           progressBarColors = [
@@ -90,7 +92,8 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
             const Color.fromRGBO(0, 122, 255, 1),
             const Color.fromRGBO(81, 181, 252, 1)
           ];
-          stateDes = sharedFile.speed.formatSpeed();
+          stateDes = '${sharedDirectory.speed.formatSpeed()} '
+              '(${sharedDirectory.receiveNum}/${sharedDirectory.sendNum})';
           stateDesGradient = [
             const Color.fromRGBO(0, 122, 255, 1),
             const Color.fromRGBO(81, 181, 252, 1)
@@ -137,10 +140,10 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
               stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
         case FileState.unknown:
-          throw StateError('Unknown send state: ${sharedFile.state}');
+          throw StateError('Unknown send state: ${sharedDirectory.state}');
       }
     } else {
-      switch (sharedFile.state) {
+      switch (sharedDirectory.state) {
         case FileState.waitToAccepted:
           showProgressBar = false;
           progressBarColors = [
@@ -161,7 +164,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
             Color.fromRGBO(0, 122, 255, 1),
             Color.fromRGBO(81, 181, 252, 1)
           ];
-          stateDes = sharedFile.speed.formatSpeed();
+          stateDes = sharedDirectory.speed.formatSpeed();
           stateDesGradient = [
             Color.fromRGBO(0, 122, 255, 1),
             Color.fromRGBO(81, 181, 252, 1)
@@ -208,12 +211,12 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
           break;
         case FileState.unknown:
         default:
-          throw StateError('Unknown send state: ${sharedFile.state}');
+          throw StateError('Unknown send state: ${sharedDirectory.state}');
       }
     }
 
     final _innerBubble = Container(
-      decoration: FlixDecoration(color: backgroundColor),
+      decoration: const BoxDecoration(color: backgroundColor),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return SizedBox(
@@ -230,20 +233,22 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Flexible(
-                            child: ExtendedText(sharedFile.content.name,
+                            child: ExtendedText(sharedDirectory.meta.name,
                                 style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: contentColor).fix(),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: contentColor)
+                                    .fix(),
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
                                 overflowWidget: TextOverflowWidget(
                                   position: TextOverflowPosition.middle,
                                   child: Text('\u2026 ',
                                       style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                          color: contentColor).fix()),
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: contentColor)
+                                          .fix()),
                                 ))),
                         const SizedBox(
                           width: 10,
@@ -252,7 +257,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
                           width: 44,
                           height: 44,
                           child: SvgPicture.asset(
-                            mimeIcon(sharedFile.content.nameWithSuffix),
+                            mimeIcon('/'),
                             width: 44,
                             height: 44,
                           ),
@@ -266,15 +271,16 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Visibility(
-                        visible: sharedFile.content.size > 0,
+                        visible: sharedDirectory.meta.size > 0,
                         child: Padding(
                           padding: const EdgeInsets.only(right: 10.0),
                           child: Text(
                             size,
                             style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Color.fromRGBO(60, 60, 67, 0.6)).fix(),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color.fromRGBO(60, 60, 67, 0.6))
+                                .fix(),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -286,9 +292,10 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
                             ? Text(
                                 stateDes ?? '',
                                 style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                    color: stateDesColor ?? Colors.grey).fix(),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                        color: stateDesColor ?? Colors.grey)
+                                    .fix(),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               )
@@ -297,21 +304,22 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
                                 gradient: LinearGradient(
                                     colors: stateDesGradient ?? []),
                                 style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                    color: contentColor.withOpacity(0.5)).fix(),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                        color: contentColor.withOpacity(0.5))
+                                    .fix(),
                               ),
                       ),
                     ],
                   ),
                 ),
                 AnimatedCrossFade(
-                  key: ValueKey(sharedFile.id),
+                  key: ValueKey(sharedDirectory.id),
                   crossFadeState: showProgressBar
                       ? CrossFadeState.showFirst
                       : CrossFadeState.showSecond,
                   firstChild: AnimatedProgressBar(
-                      value: sharedFile.progress,
+                      value: sharedDirectory.progress,
                       duration: const Duration(milliseconds: 200),
                       width: double.infinity,
                       height: 6,
@@ -330,8 +338,8 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
     );
     Widget innerBubble;
     if (!entity.isFromMe(andropContext.deviceId) &&
-        sharedFile.state == FileState.waitToAccepted) {
-      innerBubble = FlixClipRRect(
+        sharedDirectory.state == FileState.waitToAccepted) {
+      innerBubble = ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           radius: 12,
@@ -346,7 +354,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
       innerBubble = BubbleInteraction(
         key: ValueKey(entity.shareable.id),
         bubble: entity,
-        path: sharedFile.content.path ?? '',
+        path: sharedDirectory.meta.path ?? '',
         child: _innerBubble,
         clickable: clickable,
       );

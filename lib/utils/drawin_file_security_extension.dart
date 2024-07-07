@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
-import 'package:flix/utils/file/file_helper.dart';
 import 'package:macos_secure_bookmarks/macos_secure_bookmarks.dart';
+import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
@@ -158,3 +157,34 @@ Future<void> stopAccessPathOnMacos(String path) async {
 
 }
 
+String ensureTrailingSeparator(String p) {
+  if (!p.endsWith(path.separator)) {
+    return p + path.separator;
+  }
+  return p;
+}
+
+String joinPaths(String basePath, String relativePath) {
+  // 确保 basePath 以分隔符结尾
+  basePath = ensureTrailingSeparator(basePath);
+
+  // 确保 relativePath 不以分隔符开头
+  if (relativePath.startsWith(path.separator)) {
+    relativePath = relativePath.substring(1);
+  }
+
+  // 使用 path 包的 join 方法拼接路径
+  return path.join(basePath, relativePath);
+}
+
+String getRelativePath(String fullPath, String rootPath) {
+  // 获取相对路径
+  String relativePath = path.relative(fullPath, from: rootPath);
+  // 获取相对路径的目录部分
+  String relativeDirectory = path.dirname(relativePath);
+  // 确保相对目录不以分隔符开头
+  if (relativeDirectory.startsWith(path.separator)) {
+    relativeDirectory = relativeDirectory.substring(1);
+  }
+  return relativeDirectory;
+}

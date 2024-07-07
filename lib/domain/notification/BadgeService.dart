@@ -1,3 +1,4 @@
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/notification/reception_notification.dart';
 
 class BadgeService {
