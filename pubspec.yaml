@@ -16,7 +16,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 0.5.3+21
+version: 0.5.4+22
 
 environment:
   sdk: ">=3.2.4 <4.0.0"
@@ -169,7 +169,7 @@ dependency_overrides:
   image_gallery_saver:
     git:
       url: "https://github.com/heiha100/image_gallery_saver"
-      ref: "91799664c2b21e1579b9d0e21df5ea505b50e9df"
+      ref: "0d8cf85816d53df6207e9b5aceb6955a5122e904"
   connectivity_plus:
     git:
       url: "https://github.com/heiha100/plus_plugins"
