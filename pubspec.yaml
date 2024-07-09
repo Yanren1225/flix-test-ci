@@ -159,6 +159,11 @@ dependency_overrides:
       url: "https://github.com/heiha100/Bonsoir"
       ref: "f89e3c06dbd0b5540c2baca1fe9cccc4cb0e200e"
       path: "packages/bonsoir_darwin"
+  bonsoir_windows:
+    git:
+      url: "https://github.com/heiha100/Bonsoir"
+      ref: "a563575f0b85617a003a154b67abb30d2daca2c8"
+      path: "packages/bonsoir_windows"
   flutter_image_compress_macos:
     git:
       url: "https://github.com/heiha100/flutter_image_compress"
