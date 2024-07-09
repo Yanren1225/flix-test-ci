@@ -6,12 +6,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <ApplicationIcon>lo.ico</ApplicationIcon>
-    <Copyright>Developer by Haoyang. Copyright © 2024 Flix. All rights reserved.</Copyright>
+    <Copyright>© 2024 Flix. All rights reserved.</Copyright>
     <Company>Flix</Company>
     <Authors>Haoyang</Authors>
     <Product>Flix Installer</Product>
     <PackageIcon>logo.png</PackageIcon>
-    <FileVersion>2024.05.31</FileVersion>
+    <FileVersion>2024.07.09</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

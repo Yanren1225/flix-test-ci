@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+ 
+Flix Installer 
+Build date: 2024/07/09
+© 2024 Gnayoah. All rights reserved.
+
+*/
+
+/*
+ 打包指令： 
+ dotnet publish -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -o ./publish
+
+ 更新方式：
+ 替换 Installer/flix.zip 压缩包，安装器自带卸载
+
+ 请勿删除和替换 installer.zip 和其他资源文件，避免出错
+ */
+
+
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -10,7 +30,7 @@ class Program
     {
         string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         string desktopFlixPath = Path.Combine(desktopPath, "Flix");
-        string desktopFlixLnkPath = Path.Combine(desktopPath, "Flix.lnk");
+        string desktopFlixLnkPath = Path.Combine(desktopPath, "Flix.lnk.bak");
 
         // Delete the Flix file on the desktop if it exists
         if (File.Exists(desktopFlixPath))
@@ -197,7 +217,7 @@ class Program
         string[] pathsToDelete = {
             @"C:\Program Files\Flix",
             @"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Flix.lnk",
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Flix.lnk")
+         //   Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Flix.lnk")
         };
 
         foreach (string path in pathsToDelete)
