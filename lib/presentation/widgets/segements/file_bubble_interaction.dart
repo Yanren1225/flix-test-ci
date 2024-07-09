@@ -108,7 +108,7 @@ class BubbleInteractionState extends State<BubbleInteraction>
             onTap: () async {
               if (!widget.clickable) return;
               // _controller.forward().whenComplete(() => _controller.reverse());
-              if (SharedFile is SharedFile) {
+              if (sharedRes is SharedFile) {
                 _openFile(sharedRes.content.resourceId, widget.path)
                     .then((isSuccess) {
                   if (!isSuccess) {
@@ -251,6 +251,7 @@ class BubbleInteractionState extends State<BubbleInteraction>
         if (!await launchUrl(uri)) {
           throw Exception('Could not launch $uri');
         }
+        return;
       } catch (e) {
         talker.debug("open err =$e, path=$p");
       }

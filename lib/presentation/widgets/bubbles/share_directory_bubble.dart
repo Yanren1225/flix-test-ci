@@ -164,7 +164,8 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
             Color.fromRGBO(0, 122, 255, 1),
             Color.fromRGBO(81, 181, 252, 1)
           ];
-          stateDes = sharedDirectory.speed.formatSpeed();
+          stateDes = '${sharedDirectory.speed.formatSpeed()} '
+              '(${sharedDirectory.receiveNum}/${sharedDirectory.sendNum})';
           stateDesGradient = [
             Color.fromRGBO(0, 122, 255, 1),
             Color.fromRGBO(81, 181, 252, 1)
