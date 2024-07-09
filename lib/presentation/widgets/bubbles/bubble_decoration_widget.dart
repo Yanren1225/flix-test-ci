@@ -44,8 +44,8 @@ class _BubbleDecorationWidgetState extends State<BubbleDecorationWidget> {
     );
     if (isFromMe) {
       if (sharedFile.state == FileState.picked ||
-          sharedFile == FileState.waitToAccepted ||
-          sharedFile == FileState.inTransit) {
+          sharedFile.state == FileState.waitToAccepted ||
+          sharedFile.state == FileState.inTransit) {
         stateIcon = CancelSendButton(key: _cancelSendButtonKey, entity: entity);
       } else if (sharedFile.state == FileState.cancelled ||
           sharedFile.state == FileState.sendFailed ||
