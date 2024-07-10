@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/androp_context.dart';
@@ -24,7 +25,7 @@ import 'package:uuid/uuid.dart';
 class ShareTextBubble extends StatefulWidget {
   final UIBubble entity;
 
-  ShareTextBubble({super.key, required this.entity});
+  const ShareTextBubble({super.key, required this.entity});
 
   @override
   State<StatefulWidget> createState() => ShareTextBubbleState();
@@ -42,7 +43,7 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
   @override
   void initState() {
     super.initState();
-    contextMenuTag = Uuid().v4();
+    contextMenuTag = const Uuid().v4();
     _focusNode.addListener(() {
       if (!_focusNode.hasPrimaryFocus) {
         setState(() {
@@ -71,8 +72,8 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
       backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
       selectIndicatorColor = const Color.fromRGBO(255, 255, 255, 0.6);
     } else {
-      contentColor = Colors.black;
-      backgroundColor = Colors.white;
+      contentColor = Theme.of(context).flixColors.text.primary;
+      backgroundColor = Theme.of(context).flixColors.background.primary;
       selectIndicatorColor = const Color.fromRGBO(0, 122, 255, 0.6);
     }
 
@@ -83,7 +84,10 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
       alignment = Alignment.centerLeft;
     }
     final textStyle = TextStyle(
-            color: contentColor, fontSize: 16, decorationColor: contentColor ,fontWeight: FontWeight.w400)
+            color: contentColor,
+            fontSize: 16,
+            decorationColor: contentColor,
+            fontWeight: FontWeight.w400)
         .fix();
     final content = GestureDetector(
       onTap: () {
@@ -92,7 +96,7 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Theme(
-          data: ThemeData(
+          data: Theme.of(context).copyWith(
             textSelectionTheme: TextSelectionThemeData(
               selectionColor: selectIndicatorColor,
               cursorColor: Colors.black,
@@ -111,16 +115,16 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
             onTap: () {
               _copyContentToClipboard(sharedText.content);
             },
-            onSelectionChanged: (TextSelection selection,
-                SelectionChangedCause? cause) {
+            onSelectionChanged:
+                (TextSelection selection, SelectionChangedCause? cause) {
               talker.debug("cause: $cause");
               textSelection = selection;
               selectionChangedCause = cause;
             },
             contextMenuBuilder: (
-                BuildContext context,
-                EditableTextState editableTextState,
-                ) {
+              BuildContext context,
+              EditableTextState editableTextState,
+            ) {
               if (selectionChangedCause == SelectionChangedCause.longPress) {
                 Future.delayed(Duration.zero, () {
                   editableTextState.selectAll(SelectionChangedCause.toolbar);
@@ -142,17 +146,19 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
       child: FlixClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: LayoutBuilder(
-          builder: (_context, _) => Material(
+          builder: (context, _) => Material(
             color: backgroundColor,
             child: ModalAnchor(
               key: ValueKey(entity.shareable.id),
               tag: contextMenuTag,
-              child: isDesktop() ? content : GestureDetector(
-                onDoubleTap: () {
-                  _startFreeCopyScreen(context);
-                },
-                child: content,
-              ),
+              child: isDesktop()
+                  ? content
+                  : GestureDetector(
+                      onDoubleTap: () {
+                        _startFreeCopyScreen(context);
+                      },
+                      child: content,
+                    ),
             ),
           ),
         ),
@@ -224,8 +230,8 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
         showCupertinoModalPopup(
             context: context,
             builder: (context) => DeleteMessageBottomSheet(onConfirm: () async {
-              concertProvider.deleteBubble(entity);
-            }));
+                  concertProvider.deleteBubble(entity);
+                }));
       },
     };
   }

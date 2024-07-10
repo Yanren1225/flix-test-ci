@@ -45,26 +45,26 @@ class BubbleInteraction extends StatefulWidget {
 class BubbleInteractionState extends State<BubbleInteraction>
     with TickerProviderStateMixin {
   var tapDownTime = 0;
-  Offset? tapDown = null;
+  Offset? tapDown;
   late String contextMenuTag;
 
   @override
   void initState() {
     super.initState();
-    contextMenuTag = Uuid().v4();
+    contextMenuTag = const Uuid().v4();
   }
 
   @override
   Widget build(BuildContext context) {
     AndropContext andropContext = context.watch();
     ConcertProvider concertProvider = Provider.of(context, listen: false);
-    final _controller = AnimationController(
+    final controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 100),
     );
 
-    final _animation = Tween<double>(begin: 1, end: 0.96)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut))
+    final animation = Tween<double>(begin: 1, end: 0.96)
+        .animate(CurvedAnimation(parent: controller, curve: Curves.easeInOut))
       ..addListener(() {
         // setState(() {});
       });
@@ -84,22 +84,22 @@ class BubbleInteractionState extends State<BubbleInteraction>
               tapDownTime = DateTime.now().millisecondsSinceEpoch;
               talker.debug('gesture details: ');
               // details.kind?.index == 0
-              _controller.forward();
+              controller.forward();
             },
             onTapUp: (_) {
               final diff = DateTime.now().millisecondsSinceEpoch - tapDownTime;
               talker.debug('gesture time diff: $diff');
               if (DateTime.now().millisecondsSinceEpoch - tapDownTime < 60) {
                 Future.delayed(Duration(milliseconds: 60 - diff + 100), () {
-                  _controller.reverse();
+                  controller.reverse();
                 });
               } else {
-                _controller.reverse();
+                controller.reverse();
               }
               tapDownTime = 0;
             },
             onTapCancel: () {
-              _controller.reverse();
+              controller.reverse();
             },
             // onDoubleTap: () {
             //   if (!widget.clickable) return;
@@ -132,7 +132,7 @@ class BubbleInteractionState extends State<BubbleInteraction>
                   concertProvider, !widget.clickable);
             },
             child: ScaleTransition(
-                scale: _animation,
+                scale: animation,
                 child: FlixClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: widget.child))),
@@ -192,7 +192,7 @@ class BubbleInteractionState extends State<BubbleInteraction>
         final AssetEntity? asset = await AssetEntity.fromId(resourceId);
         if (asset != null) {
           final file = await asset.originFile;
-          filePath =  file?.path ?? '';
+          filePath = file?.path ?? '';
           setState(() {
             widget.path = filePath;
           });
@@ -211,7 +211,7 @@ class BubbleInteractionState extends State<BubbleInteraction>
 
   void _openFileDir() {
     // fixme 打开android目录
-    if (!(widget.bubble.shareable is SharedFile)) return;
+    if (widget.bubble.shareable is! SharedFile) return;
     final sharedFile = widget.bubble.shareable as SharedFile;
     if (Platform.isIOS && sharedFile.content.resourceId.isNotEmpty) {
       _openIOSAlbum(sharedFile.content.resourceId).then((value) {
@@ -235,7 +235,6 @@ class BubbleInteractionState extends State<BubbleInteraction>
             .catchError(
                 (error) => print('Failed to open download folder: $error'));
       }
-
     }
   }
 
@@ -284,8 +283,8 @@ class BubbleInteractionState extends State<BubbleInteraction>
   }
 
   Future<bool> _openIOSAlbum(String resourceId) async {
-    String _url = "photos-redirect://$resourceId";
-    return await launchUrl(Uri.parse(_url));
+    String url = "photos-redirect://$resourceId";
+    return await launchUrl(Uri.parse(url));
   }
 
   Future<bool> _installApk(String apkPath) async {

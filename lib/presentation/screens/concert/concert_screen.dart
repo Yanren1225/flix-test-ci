@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flix/domain/settings/SettingsRepo.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
@@ -47,7 +48,7 @@ class ConcertScreen extends StatefulWidget {
   const ConcertScreen(
       {super.key,
       required this.deviceInfo,
-      this.anchor = null,
+      this.anchor,
       required this.showBackButton,
       this.playable = true});
 
@@ -79,7 +80,7 @@ class _ConcertScreenState extends State<ConcertScreen>
       vsync: this,
     );
     _animation = Tween(begin: 0.0, end: 1.0).animate(_controller);
-    Future.delayed(Duration(milliseconds: 300), () {
+    Future.delayed(const Duration(milliseconds: 300), () {
       setState(() {
         _isContentReady = true;
       });
@@ -102,12 +103,12 @@ class _ConcertScreenState extends State<ConcertScreen>
   @override
   Widget build(BuildContext context) {
     final main = LayoutBuilder(
-      builder: (_context, constraints) {
+      builder: (context, constraints) {
         final concertProvider =
-            Provider.of<ConcertProvider>(_context, listen: true);
+            Provider.of<ConcertProvider>(context, listen: true);
         return ValueListenableBuilder(
           valueListenable: concertProvider.deviceName,
-          builder: (_context, value, child) {
+          builder: (context, value, child) {
             return PopScope(
               canPop: !concertProvider.isEditing,
               onPopInvoked: (didPop) {
@@ -147,7 +148,7 @@ class _ConcertScreenState extends State<ConcertScreen>
                                 playable: playable,
                               ),
                             )
-                          : SizedBox();
+                          : const SizedBox();
                     }),
               ),
             );
@@ -321,31 +322,36 @@ class InputAreaState extends State<InputArea> {
   }
 
   void submitText(String content) {
-    onSubmit(SharedText(id: Uuid().v4(), content: content), BubbleType.Text);
+    onSubmit(
+        SharedText(id: const Uuid().v4(), content: content), BubbleType.Text);
   }
 
   void submitImage(FileMeta meta) {
     onSubmit(
-        SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta),
+        SharedFile(
+            id: const Uuid().v4(), state: FileState.picked, content: meta),
         BubbleType.Image);
   }
 
   void submitVideo(FileMeta meta) {
     onSubmit(
-        SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta),
+        SharedFile(
+            id: const Uuid().v4(), state: FileState.picked, content: meta),
         BubbleType.Video);
   }
 
   void submitApp(FileMeta meta) {
     // onSubmit(SharedApp(id: Uuid().v4(), content: app), BubbleType.App);
     onSubmit(
-        SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta),
+        SharedFile(
+            id: const Uuid().v4(), state: FileState.picked, content: meta),
         BubbleType.App);
   }
 
   void submitFile(FileMeta meta) async {
     onSubmit(
-        SharedFile(id: Uuid().v4(), state: FileState.picked, content: meta),
+        SharedFile(
+            id: const Uuid().v4(), state: FileState.picked, content: meta),
         BubbleType.File);
   }
 
@@ -399,11 +405,7 @@ class InputAreaState extends State<InputArea> {
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           decoration: FlixDecoration(
-              color: Color.fromRGBO(242, 242, 242, 0.8),
-              // border: Border(
-              //     top: BorderSide(
-              //   color: Color.fromRGBO(240, 240, 240, 1),
-              // ))
+            color: Theme.of(context).flixColors.background.tertiary,
           ),
           child: Padding(
             padding:
@@ -446,16 +448,19 @@ class InputAreaState extends State<InputArea> {
                                     CallbackAction<BreakLineIntent>(
                                   onInvoke: (intent) {
                                     textEditController.text += '\n';
+                                    return null;
                                   },
                                 ),
                                 SubmitIntent: CallbackAction<SubmitIntent>(
                                   onInvoke: (intent) {
                                     trySubmitText();
+                                    return null;
                                   },
                                 ),
                                 PasteIntent: CallbackAction<PasteIntent>(
                                   onInvoke: (intent) async {
                                     _paste(concertProvider.deviceInfo);
+                                    return null;
                                   },
                                 )
                               },
@@ -496,8 +501,11 @@ class InputAreaState extends State<InputArea> {
                                   );
                                 },
                                 controller: textEditController,
-                                style: const TextStyle(
-                                        color: Colors.black,
+                                style: TextStyle(
+                                        color: Theme.of(context)
+                                            .flixColors
+                                            .text
+                                            .primary,
                                         fontSize: 16,
                                         fontWeight: FontWeight.normal)
                                     .fix(),
@@ -513,8 +521,14 @@ class InputAreaState extends State<InputArea> {
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
                                     filled: true,
-                                    fillColor: Colors.white,
-                                    hoverColor: Colors.white,
+                                    fillColor: Theme.of(context)
+                                        .flixColors
+                                        .background
+                                        .secondary,
+                                    hoverColor: Theme.of(context)
+                                        .flixColors
+                                        .background
+                                        .primary,
                                     contentPadding: EdgeInsets.only(
                                         left: 12,
                                         right: 12,
@@ -524,7 +538,8 @@ class InputAreaState extends State<InputArea> {
                                                 Platform.isLinux
                                             ? 16
                                             : 8)),
-                                cursorColor: Colors.black,
+                                cursorColor:
+                                    Theme.of(context).flixColors.text.primary,
                                 onChanged: (value) {
                                   input(value);
                                 },
@@ -555,7 +570,10 @@ class InputAreaState extends State<InputArea> {
                                     const Color.fromRGBO(0, 122, 255, 1)),
                             shape: const MaterialStatePropertyAll<
                                 SmoothRectangleBorder>(SmoothRectangleBorder(
-                              borderRadius: SmoothBorderRadius.all(SmoothRadius(cornerRadius: 10, cornerSmoothing: 0.6, )),
+                              borderRadius: SmoothBorderRadius.all(SmoothRadius(
+                                cornerRadius: 10,
+                                cornerSmoothing: 0.6,
+                              )),
                             ))),
                         icon: const Icon(
                           Icons.arrow_upward_sharp,
@@ -589,7 +607,7 @@ class InputAreaState extends State<InputArea> {
   ) async {
     if (!Platform.isAndroid) {
       final filePaths = await Pasteboard.files();
-      if (filePaths?.isNotEmpty == true) {
+      if (filePaths.isNotEmpty == true) {
         final files = filePaths.map((e) => XFile(e)).toList();
         showCupertinoModalPopup(
             context: context,
@@ -602,7 +620,8 @@ class InputAreaState extends State<InputArea> {
       final imageBytes = await Pasteboard.image;
       if (imageBytes != null) {
         final cachePath = await getCachePath();
-        final imageFile = await createFile(cachePath, '${Uuid().v4()}.jpg');
+        final imageFile =
+            await createFile(cachePath, '${const Uuid().v4()}.jpg');
         await imageFile.writeAsBytes(imageBytes);
         showCupertinoModalPopup(
             context: context,

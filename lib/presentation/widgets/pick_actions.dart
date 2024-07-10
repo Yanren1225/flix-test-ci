@@ -9,6 +9,7 @@ import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/presentation/screens/android_apps_screen.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/actions/progress_action.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ const MAX_ASSETS = 60;
 class PickActionsArea extends StatefulWidget {
   final OnPicked onPicked;
 
-  PickActionsArea({super.key, required this.onPicked});
+  const PickActionsArea({super.key, required this.onPicked});
 
   @override
   State<StatefulWidget> createState() => PickActionAreaState();
@@ -55,7 +56,10 @@ class PickActionAreaState extends State<PickActionsArea> {
             _onAppButtonPressed();
           },
           icon: SvgPicture.asset('assets/images/ic_app.svg',
-              width: 22, height: 22),
+              width: 22,
+              height: 22,
+              colorFilter: ColorFilter.mode(
+                  Theme.of(context).flixColors.text.primary, BlendMode.srcIn)),
         ),
       );
     } else {
@@ -104,14 +108,16 @@ class PickActionAreaState extends State<PickActionsArea> {
             );
             _isImageLoading = true;
             for (final f in (result ?? <AssetEntity>[])) {
-              onPicked([PickableFile(
-                  type: PickedFileType.Image, content: await f.toFileMeta())]);
+              onPicked([
+                PickableFile(
+                    type: PickedFileType.Image, content: await f.toFileMeta())
+              ]);
             }
 
             _isImageLoading = false;
           } else {
-            final List<XFile> pickedFileList =
-                await _picker.pickMultiImage(requestFullMetadata: true, limit: MAX_ASSETS);
+            final List<XFile> pickedFileList = await _picker.pickMultiImage(
+                requestFullMetadata: true, limit: MAX_ASSETS);
             onPicked([
               for (final f in pickedFileList)
                 PickableFile(

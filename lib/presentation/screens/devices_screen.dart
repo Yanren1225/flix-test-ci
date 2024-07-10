@@ -1,3 +1,6 @@
+import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/utils/text/text_extension.dart';
+import 'package:flix/domain/bubble_pool.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -37,7 +40,8 @@ class DeviceScreen extends StatefulWidget {
   State<StatefulWidget> createState() => _DeviceScreenState();
 }
 
-class _DeviceScreenState extends State<DeviceScreen> with RouteAware, WidgetsBindingObserver {
+class _DeviceScreenState extends State<DeviceScreen>
+    with RouteAware, WidgetsBindingObserver {
   final _badges = BadgeService.instance.badges;
   List<DeviceInfo> history = List.empty(growable: true);
   List<DeviceInfo> devices = List.empty(growable: true);
@@ -50,8 +54,8 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware, WidgetsBin
     devices = deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
     return Scaffold(
       body: Container(
-        decoration:
-            FlixDecoration(color: Color.fromARGB(255, 247, 247, 247)),
+        decoration: FlixDecoration(
+            color: Theme.of(context).flixColors.background.secondary),
         child: Stack(
           children: [
             ClipRect(
@@ -126,7 +130,7 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware, WidgetsBin
                                     showCupertinoModalPopup(
                                         context: context,
                                         builder: (context) {
-                                          return NameEditBottomSheet();
+                                          return const NameEditBottomSheet();
                                         });
                                   },
                                 );
@@ -183,7 +187,8 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware, WidgetsBin
         builder:
             (BuildContext context, AsyncSnapshot<ConnectivityResult> snapshot) {
           final connectivityResult = snapshot.data;
-          if (connectivityResult == ConnectivityResult.wifi || connectivityResult == ConnectivityResult.p2pWifi) {
+          if (connectivityResult == ConnectivityResult.wifi ||
+              connectivityResult == ConnectivityResult.p2pWifi) {
             return StreamBuilder<WifiOrApName>(
                 initialData: deviceProvider.wifiOrApName,
                 stream: deviceProvider.wifiOrApNameStream,
@@ -202,7 +207,12 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware, WidgetsBin
                     iconColor: FlixColor.blue,
                     isLeft: false,
                     onTap: () {
-                      showNetInfoBottomSheet(context, deviceProvider.apName, deviceProvider.wifiName.isEmpty ? "WiFi已连接" : deviceProvider.wifiName);
+                      showNetInfoBottomSheet(
+                          context,
+                          deviceProvider.apName,
+                          deviceProvider.wifiName.isEmpty
+                              ? "WiFi已连接"
+                              : deviceProvider.wifiName);
                     },
                   );
                 });
@@ -245,7 +255,8 @@ class _DeviceScreenState extends State<DeviceScreen> with RouteAware, WidgetsBin
     });
     final deviceProvider = MultiCastClientProvider.of(context, listen: false);
     deviceProvider.connectivityResultStream.stream.listen((event) {
-      if (event != ConnectivityResult.none && event != ConnectivityResult.mobile) {
+      if (event != ConnectivityResult.none &&
+          event != ConnectivityResult.mobile) {
         _refreshController.callRefresh(overOffset: 6);
       }
     });
@@ -302,7 +313,7 @@ class HistoryItem extends StatelessWidget {
       key: ValueKey(historyItemInfo.id),
       index: index,
       controller: _swipeActionController,
-      backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+      backgroundColor: Theme.of(context).flixColors.background.secondary,
       trailingActions: <SwipeAction>[
         SwipeAction(
             backgroundRadius: 6,
@@ -323,7 +334,9 @@ class HistoryItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: DecoratedBox(
             decoration: FlixDecoration(
-              color: selected ? const Color.fromRGBO(230, 230, 230, 1) : null,
+              color: selected
+                  ? Theme.of(context).flixColors.background.primary
+                  : null,
               borderRadius: selected ? BorderRadius.circular(10) : null,
             ),
             child: Padding(
@@ -336,6 +349,9 @@ class HistoryItem extends StatelessWidget {
                     'assets/images/history.svg',
                     width: 20,
                     height: 20,
+                    colorFilter: ColorFilter.mode(
+                        Theme.of(context).flixColors.text.secondary,
+                        BlendMode.srcIn),
                   ),
                   const SizedBox(
                     width: 6,
@@ -344,9 +360,10 @@ class HistoryItem extends StatelessWidget {
                     child: Text(historyItemInfo.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.black,
+                                color:
+                                    Theme.of(context).flixColors.text.primary,
                                 fontWeight: FontWeight.w500)
                             .fix()),
                   ),
@@ -357,6 +374,9 @@ class HistoryItem extends StatelessWidget {
                     'assets/images/arrow_right.svg',
                     width: 20,
                     height: 20,
+                    colorFilter: ColorFilter.mode(
+                        Theme.of(context).flixColors.text.secondary,
+                        BlendMode.srcIn),
                   ),
                 ],
               ),

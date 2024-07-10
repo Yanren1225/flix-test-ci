@@ -1,3 +1,4 @@
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/presentation/widgets/settings/settings_label.dart';
@@ -31,7 +32,7 @@ class ClickableItem extends StatelessWidget {
         },
         child: DecoratedBox(
             decoration: FlixDecoration(
-                color: Colors.white,
+                color: Theme.of(context).flixColors.background.primary,
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(topRadius ? 14 : 0),
                     topRight: Radius.circular(topRadius ? 14 : 0),
@@ -56,11 +57,16 @@ class ClickableItem extends StatelessWidget {
                               style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
-                                      color: tailColor ?? const Color.fromRGBO(60, 60, 67, 0.6))
+                                      color: tailColor ??
+                                          Theme.of(context)
+                                              .flixColors
+                                              .text
+                                              .secondary)
                                   .fix()),
                         )),
-                    const Icon(Icons.arrow_forward_ios_rounded,
-                        size: 16, color: Color.fromRGBO(60, 60, 67, 0.6))
+                    Icon(Icons.arrow_forward_ios_rounded,
+                        size: 16,
+                        color: Theme.of(context).flixColors.text.secondary)
                   ],
                 ))));
   }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -27,6 +28,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return SettingsScreenState();
@@ -36,7 +39,7 @@ class SettingsScreen extends StatefulWidget {
 class SettingsScreenState extends State<SettingsScreen> {
   var isAutoSave = false;
   var deviceName = DeviceProfileRepo.instance.deviceName;
-  StreamSubscription<String>? deviceNameSubscription = null;
+  StreamSubscription<String>? deviceNameSubscription;
   var isStartUpEnabled = false;
 
   @override
@@ -49,13 +52,13 @@ class SettingsScreenState extends State<SettingsScreen> {
       });
     });
 
-   if(Platform.isLinux || Platform.isWindows || Platform.isMacOS){
-     launchAtStartup.isEnabled().then((value) {
-       setState(() {
-         isStartUpEnabled = value;
-       });
-     });
-   }
+    if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+      launchAtStartup.isEnabled().then((value) {
+        setState(() {
+          isStartUpEnabled = value;
+        });
+      });
+    }
   }
 
   @override
@@ -88,10 +91,14 @@ class SettingsScreenState extends State<SettingsScreen> {
                   label: '本机名称',
                   des: deviceName,
                   onClick: () {
+                    final theme = Theme.of(context);
+                    print(theme.flixColors.text.primary);
                     showCupertinoModalPopup(
                         context: context,
                         builder: (context) {
-                          return NameEditBottomSheet();
+                          final theme = Theme.of(context);
+                          print(theme.flixColors.text.primary);
+                          return const NameEditBottomSheet();
                         });
                   }),
             ),
@@ -154,13 +161,14 @@ class SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: 20, top: 20, right: 20),
+              padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
               child: Text(
                 '接收设置',
                 style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.normal,
-                    color: Color.fromRGBO(60, 60, 67, 0.6)).fix(),
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal,
+                        color: Theme.of(context).flixColors.text.secondary)
+                    .fix(),
               ),
             ),
             Padding(
@@ -219,7 +227,9 @@ class SettingsScreenState extends State<SettingsScreen> {
                           }
                           final newSavedPath = await FilePicker.platform
                               .getDirectoryPath(
-                                  initialDirectory: Platform.isWindows ? null : initialDirectory,
+                                  initialDirectory: Platform.isWindows
+                                      ? null
+                                      : initialDirectory,
                                   lockParentWindow: true);
                           if (newSavedPath != null) {
                             authPersistentAccess(newSavedPath);
@@ -237,13 +247,14 @@ class SettingsScreenState extends State<SettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: 20, top: 20, right: 20),
+                  padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
                   child: Text(
                     '更多',
-                    style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.normal,
-                        color: Color.fromRGBO(60, 60, 67, 0.6)).fix(),
+                    style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.normal,
+                            color: Theme.of(context).flixColors.text.secondary)
+                        .fix(),
                   ),
                 ),
                 Padding(
@@ -273,11 +284,74 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(
-                      left: 16, right: 16, bottom: 16),
-                  child: ClickableItem(label: '清除缓存', topRadius: false, bottomRadius: true, onClick: () {
-                    showConfirmDeleteCacheBottomSheet();
-                  },),
+                  padding: const EdgeInsets.only(left: 16, right: 16),
+                  child: SettingsItemWrapper(
+                      topRadius: false,
+                      bottomRadius: false,
+                      child: StreamBuilder<bool>(
+                        initialData: SettingsRepo.instance.darkFollowSystem,
+                        stream:
+                            SettingsRepo.instance.darkFollowSystemStream.stream,
+                        builder: (context, snapshot) {
+                          return SwitchableItem(
+                            label: "深色模式跟随系统",
+                            checked: snapshot.data ?? false,
+                            onChanged: (value) {
+                              setState(() {
+                                if (value != null) {
+                                  SettingsRepo.instance
+                                      .setDarkFollowSystem(value);
+                                }
+                              });
+                            },
+                          );
+                        },
+                      )),
+                ),
+                StreamBuilder<bool>(
+                    stream: SettingsRepo.instance.darkFollowSystemStream.stream,
+                    initialData: SettingsRepo.instance.darkFollowSystem,
+                    builder: (context, darkFollowSystem) {
+                      return darkFollowSystem.data == true
+                          ? const SizedBox()
+                          : Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 16, right: 16),
+                              child: SettingsItemWrapper(
+                                  topRadius: false,
+                                  bottomRadius: false,
+                                  child: StreamBuilder<bool>(
+                                    initialData: SettingsRepo.instance.darkMode,
+                                    stream: SettingsRepo
+                                        .instance.darkModeStream.stream,
+                                    builder: (context, snapshot) {
+                                      return SwitchableItem(
+                                        label: "深色模式",
+                                        checked: snapshot.data ?? false,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            if (value != null) {
+                                              SettingsRepo.instance
+                                                  .setDarkMode(value);
+                                            }
+                                          });
+                                        },
+                                      );
+                                    },
+                                  )),
+                            );
+                    }),
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                  child: ClickableItem(
+                    label: '清除缓存',
+                    topRadius: false,
+                    bottomRadius: true,
+                    onClick: () {
+                      showConfirmDeleteCacheBottomSheet();
+                    },
+                  ),
                 ),
               ],
             ),
@@ -288,13 +362,16 @@ class SettingsScreenState extends State<SettingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(left: 20, top: 10, right: 20),
+                    padding:
+                        const EdgeInsets.only(left: 20, top: 10, right: 20),
                     child: Text(
                       '开发者',
                       style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.normal,
-                          color: Color.fromRGBO(60, 60, 67, 0.6)).fix(),
+                              fontSize: 12,
+                              fontWeight: FontWeight.normal,
+                              color:
+                                  Theme.of(context).flixColors.text.secondary)
+                          .fix(),
                     ),
                   ),
                   Padding(

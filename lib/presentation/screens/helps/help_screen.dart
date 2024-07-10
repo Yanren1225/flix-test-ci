@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
@@ -18,7 +19,10 @@ class HelpScreen extends StatefulWidget {
   VoidCallback goVersionScreen;
   VoidCallback goDonateCallback;
 
-  HelpScreen({required this.goVersionScreen, required this.goDonateCallback});
+  HelpScreen(
+      {super.key,
+      required this.goVersionScreen,
+      required this.goDonateCallback});
 
   @override
   State<StatefulWidget> createState() => HelpScreenState();
@@ -65,8 +69,8 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                   StreamBuilder<String?>(
                     initialData: VersionChecker.newestVersion,
                     stream: VersionChecker.newestVersionStream.stream,
-                    builder:
-                        (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                    builder: (BuildContext context,
+                        AsyncSnapshot<String?> snapshot) {
                       final tail = snapshot.data?.isNotEmpty == true
                           ? '新版本 v${snapshot.requireData}'
                           : '已是最新版本';
@@ -80,7 +84,8 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                             tail: tail,
                             tailColor: FlixColor.blue,
                             onClick: () {
-                              VersionChecker.checkNewVersion(context, ignorePromptCount: true);
+                              VersionChecker.checkNewVersion(context,
+                                  ignorePromptCount: true);
                             },
                             topRadius: false,
                           ),
@@ -105,14 +110,15 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(
+                    padding: const EdgeInsets.only(
                         left: 20, top: 20, right: 20, bottom: 4),
                     child: Text(
                       '关于连接',
-                      style: const TextStyle(
+                      style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.normal,
-                              color: Color.fromRGBO(60, 60, 67, 0.6))
+                              color:
+                                  Theme.of(context).flixColors.text.secondary)
                           .fix(),
                     ),
                   ),
@@ -128,8 +134,11 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                     child: QA(question: '传输文件会消耗流量吗？', answer: '不会。'),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
-                    child: QA(question: 'Windows端无法接收/发送文件？', answer: trimMultilineString('''
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                    child: QA(
+                        question: 'Windows端无法接收/发送文件？',
+                        answer: trimMultilineString('''
                     请先按照以下步骤，尝试将flix添加到Windows网络防火墙白名单中：
                     1. 搜索「允许应用通过Windows防火墙」
                     2. 点击「更改设置」
@@ -143,13 +152,15 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                   ),
                   const Padding(
                     padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
-                    child: QA(question: 'PC使用网线时无法接收/发送文件？', answer: '请保证PC和其他设备在一个子网下，即它们的直接上层设备是同一个路由器。若PC通过连接的光猫，其他设备通过Wifi连接的路由器是无法正常接收文件的。'),
+                    child: QA(
+                        question: 'PC使用网线时无法接收/发送文件？',
+                        answer:
+                            '请保证PC和其他设备在一个子网下，即它们的直接上层设备是同一个路由器。若PC通过连接的光猫，其他设备通过Wifi连接的路由器是无法正常接收文件的。'),
                   ),
                 ],
               )),
     );
   }
-
 
   String trimMultilineString(String input) {
     // 分割成行
@@ -175,7 +186,8 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
 
     // 去除每行的缩进
     String trimmedString = lines
-        .map((line) => line.length > minIndent ? line.substring(minIndent) : line)
+        .map((line) =>
+            line.length > minIndent ? line.substring(minIndent) : line)
         .join('\n');
 
     return trimmedString;

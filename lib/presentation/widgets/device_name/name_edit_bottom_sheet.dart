@@ -1,3 +1,4 @@
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/device/device_manager.dart';
@@ -8,6 +9,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class NameEditBottomSheet extends StatefulWidget {
+  const NameEditBottomSheet({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return NameEditBottomSheetState();
@@ -38,10 +41,11 @@ class NameEditBottomSheetState extends State<NameEditBottomSheet> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           child: CupertinoTextField(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 15, bottom: 15),
+            padding:
+                const EdgeInsets.only(left: 16, right: 16, top: 15, bottom: 15),
             controller: _controller,
-            style: const TextStyle(
-                    color: Colors.black,
+            style: TextStyle(
+                    color: Theme.of(context).flixColors.text.primary,
                     fontSize: 16,
                     fontWeight: FontWeight.normal)
                 .fix(),
@@ -50,9 +54,9 @@ class NameEditBottomSheetState extends State<NameEditBottomSheet> {
             maxLines: 1,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
-              color: Color.fromRGBO(247, 247, 247, 1),
+              color: Theme.of(context).flixColors.background.secondary,
             ),
-            cursorColor: Colors.black,
+            cursorColor: Theme.of(context).flixColors.text.primary,
             onChanged: (value) {
               name = value;
             },

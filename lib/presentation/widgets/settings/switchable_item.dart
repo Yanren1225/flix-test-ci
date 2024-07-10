@@ -1,4 +1,5 @@
 import 'package:flix/presentation/widgets/settings/settings_label.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -26,12 +27,16 @@ class SwitchableItem extends StatelessWidget {
         Switch(
           value: checked,
           onChanged: onChanged,
-          inactiveTrackColor: const Color.fromRGBO(0, 0, 0, 0.1),
-          inactiveThumbColor: const Color.fromRGBO(0, 0, 0, 0.25),
-          activeTrackColor: const Color.fromRGBO(0, 122, 255, 1),
-          activeColor: Colors.white,
+          inactiveTrackColor:
+              Theme.of(context).flixColors.switchable.inactive.track,
+          inactiveThumbColor:
+              Theme.of(context).flixColors.switchable.inactive.thumb,
+          activeTrackColor:
+              Theme.of(context).flixColors.switchable.active.track,
+          activeColor: Theme.of(context).flixColors.switchable.active.thumb,
           thumbColor: null,
-          trackOutlineColor: MaterialStateColor.resolveWith((states) => Colors.transparent),
+          trackOutlineColor:
+              MaterialStateColor.resolveWith((states) => Colors.transparent),
         )
       ],
     );

@@ -14,6 +14,7 @@ import 'package:flix/presentation/widgets/bubbles/trans_info_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/preview_error_widget.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/platform_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,7 +34,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
     AndropContext andropContext = context.watch();
     ConcertProvider concertProvider = context.watch();
     final sharedImage = entity.shareable as SharedFile;
-    const Color backgroundColor = Colors.white;
+    Color backgroundColor = Theme.of(context).flixColors.background.primary;
     bool clickable = false;
     final Widget Function(int? cacheWidth, int? cacheHeight) content;
     if (entity.isFromMe(andropContext.deviceId)) {
@@ -46,12 +47,12 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
           break;
         case FileState.waitToAccepted:
           clickable = false;
-          content = (_w, _h) => _waitToAcceptedContent(sharedImage, _w, _h);
+          content = (w, h) => _waitToAcceptedContent(sharedImage, w, h);
           break;
         case FileState.inTransit:
           clickable = false;
 
-          content = (_w, _h) => _inTransContent(sharedImage, _w, _h);
+          content = (w, h) => _inTransContent(sharedImage, w, h);
           break;
         case FileState.sendCompleted:
         case FileState.receiveCompleted:
@@ -75,15 +76,15 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
       // 接收
       switch (sharedImage.state) {
         case FileState.waitToAccepted:
-          content = (_w, _h) => InkWell(
+          content = (w, h) => InkWell(
                 onTap: () {
                   _confirmReceive(concertProvider);
                 },
-                child: AcceptMediaWidget(),
+                child: const AcceptMediaWidget(),
               );
         case FileState.inTransit:
         case FileState.sendCompleted:
-          content = (_w, _h) => _inReceiveContent(sharedImage);
+          content = (w, h) => _inReceiveContent(sharedImage);
           break;
         case FileState.receiveCompleted:
         case FileState.completed:
@@ -95,7 +96,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
-          content = (_w, _h) => _receiveErrorContent();
+          content = (w, h) => _receiveErrorContent();
           break;
         default:
           throw StateError('Error receive state: ${sharedImage.state}');
@@ -130,8 +131,8 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
       fit: StackFit.passthrough,
       children: [
         DecoratedBox(
-          decoration: FlixDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
-          child: Center(
+          decoration: FlixDecoration(color: const Color.fromRGBO(0, 0, 0, 0.5)),
+          child: const Center(
             child: SizedBox(
                 width: 18,
                 height: 18,
@@ -156,15 +157,15 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
         cacheWidth: cacheWidth, cacheHeight: cacheHeight);
   }
 
-  Stack _waitToAcceptedContent(SharedFile sharedImage, int? _w, int? _h) {
+  Stack _waitToAcceptedContent(SharedFile sharedImage, int? w, int? h) {
     return Stack(
       fit: StackFit.passthrough,
       children: [
         Container(
-          decoration: FlixDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+          decoration: FlixDecoration(color: const Color.fromRGBO(0, 0, 0, 0.5)),
           width: double.infinity,
           height: double.infinity,
-          child: _normalContent(sharedImage, _w, _h),
+          child: _normalContent(sharedImage, w, h),
         ),
         const Align(
           alignment: Alignment.center,
@@ -174,15 +175,15 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
     );
   }
 
-  Stack _inTransContent(SharedFile sharedImage, int? _w, int? _h) {
+  Stack _inTransContent(SharedFile sharedImage, int? w, int? h) {
     return Stack(
       fit: StackFit.passthrough,
       children: [
         Container(
-          decoration: FlixDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+          decoration: FlixDecoration(color: const Color.fromRGBO(0, 0, 0, 0.5)),
           width: double.infinity,
           height: double.infinity,
-          child: _normalContent(sharedImage, _w, _h),
+          child: _normalContent(sharedImage, w, h),
         ),
         const Align(
           alignment: Alignment.center,
@@ -222,7 +223,8 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
                       max(100, min(constraints.maxWidth - 60, maxPhysicalSize)),
                   minHeight: 100,
                   maxHeight: maxPhysicalSize),
-              child: IntrinsicWidth(child: IntrinsicHeight(child: content(null, null))));
+              child: IntrinsicWidth(
+                  child: IntrinsicHeight(child: content(null, null))));
         } else {
           return _aspectContent(
               maxPhysicalSize, constraints, context, sharedImage, content);
@@ -236,7 +238,7 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
       BoxConstraints constraints,
       BuildContext context,
       SharedFile sharedImage,
-      Widget content(int? cacheWidth, int? cacheHeight)) {
+      Widget Function(int? cacheWidth, int? cacheHeight) content) {
     double width;
     double height;
 
@@ -309,5 +311,5 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
     );
   }
 
-  Widget _imageErrorWidget() => PreviewErrorWidget();
+  Widget _imageErrorWidget() => const PreviewErrorWidget();
 }

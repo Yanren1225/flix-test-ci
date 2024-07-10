@@ -1,3 +1,4 @@
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/utils/void_future_callback.dart';
@@ -21,11 +22,7 @@ class FlixBottomSheet extends StatelessWidget {
       required this.title,
       this.subTitle,
       this.buttonText,
-      this.backgroundGradient = const [
-        Color.fromRGBO(232, 243, 255, 1),
-        Color.fromRGBO(255, 255, 255, 1),
-        Color.fromRGBO(255, 255, 255, 1),
-      ],
+      this.backgroundGradient = const [],
       this.buttonColor = const Color.fromRGBO(0, 122, 255, 1),
       required this.child,
       this.onClick});
@@ -60,8 +57,14 @@ class FlixBottomSheet extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: backgroundGradient,
-                      stops: [0, 0.2043, 1],
+                      colors: backgroundGradient.isEmpty
+                          ? [
+                              Theme.of(context).flixColors.background.primary,
+                              Theme.of(context).flixColors.background.primary,
+                              Theme.of(context).flixColors.background.primary
+                            ]
+                          : backgroundGradient,
+                      stops: const [0, 0.2043, 1],
                     ),
                   ),
                   child: Column(
@@ -77,7 +80,8 @@ class FlixBottomSheet extends StatelessWidget {
                           style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w500,
-                                  color: Colors.black,
+                                  color:
+                                      Theme.of(context).flixColors.text.primary,
                                   decoration: TextDecoration.none)
                               .fix(),
                         ),
@@ -92,7 +96,10 @@ class FlixBottomSheet extends StatelessWidget {
                                     fontSize: 16,
                                     fontWeight: FontWeight.w400,
                                     letterSpacing: 0,
-                                    color: Color.fromRGBO(60, 60, 67, 0.6),
+                                    color: Theme.of(context)
+                                        .flixColors
+                                        .text
+                                        .secondary,
                                     decoration: TextDecoration.none)
                                 .fix(),
                           ),

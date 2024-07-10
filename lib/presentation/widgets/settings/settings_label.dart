@@ -1,3 +1,4 @@
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 
@@ -14,19 +15,19 @@ class SettingsLabel extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.normal,
-                  color: Colors.black)
+                  color: Theme.of(context).flixColors.text.primary)
               .fix(),
         ),
         Visibility(
             visible: des != null,
             child: Text(des ?? "",
-                style: const TextStyle(
+                style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.normal,
-                        color: Color.fromRGBO(60, 60, 67, 0.6))
+                        color: Theme.of(context).flixColors.text.secondary)
                     .fix()))
       ],
     );

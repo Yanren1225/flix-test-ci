@@ -1,5 +1,5 @@
-import 'package:flix/presentation/basic/corner/flix_decoration.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flix/theme/theme_extensions.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class CheckStateBox extends StatelessWidget {
@@ -18,7 +18,7 @@ class CheckStateBox extends StatelessWidget {
       ),
       secondChild: Container(
         decoration: BoxDecoration(
-            color: const Color.fromRGBO(229, 229, 234, 1),
+            color: Theme.of(context).flixColors.text.tertiary,
             borderRadius: BorderRadius.circular(100)),
         width: 20,
         height: 20,

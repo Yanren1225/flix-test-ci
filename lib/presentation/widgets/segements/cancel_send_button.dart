@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -11,13 +12,12 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class CancelSendButtonState extends State<CancelSendButton> {
-
   late String anchorTag;
 
   @override
   void initState() {
     super.initState();
-    anchorTag = Uuid().v4();
+    anchorTag = const Uuid().v4();
   }
 
   @override
@@ -25,7 +25,6 @@ class CancelSendButtonState extends State<CancelSendButton> {
     removeModal(anchorTag);
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +38,9 @@ class CancelSendButtonState extends State<CancelSendButton> {
             iconSize: 20,
             padding: EdgeInsets.zero,
             onPressed: () {
-              if (!context.mounted) {return;}
+              if (!context.mounted) {
+                return;
+              }
               showModal(ModalEntry.anchored(context,
                   tag: 'cancel_anchor_modal',
                   anchorTag: anchorTag,
@@ -50,7 +51,7 @@ class CancelSendButtonState extends State<CancelSendButton> {
                   removeOnPop: true,
                   barrierDismissible: true,
                   child: Material(
-                    color: Colors.white,
+                    color: Theme.of(context).flixColors.background.primary,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14)),
                     child: InkWell(
@@ -59,14 +60,15 @@ class CancelSendButtonState extends State<CancelSendButton> {
                         concertProvider.cancelSend(widget.entity);
                       },
                       child: Padding(
-                        padding:
-                        EdgeInsets.only(left: 20, top: 14, right: 40, bottom: 14),
+                        padding: const EdgeInsets.only(
+                            left: 20, top: 14, right: 40, bottom: 14),
                         child: Text(
                           '取消发送',
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Color.fromRGBO(255, 59, 48, 1)).fix(),
+                          style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color.fromRGBO(255, 59, 48, 1))
+                              .fix(),
                         ),
                       ),
                     ),
@@ -77,18 +79,14 @@ class CancelSendButtonState extends State<CancelSendButton> {
             )),
       ),
     );
-
   }
-
 }
 
-class CancelSendButton extends  StatefulWidget {
+class CancelSendButton extends StatefulWidget {
   final UIBubble entity;
 
-  CancelSendButton({super.key, required this.entity});
+  const CancelSendButton({super.key, required this.entity});
 
   @override
   State<StatefulWidget> createState() => CancelSendButtonState();
-
-
 }
