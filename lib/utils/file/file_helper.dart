@@ -19,6 +19,7 @@ import 'package:share_handler/share_handler.dart';
 import 'package:shared_storage/shared_storage.dart' as shared_storage;
 import 'package:video_player/video_player.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import 'package:path/path.dart' as path_utils;
 
 Future<String> getDefaultDestinationDirectory() async {
   switch (defaultTargetPlatform) {
@@ -113,6 +114,20 @@ extension PlatformFileConvert on PlatformFile {
         mimeType: lookupMimeType(this.name) ?? 'application/octet-stream',
         nameWithSuffix: this.name,
         size: this.size);
+  }
+}
+
+extension FileConvert on File {
+  Future<FileMeta> toFileMeta({DirectoryMeta? parent}) async {
+    await authPersistentAccess(this.path);
+    return FileMeta(
+        resourceId: '',
+        name: path_utils.basename(this.path),
+        path: this.path,
+        mimeType: lookupMimeType(this.path) ?? 'application/octet-stream',
+        nameWithSuffix: path_utils.basename(this.path),
+        size: lengthSync(),
+        parent: parent);
   }
 }
 
@@ -282,6 +297,9 @@ Future<Size?> getHeifImageSize2(String filePath) async {
 }
 
 String mimeIcon(String filePath) {
+  if(filePath == '/') {
+    return "assets/images/ic_dir.svg";
+  }
   // 识别word excel ppt pdf 图片 视频等文件
   final mimeType = lookupMimeType(filePath) ?? "";
   if (mimeType.startsWith('application/vnd.openxmlformats-officedocument')) {
@@ -394,3 +412,5 @@ enum FileType {
   video,
   other;
 }
+
+enum FilePathSaveType { full, relative, none }

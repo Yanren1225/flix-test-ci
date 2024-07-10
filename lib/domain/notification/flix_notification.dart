@@ -194,6 +194,28 @@ class FlixNotification {
     }
   }
 
+  Future<void> showDirectoryNotification(
+      String deviceName, MessageNotification notification) async {
+    if (Platform.isWindows) {
+      // create new NotificationMessage instance with id, title, body, and images
+      _showWindowsNotification("接收到一个新的文件夹", '来自$deviceName', notification);
+    } else {
+      AndroidNotificationDetails androidNotificationDetails =
+          AndroidNotificationDetails('reception', 'reception',
+              channelDescription: '通知新的文件夹',
+              importance: Importance.max,
+              priority: Priority.high,
+              ticker: 'ticker',
+              autoCancel: true,
+              tag: notification.from);
+      NotificationDetails notificationDetails =
+          NotificationDetails(android: androidNotificationDetails);
+      await flutterLocalNotificationsPlugin.show(
+          id++, '接收到一个新的文件夹', '来自$deviceName', notificationDetails,
+          payload: notification.toJson());
+    }
+  }
+
   Future<List<ActiveNotification>> getNotifications() async {
     try {
       return (await flutterLocalNotificationsPlugin.getActiveNotifications());

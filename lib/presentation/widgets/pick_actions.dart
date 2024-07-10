@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:device_apps/device_apps.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/pickable.dart';
+import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/presentation/screens/android_apps_screen.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/actions/progress_action.dart';
@@ -14,6 +16,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import 'package:path/path.dart' as path_utils;
+
+import '../../model/ui_bubble/shared_file.dart';
 
 // 同时发送的数量100左右，但是没有错误信息，失败表现为接收到的文件大小未0
 const MAX_ASSETS = 60;
@@ -35,6 +40,7 @@ class PickActionAreaState extends State<PickActionsArea> {
   bool _isImageLoading = false;
   bool _isVideoLoading = false;
   bool _isFileLoading = false;
+  bool _isDirectoryLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +83,11 @@ class PickActionAreaState extends State<PickActionsArea> {
             showProgress: _isFileLoading,
             icon: 'assets/images/ic_file.svg',
             onTap: _onFileButtonPressed,
+          ),
+          ProgressAction(
+            showProgress: _isDirectoryLoading,
+            icon: 'assets/images/ic_dir_pick.svg',
+            onTap: _onDirectoryButtonPressed,
           ),
         ],
       ),
@@ -220,6 +231,51 @@ class PickActionAreaState extends State<PickActionsArea> {
       }
     } catch (e, stackTrace) {
       talker.error('pick file failed', e, stackTrace);
+    }
+  }
+
+  Future<void> _onDirectoryButtonPressed() async {
+    try {
+      if (mounted) {
+        if (await checkStoragePermission(context,
+            manageExternalStorage: false)) {
+          // if (Platform.isAndroid) {
+          setState(() {
+            _isDirectoryLoading = true;
+          });
+          String? result = await FilePicker.platform.getDirectoryPath(lockParentWindow:true);
+          setState(() {
+            _isDirectoryLoading = false;
+          });
+
+          if (result != null) {
+            var directory = Directory(result);
+            final directoryMeta = DirectoryMeta(
+                name: path_utils.basenameWithoutExtension(directory.path),
+                size: directory.statSync().size,
+                path: directory.path);
+            List<FileSystemEntity> entities =
+                directory.listSync(recursive: true);
+            List<FileMeta> picks = [];
+            int totalSize = 0;
+            for (FileSystemEntity entity in entities) {
+              if (entity is File) {
+                final sf = await entity.toFileMeta(parent: directoryMeta);
+                totalSize += entity.lengthSync();
+                picks.add(sf);
+              }
+            }
+            directoryMeta.size = totalSize;
+            onPicked([
+              PickableDirectory(
+                  content: picks,
+                  meta: directoryMeta)
+            ]);
+          }
+        }
+      }
+    } catch (e, stackTrace) {
+      talker.error('pick directory failed', e, stackTrace);
     }
   }
 }

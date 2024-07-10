@@ -1,17 +1,19 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:drift/drift.dart';
 import 'package:flix/domain/database/convertor/bubble_convertor.dart';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/database/bubble_entity.dart';
+import 'package:flix/model/database/directory_content.dart';
 import 'package:flix/model/database/file_content.dart';
 import 'package:flix/model/database/text_content.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 
 part 'bubbles_dao.g.dart';
 
-@DriftAccessor(tables: [BubbleEntities, TextContents, FileContents])
+@DriftAccessor(tables: [BubbleEntities, TextContents, FileContents, DirectoryContents])
 class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
   BubblesDao(super.db);
 
@@ -23,6 +25,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
               fromDevice: bubble.from,
               toDevice: bubble.to,
               type: bubble.type.index,
+              groupId: Value(bubble.groupId ?? ""),
               time: Value(bubble.time)));
       switch (bubble.type) {
         case BubbleType.Text:
@@ -38,6 +41,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
               FileContentsCompanion.insert(
                   id: fileBubble.id,
                   resourceId: Value(fileBubble.content.meta.resourceId),
+                  groupId: Value(fileBubble.groupId ?? ""),
                   name: fileBubble.content.meta.name,
                   nameWithSuffix: fileBubble.content.meta.nameWithSuffix,
                   mimeType: fileBubble.content.meta.mimeType,
@@ -49,6 +53,15 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
                   width: fileBubble.content.meta.width,
                   height: fileBubble.content.meta.height,
                   waitingForAccept: Value(fileBubble.content.waitingForAccept)));
+        case BubbleType.Directory:
+          final directoryBubble = bubble as PrimitiveDirectoryBubble;
+          return await into(directoryContents)
+              .insertOnConflictUpdate(DirectoryContentsCompanion.insert(
+                  id: directoryBubble.id,
+                  name: directoryBubble.content.meta.name,
+                  state: directoryBubble.content.state.index,
+                  size: directoryBubble.content.meta.size,
+                  path: Value(directoryBubble.content.meta.path)));
         default:
           throw UnimplementedError();
       }
@@ -57,14 +70,17 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
 
   Stream<List<PrimitiveBubble>> watchBubblesByCid(String collebratorId) {
     return (select(bubbleEntities)
-          ..where((tbl) => (tbl.fromDevice.equals(collebratorId) |
-              tbl.toDevice.equals(collebratorId))))
+          ..where((tbl) =>
+              (tbl.fromDevice.equals(collebratorId) |
+                  tbl.toDevice.equals(collebratorId)) &
+              (tbl.groupId.equals("") | tbl.groupId.isNull())))
         .watch()
         .asyncMap((bubbleEntities) async {
       final List<PrimitiveBubble?> primitiveBubbles =
           List.filled(bubbleEntities.length, null);
       final categoriedBubbleEntities =
           <int, List<MapEntry<int, BubbleEntity>>>{};
+
       for (int i = 0; i < bubbleEntities.length; i++) {
         final bubbleEntity = bubbleEntities[i];
         final contentType;
@@ -74,6 +90,8 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
             BubbleType.values[bubbleEntity.type] == BubbleType.Image ||
             BubbleType.values[bubbleEntity.type] == BubbleType.App) {
           contentType = BubbleType.File.index;
+        } else if (BubbleType.values[bubbleEntity.type] == BubbleType.Directory) {
+          contentType = BubbleType.Directory.index;
         } else {
           contentType = BubbleType.Text.index;
         }
@@ -104,6 +122,11 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
                   ..where((tbl) => tbl.id.isIn(ids)))
                 .get();
             break;
+          case BubbleType.Directory:
+            contents = await (select(directoryContents)
+                  ..where((tbl) => tbl.id.isIn(ids)))
+                .get();
+            break;
           default:
             throw UnimplementedError();
         }
@@ -113,7 +136,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
             if (entityWithIndex.value.id == _content.id) {
               final index = entityWithIndex.key;
               final entity = entityWithIndex.value;
-              final item = fromDBEntity(entity, _content);
+              final item = await fromDBEntity(entity, _content);
               primitiveBubbles[index] = item;
             }
           }
@@ -197,6 +220,23 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
       case BubbleType.App:
         return await (select(fileContents)..where((tbl) => tbl.id.equals(id)))
             .getSingleOrNull();
+      case BubbleType.Directory:
+        return await (select(directoryContents)..where((tbl) => tbl.id.equals(id)))
+            .getSingleOrNull();
+      default:
+        throw UnimplementedError();
+    }
+  }
+
+  Future<dynamic> getContentsByGroupId(String groupId, int bubbleType) async {
+    final type = BubbleType.values[bubbleType];
+    switch (type) {
+      case BubbleType.File:
+      case BubbleType.Image:
+      case BubbleType.Video:
+      case BubbleType.App:
+        return await (select(fileContents)
+              ..where((tbl) => tbl.groupId.equals(groupId))).get();
       default:
         throw UnimplementedError();
     }
@@ -207,6 +247,9 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
       await (delete(bubbleEntities)..where((tbl) => tbl.id.equals(id))).go();
       await (delete(textContents)..where((tbl) => tbl.id.equals(id))).go();
       await (delete(fileContents)..where((tbl) => tbl.id.equals(id))).go();
+      // directory
+      await (delete(directoryContents)..where((tbl) => tbl.id.equals(id))).go();
+      await (delete(fileContents)..where((tbl) => tbl.groupId.equals(id))).go();
     });
   }
 
@@ -226,6 +269,9 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
       await (delete(bubbleEntities)..where((tbl) => tbl.fromDevice.equals(deviceId) | tbl.toDevice.equals(deviceId))).go();
       await (delete(textContents)..where((tbl) => tbl.id.isIn(ids))).go();
       await (delete(fileContents)..where((tbl) => tbl.id.isIn(ids))).go();
+      // directory
+      await (delete(directoryContents)..where((tbl) => tbl.id.isIn(ids))).go();
+      await (delete(fileContents)..where((tbl) => tbl.groupId.isIn(ids))).go();
     });
   }
 

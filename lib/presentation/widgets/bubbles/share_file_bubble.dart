@@ -357,10 +357,11 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
         ),
       );
     } else {
-      innerBubble = FileBubbleInteraction(
+      innerBubble = BubbleInteraction(
         key: ValueKey(entity.shareable.id),
         bubble: entity,
-        filePath: sharedFile.content.path ?? '',
+        path: sharedFile.content.path ?? '',
+        child: _innerBubble,
         clickable: clickable,
         child: innerBubble0,
       );

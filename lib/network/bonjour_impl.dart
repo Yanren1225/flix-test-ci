@@ -171,13 +171,8 @@ class BonjourImpl extends MultiCastApi {
           talker.error('mDns discover error: $e', s);
         });
 
-// Start the discovery **after** listening to discovery events :
         await discovery?.start();
 
-// ...
-
-// Then if you want to stop the broadcast :
-//     await broadcast?.stop();
       });
     } catch (e, stackTrace) {
       talker.error('mDns startScan failed', e, stackTrace);

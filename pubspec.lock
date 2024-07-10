@@ -131,12 +131,13 @@ packages:
     source: hosted
     version: "5.1.2"
   bonsoir_windows:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: bonsoir_windows
-      sha256: abbc90b73ac39e823b0c127da43b91d8906dcc530fc0cec4e169cf0d8c4404b1
-      url: "https://pub.flutter-io.cn"
-    source: hosted
+      path: "packages/bonsoir_windows"
+      ref: a563575f0b85617a003a154b67abb30d2daca2c8
+      resolved-ref: a563575f0b85617a003a154b67abb30d2daca2c8
+      url: "https://github.com/heiha100/Bonsoir"
+    source: git
     version: "5.1.4"
   boolean_selector:
     dependency: transitive
@@ -1017,8 +1018,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "91799664c2b21e1579b9d0e21df5ea505b50e9df"
-      resolved-ref: "91799664c2b21e1579b9d0e21df5ea505b50e9df"
+      ref: "0d8cf85816d53df6207e9b5aceb6955a5122e904"
+      resolved-ref: "0d8cf85816d53df6207e9b5aceb6955a5122e904"
       url: "https://github.com/heiha100/image_gallery_saver"
     source: git
     version: "2.0.3"

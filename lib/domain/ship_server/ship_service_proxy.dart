@@ -12,6 +12,9 @@ import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/utils/bubble_convert.dart';
+import 'package:flix/utils/compat/CompatUtil.dart';
+import 'package:flix/utils/file/file_helper.dart';
+import 'package:flutter/services.dart';
 
 class ShipServiceProxy extends ApInterface {
   final syncTasks = <String, Completer>{};
@@ -50,9 +53,9 @@ class ShipServiceProxy extends ApInterface {
     _shipService.send(primitiveBubble);
   }
 
-  Future<void> confirmReceiveFile(String from, String bubbleId) async {
+  Future<void> confirmReceive(String from, String bubbleId) async {
     await _awaitServerReady();
-    _shipService.confirmReceiveFile(from, bubbleId);
+    _shipService.confirmReceiveBubble(from, bubbleId);
   }
 
   Future<int> getPort() async {
@@ -62,18 +65,14 @@ class ShipServiceProxy extends ApInterface {
 
   Future<void> cancelReceive(UIBubble uiBubble) async {
     final bubble = fromUIBubble(uiBubble) as PrimitiveFileBubble;
-    await updateFileShareState(
+    await updateBubbleShareState(
         BubblePool.instance, bubble.id, FileState.cancelled,
         create: bubble);
   }
 
   Future<void> resend(UIBubble uiBubble) async {
     await _awaitServerReady();
-    var primitiveFileBubbleJson =
-        jsonEncode(fromUIBubble(uiBubble).toJson(full: true));
-    final primitiveFileBubble =
-        PrimitiveFileBubble.fromJson(jsonDecode(primitiveFileBubbleJson));
-    _shipService.resend(primitiveFileBubble);
+    _shipService.resend(fromUIBubble(uiBubble));
   }
 
   Future<bool> isServerLiving() async {
@@ -88,11 +87,7 @@ class ShipServiceProxy extends ApInterface {
 
   Future<void> cancelSend(UIBubble uiBubble) async {
     await _awaitServerReady();
-    var primitiveFileBubbleJson =
-        jsonEncode(fromUIBubble(uiBubble).toJson(full: true));
-    final primitiveFileBubble =
-        PrimitiveFileBubble.fromJson(jsonDecode(primitiveFileBubbleJson));
-    _shipService.cancelSend(primitiveFileBubble);
+    _shipService.cancelSend(fromUIBubble(uiBubble));
   }
 
   void receivePong(Pong pong) {
