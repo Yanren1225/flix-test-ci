@@ -1,13 +1,9 @@
-import 'dart:math';
-
-import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
-import 'package:flix/presentation/basic/corner/flix_decoration.dart';
-import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
+import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/basic/progressbar/linear/animated_progress_bar.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/bubbles/base_file_bubble.dart';
@@ -15,12 +11,12 @@ import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/receive_button.dart';
 import 'package:flix/presentation/widgets/segements/resend_button.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/file/size_utils.dart';
 import 'package:flix/utils/file/speed_utils.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gradient_txt/gradient_text.dart';
 import 'package:provider/provider.dart';
@@ -306,8 +302,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
                               )
                             : GradientText(
                                 text: stateDes ?? '',
-                                gradient: LinearGradient(
-                                    colors: stateDesGradient ?? []),
+                                gradient: LinearGradient(colors: stateDesGradient),
                                 style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w400,
@@ -361,7 +356,6 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
         key: ValueKey(entity.shareable.id),
         bubble: entity,
         path: sharedFile.content.path ?? '',
-        child: _innerBubble,
         clickable: clickable,
         child: innerBubble0,
       );
