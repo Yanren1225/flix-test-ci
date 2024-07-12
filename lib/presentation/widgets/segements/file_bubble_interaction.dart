@@ -9,6 +9,7 @@ import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/presentation/basic/flix_thumbnail_provider.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bottom_sheet.dart';
+import 'package:flix/presentation/widgets/bubbles/share_dir_detail_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/segements/bubble_context_menu.dart';
 import 'package:flix/utils/android/android_utils.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
@@ -115,6 +116,14 @@ class BubbleInteractionState extends State<BubbleInteraction>
                     _openFileDir();
                   }
                 });
+              } else if (sharedRes is SharedDirectory) {
+                if (sharedRes.state == FileState.inTransit ||
+                    sharedRes.state == FileState.waitToAccepted) {
+                  showDirectoryDetailBottomSheet(
+                      context, sharedRes.id, sharedRes.meta.name);
+                } else {
+                  _openDirectoryDir();
+                }
               } else {
                 _openDirectoryDir();
               }

@@ -158,7 +158,7 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
           break;
         case FileState.inTransit:
         case FileState.sendCompleted:
-          clickable = false;
+          clickable = true;
           showProgressBar = true;
           progressBarColors = [
             Color.fromRGBO(0, 122, 255, 1),
