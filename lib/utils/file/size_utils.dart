@@ -1,4 +1,3 @@
-import 'package:mime/mime.dart';
 
 extension SizeUtils on int {
   String formateBinarySize() {

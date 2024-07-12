@@ -1,13 +1,11 @@
-import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/widgets/devices/device_item.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/meida/media_utils.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class DeviceList extends StatefulWidget {
   const DeviceList(
@@ -27,10 +25,10 @@ class DeviceList extends StatefulWidget {
   final Map<String, int> badges;
 
   @override
-  _DeviceListState createState() => _DeviceListState();
+  DeviceListState createState() => DeviceListState();
 }
 
-class _DeviceListState extends State<DeviceList> {
+class DeviceListState extends State<DeviceList> {
   List<DeviceInfo> get devices => widget.devices;
 
   void Function(DeviceInfo deviceInfo, bool isHistory) get onDeviceSelected =>

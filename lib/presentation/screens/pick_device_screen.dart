@@ -1,9 +1,6 @@
-import 'dart:developer';
 
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
@@ -16,6 +13,7 @@ import 'package:flix/presentation/widgets/devices/device_list.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/meida/media_utils.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -44,8 +42,7 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 247, 247, 247),
         title: Text('选择一个设备',
-            style: TextStyle(
-                color: Colors.black,
+            style: const TextStyle(color: Colors.black,
                 fontSize: 14,
                 fontWeight: FontWeight.w500).fix()),
       ),
@@ -56,8 +53,8 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
             devices: devices,
             onDeviceSelected: (deviceInfo, _) => _onDeviceSelected(deviceInfo),
             showHistory: false,
-            history: [],
-          )],
+              history: const [],
+            )],
         ),
       ),
     );
@@ -68,7 +65,7 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
     for (final bubble in bubbles) {
       shipService.send(bubble);
     }
-    if (context.mounted) {
+    if (mounted) {
       if (isOverMediumWidth(context)) {
         Navigator.pop(context, deviceInfo);
       } else {

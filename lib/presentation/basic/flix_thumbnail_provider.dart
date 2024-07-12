@@ -1,16 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
-import 'dart:ui';
 
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:simple_native_image_compress/simple_native_image_compress.dart'
-    as nativeCompress;
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:simple_native_image_compress/simple_native_image_compress.dart' as native_compress;
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 final _providerLocks = <FlixThumbnailProvider, Completer<Codec>>{};
 final photoManagerPlugin = PhotoManagerPlugin();
@@ -24,7 +22,7 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
   final int preferWidth;
   final int preferHeight;
 
-  static final compress = nativeCompress.SimpleNativeImageCompress();
+  static final compress = native_compress.SimpleNativeImageCompress();
 
   FlixThumbnailProvider(
       {required this.id,
@@ -71,11 +69,11 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
     if (Platform.isWindows || Platform.isLinux) {
       final bytes = await compress.contain(
           filePath: key.resourcePath!,
-          compressFormat: nativeCompress.CompressFormat.Jpeg,
+          compressFormat: native_compress.CompressFormat.Jpeg,
           quality: 90,
           maxWidth: key.preferWidth,
           maxHeight: key.preferHeight,
-          samplingFilter: nativeCompress.FilterType.Lanczos3);
+          samplingFilter: native_compress.FilterType.Lanczos3);
 
       final thumbnailFile = File(await _getThumbnailCachePath(key));
       if (!(await thumbnailFile.exists())) {
@@ -176,7 +174,7 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
         format: ThumbnailFormat.jpeg,
       );
     } else {
-      option = ThumbnailOption(
+      option = const ThumbnailOption(
         size: pmDefaultGridThumbnailSize,
         format: ThumbnailFormat.jpeg,
         frame: 0,

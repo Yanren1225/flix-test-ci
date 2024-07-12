@@ -2,9 +2,7 @@ import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/widgets/bubbles/bubble_widget.dart';
 import 'package:flix/presentation/widgets/rounded_check_box.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class BubbleList extends StatefulWidget {

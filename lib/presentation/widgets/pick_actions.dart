@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:device_apps/device_apps.dart';
 import 'package:file_picker/file_picker.dart';
@@ -15,10 +14,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'package:path/path.dart' as path_utils;
+import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
-import '../../model/ui_bubble/shared_file.dart';
 
 // 同时发送的数量100左右，但是没有错误信息，失败表现为接收到的文件大小未0
 const MAX_ASSETS = 60;

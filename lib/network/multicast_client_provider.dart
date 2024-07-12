@@ -27,7 +27,7 @@ class MultiCastClientProvider extends ChangeNotifier {
       .toSet();
   StreamSubscription? connectivitySubscription;
 
-  String? _selectedDeviceId = null;
+  String? _selectedDeviceId;
 
   String? get selectedDeviceId => _selectedDeviceId;
 
@@ -51,7 +51,7 @@ class MultiCastClientProvider extends ChangeNotifier {
           .map((event) => event?.ssid);
 
   WifiOrApName get wifiOrApName {
-    if (apName?.isNotEmpty == true) {
+    if (apName.isNotEmpty == true) {
       return WifiOrApName(isAp: true, name: apName);
     } else {
       return WifiOrApName(isAp: false, name: wifiName);
@@ -61,7 +61,7 @@ class MultiCastClientProvider extends ChangeNotifier {
   Stream<WifiOrApName> get wifiOrApNameStream {
     return combineStreams([
       wifiNameStream.map((event) {
-        if (apName == null || apName?.isEmpty == true) {
+        if (apName.isEmpty == true) {
           return WifiOrApName(isAp: false, name: event);
         } else {
           return WifiOrApName(isAp: true, name: apName);

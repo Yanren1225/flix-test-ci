@@ -1,7 +1,6 @@
 import 'package:extended_text/extended_text.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
-import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/basic/progressbar/linear/animated_progress_bar.dart';
@@ -56,12 +55,12 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
 
     var clickable = false;
     Widget stateIcon = const SizedBox(width: 20, height: 20);
-    final showProgressBar;
-    final progressBarColors;
+    final bool showProgressBar;
+    final List<Color> progressBarColors;
     final size = sharedDirectory.meta.size.formateBinarySize();
-    String? stateDes = null;
-    Color? stateDesColor = null;
-    List<Color>? stateDesGradient = null;
+    String? stateDes;
+    Color? stateDesColor;
+    List<Color>? stateDesGradient;
     if (entity.isFromMe(andropContext.deviceId)) {
       switch (sharedDirectory.state) {
         case FileState.picked:
@@ -147,8 +146,8 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
         case FileState.waitToAccepted:
           showProgressBar = false;
           progressBarColors = [
-            Color.fromRGBO(0, 122, 255, 1),
-            Color.fromRGBO(81, 181, 252, 1)
+            const Color.fromRGBO(0, 122, 255, 1),
+            const Color.fromRGBO(81, 181, 252, 1)
           ];
           stateDes = '点击确认接收';
           stateDesColor = const Color.fromRGBO(60, 60, 67, 0.6);
@@ -161,14 +160,14 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
           clickable = true;
           showProgressBar = true;
           progressBarColors = [
-            Color.fromRGBO(0, 122, 255, 1),
-            Color.fromRGBO(81, 181, 252, 1)
+            const Color.fromRGBO(0, 122, 255, 1),
+            const Color.fromRGBO(81, 181, 252, 1)
           ];
           stateDes = '${sharedDirectory.speed.formatSpeed()} '
               '(${sharedDirectory.receiveNum}/${sharedDirectory.sendNum})';
           stateDesGradient = [
-            Color.fromRGBO(0, 122, 255, 1),
-            Color.fromRGBO(81, 181, 252, 1)
+            const Color.fromRGBO(0, 122, 255, 1),
+            const Color.fromRGBO(81, 181, 252, 1)
           ];
           break;
         case FileState.receiveCompleted:
@@ -176,8 +175,8 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
           clickable = true;
           showProgressBar = false;
           progressBarColors = [
-            Color.fromRGBO(0, 122, 255, 1),
-            Color.fromRGBO(81, 181, 252, 1)
+            const Color.fromRGBO(0, 122, 255, 1),
+            const Color.fromRGBO(81, 181, 252, 1)
           ];
           stateDes = '已下载';
           stateDesColor = const Color.fromRGBO(26, 189, 91, 1);
@@ -216,7 +215,7 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
       }
     }
 
-    final _innerBubble = Container(
+    final innerBubble0 = Container(
       decoration: const BoxDecoration(color: backgroundColor),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -302,8 +301,7 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
                               )
                             : GradientText(
                                 text: stateDes ?? '',
-                                gradient: LinearGradient(
-                                    colors: stateDesGradient ?? []),
+                                gradient: LinearGradient(colors: stateDesGradient),
                                 style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w400,
@@ -329,7 +327,7 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
                   secondChild: const SizedBox(
                     height: 6,
                   ),
-                  duration: Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 200),
                 )
               ],
             ),
@@ -348,7 +346,7 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
           onTap: () {
             _confirmReceive(concertProvider);
           },
-          child: _innerBubble,
+          child: innerBubble0,
         ),
       );
     } else {
@@ -356,8 +354,8 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
         key: ValueKey(entity.shareable.id),
         bubble: entity,
         path: sharedDirectory.meta.path ?? '',
-        child: _innerBubble,
         clickable: clickable,
+        child: innerBubble0,
       );
     }
 

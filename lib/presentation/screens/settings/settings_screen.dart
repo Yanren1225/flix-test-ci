@@ -1,16 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/utils/drawin_file_security_extension.dart';
-import 'package:flix/utils/text/text_extension.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
-
 import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/domain/settings/SettingsRepo.dart';
+import 'package:flix/domain/settings/settings_repo.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/screens/settings/confirm_clean_cache_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/device_name/name_edit_bottom_sheet.dart';
@@ -18,13 +12,15 @@ import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffol
 import 'package:flix/presentation/widgets/settings/clickable_item.dart';
 import 'package:flix/presentation/widgets/settings/settings_item_wrapper.dart';
 import 'package:flix/presentation/widgets/settings/switchable_item.dart';
+import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/platform_utils.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 class SettingsScreen extends StatefulWidget {

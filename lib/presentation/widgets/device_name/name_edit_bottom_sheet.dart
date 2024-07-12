@@ -1,10 +1,7 @@
-import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/presentation/basic/corner/flix_decoration.dart';
-import 'package:flix/utils/text/text_extension.dart';
-import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
-
 import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
+import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

@@ -45,9 +45,9 @@ class PlatformStateDispatcher {
   }
 
   void dispatch(PlatformState state) {
-    _listeners.forEach((listener) {
+    for (var listener in _listeners) {
       listener.onPlatformStateChanged(state);
-    });
+    }
   }
 }
 

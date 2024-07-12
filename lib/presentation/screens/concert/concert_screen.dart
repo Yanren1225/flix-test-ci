@@ -1,24 +1,19 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flix/theme/theme_extensions.dart';
 import 'package:figma_squircle/figma_squircle.dart';
-import 'package:flix/domain/settings/SettingsRepo.dart';
-import 'package:flix/presentation/basic/corner/flix_decoration.dart';
-import 'package:flix/utils/drawin_file_security_extension.dart';
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
-import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/domain/notification/BadgeService.dart';
-import 'package:flix/domain/settings/SettingsRepo.dart';
+import 'package:flix/domain/notification/badge_service.dart';
+import 'package:flix/domain/settings/settings_repo.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/pickable.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shareable.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/screens/concert/bubble_list.dart';
 import 'package:flix/presentation/screens/concert/files_confirm_bottom_sheet.dart';
@@ -26,6 +21,7 @@ import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bot
 import 'package:flix/presentation/widgets/bubble_context_menu/multi_select_actions.dart';
 import 'package:flix/presentation/widgets/pick_actions.dart';
 import 'package:flix/presentation/widgets/segements/navigation_appbar_scaffold.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/text/text_extension.dart';
@@ -303,17 +299,12 @@ class InputArea extends StatefulWidget {
   const InputArea({super.key, required this.onSubmit});
 
   @override
-  State<StatefulWidget> createState() {
-    return InputAreaState(onSubmit: onSubmit);
-  }
+  State<StatefulWidget> createState() => InputAreaState();
 }
 
 class InputAreaState extends State<InputArea> {
-  final OnSubmit onSubmit;
   String inputContent = '';
   final textEditController = TextEditingController();
-
-  InputAreaState({required this.onSubmit});
 
   void input(String content) {
     setState(() {
@@ -322,34 +313,31 @@ class InputAreaState extends State<InputArea> {
   }
 
   void submitText(String content) {
-    onSubmit(
-        SharedText(id: const Uuid().v4(), content: content), BubbleType.Text);
+    widget.onSubmit(SharedText(id: const Uuid().v4(), content: content), BubbleType.Text);
   }
 
   void submitImage(FileMeta meta) {
-    onSubmit(
-        SharedFile(
+    widget.onSubmit(SharedFile(
             id: const Uuid().v4(), state: FileState.picked, content: meta),
         BubbleType.Image);
   }
 
   void submitVideo(FileMeta meta) {
-    onSubmit(
-        SharedFile(
+    widget.onSubmit(SharedFile(
             id: const Uuid().v4(), state: FileState.picked, content: meta),
         BubbleType.Video);
   }
 
   void submitApp(FileMeta meta) {
     // onSubmit(SharedApp(id: Uuid().v4(), content: app), BubbleType.App);
-    onSubmit(
+    widget.onSubmit(
         SharedFile(
             id: const Uuid().v4(), state: FileState.picked, content: meta),
         BubbleType.App);
   }
 
   void submitFile(FileMeta meta) async {
-    onSubmit(
+    widget.onSubmit(
         SharedFile(
             id: const Uuid().v4(), state: FileState.picked, content: meta),
         BubbleType.File);
@@ -357,7 +345,7 @@ class InputAreaState extends State<InputArea> {
 
   void submitDirectory(DirectoryMeta meta, List<FileMeta> files) async {
     final directoryId = const Uuid().v4();
-    onSubmit(
+    widget.onSubmit(
         SharedDirectory(
             id: directoryId,
             state: FileState.picked,
@@ -565,11 +553,10 @@ class InputAreaState extends State<InputArea> {
                         // padding: const EdgeInsets.all(9.0),
                         iconSize: 22,
                         style: ButtonStyle(
-                            backgroundColor: MaterialStateColor.resolveWith(
+                            backgroundColor: WidgetStateColor.resolveWith(
                                 (states) =>
                                     const Color.fromRGBO(0, 122, 255, 1)),
-                            shape: const MaterialStatePropertyAll<
-                                SmoothRectangleBorder>(SmoothRectangleBorder(
+                            shape: const WidgetStatePropertyAll<SmoothRectangleBorder>(SmoothRectangleBorder(
                               borderRadius: SmoothBorderRadius.all(SmoothRadius(
                                 cornerRadius: 10,
                                 cornerSmoothing: 0.6,

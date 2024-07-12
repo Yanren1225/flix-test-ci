@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/device/ap_interface.dart';
@@ -12,9 +11,6 @@ import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/utils/bubble_convert.dart';
-import 'package:flix/utils/compat/CompatUtil.dart';
-import 'package:flix/utils/file/file_helper.dart';
-import 'package:flutter/services.dart';
 
 class ShipServiceProxy extends ApInterface {
   final syncTasks = <String, Completer>{};

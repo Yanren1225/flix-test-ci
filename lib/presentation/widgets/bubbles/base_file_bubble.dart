@@ -27,7 +27,7 @@ abstract class BaseFileBubbleState<T extends BaseFileBubble> extends State<T> {
       sharedFile.content.startAccessPath().then((path) {
         Future.delayed(Duration.zero, () {
           if (mounted) {
-            if (path != null && path.isNotEmpty && path != _tmpPath && path != sharedFile.content.path) {
+            if (path.isNotEmpty && path != _tmpPath && path != sharedFile.content.path) {
               talker.debug('old path: ${sharedFile.content.path}, new path: $path');
               _tmpPath = path;
               setState(() {

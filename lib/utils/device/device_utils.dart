@@ -9,7 +9,7 @@ extension DeviceUtils on DeviceModal {
   DeviceInfo toDeviceInfo() {
     final int type;
     final String icon;
-    switch (this.deviceType) {
+    switch (deviceType) {
       case null:
         type = 1;
         icon = 'pc.webp';
@@ -41,12 +41,12 @@ extension DeviceUtils on DeviceModal {
     }
 
     final String name;
-    if (this.alias.isNotEmpty) {
-      name = this.alias;
+    if (alias.isNotEmpty) {
+      name = alias;
     } else {
-      name = this.deviceModel ?? "Unknown";
+      name = deviceModel ?? "Unknown";
     }
 
-    return DeviceInfo(this.fingerprint, type, name, icon);
+    return DeviceInfo(fingerprint, type, name, icon);
   }
 }

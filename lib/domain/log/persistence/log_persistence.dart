@@ -3,7 +3,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:ui';
 
-import 'package:flix/domain/lifecycle/AppLifecycle.dart';
+import 'package:flix/domain/lifecycle/app_lifecycle.dart';
 import 'package:flix/domain/log/persistence/partition_log_file.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -28,23 +28,19 @@ class LogPersistence extends LifecycleListener {
     buffer.write(message);
   }
 
-  /**
-   * Flush the buffer to the log file
-   */
+  /// Flush the buffer to the log file
   Future<void> flush() async {
     await _batchWrite();
   }
 
   Future<void> _batchWrite() async {
     if (buffer.isNotEmpty) {
-      final _buffer = buffer.toString();
+      final bufferStr = buffer.toString();
       buffer.clear();
       await _prepareLogFile();
-      _logFile?.write(_buffer);
-      buffer.clear();
-    } else {
-      buffer.clear();
+      _logFile?.write(bufferStr);
     }
+    buffer.clear();
   }
 
   // android: /data/user/0/com.ifreedomer.flix/files

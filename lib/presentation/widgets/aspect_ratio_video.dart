@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flix/domain/log/flix_log.dart';
@@ -33,10 +32,10 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
     if (!mounted) {
       return;
     }
-    if (initialized != controller!.value.isInitialized) {
-      initialized = controller!.value.isInitialized;
+    if (initialized != controller.value.isInitialized) {
+      initialized = controller.value.isInitialized;
       setState(() {});
-    } else if (controller!.value.hasError) {
+    } else if (controller.value.hasError) {
       setState(() {
         isError = true;
       });
@@ -48,21 +47,21 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
     super.initState();
     isError = false;
     controller = VideoPlayerController.file(File(widget.videoPath));
-    controller?.setVolume(0);
-    controller!.addListener(_onVideoControllerUpdate);
-    controller?.initialize().catchError((e) {
+    controller.setVolume(0);
+    controller.addListener(_onVideoControllerUpdate);
+    controller.initialize().catchError((e) {
       talker.error('init video player error: ', e);
       setState(() {
         isError = true;
       });
     });
-    controller?.setLooping(false);
+    controller.setLooping(false);
   }
 
   @override
   void dispose() {
-    controller?.removeListener(_onVideoControllerUpdate);
-    controller?.dispose();
+    controller.removeListener(_onVideoControllerUpdate);
+    controller.dispose();
     super.dispose();
   }
 
@@ -89,8 +88,8 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
           children: [
             Center(
               child: AspectRatio(
-                aspectRatio: controller!.value.aspectRatio,
-                child: VideoPlayer(controller!),
+                aspectRatio: controller.value.aspectRatio,
+                child: VideoPlayer(controller),
               ),
             ),
             Align(

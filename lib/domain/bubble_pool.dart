@@ -20,7 +20,7 @@ class BubblePool {
   late AppDatabase _appDatabase;
 
   void init(AppDatabase appDatabase) {
-    this._appDatabase = appDatabase;
+    _appDatabase = appDatabase;
   }
 
   Future<void> add(PrimitiveBubble bubble) async {
@@ -39,11 +39,8 @@ class BubblePool {
     _broadcast.add(bubble);
   }
 
-  StreamSubscription<PrimitiveBubble> listen(
-      void onData(PrimitiveBubble bubble)?,
-      {Function? onError,
-      void onDone()?,
-      bool? cancelOnError}) {
+  StreamSubscription<PrimitiveBubble> listen(void Function(PrimitiveBubble bubble)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
     if (_buffer != null) {
       onData?.call(_buffer!);
     }

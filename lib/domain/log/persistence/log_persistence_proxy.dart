@@ -3,7 +3,7 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:flix/domain/isolate/isolate_communication.dart';
-import 'package:flix/domain/lifecycle/AppLifecycle.dart';
+import 'package:flix/domain/lifecycle/app_lifecycle.dart';
 import 'package:flix/domain/log/persistence/log_persistence.dart';
 import 'package:flix/model/isolate/isolate_command.dart';
 import 'package:flutter/services.dart';
@@ -11,16 +11,14 @@ import 'package:flutter/services.dart';
 class LogPersistenceProxy extends LifecycleListener {
   late SendPort _sender;
   final ReceivePort _receiver = ReceivePort();
-  Completer<void> _initWait = Completer();
+  final Completer<void> _initWait = Completer();
   bool? _isInitSuccess = false;
   final syncTasks = <String, Completer>{};
 
-  /**
-   * 存放未初始化完成前写入的日志
-   */
+  /// 存放未初始化完成前写入的日志
   StringBuffer? _buffer;
 
-  Future<void> init({SendPort? sender = null}) async {
+  Future<void> init({SendPort? sender}) async {
     _receiver.listen(_receiveMessageFromChild);
     if (sender == null) {
       RootIsolateToken? token = RootIsolateToken.instance;
@@ -58,9 +56,7 @@ class LogPersistenceProxy extends LifecycleListener {
       _flushBuffer();
       _sender.send(message);
     } else {
-      if (_buffer == null) {
-        _buffer = StringBuffer();
-      }
+      _buffer ??= StringBuffer();
       _buffer?.write(message);
     }
   }
@@ -118,11 +114,11 @@ class LogPersistenceBridge {
   final LogPersistence _logPersistence = LogPersistence();
   late SendPort _sendPort;
 
-  LogPersistenceBridge(SendPort _sendPort) {
-    this._sendPort = _sendPort;
-    final ReceivePort _receivePort = ReceivePort();
-    _receivePort.listen(_receiveMessage);
-    _sendPort.send(_receivePort.sendPort);
+  LogPersistenceBridge(SendPort sendPort) {
+    _sendPort = sendPort;
+    final ReceivePort receivePort = ReceivePort();
+    receivePort.listen(_receiveMessage);
+    sendPort.send(receivePort.sendPort);
   }
 
   void _receiveMessage(var message) {

@@ -13,7 +13,7 @@ PrimitiveBubble fromUIBubble(UIBubble bubbleEntity) {
           to: bubbleEntity.to,
           type: BubbleType.Text,
           content: sharedText.content,
-          time: bubbleEntity.time!);
+          time: bubbleEntity.time);
     case BubbleType.Image:
     case BubbleType.Video:
     case BubbleType.File:
@@ -24,7 +24,7 @@ PrimitiveBubble fromUIBubble(UIBubble bubbleEntity) {
           from: bubbleEntity.from,
           to: bubbleEntity.to,
           type: bubbleEntity.type,
-          time: bubbleEntity.time!,
+          time: bubbleEntity.time,
           groupId: sharedFile.groupId,
           content: FileTransfer(
               meta: sharedFile.content,

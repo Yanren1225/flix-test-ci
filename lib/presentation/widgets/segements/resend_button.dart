@@ -1,9 +1,8 @@
-import 'dart:developer';
 
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modals/modals.dart';
@@ -29,7 +28,7 @@ class _ResendButtonState extends State<ResendButton> {
   @override
   void initState() {
     super.initState();
-    anchorTag = Uuid().v4();
+    anchorTag = const Uuid().v4();
   }
 
   @override
@@ -73,9 +72,8 @@ class _ResendButtonState extends State<ResendButton> {
                       concertProvider.resend(widget.entity);
                     },
                     child: Padding(
-                      padding:
-                      EdgeInsets.only(left: 20, top: 14, right: 40, bottom: 14),
-                      child: Text(
+                      padding: const EdgeInsets.only(left: 20, top: 14, right: 40, bottom: 14),
+                        child: Text(
                           '重新发送',
                           style: const TextStyle(
                           fontSize: 16,

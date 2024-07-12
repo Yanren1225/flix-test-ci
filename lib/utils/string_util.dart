@@ -6,7 +6,7 @@ extension StringExtensions on String {
 
   // 一个忽略大小写移除子字符串的方法
   String removeSubstringIgnoreCase(String toRemove) {
-    String lowerOriginal = this.toLowerCase();
+    String lowerOriginal = toLowerCase();
     String lowerToRemove = toRemove.toLowerCase();
 
     String result = this;

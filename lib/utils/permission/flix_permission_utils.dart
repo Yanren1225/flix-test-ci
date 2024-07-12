@@ -6,7 +6,6 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/permission/permission_bottom_sheet.dart';
 import 'package:flix/utils/permission/flix_permission_tape.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -155,9 +154,7 @@ class FlixPermissionUtils {
         context, permissions, title, subTitle);
   }
 
-  static Future<bool> _checkNecessaryPermissions(BuildContext? context,
-      List<Permission> permissions, String title, String subTitle,
-      {int requestCount = 0}) async {
+  static Future<bool> _checkNecessaryPermissions(BuildContext? context, List<Permission> permissions, String title, String subTitle) async {
     if (Platform.isAndroid || Platform.isIOS || Platform.isWindows) {
       try {
         bool isGranted = await isAllGranted(permissions);
@@ -200,7 +197,7 @@ class FlixPermissionUtils {
       String title, String subTitle, Future<void> Function() onConfirm) async {
     await showCupertinoModalPopup(
         context: context,
-        builder: (_context) {
+        builder: (context) {
           return PermissionBottomSheet(
               title: title,
               subTitle: subTitle,

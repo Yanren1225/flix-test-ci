@@ -8,7 +8,7 @@ class BufferBroadcast<E> {
   final _broadcast = StreamController<E>.broadcast();
 
   BufferBroadcast([Future<E> Function()? init]) {
-    init?.call()?.then((value) => add(value));
+    init?.call().then((value) => add(value));
   }
 
   void add(E e) {
@@ -16,10 +16,10 @@ class BufferBroadcast<E> {
     _broadcast.add(e);
   }
 
-  StreamSubscription<E> listen(void onData(E e)?,
-      {Function? onError, void onDone()?, bool? cancelOnError}) {
+  StreamSubscription<E> listen(void Function(E e)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
     if (_buffer != null) {
-      onData?.call(_buffer!);
+      onData?.call(_buffer as E);
     }
     return _broadcast.stream.listen((e) => onData?.call(e), onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }

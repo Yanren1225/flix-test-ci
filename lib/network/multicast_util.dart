@@ -98,7 +98,7 @@ class MultiCastUtil {
         return;
       }
       needPong = true;
-    } on MapperException catch (e) {
+    } on MapperException {
       final pong = Pong.fromJson(message);
       if (MultiCastUtil.isFromSelf(pong.from.fingerprint)) {
         return;

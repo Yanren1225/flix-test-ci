@@ -5,9 +5,7 @@ import 'package:flix/presentation/screens/hotpots/hotpots_scanner_screen.dart';
 import 'package:flix/presentation/screens/hotpots/hotspot_screen.dart';
 import 'package:flix/presentation/widgets/basic/animatable_pop_menu.dart';
 import 'package:flix/presentation/widgets/menu/device_pair_menu_item.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:modals/modals.dart';
 
 void showDevicePairMenu(BuildContext context, String tag) {
@@ -61,7 +59,10 @@ class DevicePairMenuState extends AnimatablePopMenuState<DevicePairMenu> {
                 visible: Platform.isAndroid,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16.0),
-                  child: Container(decoration: FlixDecoration(color: Color.fromRGBO(242, 242, 242, 1)), height: 0.5,),
+                  child: Container(
+                    decoration: FlixDecoration(color: const Color.fromRGBO(242, 242, 242, 1)),
+                    height: 0.5,
+                  ),
                 ),
               ),
               Visibility(

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flix/domain/hotspot/direct_wifi_manager.dart';
-import 'package:flix/domain/lifecycle/AppLifecycle.dart';
+import 'package:flix/domain/lifecycle/app_lifecycle.dart';
 import 'package:flix/presentation/screens/hotpots/hotspot_screen.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flutter/material.dart';

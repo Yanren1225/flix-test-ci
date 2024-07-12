@@ -1,22 +1,13 @@
 import 'dart:io';
 
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
-import 'package:flix/utils/text/text_extension.dart';
-import 'package:chinese_font_library/chinese_font_library.dart';
-import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
-import 'package:flix/presentation/widgets/toolbar.dart';
-import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/utils/PlatformUtil.dart';
 import 'package:flix/utils/pay/pay_util.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class DonateUSScreen extends StatefulWidget {
   var versionTapCount = 0;
@@ -121,7 +112,7 @@ class DonateUSScreenState extends State<DonateUSScreen> {
                   height: 24,
                 ),
                 const SizedBox(width: 8), // 添加一些间距
-                Text(text,style: TextStyle().fix()), // 按钮文本
+                Text(text, style: const TextStyle().fix()), // 按钮文本
               ],
             )));
   }

@@ -9,7 +9,7 @@ class FlixWindowManager with WindowListener {
   static const WINDOW_WIDTH_KEY = 'window_width';
   static const WINDOW_HEIGHT_KEY = 'window_height';
 
-  FlixWindowManager._privateConstructor() {}
+  FlixWindowManager._privateConstructor();
 
   @override
   void onWindowResize() async {

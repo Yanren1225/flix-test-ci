@@ -6,13 +6,9 @@ import 'package:flix/presentation/screens/hotpots/connect_hotspot_screen.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/style/flix_text_style.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
-import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flix/utils/permission/flix_permission_utils.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class HotpotsScannerScreen extends StatefulWidget {
@@ -107,7 +103,7 @@ class _HotpotsScannerScreenState extends State<HotpotsScannerScreen> {
       if (result != null) return;
       talker.info("qrcode result: ${scanData.code}");
       if (scanData.code?.startsWith("qrcode://") == true) {
-        final uri = Uri.parse(scanData!.code!);
+        final uri = Uri.parse(scanData.code!);
         if (uri.host == "ap" && uri.pathSegments.length >= 2) {
           result = scanData;
           Navigator.of(context).pushReplacement(CupertinoPageRoute(

@@ -1,6 +1,6 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/network/protocol/device_modal.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:windows_system_info/windows_system_info.dart';
 
@@ -25,7 +25,7 @@ class DeviceInfoResult {
 
 Future<DeviceInfoResult> getDeviceInfo() async {
   final plugin = DeviceInfoPlugin();
-  String? alias = null;
+  String? alias;
   final DeviceType deviceType;
   final String? deviceModel;
   int? androidSdkInt;
