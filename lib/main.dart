@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flix/domain/analytics/flix_analytics.dart';
@@ -24,9 +23,7 @@ import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/domain/window/FlixWindowManager.dart';
 import 'package:flix/model/device_info.dart';
-import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/network/multicast_client_provider.dart';
-import 'package:flix/presentation/dialog/new_version_bottomsheet.dart';
 import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
@@ -57,7 +54,7 @@ import 'package:modals/modals.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:share_handler/share_handler.dart';
-import 'package:system_tray/system_tray.dart';
+import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'domain/foreground_service/flix_foreground_service.dart';
@@ -191,50 +188,61 @@ Future<void> initFireBase() async {
   }
 }
 
-// linux需要前置安装其他库： https://pub.dev/packages/system_tray
+// linux需要前置安装其他库： https://pub.dev/packages/tray_manager
 Future<void> initSystemManager() async {
   if (!(Platform.isMacOS || Platform.isWindows || Platform.isLinux)) {
     return;
   }
   const String iconPathWin = 'assets/images/tray_logo.ico';
   const String iconPathOther = 'assets/images/tray_logo_no_color.png';
-  final SystemTray systemTray = SystemTray();
 
   // We first init the systray menu
-  await systemTray.initSystemTray(
-    iconPath: Platform.isWindows ? iconPathWin : iconPathOther,
+  await trayManager.setIcon(
+    Platform.isWindows ? iconPathWin : iconPathOther,
     isTemplate: Platform.isMacOS,
   );
 
   // create context menu
-  final Menu menu = Menu();
-  await menu.buildFrom([
-    MenuItemLabel(label: '显示', onClicked: (menuItem) => windowManager.show()),
-    MenuItemLabel(
+  final Menu menu = Menu(items: [
+    MenuItem(label: '显示', onClick: (menuItem) => windowManager.show()),
+    MenuItem(
         label: '隐藏',
-        onClicked: (menuItem) {
+        onClick: (menuItem) {
           if (Platform.isWindows) {
             windowManager.hide();
           } else {
             windowManager.minimize();
           }
         }),
-    MenuItemLabel(
-        label: '退出', onClicked: (menuItem) => windowManager.destroy()),
+    MenuItem(label: '退出', onClick: (menuItem) => windowManager.destroy()),
   ]);
 
   // set context menu
-  await systemTray.setContextMenu(menu);
+  await trayManager.setContextMenu(menu);
 
   // handle system tray event
-  systemTray.registerSystemTrayEventHandler((eventName) {
-    debugPrint("eventName: $eventName");
-    if (eventName == kSystemTrayEventClick) {
-      Platform.isWindows ? windowManager.show() : systemTray.popUpContextMenu();
-    } else if (eventName == kSystemTrayEventRightClick) {
-      Platform.isWindows ? systemTray.popUpContextMenu() : windowManager.show();
+  trayManager.addListener(ShowUpTrayListener());
+}
+
+/// 支持一个鼠标键显示菜单、另一个鼠标键显示窗口
+class ShowUpTrayListener with TrayListener {
+  @override
+  void onTrayIconMouseUp() {
+    if (Platform.isWindows) {
+      windowManager.show();
+    } else {
+      trayManager.popUpContextMenu();
     }
-  });
+  }
+
+  @override
+  void onTrayIconRightMouseUp() {
+    if (Platform.isWindows) {
+      trayManager.popUpContextMenu();
+    } else {
+      windowManager.show();
+    }
+  }
 }
 
 Future<void> initBootStartUp() async {
