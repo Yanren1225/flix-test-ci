@@ -52,8 +52,8 @@ class FlixWindowManager with WindowListener {
   void restoreWindow() async {
     if (_isDesktop()) {
       final sp = await SharedPreferences.getInstance();
-      final size = Size(await sp.getDouble(WINDOW_WIDTH_KEY) ?? 800,
-          await sp.getDouble(WINDOW_HEIGHT_KEY) ?? 600);
+      final size =
+          Size(sp.getDouble(WINDOW_WIDTH_KEY) ?? 800, sp.getDouble(WINDOW_HEIGHT_KEY) ?? 600);
       WindowOptions windowOptions = WindowOptions(
         size: size,
         center: true,
