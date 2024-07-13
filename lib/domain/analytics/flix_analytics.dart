@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
 class FlixAnalytics {
-  FirebaseAnalytics? _backendAnalytics = null;
+  FirebaseAnalytics? _backendAnalytics;
 
   FirebaseAnalytics? get _analytics {
     if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {

@@ -1,10 +1,7 @@
-import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/utils/text/text_extension.dart';
-import 'package:flix/domain/bubble_pool.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/domain/notification/BadgeService.dart';
+import 'package:flix/domain/notification/badge_service.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/wifi_or_ap_name.dart';
 import 'package:flix/network/multicast_client_provider.dart';
@@ -15,14 +12,14 @@ import 'package:flix/presentation/widgets/device_name/name_edit_bottom_sheet.dar
 import 'package:flix/presentation/widgets/devices/device_list.dart';
 import 'package:flix/presentation/widgets/menu/device_pair_menu.dart';
 import 'package:flix/presentation/widgets/net/net_info_bottom_sheet.dart';
-import 'package:flix/utils/PlatformUtil.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/android/android_utils.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/permission/flix_permission_utils.dart';
+import 'package:flix/utils/platform_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 import 'package:lottie/lottie.dart';
@@ -82,7 +79,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                     children: [
                       SvgPicture.asset("assets/images/slogan.svg"),
                       Visibility(
-                        visible: PlatformUtil.isMobile(),
+                        visible: isMobile(),
                         child: ModalAnchor(
                           key: _menuKey,
                           tag: "open_menu",
@@ -108,7 +105,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                   ),
                 ),
                 Visibility(
-                  visible: PlatformUtil.isMobile(),
+                  visible: isMobile(),
                   child: Padding(
                     padding: const EdgeInsets.only(
                         left: 16, right: 16, top: 0, bottom: 16),

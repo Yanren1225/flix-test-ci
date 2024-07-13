@@ -1,7 +1,6 @@
 
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class WaitToAcceptMediaWidget extends StatelessWidget {
   const WaitToAcceptMediaWidget({

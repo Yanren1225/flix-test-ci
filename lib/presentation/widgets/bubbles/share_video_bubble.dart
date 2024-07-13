@@ -97,7 +97,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
             onTap: () {
               _confirmReceive(concertProvider);
             },
-            child: AcceptMediaWidget(),
+            child: const AcceptMediaWidget(),
           );
           break;
         case FileState.inTransit:
@@ -115,7 +115,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
             aspectRatio: 1.333333,
             child: DecoratedBox(
               decoration: FlixDecoration(color: Colors.white),
-              child: PreviewErrorWidget(),
+              child: const PreviewErrorWidget(),
             ),
           );
           break;
@@ -171,9 +171,9 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
           width: double.infinity,
           height: double.infinity,
         ),
-        Align(
+        const Align(
           alignment: Alignment.center,
-          child: const SizedBox(
+          child: SizedBox(
               width: 18,
               height: 18,
               child: CircularProgressIndicator(
@@ -196,7 +196,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
       children: [
         _buildInlineVideoPlayer(true, sharedVideo, true),
         Container(
-          decoration: FlixDecoration(color: Color.fromRGBO(0, 0, 0, 0.5)),
+          decoration: FlixDecoration(color: const Color.fromRGBO(0, 0, 0, 0.5)),
           width: double.infinity,
           height: double.infinity,
           child: const SizedBox(),
@@ -236,8 +236,8 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
 
   SizedBox _aspectContent(double maxPhysicalSize, BoxConstraints constraints,
       BuildContext context, SharedFile sharedVideo, Widget content) {
-    final width;
-    final height;
+    final num width;
+    final num height;
 
     const minSize = 100;
     final maxSize =
@@ -281,7 +281,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
 
   Widget _buildInlineVideoPlayer(
       bool isFromSelf, SharedFile videoEntity, bool preview) {
-    final previewWidget;
+    final StatefulWidget previewWidget;
     if (videoEntity.content.resourceId.isEmpty || isDesktop()) {
       previewWidget = AspectRatioVideo(
           key: _videoWidget,

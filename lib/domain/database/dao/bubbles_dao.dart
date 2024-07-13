@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:drift/drift.dart';
 import 'package:flix/domain/database/convertor/bubble_convertor.dart';
 import 'package:flix/domain/database/database.dart';
-import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/database/bubble_entity.dart';
 import 'package:flix/model/database/directory_content.dart';
 import 'package:flix/model/database/file_content.dart';
@@ -83,7 +81,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
 
       for (int i = 0; i < bubbleEntities.length; i++) {
         final bubbleEntity = bubbleEntities[i];
-        final contentType;
+        final int contentType;
         // Image, Video, App, File都从FileContents表中读取
         if (BubbleType.values[bubbleEntity.type] == BubbleType.File ||
             BubbleType.values[bubbleEntity.type] == BubbleType.Video ||
@@ -132,11 +130,11 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
         }
 
         for (final entityWithIndex in entitiesWithIndex) {
-          for (final _content in contents) {
-            if (entityWithIndex.value.id == _content.id) {
+          for (final content in contents) {
+            if (entityWithIndex.value.id == content.id) {
               final index = entityWithIndex.key;
               final entity = entityWithIndex.value;
-              final item = await fromDBEntity(entity, _content);
+              final item = await fromDBEntity(entity, content);
               primitiveBubbles[index] = item;
             }
           }
@@ -150,11 +148,11 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
         return nonNullsBubbles;
       }
 
-      final timeGap = 3 * 60 * 1000;
+      const timeGap = 3 * 60 * 1000;
       var timeBubbleSource = nonNullsBubbles[0];
-      if (DateTime.now().millisecondsSinceEpoch - timeBubbleSource!.time >= timeGap) {
+      if (DateTime.now().millisecondsSinceEpoch - timeBubbleSource.time >= timeGap) {
         final timeBubble = PrimitiveTimeBubble(
-            id: timeBubbleSource!.id,
+            id: timeBubbleSource.id,
             from: timeBubbleSource.from,
             to: timeBubbleSource.to,
             type: BubbleType.Time,
@@ -168,14 +166,6 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
       for (var i = 0; i < nonNullsBubbles.length - 1; i++) {
         timeBubbleSource = nonNullsBubbles[i + 1];
         final beforeItem = nonNullsBubbles[i];
-        if (timeBubbleSource == null) {
-          talker.error('missing bubble: ${bubbleEntities[i + 1]}');
-          continue;
-        }
-        if (beforeItem == null) {
-          talker.error('missing bubble: ${bubbleEntities[i]}');
-          continue;
-        }
 
         if (timeBubbleSource.time - beforeItem.time >=
             timeGap) {

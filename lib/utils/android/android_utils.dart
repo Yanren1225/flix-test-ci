@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:android_intent/android_intent.dart';
 import 'package:flix/domain/log/flix_log.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_app_installer/flutter_app_installer.dart';
 
 class AndroidUtils {

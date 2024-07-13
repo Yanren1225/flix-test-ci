@@ -1,9 +1,7 @@
-import 'package:flix/domain/androp_context.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/basic/progressbar/linear/animated_progress_bar.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:provider/provider.dart';
 
 class StateProgressBar extends StatefulWidget {
   final UIBubble entity;
@@ -48,7 +46,7 @@ class _StateProgressBarState extends State<StateProgressBar> {
       secondChild: const SizedBox(
         height: 6,
       ),
-      duration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
     );
   }
 }

@@ -1,8 +1,5 @@
-import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flix/domain/constants.dart';
-import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/utils/file/file_helper.dart';
 
@@ -125,6 +122,7 @@ class PrimitiveFileBubble extends PrimitiveBubble<FileTransfer> {
   @override
   late int time;
 
+  @override
   String? groupId;
 
   PrimitiveFileBubble.fromJson(Map<String, dynamic> json) {

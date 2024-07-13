@@ -1,8 +1,7 @@
-import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

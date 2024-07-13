@@ -11,17 +11,17 @@ import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/hotspot/hotspot_manager.dart';
-import 'package:flix/domain/lifecycle/AppLifecycle.dart';
+import 'package:flix/domain/lifecycle/app_lifecycle.dart';
 import 'package:flix/domain/lifecycle/platform_state.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
-import 'package:flix/domain/notification/NotificationService.dart';
 import 'package:flix/domain/notification/flix_notification.dart';
-import 'package:flix/domain/settings/SettingsRepo.dart';
+import 'package:flix/domain/notification/notification_service.dart';
+import 'package:flix/domain/settings/settings_repo.dart';
 import 'package:flix/domain/ship_server/ship_service_lifecycle_watcher.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/domain/version/version_checker.dart';
-import 'package:flix/domain/window/FlixWindowManager.dart';
+import 'package:flix/domain/window/flix_window_manager.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/concert/concert_screen.dart';
@@ -58,7 +58,7 @@ import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'domain/foreground_service/flix_foreground_service.dart';
-import 'domain/notification/BadgeService.dart';
+import 'domain/notification/badge_service.dart';
 import 'firebase_options.dart';
 import 'presentation/screens/base_screen.dart';
 
@@ -611,7 +611,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
             Navigator.push(
                 context,
                 CupertinoPageRoute(
-                    builder: (context) => AboutUSScreen(
+                    builder: (context) => const AboutUSScreen(
                           showBack: true,
                         )));
           },
@@ -722,7 +722,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
         return HelpScreen(
           goVersionScreen: () {
             setState(() {
-              thirdWidget = AboutUSScreen(
+              thirdWidget = const AboutUSScreen(
                 showBack: false,
               );
             });

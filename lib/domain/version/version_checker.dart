@@ -9,7 +9,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class VersionChecker {
@@ -40,12 +39,10 @@ class VersionChecker {
 
   static Future<bool> hasNewerVersion() async {
     try {
-      final _newestVersion = await getNewestVersion();
+      final nextVersion = await getNewestVersion();
       final info = await PackageInfo.fromPlatform();
-      final newestVersionComponents = _newestVersion
-          ?.split('.')
-          ?.map((e) => int.parse(e))
-          .toList(growable: false);
+      final newestVersionComponents =
+          nextVersion?.split('.').map((e) => int.parse(e)).toList(growable: false);
       final versionComponents = info.version
           .split('.')
           .map((e) => int.parse(e))
@@ -58,8 +55,8 @@ class VersionChecker {
             (newestVersionComponents[0] == versionComponents[0] &&
                 newestVersionComponents[1] == versionComponents[1] &&
                 newestVersionComponents[2] > versionComponents[2])) {
-          newestVersion = _newestVersion;
-          newestVersionStream.add(_newestVersion);
+          newestVersion = nextVersion;
+          newestVersionStream.add(nextVersion);
           return true;
         } else {
           return false;

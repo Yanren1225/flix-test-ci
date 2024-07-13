@@ -13,13 +13,13 @@ import 'package:image_size_getter/file_input.dart';
 import 'package:image_size_getter/image_size_getter.dart';
 import 'package:mime/mime.dart';
 import 'package:open_dir/open_dir.dart';
+import 'package:path/path.dart' as path_utils;
 import 'package:path_provider/path_provider.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_handler/share_handler.dart';
 import 'package:shared_storage/shared_storage.dart' as shared_storage;
 import 'package:video_player/video_player.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
-import 'package:path/path.dart' as path_utils;
 
 Future<String> getDefaultDestinationDirectory() async {
   switch (defaultTargetPlatform) {
@@ -66,10 +66,10 @@ extension XFileConvert on XFile {
 
     return FileMeta(
         resourceId: '',
-        name: this.name,
+        name: name,
         path: this.path,
-        mimeType: this.mimeType ?? 'application/octet-stream',
-        nameWithSuffix: this.name,
+        mimeType: mimeType ?? 'application/octet-stream',
+        nameWithSuffix: name,
         size: await length(),
         width: size.width,
         height: size.height);
@@ -81,9 +81,9 @@ extension AttachmentConvert on SharedAttachment {
     await authPersistentAccess(this.path);
     var size = const Size(0, 0);
     final file = File(this.path);
-    if (this.type == SharedAttachmentType.image) {
+    if (type == SharedAttachmentType.image) {
       size = await getImgSize(size, this.path);
-    } else if (this.type == SharedAttachmentType.video) {
+    } else if (type == SharedAttachmentType.video) {
       size = await getVideoSize(size, this.path);
     }
 
@@ -109,11 +109,11 @@ extension PlatformFileConvert on PlatformFile {
     await authPersistentAccess(this.path!);
     return FileMeta(
         resourceId: '',
-        name: this.name,
+        name: name,
         path: this.path,
-        mimeType: lookupMimeType(this.name) ?? 'application/octet-stream',
-        nameWithSuffix: this.name,
-        size: this.size);
+        mimeType: lookupMimeType(name) ?? 'application/octet-stream',
+        nameWithSuffix: name,
+        size: size);
   }
 }
 
@@ -133,9 +133,6 @@ extension FileConvert on File {
 
 extension ApplicationConvert on Application {
   Future<FileMeta> toFileMeta() async {
-    if (this.apkFilePath == null) {
-      throw UnsupportedError('PlatformFile.path must not be null');
-    }
     return FileMeta(
         resourceId: '',
         name: '$packageName.apk',
@@ -148,18 +145,18 @@ extension ApplicationConvert on Application {
 
 extension AssetEntityExtension on AssetEntity {
   Future<FileMeta> toFileMeta() async {
-    final title = await this.titleAsync ?? '';
-    final file = await this.originFile;
+    final title = await titleAsync;
+    final file = await originFile;
 
     return FileMeta(
-        resourceId: this.id,
+        resourceId: id,
         name: title,
         path: file?.path ?? '',
-        mimeType: await this.mimeTypeAsync ?? 'application/octet-stream',
+        mimeType: await mimeTypeAsync ?? 'application/octet-stream',
         nameWithSuffix: title,
         size: await file?.length() ?? 0,
-        width: this.orientatedWidth,
-        height: this.orientatedHeight);
+        width: orientatedWidth,
+        height: orientatedHeight);
   }
 }
 
@@ -236,11 +233,11 @@ Future<Size> getImgSize(Size size, String path) async {
   // TODO: 其他平台也优先使用getHeifImageSize2
   try {
     if (Platform.isIOS) {
-      final _size = await getHeifImageSize2(path);
-      if (_size == null) {
-        talker.error('Failed to get size of image, path: ${path}');
+      final size0 = await getHeifImageSize2(path);
+      if (size0 == null) {
+        talker.error('Failed to get size of image, path: $path');
       } else {
-        size = _size;
+        size = size0;
       }
     } else {
       try {
@@ -249,21 +246,18 @@ Future<Size> getImgSize(Size size, String path) async {
           size = Size(size.height, size.width);
         }
       } catch (e, stack) {
-        talker.error(
-            'inner: Failed to get size of image, path: ${path}: $e, $stack',
-            e,
+        talker.error('inner: Failed to get size of image, path: $path: $e, $stack', e,
             stack);
-        final _size = await getHeifImageSize2(path);
-        if (_size == null) {
-          talker.error('Failed to get size of heifImage, path: ${path}');
+        final size0 = await getHeifImageSize2(path);
+        if (size0 == null) {
+          talker.error('Failed to get size of heifImage, path: $path');
         } else {
-          size = _size;
+          size = size0;
         }
       }
     }
   } catch (e, stacktrace) {
-    talker.error(
-        'outer: Failed to get image size, path: ${path}', e, stacktrace);
+    talker.error('outer: Failed to get image size, path: $path', e, stacktrace);
   }
 
   return size;
@@ -271,14 +265,12 @@ Future<Size> getImgSize(Size size, String path) async {
 
 Future<Size> getVideoSize(Size size, String path) async {
   try {
-    VideoPlayerController _controller = VideoPlayerController.file(File(path));
-    await _controller.initialize();
-    size = Size(_controller.value?.size?.width?.toInt() ?? 0,
-        _controller.value?.size?.height?.toInt() ?? 0);
-    _controller.dispose();
+    VideoPlayerController controller = VideoPlayerController.file(File(path));
+    await controller.initialize();
+    size = Size(controller.value.size.width.toInt(), controller.value.size.height.toInt());
+    controller.dispose();
   } catch (e, stack) {
-    talker.error(
-        'Failed to get size of video, path: ${path}: $e, $stack', e, stack);
+    talker.error('Failed to get size of video, path: $path: $e, $stack', e, stack);
   }
   return size;
 }

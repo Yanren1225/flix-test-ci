@@ -1,8 +1,8 @@
-import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/blur_appbar.dart';
 import 'package:flix/presentation/widgets/toolbar.dart';
+import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -115,8 +115,7 @@ class NavigationScaffold extends StatelessWidget {
       extendBodyBehindAppBar: toolbarCoverBody,
       //BlurAppBar会自动+stateBarHeight,所以toolbarCoverBody是，padding需要加上stateBarHeight
       appBar: BlurAppBar(
-        appBar: Container(
-            child: Align(alignment: Alignment.bottomCenter, child: appBar)),
+        appBar: Align(alignment: Alignment.bottomCenter, child: appBar),
         cpreferredSize: Size(double.infinity, appBarHeight),
       ),
       body: builder(EdgeInsets.only(

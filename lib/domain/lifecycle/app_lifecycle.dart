@@ -32,25 +32,25 @@ class AppLifecycle {
   void _dispatchLifecycleEvent(String? msg) {
     talker.verbose('AppLifecycle $msg');
     if (msg == 'AppLifecycleState.resumed') {
-      _lifecycleListeners.forEach((listener) {
+      for (var listener in _lifecycleListeners) {
         listener.onLifecycleChanged(AppLifecycleState.resumed);
-      });
+      }
     } else if (msg == 'AppLifecycleState.inactive') {
-      _lifecycleListeners.forEach((listener) {
+      for (var listener in _lifecycleListeners) {
         listener.onLifecycleChanged(AppLifecycleState.inactive);
-      });
+      }
     } else if (msg == 'AppLifecycleState.hide') {
-      _lifecycleListeners.forEach((listener) {
+      for (var listener in _lifecycleListeners) {
         listener.onLifecycleChanged(AppLifecycleState.hidden);
-      });
+      }
     } else if (msg == 'AppLifecycleState.paused') {
-      _lifecycleListeners.forEach((listener) {
+      for (var listener in _lifecycleListeners) {
         listener.onLifecycleChanged(AppLifecycleState.paused);
-      });
+      }
     } else if (msg == 'AppLifecycleState.detached') {
-      _lifecycleListeners.forEach((listener) {
+      for (var listener in _lifecycleListeners) {
         listener.onLifecycleChanged(AppLifecycleState.detached);
-      });
+      }
     }
 
     void onAppResume() {

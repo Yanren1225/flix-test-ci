@@ -1,11 +1,9 @@
 import 'dart:io';
 
-import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shareable.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/string_util.dart';
-import 'package:path/path.dart' as path_utils;
 
 class SharedFile extends Shareable<FileMeta> {
   @override

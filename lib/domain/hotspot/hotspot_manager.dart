@@ -2,15 +2,15 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flix/domain/lifecycle/AppLifecycle.dart';
+import 'package:flix/domain/lifecycle/app_lifecycle.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/hotspot/hotspot_info.dart';
 import 'package:flutter_p2p_connection/flutter_p2p_connection.dart';
 
 class HotspotManager implements LifecycleListener {
   final _flutterP2pConnectionPlugin = FlutterP2pConnection();
-  Completer<bool?> _initCompleter = Completer();
-  HotspotInfo? hotspotInfo = null;
+  final Completer<bool?> _initCompleter = Completer();
+  HotspotInfo? hotspotInfo;
   StreamController<HotspotInfo?> hotspotInfoStreamController = StreamController.broadcast();
 
   HotspotManager._privateConstructor() {

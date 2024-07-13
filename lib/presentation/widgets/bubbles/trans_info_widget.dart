@@ -5,9 +5,7 @@ import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/file/size_utils.dart';
 import 'package:flix/utils/file/speed_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:gradient_txt/gradient_text.dart';
 
 class TransInfoWidget extends StatefulWidget {

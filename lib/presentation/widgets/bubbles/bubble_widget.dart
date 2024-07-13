@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 class BubbleWidget extends StatelessWidget {
   final UIBubble uiBubble;
 
-  BubbleWidget({super.key, required this.uiBubble});
+  const BubbleWidget({super.key, required this.uiBubble});
 
   @override
   Widget build(BuildContext context) {

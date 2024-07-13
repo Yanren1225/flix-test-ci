@@ -4,7 +4,12 @@ import 'package:flix/presentation/screens/concert/files_confirm_bottom_sheet.dar
 import 'package:flutter/cupertino.dart';
 
 class Droper extends StatefulWidget {
-  const Droper({super.key, required this.deviceInfo, required this.child, this.onDropEntered = null, this.onDropExited = null});
+  const Droper(
+      {super.key,
+      required this.deviceInfo,
+      required this.child,
+      this.onDropEntered,
+      this.onDropExited});
 
   final DeviceInfo deviceInfo;
   final Widget child;
@@ -41,8 +46,10 @@ class DroperState extends State<Droper> {
       },
       onDragDone: (details) async {
         print('onDragDone');
-        showCupertinoModalPopup(context: context, builder: (_context) {
-          return FilesConfirmBottomSheet(deviceInfo: deviceInfo, files: details.files);
+        showCupertinoModalPopup(
+            context: context,
+            builder: (context) {
+              return FilesConfirmBottomSheet(deviceInfo: deviceInfo, files: details.files);
         });
       },
       child: child,

@@ -1,12 +1,11 @@
 import 'dart:async';
 
 import 'package:flix/domain/hotspot/hotspot_manager.dart';
-import 'package:flix/domain/lifecycle/AppLifecycle.dart';
+import 'package:flix/domain/lifecycle/app_lifecycle.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/style/flix_text_style.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
-import 'package:flix/utils/android/android_utils.dart';
 import 'package:flix/utils/permission/flix_permission_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -99,8 +98,8 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
     if (hotspotInfo == null) return false;
     setState(() {
       _apState = ApState.enabled;
-      _sPreviousAPSSID = hotspotInfo?.ssid ?? "";
-      _sPreviousPreSharedKey = hotspotInfo?.key ?? "";
+      _sPreviousAPSSID = hotspotInfo.ssid;
+      _sPreviousPreSharedKey = hotspotInfo.key;
     });
     return true;
   }
@@ -335,7 +334,7 @@ Widget buildHotspotContent(
                       height: 54,
                       decoration: FlixDecoration(
                           color: FlixColor.blue,
-                          borderRadius: BorderRadius.all(Radius.circular(16))),
+                          borderRadius: const BorderRadius.all(Radius.circular(16))),
                       child: Center(
                         child: Text(
                           action ?? "",

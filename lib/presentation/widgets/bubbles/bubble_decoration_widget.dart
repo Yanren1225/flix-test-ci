@@ -32,7 +32,7 @@ class _BubbleDecorationWidgetState extends State<BubbleDecorationWidget> {
     final sharedFile = entity.shareable as SharedFile;
     AndropContext andropContext = Provider.of(context, listen: false);
     final isFromMe = widget.entity.isFromMe(andropContext.deviceId);
-    final alignment;
+    final MainAxisAlignment alignment;
     if (isFromMe) {
       alignment = MainAxisAlignment.end;
     } else {
@@ -73,7 +73,7 @@ class _BubbleDecorationWidgetState extends State<BubbleDecorationWidget> {
                   width: 20 + 18,
                   height: 20,
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
           child: Padding(
             padding: const EdgeInsets.only(right: 18.0),
             child: stateIcon,
@@ -87,11 +87,11 @@ class _BubbleDecorationWidgetState extends State<BubbleDecorationWidget> {
         Visibility(
           visible: alignment == MainAxisAlignment.start,
           replacement: alignment == MainAxisAlignment.start
-              ? SizedBox(
+              ? const SizedBox(
                   width: 20 + 18,
                   height: 20,
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
           child: Padding(
             padding: const EdgeInsets.only(left: 18.0),
             child: stateIcon,

@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flix/domain/log/flix_log.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 
@@ -15,9 +14,9 @@ class CustomSliverHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _LargeTitle(
-      child: lagerTitle,
       height: height,
       onFolded: onFolded,
+      child: lagerTitle,
     );
   }
 }
@@ -26,7 +25,7 @@ class _LargeTitle extends SingleChildRenderObjectWidget {
   final Function(bool isFolded) onFolded;
   final double height;
 
-  _LargeTitle({super.key, required super.child, required this.height, required this.onFolded});
+  const _LargeTitle({required super.child, required this.height, required this.onFolded});
 
   @override
   RenderObject createRenderObject(BuildContext context) {

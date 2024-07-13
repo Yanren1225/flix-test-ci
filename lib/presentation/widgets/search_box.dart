@@ -1,5 +1,4 @@
 import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 

@@ -4,36 +4,24 @@ import 'package:flix/domain/log/persistence/log_file.dart';
 import 'package:intl/intl.dart';
 
 class PartitionLogFile {
-  /**
-   * The directory where the log files are stored.
-   */
+  /// The directory where the log files are stored.
   final String dir;
 
-  /**
-   * The maximum size of the log file in bytes.
-   * 超出限制后新建文件
-   */
+  /// The maximum size of the log file in bytes.
+  /// 超出限制后新建文件
   final int singleFileMaxSize;
 
-  /**
-   * 所有日志的最大大小 in bytes
-   */
+  /// 所有日志的最大大小 in bytes
   final int maxSize;
 
-  /**
-   * 当前日志文件已经使用的大小
-   */
+  /// 当前日志文件已经使用的大小
   int _currentFileUsedSize = 0;
 
-  /**
-   * 所有日志使用的大小
-   */
+  /// 所有日志使用的大小
   int _usedSize = 0;
 
-  /**
-   * 当前日志文件
-   */
-  LogFile? logFile = null;
+  /// 当前日志文件
+  LogFile? logFile;
 
   PartitionLogFile({required this.dir, required this.singleFileMaxSize, required this.maxSize});
 

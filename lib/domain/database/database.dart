@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:drift/drift.dart';
+import 'package:drift/native.dart';
 import 'package:flix/domain/database/dao/bubbles_dao.dart';
 import 'package:flix/domain/database/dao/devices_dao.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -9,12 +11,9 @@ import 'package:flix/model/database/device/persistence_devices.dart';
 import 'package:flix/model/database/directory_content.dart';
 import 'package:flix/model/database/file_content.dart';
 import 'package:flix/model/database/text_content.dart';
-import 'package:drift/drift.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
-import 'package:drift/native.dart';
-
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 
 part 'database.g.dart'; // the generated code will be there
@@ -33,7 +32,7 @@ class AppDatabase extends _$AppDatabase {
     return LazyDatabase(() async {
       // put the database file, called db.sqlite here, into the documents folder
       // for your app.
-      final file;
+      final File file;
       final dbFolder = await getApplicationSupportDirectory();
       talker.verbose('create db in folder: $dbFolder');
       file = File(p.join(dbFolder.path, 'db.sqlite'));

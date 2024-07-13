@@ -132,39 +132,33 @@ class BonjourImpl extends MultiCastApi {
               BonsoirDiscoveryEventType.discoveryServiceResolved) {
             talker.debug('mDns Service resolved : ${event.service?.toJson()}');
             final remoteService = event.service as ResolvedBonsoirService;
-            if (remoteService != null) {
-              // final alias = remoteService.name;
-              final host = remoteService.host ?? '';
-              final port = remoteService.port;
-              final serviceAttributes = remoteService.attributes;
-              if (serviceAttributes != null) {
-                final alias = serviceAttributes['alias'];
-                final deviceType = serviceAttributes['deviceType'];
-                final deviceModel = serviceAttributes['deviceModal'];
-                final fingerprint = serviceAttributes['fingerprint'];
-                final version = int.parse(serviceAttributes['version'].toString());
-                if (alias == null || deviceType == null || deviceModel == null || fingerprint == null) {
-                  talker.error('mDns Service resolved error: $serviceAttributes');
-                  return;
-                }
-                if (_isFromSelf(fingerprint)) {
-                  return;
-                }
-                deviceScanCallback(
-                    DeviceModal(
-                        alias: alias,
-                        deviceType: DeviceType.values
-                            .find((element) => element.name == deviceType),
-                        fingerprint: fingerprint,
-                        port: port,
-                        version: version,
-                        deviceModel: deviceModel,
-                        host: host),
-                    false);
-              }
+            // final alias = remoteService.name;
+            final host = remoteService.host ?? '';
+            final port = remoteService.port;
+            final serviceAttributes = remoteService.attributes;
+            final alias = serviceAttributes['alias'];
+            final deviceType = serviceAttributes['deviceType'];
+            final deviceModel = serviceAttributes['deviceModal'];
+            final fingerprint = serviceAttributes['fingerprint'];
+            final version = int.parse(serviceAttributes['version'].toString());
+            if (alias == null || deviceType == null || deviceModel == null || fingerprint == null) {
+              talker.error('mDns Service resolved error: $serviceAttributes');
+              return;
             }
-          } else if (event.type ==
-              BonsoirDiscoveryEventType.discoveryServiceLost) {
+            if (_isFromSelf(fingerprint)) {
+              return;
+            }
+            deviceScanCallback(
+                DeviceModal(
+                    alias: alias,
+                    deviceType: DeviceType.values.find((element) => element.name == deviceType),
+                    fingerprint: fingerprint,
+                    port: port,
+                    version: version,
+                    deviceModel: deviceModel,
+                    host: host),
+                false);
+          } else if (event.type == BonsoirDiscoveryEventType.discoveryServiceLost) {
             talker.debug('mDns Service lost : ${event.service?.toJson()}');
           }
         }, onError: (e, s) {

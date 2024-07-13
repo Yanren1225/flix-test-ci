@@ -66,7 +66,7 @@ Future<void> _resolvePath(String resourceId, String path,
   }
 }
 
-Future<void> resolvePathOnMacOS(String path, Future<void> callback(String path)) async {
+Future<void> resolvePathOnMacOS(String path, Future<void> Function(String path) callback) async {
   if (Platform.isMacOS) {
     final secureBookmarks = SecureBookmarks();
     var sharePreference = await SharedPreferences.getInstance();

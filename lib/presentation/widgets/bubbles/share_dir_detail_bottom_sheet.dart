@@ -20,7 +20,7 @@ showDirectoryDetailBottomSheet(
     BuildContext context, String dirBubbleId, String dirName) async {
   await showCupertinoModalPopup(
       context: context,
-      builder: (_context) {
+      builder: (context) {
         return DirectoryDetailBottomSheet(
             dirBubbleId: dirBubbleId, dirName: dirName);
       });
@@ -34,10 +34,10 @@ class DirectoryDetailBottomSheet extends StatefulWidget {
       {super.key, required this.dirBubbleId, required this.dirName});
 
   @override
-  _BottomSheetContentState createState() => _BottomSheetContentState();
+  BottomSheetContentState createState() => BottomSheetContentState();
 }
 
-class _BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
+class BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
   // 模拟不同状态
   _BottomSheetState _bottomSheetState = _BottomSheetState.loading;
 
@@ -120,7 +120,7 @@ class _BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
             padding: EdgeInsets.zero,
             shrinkWrap: true,
             itemCount: files?.length ?? 0,
-            itemBuilder: (_context, index) {
+            itemBuilder: (context, index) {
               final file = files![index];
               return _SendFileItem(entity: toUIBubble(file));
             });
@@ -142,7 +142,6 @@ enum _BottomSheetState { loading, list, error, empty }
 
 class _SendFileItem extends StatefulWidget {
   const _SendFileItem({
-    super.key,
     required this.entity,
   });
 
@@ -236,8 +235,8 @@ class _SendFileItemState extends State<_SendFileItem>
         case FileState.sendCompleted:
           stateDes = '${(sharedFile.progress * 100).toStringAsFixed(1)}%';
           stateDesGradient = [
-            Color.fromRGBO(0, 122, 255, 1),
-            Color.fromRGBO(81, 181, 252, 1)
+            const Color.fromRGBO(0, 122, 255, 1),
+            const Color.fromRGBO(81, 181, 252, 1)
           ];
           stateIcon = RotationTransition(
               turns: _controller,
@@ -338,8 +337,7 @@ class _SendFileItemState extends State<_SendFileItem>
                             )
                           : GradientText(
                               text: stateDes ?? '',
-                              gradient: LinearGradient(
-                                  colors: stateDesGradient ?? []),
+                              gradient: LinearGradient(colors: stateDesGradient),
                               style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,

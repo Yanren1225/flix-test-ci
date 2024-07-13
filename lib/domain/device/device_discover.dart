@@ -4,7 +4,7 @@ import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/domain/settings/SettingsRepo.dart';
+import 'package:flix/domain/settings/settings_repo.dart';
 import 'package:flix/network/bonjour_impl.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/nearby_service_info.dart';
@@ -13,7 +13,7 @@ import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/net/net_utils.dart';
 
 class DeviceDiscover {
-  DeviceDiscover._privateConstructor() {}
+  DeviceDiscover._privateConstructor();
 
   static final DeviceDiscover _instance = DeviceDiscover._privateConstructor();
 

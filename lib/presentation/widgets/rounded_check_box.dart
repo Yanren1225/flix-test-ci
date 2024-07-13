@@ -1,4 +1,3 @@
-import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -21,10 +20,10 @@ class RoundedCheckBox extends StatefulWidget {
   });
 
   @override
-  _RoundedCheckBoxState createState() => _RoundedCheckBoxState();
+  RoundedCheckBoxState createState() => RoundedCheckBoxState();
 }
 
-class _RoundedCheckBoxState extends State<RoundedCheckBox> {
+class RoundedCheckBoxState extends State<RoundedCheckBox> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

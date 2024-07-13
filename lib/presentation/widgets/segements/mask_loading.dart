@@ -1,8 +1,6 @@
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:modals/modals.dart';
 
 class MaskLoading extends StatefulWidget {

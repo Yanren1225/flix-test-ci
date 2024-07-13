@@ -1,13 +1,12 @@
-import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/presentation/basic/corner/flix_decoration.dart';
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flix/network/multicast_client_provider.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/widgets/segements/custom_sliver_header.dart';
 import 'package:flix/presentation/widgets/super_title.dart';
+import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 class CupertinoNavigationScaffold extends StatefulWidget {

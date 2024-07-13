@@ -1,19 +1,15 @@
 import 'dart:io';
 
 import 'package:flix/domain/version/version_checker.dart';
-import 'package:flix/presentation/style/colors/flix_color.dart';
-import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
-import 'package:flix/presentation/screens/helps/about_us.dart';
-import 'package:flix/presentation/widgets/helps/QA.dart';
+import 'package:flix/presentation/style/colors/flix_color.dart';
+import 'package:flix/presentation/widgets/helps/qa.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/settings/clickable_item.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:provider/provider.dart';
 
 class HelpScreen extends StatefulWidget {
   VoidCallback goVersionScreen;

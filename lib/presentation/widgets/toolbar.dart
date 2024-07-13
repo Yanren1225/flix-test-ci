@@ -1,16 +1,14 @@
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/utils/meida/media_utils.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class Toolbar extends StatefulWidget {
-  bool showBack = false;
-  String title = "";
+  final bool showBack;
+  final String title;
 
-  Toolbar({super.key, required this.showBack, required this.title});
+  const Toolbar({super.key, this.showBack = false, required this.title});
 
   @override
   State<StatefulWidget> createState() => ToolbarState();

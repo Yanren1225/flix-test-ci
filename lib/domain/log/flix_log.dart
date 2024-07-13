@@ -35,19 +35,19 @@ class _FlixTalkerObserver extends TalkerObserver {
   @override
   void onError(TalkerError err) {
     super.onError(err);
-    logPersistence.write(err.generateTextMessage() + '\n');
+    logPersistence.write('${err.generateTextMessage()}\n');
   }
 
   @override
   void onException(TalkerException exception) {
     super.onException(exception);
-    logPersistence.write(exception.generateTextMessage() + '\n');
+    logPersistence.write('${exception.generateTextMessage()}\n');
   }
 
   @override
   void onLog(TalkerData log) {
     super.onLog(log);
-    logPersistence.write(log.generateTextMessage() + '\n');
+    logPersistence.write('${log.generateTextMessage()}\n');
   }
 }
 

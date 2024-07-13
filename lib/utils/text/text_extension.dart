@@ -9,7 +9,7 @@ extension TextStyleExtension on TextStyle {
     if (Platform.isWindows) {
       return useSystemChineseFont();
     } else if (Platform.isLinux){
-      return this.copyWith(fontFamily: 'custom-sans');;
+      return copyWith(fontFamily: 'custom-sans');
     } else {
       return this;
     }

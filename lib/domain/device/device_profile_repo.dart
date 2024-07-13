@@ -1,16 +1,16 @@
 import 'dart:async';
 
 import 'package:flix/network/protocol/device_modal.dart';
+import 'package:flix/utils/device_info_helper.dart' as device_utils;
 import 'package:flix/utils/device_info_helper.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
-import 'package:flix/utils/device_info_helper.dart' as deviceUtils;
 
 class DeviceProfileRepo {
   static const deviceNameKey = 'device_name_key';
 
-  DeviceProfileRepo._privateConstructor() {}
+  DeviceProfileRepo._privateConstructor();
 
   static final DeviceProfileRepo _instance =
       DeviceProfileRepo._privateConstructor();
@@ -35,7 +35,7 @@ class DeviceProfileRepo {
     }
     did = saveDid;
 
-    final deviceInfo = await deviceUtils.getDeviceInfo();
+    final deviceInfo = await device_utils.getDeviceInfo();
     var savedDeviceName = sharePreference.getString(deviceNameKey);
     if (savedDeviceName == null || savedDeviceName.isEmpty) {
       savedDeviceName = deviceInfo.alias ?? deviceInfo.deviceModel ?? '';
@@ -43,16 +43,16 @@ class DeviceProfileRepo {
     }
 
     deviceName = savedDeviceName;
-    return deviceUtils.DeviceInfoResult(
+    return device_utils.DeviceInfoResult(
         alias: deviceName,
         deviceType: deviceInfo.deviceType,
         deviceModel: deviceInfo.deviceModel,
         androidSdkInt: deviceInfo.androidSdkInt);
   }
 
-  Future<deviceUtils.DeviceInfoResult> getDeviceInfo() async {
-    final deviceInfo = await deviceUtils.getDeviceInfo();
-    return deviceUtils.DeviceInfoResult(
+  Future<device_utils.DeviceInfoResult> getDeviceInfo() async {
+    final deviceInfo = await device_utils.getDeviceInfo();
+    return device_utils.DeviceInfoResult(
         alias: deviceName,
         deviceType: deviceInfo.deviceType,
         deviceModel: deviceInfo.deviceModel,

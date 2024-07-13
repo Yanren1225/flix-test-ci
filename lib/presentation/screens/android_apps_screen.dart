@@ -1,15 +1,12 @@
-import 'dart:developer';
-import 'dart:ffi';
 
-import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/utils/text/text_extension.dart';
+import 'package:device_apps/device_apps.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/app_icon.dart';
 import 'package:flix/presentation/widgets/check_state_box.dart';
 import 'package:flix/presentation/widgets/search_box.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/app/apk_utils.dart';
-import 'package:device_apps/device_apps.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pinyin/pinyin.dart';
@@ -89,7 +86,7 @@ class AppsScreenState extends State<AppsScreen> {
             margin: EdgeInsets.only(top: appBarHeight),
             child: Column(
               children: [
-                Container(child: SizedBox(child: createSearchBar())),
+                SizedBox(child: createSearchBar()),
                 Expanded(
                     child: MediaQuery.removePadding(
                         removeTop: true,

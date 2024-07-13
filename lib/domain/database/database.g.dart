@@ -199,6 +199,18 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
         time: time ?? this.time,
         groupId: groupId ?? this.groupId,
       );
+  BubbleEntity copyWithCompanion(BubbleEntitiesCompanion data) {
+    return BubbleEntity(
+      id: data.id.present ? data.id.value : this.id,
+      fromDevice:
+          data.fromDevice.present ? data.fromDevice.value : this.fromDevice,
+      toDevice: data.toDevice.present ? data.toDevice.value : this.toDevice,
+      type: data.type.present ? data.type.value : this.type,
+      time: data.time.present ? data.time.value : this.time,
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('BubbleEntity(')
@@ -439,6 +451,13 @@ class TextContent extends DataClass implements Insertable<TextContent> {
         id: id ?? this.id,
         content: content ?? this.content,
       );
+  TextContent copyWithCompanion(TextContentsCompanion data) {
+    return TextContent(
+      id: data.id.present ? data.id.value : this.id,
+      content: data.content.present ? data.content.value : this.content,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('TextContent(')
@@ -907,6 +926,30 @@ class FileContent extends DataClass implements Insertable<FileContent> {
         height: height ?? this.height,
         waitingForAccept: waitingForAccept ?? this.waitingForAccept,
       );
+  FileContent copyWithCompanion(FileContentsCompanion data) {
+    return FileContent(
+      id: data.id.present ? data.id.value : this.id,
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
+      resourceId:
+          data.resourceId.present ? data.resourceId.value : this.resourceId,
+      name: data.name.present ? data.name.value : this.name,
+      mimeType: data.mimeType.present ? data.mimeType.value : this.mimeType,
+      nameWithSuffix: data.nameWithSuffix.present
+          ? data.nameWithSuffix.value
+          : this.nameWithSuffix,
+      size: data.size.present ? data.size.value : this.size,
+      path: data.path.present ? data.path.value : this.path,
+      state: data.state.present ? data.state.value : this.state,
+      progress: data.progress.present ? data.progress.value : this.progress,
+      speed: data.speed.present ? data.speed.value : this.speed,
+      width: data.width.present ? data.width.value : this.width,
+      height: data.height.present ? data.height.value : this.height,
+      waitingForAccept: data.waitingForAccept.present
+          ? data.waitingForAccept.value
+          : this.waitingForAccept,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('FileContent(')
@@ -1452,6 +1495,25 @@ class PersistenceDevice extends DataClass
         host: host.present ? host.value : this.host,
         insertOrUpdateTime: insertOrUpdateTime ?? this.insertOrUpdateTime,
       );
+  PersistenceDevice copyWithCompanion(PersistenceDevicesCompanion data) {
+    return PersistenceDevice(
+      alias: data.alias.present ? data.alias.value : this.alias,
+      deviceModel:
+          data.deviceModel.present ? data.deviceModel.value : this.deviceModel,
+      deviceType:
+          data.deviceType.present ? data.deviceType.value : this.deviceType,
+      fingerprint:
+          data.fingerprint.present ? data.fingerprint.value : this.fingerprint,
+      port: data.port.present ? data.port.value : this.port,
+      version: data.version.present ? data.version.value : this.version,
+      ip: data.ip.present ? data.ip.value : this.ip,
+      host: data.host.present ? data.host.value : this.host,
+      insertOrUpdateTime: data.insertOrUpdateTime.present
+          ? data.insertOrUpdateTime.value
+          : this.insertOrUpdateTime,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('PersistenceDevice(')
@@ -1826,6 +1888,19 @@ class DirectoryContent extends DataClass
         path: path.present ? path.value : this.path,
         waitingForAccept: waitingForAccept ?? this.waitingForAccept,
       );
+  DirectoryContent copyWithCompanion(DirectoryContentsCompanion data) {
+    return DirectoryContent(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      size: data.size.present ? data.size.value : this.size,
+      state: data.state.present ? data.state.value : this.state,
+      path: data.path.present ? data.path.value : this.path,
+      waitingForAccept: data.waitingForAccept.present
+          ? data.waitingForAccept.value
+          : this.waitingForAccept,
+    );
+  }
+
   @override
   String toString() {
     return (StringBuffer('DirectoryContent(')
@@ -1966,6 +2041,7 @@ class DirectoryContentsCompanion extends UpdateCompanion<DirectoryContent> {
 
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
+  $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $BubbleEntitiesTable bubbleEntities = $BubbleEntitiesTable(this);
   late final $TextContentsTable textContents = $TextContentsTable(this);
   late final $FileContentsTable fileContents = $FileContentsTable(this);
@@ -1986,4 +2062,854 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         persistenceDevices,
         directoryContents
       ];
+}
+
+typedef $$BubbleEntitiesTableCreateCompanionBuilder = BubbleEntitiesCompanion
+    Function({
+  required String id,
+  required String fromDevice,
+  required String toDevice,
+  required int type,
+  Value<int> time,
+  Value<String> groupId,
+  Value<int> rowid,
+});
+typedef $$BubbleEntitiesTableUpdateCompanionBuilder = BubbleEntitiesCompanion
+    Function({
+  Value<String> id,
+  Value<String> fromDevice,
+  Value<String> toDevice,
+  Value<int> type,
+  Value<int> time,
+  Value<String> groupId,
+  Value<int> rowid,
+});
+
+class $$BubbleEntitiesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $BubbleEntitiesTable,
+    BubbleEntity,
+    $$BubbleEntitiesTableFilterComposer,
+    $$BubbleEntitiesTableOrderingComposer,
+    $$BubbleEntitiesTableCreateCompanionBuilder,
+    $$BubbleEntitiesTableUpdateCompanionBuilder> {
+  $$BubbleEntitiesTableTableManager(
+      _$AppDatabase db, $BubbleEntitiesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$BubbleEntitiesTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$BubbleEntitiesTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> fromDevice = const Value.absent(),
+            Value<String> toDevice = const Value.absent(),
+            Value<int> type = const Value.absent(),
+            Value<int> time = const Value.absent(),
+            Value<String> groupId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              BubbleEntitiesCompanion(
+            id: id,
+            fromDevice: fromDevice,
+            toDevice: toDevice,
+            type: type,
+            time: time,
+            groupId: groupId,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String fromDevice,
+            required String toDevice,
+            required int type,
+            Value<int> time = const Value.absent(),
+            Value<String> groupId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              BubbleEntitiesCompanion.insert(
+            id: id,
+            fromDevice: fromDevice,
+            toDevice: toDevice,
+            type: type,
+            time: time,
+            groupId: groupId,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$BubbleEntitiesTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $BubbleEntitiesTable> {
+  $$BubbleEntitiesTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get fromDevice => $state.composableBuilder(
+      column: $state.table.fromDevice,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get toDevice => $state.composableBuilder(
+      column: $state.table.toDevice,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get type => $state.composableBuilder(
+      column: $state.table.type,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get time => $state.composableBuilder(
+      column: $state.table.time,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get groupId => $state.composableBuilder(
+      column: $state.table.groupId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$BubbleEntitiesTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $BubbleEntitiesTable> {
+  $$BubbleEntitiesTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get fromDevice => $state.composableBuilder(
+      column: $state.table.fromDevice,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get toDevice => $state.composableBuilder(
+      column: $state.table.toDevice,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get type => $state.composableBuilder(
+      column: $state.table.type,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get time => $state.composableBuilder(
+      column: $state.table.time,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get groupId => $state.composableBuilder(
+      column: $state.table.groupId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+typedef $$TextContentsTableCreateCompanionBuilder = TextContentsCompanion
+    Function({
+  required String id,
+  required String content,
+  Value<int> rowid,
+});
+typedef $$TextContentsTableUpdateCompanionBuilder = TextContentsCompanion
+    Function({
+  Value<String> id,
+  Value<String> content,
+  Value<int> rowid,
+});
+
+class $$TextContentsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $TextContentsTable,
+    TextContent,
+    $$TextContentsTableFilterComposer,
+    $$TextContentsTableOrderingComposer,
+    $$TextContentsTableCreateCompanionBuilder,
+    $$TextContentsTableUpdateCompanionBuilder> {
+  $$TextContentsTableTableManager(_$AppDatabase db, $TextContentsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$TextContentsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$TextContentsTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> content = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TextContentsCompanion(
+            id: id,
+            content: content,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String content,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TextContentsCompanion.insert(
+            id: id,
+            content: content,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$TextContentsTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $TextContentsTable> {
+  $$TextContentsTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get content => $state.composableBuilder(
+      column: $state.table.content,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$TextContentsTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $TextContentsTable> {
+  $$TextContentsTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get content => $state.composableBuilder(
+      column: $state.table.content,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+typedef $$FileContentsTableCreateCompanionBuilder = FileContentsCompanion
+    Function({
+  required String id,
+  Value<String> groupId,
+  Value<String> resourceId,
+  required String name,
+  required String mimeType,
+  required String nameWithSuffix,
+  required int size,
+  Value<String?> path,
+  required int state,
+  required double progress,
+  Value<int> speed,
+  required int width,
+  required int height,
+  Value<bool> waitingForAccept,
+  Value<int> rowid,
+});
+typedef $$FileContentsTableUpdateCompanionBuilder = FileContentsCompanion
+    Function({
+  Value<String> id,
+  Value<String> groupId,
+  Value<String> resourceId,
+  Value<String> name,
+  Value<String> mimeType,
+  Value<String> nameWithSuffix,
+  Value<int> size,
+  Value<String?> path,
+  Value<int> state,
+  Value<double> progress,
+  Value<int> speed,
+  Value<int> width,
+  Value<int> height,
+  Value<bool> waitingForAccept,
+  Value<int> rowid,
+});
+
+class $$FileContentsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $FileContentsTable,
+    FileContent,
+    $$FileContentsTableFilterComposer,
+    $$FileContentsTableOrderingComposer,
+    $$FileContentsTableCreateCompanionBuilder,
+    $$FileContentsTableUpdateCompanionBuilder> {
+  $$FileContentsTableTableManager(_$AppDatabase db, $FileContentsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$FileContentsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$FileContentsTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> groupId = const Value.absent(),
+            Value<String> resourceId = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> mimeType = const Value.absent(),
+            Value<String> nameWithSuffix = const Value.absent(),
+            Value<int> size = const Value.absent(),
+            Value<String?> path = const Value.absent(),
+            Value<int> state = const Value.absent(),
+            Value<double> progress = const Value.absent(),
+            Value<int> speed = const Value.absent(),
+            Value<int> width = const Value.absent(),
+            Value<int> height = const Value.absent(),
+            Value<bool> waitingForAccept = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              FileContentsCompanion(
+            id: id,
+            groupId: groupId,
+            resourceId: resourceId,
+            name: name,
+            mimeType: mimeType,
+            nameWithSuffix: nameWithSuffix,
+            size: size,
+            path: path,
+            state: state,
+            progress: progress,
+            speed: speed,
+            width: width,
+            height: height,
+            waitingForAccept: waitingForAccept,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<String> groupId = const Value.absent(),
+            Value<String> resourceId = const Value.absent(),
+            required String name,
+            required String mimeType,
+            required String nameWithSuffix,
+            required int size,
+            Value<String?> path = const Value.absent(),
+            required int state,
+            required double progress,
+            Value<int> speed = const Value.absent(),
+            required int width,
+            required int height,
+            Value<bool> waitingForAccept = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              FileContentsCompanion.insert(
+            id: id,
+            groupId: groupId,
+            resourceId: resourceId,
+            name: name,
+            mimeType: mimeType,
+            nameWithSuffix: nameWithSuffix,
+            size: size,
+            path: path,
+            state: state,
+            progress: progress,
+            speed: speed,
+            width: width,
+            height: height,
+            waitingForAccept: waitingForAccept,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$FileContentsTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $FileContentsTable> {
+  $$FileContentsTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get groupId => $state.composableBuilder(
+      column: $state.table.groupId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get resourceId => $state.composableBuilder(
+      column: $state.table.resourceId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get mimeType => $state.composableBuilder(
+      column: $state.table.mimeType,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get nameWithSuffix => $state.composableBuilder(
+      column: $state.table.nameWithSuffix,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get size => $state.composableBuilder(
+      column: $state.table.size,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get path => $state.composableBuilder(
+      column: $state.table.path,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get state => $state.composableBuilder(
+      column: $state.table.state,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<double> get progress => $state.composableBuilder(
+      column: $state.table.progress,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get speed => $state.composableBuilder(
+      column: $state.table.speed,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get width => $state.composableBuilder(
+      column: $state.table.width,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get height => $state.composableBuilder(
+      column: $state.table.height,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get waitingForAccept => $state.composableBuilder(
+      column: $state.table.waitingForAccept,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$FileContentsTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $FileContentsTable> {
+  $$FileContentsTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get groupId => $state.composableBuilder(
+      column: $state.table.groupId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get resourceId => $state.composableBuilder(
+      column: $state.table.resourceId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get mimeType => $state.composableBuilder(
+      column: $state.table.mimeType,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get nameWithSuffix => $state.composableBuilder(
+      column: $state.table.nameWithSuffix,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get size => $state.composableBuilder(
+      column: $state.table.size,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get path => $state.composableBuilder(
+      column: $state.table.path,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get state => $state.composableBuilder(
+      column: $state.table.state,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<double> get progress => $state.composableBuilder(
+      column: $state.table.progress,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get speed => $state.composableBuilder(
+      column: $state.table.speed,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get width => $state.composableBuilder(
+      column: $state.table.width,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get height => $state.composableBuilder(
+      column: $state.table.height,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get waitingForAccept => $state.composableBuilder(
+      column: $state.table.waitingForAccept,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+typedef $$PersistenceDevicesTableCreateCompanionBuilder
+    = PersistenceDevicesCompanion Function({
+  required String alias,
+  Value<String?> deviceModel,
+  Value<int?> deviceType,
+  required String fingerprint,
+  Value<int?> port,
+  Value<int?> version,
+  Value<String?> ip,
+  Value<String?> host,
+  Value<DateTime> insertOrUpdateTime,
+  Value<int> rowid,
+});
+typedef $$PersistenceDevicesTableUpdateCompanionBuilder
+    = PersistenceDevicesCompanion Function({
+  Value<String> alias,
+  Value<String?> deviceModel,
+  Value<int?> deviceType,
+  Value<String> fingerprint,
+  Value<int?> port,
+  Value<int?> version,
+  Value<String?> ip,
+  Value<String?> host,
+  Value<DateTime> insertOrUpdateTime,
+  Value<int> rowid,
+});
+
+class $$PersistenceDevicesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $PersistenceDevicesTable,
+    PersistenceDevice,
+    $$PersistenceDevicesTableFilterComposer,
+    $$PersistenceDevicesTableOrderingComposer,
+    $$PersistenceDevicesTableCreateCompanionBuilder,
+    $$PersistenceDevicesTableUpdateCompanionBuilder> {
+  $$PersistenceDevicesTableTableManager(
+      _$AppDatabase db, $PersistenceDevicesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$PersistenceDevicesTableFilterComposer(ComposerState(db, table)),
+          orderingComposer: $$PersistenceDevicesTableOrderingComposer(
+              ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> alias = const Value.absent(),
+            Value<String?> deviceModel = const Value.absent(),
+            Value<int?> deviceType = const Value.absent(),
+            Value<String> fingerprint = const Value.absent(),
+            Value<int?> port = const Value.absent(),
+            Value<int?> version = const Value.absent(),
+            Value<String?> ip = const Value.absent(),
+            Value<String?> host = const Value.absent(),
+            Value<DateTime> insertOrUpdateTime = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PersistenceDevicesCompanion(
+            alias: alias,
+            deviceModel: deviceModel,
+            deviceType: deviceType,
+            fingerprint: fingerprint,
+            port: port,
+            version: version,
+            ip: ip,
+            host: host,
+            insertOrUpdateTime: insertOrUpdateTime,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String alias,
+            Value<String?> deviceModel = const Value.absent(),
+            Value<int?> deviceType = const Value.absent(),
+            required String fingerprint,
+            Value<int?> port = const Value.absent(),
+            Value<int?> version = const Value.absent(),
+            Value<String?> ip = const Value.absent(),
+            Value<String?> host = const Value.absent(),
+            Value<DateTime> insertOrUpdateTime = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PersistenceDevicesCompanion.insert(
+            alias: alias,
+            deviceModel: deviceModel,
+            deviceType: deviceType,
+            fingerprint: fingerprint,
+            port: port,
+            version: version,
+            ip: ip,
+            host: host,
+            insertOrUpdateTime: insertOrUpdateTime,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$PersistenceDevicesTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $PersistenceDevicesTable> {
+  $$PersistenceDevicesTableFilterComposer(super.$state);
+  ColumnFilters<String> get alias => $state.composableBuilder(
+      column: $state.table.alias,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get deviceModel => $state.composableBuilder(
+      column: $state.table.deviceModel,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get deviceType => $state.composableBuilder(
+      column: $state.table.deviceType,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get fingerprint => $state.composableBuilder(
+      column: $state.table.fingerprint,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get port => $state.composableBuilder(
+      column: $state.table.port,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get version => $state.composableBuilder(
+      column: $state.table.version,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get ip => $state.composableBuilder(
+      column: $state.table.ip,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get host => $state.composableBuilder(
+      column: $state.table.host,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get insertOrUpdateTime => $state.composableBuilder(
+      column: $state.table.insertOrUpdateTime,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$PersistenceDevicesTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $PersistenceDevicesTable> {
+  $$PersistenceDevicesTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get alias => $state.composableBuilder(
+      column: $state.table.alias,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get deviceModel => $state.composableBuilder(
+      column: $state.table.deviceModel,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get deviceType => $state.composableBuilder(
+      column: $state.table.deviceType,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get fingerprint => $state.composableBuilder(
+      column: $state.table.fingerprint,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get port => $state.composableBuilder(
+      column: $state.table.port,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get version => $state.composableBuilder(
+      column: $state.table.version,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get ip => $state.composableBuilder(
+      column: $state.table.ip,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get host => $state.composableBuilder(
+      column: $state.table.host,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get insertOrUpdateTime => $state.composableBuilder(
+      column: $state.table.insertOrUpdateTime,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+typedef $$DirectoryContentsTableCreateCompanionBuilder
+    = DirectoryContentsCompanion Function({
+  required String id,
+  required String name,
+  required int size,
+  required int state,
+  Value<String?> path,
+  Value<bool> waitingForAccept,
+  Value<int> rowid,
+});
+typedef $$DirectoryContentsTableUpdateCompanionBuilder
+    = DirectoryContentsCompanion Function({
+  Value<String> id,
+  Value<String> name,
+  Value<int> size,
+  Value<int> state,
+  Value<String?> path,
+  Value<bool> waitingForAccept,
+  Value<int> rowid,
+});
+
+class $$DirectoryContentsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $DirectoryContentsTable,
+    DirectoryContent,
+    $$DirectoryContentsTableFilterComposer,
+    $$DirectoryContentsTableOrderingComposer,
+    $$DirectoryContentsTableCreateCompanionBuilder,
+    $$DirectoryContentsTableUpdateCompanionBuilder> {
+  $$DirectoryContentsTableTableManager(
+      _$AppDatabase db, $DirectoryContentsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$DirectoryContentsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer: $$DirectoryContentsTableOrderingComposer(
+              ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<int> size = const Value.absent(),
+            Value<int> state = const Value.absent(),
+            Value<String?> path = const Value.absent(),
+            Value<bool> waitingForAccept = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              DirectoryContentsCompanion(
+            id: id,
+            name: name,
+            size: size,
+            state: state,
+            path: path,
+            waitingForAccept: waitingForAccept,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String name,
+            required int size,
+            required int state,
+            Value<String?> path = const Value.absent(),
+            Value<bool> waitingForAccept = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              DirectoryContentsCompanion.insert(
+            id: id,
+            name: name,
+            size: size,
+            state: state,
+            path: path,
+            waitingForAccept: waitingForAccept,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$DirectoryContentsTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $DirectoryContentsTable> {
+  $$DirectoryContentsTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get size => $state.composableBuilder(
+      column: $state.table.size,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get state => $state.composableBuilder(
+      column: $state.table.state,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get path => $state.composableBuilder(
+      column: $state.table.path,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get waitingForAccept => $state.composableBuilder(
+      column: $state.table.waitingForAccept,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$DirectoryContentsTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $DirectoryContentsTable> {
+  $$DirectoryContentsTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get size => $state.composableBuilder(
+      column: $state.table.size,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get state => $state.composableBuilder(
+      column: $state.table.state,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get path => $state.composableBuilder(
+      column: $state.table.path,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get waitingForAccept => $state.composableBuilder(
+      column: $state.table.waitingForAccept,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+class $AppDatabaseManager {
+  final _$AppDatabase _db;
+  $AppDatabaseManager(this._db);
+  $$BubbleEntitiesTableTableManager get bubbleEntities =>
+      $$BubbleEntitiesTableTableManager(_db, _db.bubbleEntities);
+  $$TextContentsTableTableManager get textContents =>
+      $$TextContentsTableTableManager(_db, _db.textContents);
+  $$FileContentsTableTableManager get fileContents =>
+      $$FileContentsTableTableManager(_db, _db.fileContents);
+  $$PersistenceDevicesTableTableManager get persistenceDevices =>
+      $$PersistenceDevicesTableTableManager(_db, _db.persistenceDevices);
+  $$DirectoryContentsTableTableManager get directoryContents =>
+      $$DirectoryContentsTableTableManager(_db, _db.directoryContents);
 }

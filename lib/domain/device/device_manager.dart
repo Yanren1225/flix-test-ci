@@ -11,8 +11,7 @@ import '../../network/protocol/device_modal.dart';
 // DeviceManager depends on DeviceProfileRepo and DeviceDiscover + history devices
 // DeviceDiscover depends on DeviceProfileRepo
 class DeviceManager {
-
-  DeviceManager._privateConstructor() {}
+  DeviceManager._privateConstructor();
 
   static final DeviceManager _instance = DeviceManager._privateConstructor();
 
@@ -103,20 +102,20 @@ class DeviceManager {
   }
 
   void _watchHistory() {
-    appDatabase.devicesDao.watchDevices().listen((_history) async {
+    appDatabase.devicesDao.watchDevices().listen((history) async {
       history.clear();
       talker.debug("_watchHistory start");
       // 在前端去重，当在线设备变化时，可以再次去重
       // event.removeWhere((element) => deviceList.contains(element));
-      for (int i = _history.length - 1;i >= 0; i--) {
-        var element = _history[i];
+      for (int i = history.length - 1; i >= 0; i--) {
+        var element = history[i];
         var bubbleCount = await appDatabase.bubblesDao
             .queryDeviceBubbleCount(element.fingerprint);
         if (bubbleCount == 0) {
-          _history.remove(element);
+          history.remove(element);
         }
       }
-      history.addAll(_history);
+      history.addAll(history);
       notifyHistoryChanged();
     });
   }

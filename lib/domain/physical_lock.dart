@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 class PhysicalLock {
-  static final LOCK_CHANNEL = MethodChannel('com.ifreedomer.flix/lock');
+  static const LOCK_CHANNEL = MethodChannel('com.ifreedomer.flix/lock');
 
   static void acquirePhysicalLock() {
     acquireWakeLock();

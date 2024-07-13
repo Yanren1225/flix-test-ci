@@ -1,10 +1,9 @@
-import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/utils/void_future_callback.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 // TODO: 回车确认

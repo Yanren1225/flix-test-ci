@@ -1,18 +1,14 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:archive/archive_io.dart';
-import 'package:downloadsfolder/downloadsfolder.dart';
-import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
 import 'package:flix/domain/log/persistence/partition_log_file.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:open_dir/open_dir.dart';
+import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:path/path.dart' as path;
 
 Future<void> downloadFile(BuildContext context, String logs) async {
   final File file;

@@ -20,12 +20,9 @@ class FlixDecoration extends Decoration {
                     ? SmoothBorderRadius.only(
                         topLeft: buildSmoothRadius(
                             (borderRadius as BorderRadius).topLeft.x),
-                        topRight: buildSmoothRadius(
-                            (borderRadius as BorderRadius).topRight.x),
-                        bottomLeft: buildSmoothRadius(
-                            (borderRadius as BorderRadius).bottomLeft.x),
-                        bottomRight: buildSmoothRadius(
-                            (borderRadius as BorderRadius).bottomRight.x),
+                        topRight: buildSmoothRadius((borderRadius).topRight.x),
+                        bottomLeft: buildSmoothRadius((borderRadius).bottomLeft.x),
+                        bottomRight: buildSmoothRadius((borderRadius).bottomRight.x),
                       )
                     : SmoothBorderRadius.zero));
 

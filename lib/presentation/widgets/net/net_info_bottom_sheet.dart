@@ -1,6 +1,4 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flix/domain/hotspot/hotspot_manager.dart';
-import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/style/flix_text_style.dart';
@@ -14,7 +12,7 @@ showNetInfoBottomSheet(
     BuildContext context, String apName, String wifiName) async {
   await showCupertinoModalPopup(
       context: context,
-      builder: (_context) {
+      builder: (context) {
         return NetInfoBottomSheet(
           apName: apName,
           wifiName: wifiName,
@@ -35,7 +33,7 @@ class NetInfoBottomSheet extends StatelessWidget {
     return FlixBottomSheet(
       title: "网络连接信息",
       child: Padding(
-          padding: EdgeInsets.only(top: 24, bottom: 28),
+          padding: const EdgeInsets.only(top: 24, bottom: 28),
           child: NetInfoList(
             apName: apName,
             wifiName: wifiName,

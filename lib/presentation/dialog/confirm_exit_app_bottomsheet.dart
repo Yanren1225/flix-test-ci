@@ -4,6 +4,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:window_manager/window_manager.dart';
 
 class ConfirmExitAppBottomSheet extends StatelessWidget {
+  const ConfirmExitAppBottomSheet({super.key});
+
   @override
   Widget build(BuildContext context) {
     return FlixBottomSheet(
@@ -20,7 +22,10 @@ class ConfirmExitAppBottomSheet extends StatelessWidget {
       Navigator.of(context).pop();
       await windowManager.destroy();
     },
-      child: Padding(padding: EdgeInsets.only(top: 16, bottom: 24),child: Align(heightFactor: 1.0, child: SvgPicture.asset('assets/images/ic_big_delete.svg'))),
+      child: Padding(
+          padding: const EdgeInsets.only(top: 16, bottom: 24),
+          child:
+              Align(heightFactor: 1.0, child: SvgPicture.asset('assets/images/ic_big_delete.svg'))),
     );
   }
 

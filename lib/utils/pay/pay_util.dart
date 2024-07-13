@@ -4,8 +4,6 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:shared_storage/shared_storage.dart';
-import 'package:slang/builder/utils/file_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PayUtil {
@@ -32,8 +30,8 @@ class PayUtil {
     final List<int> bytes = byteData.buffer.asUint8List();
 
     // 获取存储路径
-    final String? extDir = await getCachePath();
-    final String filePath = '${extDir}/image_from_assets.png';
+    final String extDir = await getCachePath();
+    final String filePath = '$extDir/image_from_assets.png';
 
     // 将图片保存到文件
     final File file = File(filePath);

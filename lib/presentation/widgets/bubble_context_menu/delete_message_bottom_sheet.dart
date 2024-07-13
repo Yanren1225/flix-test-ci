@@ -1,4 +1,3 @@
-import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
 import 'package:flix/utils/void_future_callback.dart';
 import 'package:flutter/widgets.dart';
@@ -23,7 +22,10 @@ class DeleteMessageBottomSheet extends StatelessWidget {
       subTitle: '如果文件正在传输，删除消息会中断传输',
       buttonText: '删除',
       onClick: onConfirm,
-      child: Padding(padding: EdgeInsets.only(top: 16, bottom: 24),child: Align(heightFactor: 1.0, child: SvgPicture.asset('assets/images/ic_big_delete.svg'))),
+      child: Padding(
+          padding: const EdgeInsets.only(top: 16, bottom: 24),
+          child:
+              Align(heightFactor: 1.0, child: SvgPicture.asset('assets/images/ic_big_delete.svg'))),
     );
   }
 }

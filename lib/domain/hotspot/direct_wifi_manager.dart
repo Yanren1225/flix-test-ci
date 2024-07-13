@@ -5,7 +5,7 @@ import 'package:flix/model/hotspot/hotspot_info.dart';
 import 'package:wifi_iot/wifi_iot.dart';
 
 class DirectWifiManager  {
-  HotspotInfo? hotspotInfo = null;
+  HotspotInfo? hotspotInfo;
   StreamController<HotspotInfo?> hotspotInfoStreamController = StreamController.broadcast();
 
   DirectWifiManager._privateConstructor();

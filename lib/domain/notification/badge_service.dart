@@ -1,4 +1,3 @@
-import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/notification/reception_notification.dart';
 
 class BadgeService {
@@ -24,9 +23,9 @@ class BadgeService {
   }
 
   void notifyBadgesChanged() {
-    onBadgesChanged.forEach((listener) {
+    for (var listener in onBadgesChanged) {
       listener(badges);
-    });
+    }
   }
 
   void addOnBadgesChangedListener(OnBadgesChanged listener) {

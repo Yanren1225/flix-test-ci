@@ -16,7 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 var isCheckingPermission = false;
 
 abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
-  StreamSubscription<PrimitiveBubble>? subscription = null;
+  StreamSubscription<PrimitiveBubble>? subscription;
 
   @override
   void initState() {
@@ -117,7 +117,8 @@ Future<bool> checkPermission(BuildContext? context, List<Permission> permissions
   return await _checkPermission(context, permissions, title, subTitle);
 }
 
-Future<bool> _checkPermission(BuildContext? context, List<Permission> permissions, String title, String subTitle, {int requestCount = 0}) async {
+Future<bool> _checkPermission(
+    BuildContext? context, List<Permission> permissions, String title, String subTitle) async {
   if (Platform.isAndroid) {
     try {
       bool isGranted = await isAllGranted(permissions);
@@ -141,7 +142,7 @@ Future<bool> _checkPermission(BuildContext? context, List<Permission> permission
         if (context != null) {
           await showCupertinoModalPopup(
               context: context,
-              builder: (_context) {
+              builder: (context) {
                 return PermissionBottomSheet(title: title, subTitle: subTitle, onConfirm: () async {
                     await _openAppSettings();
                 });

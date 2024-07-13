@@ -33,17 +33,15 @@ class FlixNotification {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('ic_launcher');
 
-    final DarwinInitializationSettings initializationSettingsDarwin =
-        DarwinInitializationSettings(
+    const DarwinInitializationSettings initializationSettingsDarwin = DarwinInitializationSettings(
             onDidReceiveLocalNotification: null,
             requestAlertPermission: true,
             requestBadgePermission: true,
             requestSoundPermission: true,
             requestCriticalPermission: true);
-    final LinuxInitializationSettings initializationSettingsLinux =
+    const LinuxInitializationSettings initializationSettingsLinux =
         LinuxInitializationSettings(defaultActionName: 'Open notification');
-    final InitializationSettings initializationSettings =
-        InitializationSettings(
+    const InitializationSettings initializationSettings = InitializationSettings(
             android: initializationSettingsAndroid,
             iOS: initializationSettingsDarwin,
             macOS: initializationSettingsDarwin,
@@ -219,7 +217,7 @@ class FlixNotification {
   Future<List<ActiveNotification>> getNotifications() async {
     try {
       return (await flutterLocalNotificationsPlugin.getActiveNotifications());
-    } on UnimplementedError catch (e) {
+    } on UnimplementedError {
       return <ActiveNotification>[];
     }
   }
