@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: android
-          path: /home/runner/work/androp/build/app/outputs/flutter-apk
+          path: /home/runner/work/androp/build/app/outputs/
 
   ios:
     runs-on: macos-latest
@@ -65,7 +65,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: release-ipa
-          path: build/ios/ipa/App.ipa
+          path: /Users/runner/work/androp/androp/build/ios/ipa/
   linux-deb:
     runs-on: ubuntu-latest
     container:
