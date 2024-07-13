@@ -26,6 +26,7 @@ enum TransAction {
   confirmPairDevice,
   deletePairDevice,
   confirmDeletePairDevice,
+  clipboard,
   // resend,
   cancel,
 }

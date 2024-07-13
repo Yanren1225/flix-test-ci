@@ -5,6 +5,11 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:flix/domain/lifecycle/app_lifecycle.dart';
+import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/domain/ship_server/ship_service_proxy.dart';
+import 'package:flix/utils/pay/pay_util.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 
 // The callback function should always be a top-level function.
@@ -15,15 +20,27 @@ void startCallback() {
 }
 
 class FirstTaskHandler extends TaskHandler {
+  SendPort? sendPort = null;
+
 
   @override
   void onStart(DateTime timestamp, SendPort? sendPort) async {
     // TODO
+    this.sendPort = sendPort;
   }
 
   @override
   void onRepeatEvent(DateTime timestamp, SendPort? sendPort) async {
 
+  }
+
+  @override
+  Future<void> onNotificationButtonPressed(String id) async {
+    super.onNotificationButtonPressed(id);
+    talker.debug("onNotificationButtonPressed","clip $id");
+    if(id == "send_clipboard"){
+      this.sendPort?.send("$id");
+    }
   }
 
   @override
@@ -36,9 +53,9 @@ class FlixForegroundService extends LifecycleListener {
 
 
   void init() {
+
     FlutterForegroundTask.init(
       androidNotificationOptions: AndroidNotificationOptions(
-        foregroundServiceType: AndroidForegroundServiceType.SPECIAL_USE,
         channelId: 'foreground_service',
         channelName: '文件传输',
         channelDescription: '文件传输提醒',
@@ -49,10 +66,15 @@ class FlixForegroundService extends LifecycleListener {
           resPrefix: ResourcePrefix.ic,
           name: 'launcher',
         ),
-        // buttons: [
-        //   const NotificationButton(id: 'sendButton', text: 'Send'),
-        //   const NotificationButton(id: 'testButton', text: 'Test'),
-        // ],
+        buttons: [
+          const NotificationButton(
+            id: 'send_clipboard',
+            text: '发送到剪贴板',
+            launchType: NotificationButton.ACTIVITY,
+            action: "send_clipboard_action",
+            textColor: Colors.blue
+          ),
+        ],
       ),
       iosNotificationOptions: const IOSNotificationOptions(
         showNotification: true,
@@ -137,7 +159,7 @@ class FlixForegroundService extends LifecycleListener {
 
     _receivePort = newReceivePort;
     _receivePort?.listen((data) {
-      // TODO
+      talker.debug("_receivePort listen = $data");
     });
 
     return _receivePort != null;

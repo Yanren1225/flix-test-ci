@@ -1,5 +1,6 @@
 package com.ifreedomer.flix
 
+import android.content.ClipboardManager
 import android.net.wifi.WifiManager
 import android.os.Build
 import io.flutter.embedding.android.FlutterActivity
@@ -8,20 +9,45 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 import android.content.Intent
 import android.content.Context
+import android.os.Bundle
 import android.os.PowerManager
+import android.util.Log
 
 
 class MainActivity : FlutterActivity() {
     companion object {
         const val MULTICAST_LOCK_CHANNEL = "com.ifreedomer.flix/multicast-lock"
         const val PAY_CHANNEL = "com.ifreedomer.flix/pay"
+        const val CLIPBOARD_CHANNEL = "com.ifreedomer.flix/clipboard"
         const val LOCK_CHANNEL = "com.ifreedomer.flix/lock"
+        const val TAG = "MainActivity"
+
+        const val FROM = "from"
+        const val FROM_CLIPBOARD_NOTIFICATION = "send_clipboard_action"
+        var clipboardChannel: MethodChannel? = null
+        fun notifyClipboardCopy(context: Context) {
+            val clipboardManager =
+                context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            Log.i(TAG, "notifyStartClipboardCopy ${clipboardManager.text}", Exception())
+            clipboardChannel?.invokeMethod("return_send_clipboard", clipboardManager.text)
+        }
     }
 
     private var multicastLock: WifiManager.MulticastLock? = null
     private var wakeLock: PowerManager.WakeLock? = null
     private var wifiLock: WifiManager.WifiLock? = null
+    private var isFromNotification = false
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.i(TAG,"onCreate action = ${intent.action}")
+        isFromNotification = isFromNotification(intent)
+    }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        Log.i(TAG,"onCreate action = ${intent.action}")
+        isFromNotification = isFromNotification(intent)
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -50,6 +76,24 @@ class MainActivity : FlutterActivity() {
             }
         }
 
+
+        clipboardChannel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            CLIPBOARD_CHANNEL
+        )
+
+        clipboardChannel?.setMethodCallHandler { call, result ->
+            if (call.method.equals("send_clipboard")) {
+                startActivity(Intent(applicationContext, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    putExtra(FROM, FROM_CLIPBOARD_NOTIFICATION)
+                })
+                result.success("")
+            } else {
+                result.notImplemented();
+            }
+        }
+
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             LOCK_CHANNEL
@@ -69,6 +113,10 @@ class MainActivity : FlutterActivity() {
 
     }
 
+    private fun isFromNotification(curIntent:Intent) :Boolean{
+        val from = curIntent.action
+        return FROM_CLIPBOARD_NOTIFICATION == from
+    }
 
     private fun aquireMulticastLock(): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.DONUT) {

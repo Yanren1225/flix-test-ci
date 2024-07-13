@@ -4,15 +4,20 @@ import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/constants.dart';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/ap_interface.dart';
+import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/domain/physical_lock.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/utils/bubble_convert.dart';
+
+import '../../utils/compat/compat_util.dart';
 
 class ShipServiceProxy extends ApInterface {
   final syncTasks = <String, Completer>{};
@@ -26,6 +31,10 @@ class ShipServiceProxy extends ApInterface {
   static final ShipServiceProxy _instance = ShipServiceProxy._internal();
 
   static final ShipServiceProxy instance = _instance;
+
+  String getAddressByDeviceId(String deviceId) {
+    return '${DeviceManager.instance.getNetAdressByDeviceId(deviceId)}';
+  }
 
   Future<bool> startShipServer() async {
     talker.debug("startScan startShipServer");
@@ -77,9 +86,9 @@ class ShipServiceProxy extends ApInterface {
     await _shipService.askPairDevice(deviceId, code);
   }
 
-
   Future<void> deletePairDevice(String deleteDeviceId) async {
-    talker.debug('pairDevice', "deletePairDevice deleteDeviceId = $deleteDeviceId ");
+    talker.debug(
+        'pairDevice', "deletePairDevice deleteDeviceId = $deleteDeviceId ");
     await _awaitServerReady();
     _shipService.askDeletePairDevice(deleteDeviceId);
   }
@@ -105,6 +114,37 @@ class ShipServiceProxy extends ApInterface {
 
   Future<bool> _awaitServerReady() async {
     return _serverReadyTask.future;
+  }
+
+  void notifyNewBubble(PrimitiveBubble bubble) {
+    BubblePool.instance.notify(bubble);
+  }
+
+  bool supportBreakPoint(String fingerprint) {
+    return CompatUtil.supportBreakPoint(fingerprint);
+  }
+
+  Future<void> markTaskStarted() async {
+    PhysicalLock.acquirePhysicalLock();
+  }
+
+  Future<void> markTaskStopped() async {
+    PhysicalLock.releasePhysicalLock();
+  }
+
+  void dispatcherClipboard(String lastText) {
+    var pairDevices = DeviceManager.instance.pairDevices;
+    var deviceList = DeviceManager.instance.deviceList;
+    var pairDeviceIds = [];
+    for (var element in pairDevices) {
+      pairDeviceIds.add(element.fingerprint);
+    }
+
+    for (var element in deviceList) {
+      if (pairDeviceIds.contains(element.fingerprint)) {
+        _shipService.sendClipboard(element.fingerprint,lastText);
+      }
+    }
   }
 }
 

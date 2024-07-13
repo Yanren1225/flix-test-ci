@@ -38,8 +38,17 @@ class $BubbleEntitiesTable extends BubbleEntities
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       defaultValue: const Constant(0x7FFFFFFFFFFFFFFF));
+  static const VerificationMeta _groupIdMeta =
+      const VerificationMeta('groupId');
   @override
-  List<GeneratedColumn> get $columns => [id, fromDevice, toDevice, type, time];
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+      'group_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(""));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, fromDevice, toDevice, type, time, groupId];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -79,6 +88,10 @@ class $BubbleEntitiesTable extends BubbleEntities
       context.handle(
           _timeMeta, time.isAcceptableOrUnknown(data['time']!, _timeMeta));
     }
+    if (data.containsKey('group_id')) {
+      context.handle(_groupIdMeta,
+          groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta));
+    }
     return context;
   }
 
@@ -98,6 +111,8 @@ class $BubbleEntitiesTable extends BubbleEntities
           .read(DriftSqlType.int, data['${effectivePrefix}type'])!,
       time: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}time'])!,
+      groupId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}group_id'])!,
     );
   }
 
@@ -113,12 +128,14 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
   final String toDevice;
   final int type;
   final int time;
+  final String groupId;
   const BubbleEntity(
       {required this.id,
       required this.fromDevice,
       required this.toDevice,
       required this.type,
-      required this.time});
+      required this.time,
+      required this.groupId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -127,6 +144,7 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
     map['to_device'] = Variable<String>(toDevice);
     map['type'] = Variable<int>(type);
     map['time'] = Variable<int>(time);
+    map['group_id'] = Variable<String>(groupId);
     return map;
   }
 
@@ -137,6 +155,7 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
       toDevice: Value(toDevice),
       type: Value(type),
       time: Value(time),
+      groupId: Value(groupId),
     );
   }
 
@@ -149,6 +168,7 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
       toDevice: serializer.fromJson<String>(json['toDevice']),
       type: serializer.fromJson<int>(json['type']),
       time: serializer.fromJson<int>(json['time']),
+      groupId: serializer.fromJson<String>(json['groupId']),
     );
   }
   @override
@@ -160,6 +180,7 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
       'toDevice': serializer.toJson<String>(toDevice),
       'type': serializer.toJson<int>(type),
       'time': serializer.toJson<int>(time),
+      'groupId': serializer.toJson<String>(groupId),
     };
   }
 
@@ -168,13 +189,15 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
           String? fromDevice,
           String? toDevice,
           int? type,
-          int? time}) =>
+          int? time,
+          String? groupId}) =>
       BubbleEntity(
         id: id ?? this.id,
         fromDevice: fromDevice ?? this.fromDevice,
         toDevice: toDevice ?? this.toDevice,
         type: type ?? this.type,
         time: time ?? this.time,
+        groupId: groupId ?? this.groupId,
       );
   BubbleEntity copyWithCompanion(BubbleEntitiesCompanion data) {
     return BubbleEntity(
@@ -195,13 +218,15 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
           ..write('fromDevice: $fromDevice, ')
           ..write('toDevice: $toDevice, ')
           ..write('type: $type, ')
-          ..write('time: $time')
+          ..write('time: $time, ')
+          ..write('groupId: $groupId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, fromDevice, toDevice, type, time);
+  int get hashCode =>
+      Object.hash(id, fromDevice, toDevice, type, time, groupId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -210,7 +235,8 @@ class BubbleEntity extends DataClass implements Insertable<BubbleEntity> {
           other.fromDevice == this.fromDevice &&
           other.toDevice == this.toDevice &&
           other.type == this.type &&
-          other.time == this.time);
+          other.time == this.time &&
+          other.groupId == this.groupId);
 }
 
 class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
@@ -219,6 +245,7 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
   final Value<String> toDevice;
   final Value<int> type;
   final Value<int> time;
+  final Value<String> groupId;
   final Value<int> rowid;
   const BubbleEntitiesCompanion({
     this.id = const Value.absent(),
@@ -226,6 +253,7 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
     this.toDevice = const Value.absent(),
     this.type = const Value.absent(),
     this.time = const Value.absent(),
+    this.groupId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   BubbleEntitiesCompanion.insert({
@@ -234,6 +262,7 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
     required String toDevice,
     required int type,
     this.time = const Value.absent(),
+    this.groupId = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : id = Value(id),
         fromDevice = Value(fromDevice),
@@ -245,6 +274,7 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
     Expression<String>? toDevice,
     Expression<int>? type,
     Expression<int>? time,
+    Expression<String>? groupId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -253,6 +283,7 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
       if (toDevice != null) 'to_device': toDevice,
       if (type != null) 'type': type,
       if (time != null) 'time': time,
+      if (groupId != null) 'group_id': groupId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -263,6 +294,7 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
       Value<String>? toDevice,
       Value<int>? type,
       Value<int>? time,
+      Value<String>? groupId,
       Value<int>? rowid}) {
     return BubbleEntitiesCompanion(
       id: id ?? this.id,
@@ -270,6 +302,7 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
       toDevice: toDevice ?? this.toDevice,
       type: type ?? this.type,
       time: time ?? this.time,
+      groupId: groupId ?? this.groupId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -292,6 +325,9 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
     if (time.present) {
       map['time'] = Variable<int>(time.value);
     }
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -306,6 +342,7 @@ class BubbleEntitiesCompanion extends UpdateCompanion<BubbleEntity> {
           ..write('toDevice: $toDevice, ')
           ..write('type: $type, ')
           ..write('time: $time, ')
+          ..write('groupId: $groupId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -513,6 +550,14 @@ class $FileContentsTable extends FileContents
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
       'id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _groupIdMeta =
+      const VerificationMeta('groupId');
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+      'group_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
   static const VerificationMeta _resourceIdMeta =
       const VerificationMeta('resourceId');
   @override
@@ -589,6 +634,7 @@ class $FileContentsTable extends FileContents
   @override
   List<GeneratedColumn> get $columns => [
         id,
+        groupId,
         resourceId,
         name,
         mimeType,
@@ -616,6 +662,10 @@ class $FileContentsTable extends FileContents
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
+    }
+    if (data.containsKey('group_id')) {
+      context.handle(_groupIdMeta,
+          groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta));
     }
     if (data.containsKey('resource_id')) {
       context.handle(
@@ -698,6 +748,8 @@ class $FileContentsTable extends FileContents
     return FileContent(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      groupId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}group_id'])!,
       resourceId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}resource_id'])!,
       name: attachedDatabase.typeMapping
@@ -733,6 +785,7 @@ class $FileContentsTable extends FileContents
 
 class FileContent extends DataClass implements Insertable<FileContent> {
   final String id;
+  final String groupId;
   final String resourceId;
   final String name;
   final String mimeType;
@@ -747,6 +800,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
   final bool waitingForAccept;
   const FileContent(
       {required this.id,
+      required this.groupId,
       required this.resourceId,
       required this.name,
       required this.mimeType,
@@ -763,6 +817,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['group_id'] = Variable<String>(groupId);
     map['resource_id'] = Variable<String>(resourceId);
     map['name'] = Variable<String>(name);
     map['mime_type'] = Variable<String>(mimeType);
@@ -783,6 +838,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
   FileContentsCompanion toCompanion(bool nullToAbsent) {
     return FileContentsCompanion(
       id: Value(id),
+      groupId: Value(groupId),
       resourceId: Value(resourceId),
       name: Value(name),
       mimeType: Value(mimeType),
@@ -803,6 +859,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return FileContent(
       id: serializer.fromJson<String>(json['id']),
+      groupId: serializer.fromJson<String>(json['groupId']),
       resourceId: serializer.fromJson<String>(json['resourceId']),
       name: serializer.fromJson<String>(json['name']),
       mimeType: serializer.fromJson<String>(json['mimeType']),
@@ -822,6 +879,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'groupId': serializer.toJson<String>(groupId),
       'resourceId': serializer.toJson<String>(resourceId),
       'name': serializer.toJson<String>(name),
       'mimeType': serializer.toJson<String>(mimeType),
@@ -839,6 +897,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
 
   FileContent copyWith(
           {String? id,
+          String? groupId,
           String? resourceId,
           String? name,
           String? mimeType,
@@ -853,6 +912,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
           bool? waitingForAccept}) =>
       FileContent(
         id: id ?? this.id,
+        groupId: groupId ?? this.groupId,
         resourceId: resourceId ?? this.resourceId,
         name: name ?? this.name,
         mimeType: mimeType ?? this.mimeType,
@@ -894,6 +954,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
   String toString() {
     return (StringBuffer('FileContent(')
           ..write('id: $id, ')
+          ..write('groupId: $groupId, ')
           ..write('resourceId: $resourceId, ')
           ..write('name: $name, ')
           ..write('mimeType: $mimeType, ')
@@ -913,6 +974,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
   @override
   int get hashCode => Object.hash(
       id,
+      groupId,
       resourceId,
       name,
       mimeType,
@@ -930,6 +992,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
       identical(this, other) ||
       (other is FileContent &&
           other.id == this.id &&
+          other.groupId == this.groupId &&
           other.resourceId == this.resourceId &&
           other.name == this.name &&
           other.mimeType == this.mimeType &&
@@ -946,6 +1009,7 @@ class FileContent extends DataClass implements Insertable<FileContent> {
 
 class FileContentsCompanion extends UpdateCompanion<FileContent> {
   final Value<String> id;
+  final Value<String> groupId;
   final Value<String> resourceId;
   final Value<String> name;
   final Value<String> mimeType;
@@ -961,6 +1025,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
   final Value<int> rowid;
   const FileContentsCompanion({
     this.id = const Value.absent(),
+    this.groupId = const Value.absent(),
     this.resourceId = const Value.absent(),
     this.name = const Value.absent(),
     this.mimeType = const Value.absent(),
@@ -977,6 +1042,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
   });
   FileContentsCompanion.insert({
     required String id,
+    this.groupId = const Value.absent(),
     this.resourceId = const Value.absent(),
     required String name,
     required String mimeType,
@@ -1001,6 +1067,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
         height = Value(height);
   static Insertable<FileContent> custom({
     Expression<String>? id,
+    Expression<String>? groupId,
     Expression<String>? resourceId,
     Expression<String>? name,
     Expression<String>? mimeType,
@@ -1017,6 +1084,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (groupId != null) 'group_id': groupId,
       if (resourceId != null) 'resource_id': resourceId,
       if (name != null) 'name': name,
       if (mimeType != null) 'mime_type': mimeType,
@@ -1035,6 +1103,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
 
   FileContentsCompanion copyWith(
       {Value<String>? id,
+      Value<String>? groupId,
       Value<String>? resourceId,
       Value<String>? name,
       Value<String>? mimeType,
@@ -1050,6 +1119,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
       Value<int>? rowid}) {
     return FileContentsCompanion(
       id: id ?? this.id,
+      groupId: groupId ?? this.groupId,
       resourceId: resourceId ?? this.resourceId,
       name: name ?? this.name,
       mimeType: mimeType ?? this.mimeType,
@@ -1071,6 +1141,9 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
+    }
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
     }
     if (resourceId.present) {
       map['resource_id'] = Variable<String>(resourceId.value);
@@ -1118,6 +1191,7 @@ class FileContentsCompanion extends UpdateCompanion<FileContent> {
   String toString() {
     return (StringBuffer('FileContentsCompanion(')
           ..write('id: $id, ')
+          ..write('groupId: $groupId, ')
           ..write('resourceId: $resourceId, ')
           ..write('name: $name, ')
           ..write('mimeType: $mimeType, ')
@@ -1751,16 +1825,14 @@ class PairDevice extends DataClass implements Insertable<PairDevice> {
         code: code ?? this.code,
         insertOrUpdateTime: insertOrUpdateTime ?? this.insertOrUpdateTime,
       );
-  DirectoryContent copyWithCompanion(DirectoryContentsCompanion data) {
-    return DirectoryContent(
-      id: data.id.present ? data.id.value : this.id,
-      name: data.name.present ? data.name.value : this.name,
-      size: data.size.present ? data.size.value : this.size,
-      state: data.state.present ? data.state.value : this.state,
-      path: data.path.present ? data.path.value : this.path,
-      waitingForAccept: data.waitingForAccept.present
-          ? data.waitingForAccept.value
-          : this.waitingForAccept,
+  PairDevice copyWithCompanion(PairDevicesCompanion data) {
+    return PairDevice(
+      fingerprint:
+          data.fingerprint.present ? data.fingerprint.value : this.fingerprint,
+      code: data.code.present ? data.code.value : this.code,
+      insertOrUpdateTime: data.insertOrUpdateTime.present
+          ? data.insertOrUpdateTime.value
+          : this.insertOrUpdateTime,
     );
   }
 
@@ -1862,6 +1934,354 @@ class PairDevicesCompanion extends UpdateCompanion<PairDevice> {
   }
 }
 
+class $DirectoryContentsTable extends DirectoryContents
+    with TableInfo<$DirectoryContentsTable, DirectoryContent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DirectoryContentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _sizeMeta = const VerificationMeta('size');
+  @override
+  late final GeneratedColumn<int> size = GeneratedColumn<int>(
+      'size', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<int> state = GeneratedColumn<int>(
+      'state', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _pathMeta = const VerificationMeta('path');
+  @override
+  late final GeneratedColumn<String> path = GeneratedColumn<String>(
+      'path', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _waitingForAcceptMeta =
+      const VerificationMeta('waitingForAccept');
+  @override
+  late final GeneratedColumn<bool> waitingForAccept = GeneratedColumn<bool>(
+      'waiting_for_accept', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("waiting_for_accept" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, size, state, path, waitingForAccept];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'directory_contents';
+  @override
+  VerificationContext validateIntegrity(Insertable<DirectoryContent> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('size')) {
+      context.handle(
+          _sizeMeta, size.isAcceptableOrUnknown(data['size']!, _sizeMeta));
+    } else if (isInserting) {
+      context.missing(_sizeMeta);
+    }
+    if (data.containsKey('state')) {
+      context.handle(
+          _stateMeta, state.isAcceptableOrUnknown(data['state']!, _stateMeta));
+    } else if (isInserting) {
+      context.missing(_stateMeta);
+    }
+    if (data.containsKey('path')) {
+      context.handle(
+          _pathMeta, path.isAcceptableOrUnknown(data['path']!, _pathMeta));
+    }
+    if (data.containsKey('waiting_for_accept')) {
+      context.handle(
+          _waitingForAcceptMeta,
+          waitingForAccept.isAcceptableOrUnknown(
+              data['waiting_for_accept']!, _waitingForAcceptMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DirectoryContent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DirectoryContent(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      size: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}size'])!,
+      state: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}state'])!,
+      path: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}path']),
+      waitingForAccept: attachedDatabase.typeMapping.read(
+          DriftSqlType.bool, data['${effectivePrefix}waiting_for_accept'])!,
+    );
+  }
+
+  @override
+  $DirectoryContentsTable createAlias(String alias) {
+    return $DirectoryContentsTable(attachedDatabase, alias);
+  }
+}
+
+class DirectoryContent extends DataClass
+    implements Insertable<DirectoryContent> {
+  final String id;
+  final String name;
+  final int size;
+  final int state;
+  final String? path;
+  final bool waitingForAccept;
+  const DirectoryContent(
+      {required this.id,
+      required this.name,
+      required this.size,
+      required this.state,
+      this.path,
+      required this.waitingForAccept});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['size'] = Variable<int>(size);
+    map['state'] = Variable<int>(state);
+    if (!nullToAbsent || path != null) {
+      map['path'] = Variable<String>(path);
+    }
+    map['waiting_for_accept'] = Variable<bool>(waitingForAccept);
+    return map;
+  }
+
+  DirectoryContentsCompanion toCompanion(bool nullToAbsent) {
+    return DirectoryContentsCompanion(
+      id: Value(id),
+      name: Value(name),
+      size: Value(size),
+      state: Value(state),
+      path: path == null && nullToAbsent ? const Value.absent() : Value(path),
+      waitingForAccept: Value(waitingForAccept),
+    );
+  }
+
+  factory DirectoryContent.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DirectoryContent(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      size: serializer.fromJson<int>(json['size']),
+      state: serializer.fromJson<int>(json['state']),
+      path: serializer.fromJson<String?>(json['path']),
+      waitingForAccept: serializer.fromJson<bool>(json['waitingForAccept']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'size': serializer.toJson<int>(size),
+      'state': serializer.toJson<int>(state),
+      'path': serializer.toJson<String?>(path),
+      'waitingForAccept': serializer.toJson<bool>(waitingForAccept),
+    };
+  }
+
+  DirectoryContent copyWith(
+          {String? id,
+          String? name,
+          int? size,
+          int? state,
+          Value<String?> path = const Value.absent(),
+          bool? waitingForAccept}) =>
+      DirectoryContent(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        size: size ?? this.size,
+        state: state ?? this.state,
+        path: path.present ? path.value : this.path,
+        waitingForAccept: waitingForAccept ?? this.waitingForAccept,
+      );
+  DirectoryContent copyWithCompanion(DirectoryContentsCompanion data) {
+    return DirectoryContent(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      size: data.size.present ? data.size.value : this.size,
+      state: data.state.present ? data.state.value : this.state,
+      path: data.path.present ? data.path.value : this.path,
+      waitingForAccept: data.waitingForAccept.present
+          ? data.waitingForAccept.value
+          : this.waitingForAccept,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DirectoryContent(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('size: $size, ')
+          ..write('state: $state, ')
+          ..write('path: $path, ')
+          ..write('waitingForAccept: $waitingForAccept')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, size, state, path, waitingForAccept);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DirectoryContent &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.size == this.size &&
+          other.state == this.state &&
+          other.path == this.path &&
+          other.waitingForAccept == this.waitingForAccept);
+}
+
+class DirectoryContentsCompanion extends UpdateCompanion<DirectoryContent> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<int> size;
+  final Value<int> state;
+  final Value<String?> path;
+  final Value<bool> waitingForAccept;
+  final Value<int> rowid;
+  const DirectoryContentsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.size = const Value.absent(),
+    this.state = const Value.absent(),
+    this.path = const Value.absent(),
+    this.waitingForAccept = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DirectoryContentsCompanion.insert({
+    required String id,
+    required String name,
+    required int size,
+    required int state,
+    this.path = const Value.absent(),
+    this.waitingForAccept = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        name = Value(name),
+        size = Value(size),
+        state = Value(state);
+  static Insertable<DirectoryContent> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<int>? size,
+    Expression<int>? state,
+    Expression<String>? path,
+    Expression<bool>? waitingForAccept,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (size != null) 'size': size,
+      if (state != null) 'state': state,
+      if (path != null) 'path': path,
+      if (waitingForAccept != null) 'waiting_for_accept': waitingForAccept,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DirectoryContentsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? name,
+      Value<int>? size,
+      Value<int>? state,
+      Value<String?>? path,
+      Value<bool>? waitingForAccept,
+      Value<int>? rowid}) {
+    return DirectoryContentsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      size: size ?? this.size,
+      state: state ?? this.state,
+      path: path ?? this.path,
+      waitingForAccept: waitingForAccept ?? this.waitingForAccept,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (size.present) {
+      map['size'] = Variable<int>(size.value);
+    }
+    if (state.present) {
+      map['state'] = Variable<int>(state.value);
+    }
+    if (path.present) {
+      map['path'] = Variable<String>(path.value);
+    }
+    if (waitingForAccept.present) {
+      map['waiting_for_accept'] = Variable<bool>(waitingForAccept.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DirectoryContentsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('size: $size, ')
+          ..write('state: $state, ')
+          ..write('path: $path, ')
+          ..write('waitingForAccept: $waitingForAccept, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1871,6 +2291,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $PersistenceDevicesTable persistenceDevices =
       $PersistenceDevicesTable(this);
   late final $PairDevicesTable pairDevices = $PairDevicesTable(this);
+  late final $DirectoryContentsTable directoryContents =
+      $DirectoryContentsTable(this);
   late final BubblesDao bubblesDao = BubblesDao(this as AppDatabase);
   late final DevicesDao devicesDao = DevicesDao(this as AppDatabase);
   late final PairDevicesDao pairDevicesDao =
@@ -1884,7 +2306,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         textContents,
         fileContents,
         persistenceDevices,
-        pairDevices
+        pairDevices,
+        directoryContents
       ];
 }
 
@@ -2578,6 +3001,102 @@ class $$PersistenceDevicesTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+typedef $$PairDevicesTableCreateCompanionBuilder = PairDevicesCompanion
+    Function({
+  required String fingerprint,
+  required String code,
+  Value<DateTime> insertOrUpdateTime,
+  Value<int> rowid,
+});
+typedef $$PairDevicesTableUpdateCompanionBuilder = PairDevicesCompanion
+    Function({
+  Value<String> fingerprint,
+  Value<String> code,
+  Value<DateTime> insertOrUpdateTime,
+  Value<int> rowid,
+});
+
+class $$PairDevicesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $PairDevicesTable,
+    PairDevice,
+    $$PairDevicesTableFilterComposer,
+    $$PairDevicesTableOrderingComposer,
+    $$PairDevicesTableCreateCompanionBuilder,
+    $$PairDevicesTableUpdateCompanionBuilder> {
+  $$PairDevicesTableTableManager(_$AppDatabase db, $PairDevicesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$PairDevicesTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$PairDevicesTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> fingerprint = const Value.absent(),
+            Value<String> code = const Value.absent(),
+            Value<DateTime> insertOrUpdateTime = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PairDevicesCompanion(
+            fingerprint: fingerprint,
+            code: code,
+            insertOrUpdateTime: insertOrUpdateTime,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String fingerprint,
+            required String code,
+            Value<DateTime> insertOrUpdateTime = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PairDevicesCompanion.insert(
+            fingerprint: fingerprint,
+            code: code,
+            insertOrUpdateTime: insertOrUpdateTime,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$PairDevicesTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $PairDevicesTable> {
+  $$PairDevicesTableFilterComposer(super.$state);
+  ColumnFilters<String> get fingerprint => $state.composableBuilder(
+      column: $state.table.fingerprint,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get code => $state.composableBuilder(
+      column: $state.table.code,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get insertOrUpdateTime => $state.composableBuilder(
+      column: $state.table.insertOrUpdateTime,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$PairDevicesTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $PairDevicesTable> {
+  $$PairDevicesTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get fingerprint => $state.composableBuilder(
+      column: $state.table.fingerprint,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get code => $state.composableBuilder(
+      column: $state.table.code,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get insertOrUpdateTime => $state.composableBuilder(
+      column: $state.table.insertOrUpdateTime,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
 typedef $$DirectoryContentsTableCreateCompanionBuilder
     = DirectoryContentsCompanion Function({
   required String id,
@@ -2734,6 +3253,8 @@ class $AppDatabaseManager {
       $$FileContentsTableTableManager(_db, _db.fileContents);
   $$PersistenceDevicesTableTableManager get persistenceDevices =>
       $$PersistenceDevicesTableTableManager(_db, _db.persistenceDevices);
+  $$PairDevicesTableTableManager get pairDevices =>
+      $$PairDevicesTableTableManager(_db, _db.pairDevices);
   $$DirectoryContentsTableTableManager get directoryContents =>
       $$DirectoryContentsTableTableManager(_db, _db.directoryContents);
 }

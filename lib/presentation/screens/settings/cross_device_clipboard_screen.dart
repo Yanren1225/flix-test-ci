@@ -12,7 +12,7 @@ import 'package:flix/presentation/widgets/devices/cross_device_item.dart';
 import 'package:flix/presentation/widgets/devices/device_item.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
-import 'package:flix/utils/compat/CompatUtil.dart';
+import 'package:flix/utils/compat/compat_util.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/meida/media_utils.dart';
 import 'package:flutter/cupertino.dart';

@@ -25,7 +25,8 @@ part 'database.g.dart'; // the generated code will be there
   TextContents,
   FileContents,
   PersistenceDevices,
-  PairDevices
+  PairDevices,
+  DirectoryContents,
 ], daos: [
   BubblesDao,
   DevicesDao,
@@ -98,6 +99,7 @@ class AppDatabase extends _$AppDatabase {
     if (!(await _checkIfColumnExists(bubbleEntities.actualTableName, bubbleEntities.groupId.name))) {
       await m.addColumn(bubbleEntities, bubbleEntities.groupId);
     }
+    await m.createTable(pairDevices);
   }
   Future<void> migration5_6(Migrator m) async {
     if (!(await _checkIfColumnExists(
@@ -148,10 +150,6 @@ class AppDatabase extends _$AppDatabase {
       }
     }
     return false;
-  }
-
-  Future<void> migration6_7(Migrator m) async {
-    await m.createTable(pairDevices);
   }
 }
 

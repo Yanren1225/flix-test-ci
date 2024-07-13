@@ -44,6 +44,7 @@ dependencies:
   device_apps: ^2.2.0
   dart_mappable: 4.0.1
   device_info_plus: 9.1.1
+  clipboard_watcher: ^0.2.1
   dio: 5.4.0
   slang: 3.26.1
   slang_flutter: 3.26.1
@@ -125,7 +126,10 @@ dependencies:
   windows_system_info: ^0.0.4
   archive: ^3.5.0
   flutter_displaymode: ^0.6.0
-  flutter_foreground_task: 6.2.0
+  flutter_foreground_task:
+    git:
+      url: "https://github.com/HumorSmith/flutter_foreground_task"
+      ref: "4a122e9d872f05b617318b71ebb120d61b1fc060"
   flutter_desktop_sleep: ^0.0.2
   network_info_plus: ^5.0.3
   wifi_iot: ^0.3.19

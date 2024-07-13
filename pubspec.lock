@@ -259,6 +259,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.4.1"
+  clipboard_watcher:
+    dependency: "direct main"
+    description:
+      name: clipboard_watcher
+      sha256: a6c98d9a30c47d1c5655ed48c46f554b04545da018f28992fb2540d1d14d863a
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.1"
   clock:
     dependency: transitive
     description:
@@ -725,11 +733,12 @@ packages:
   flutter_foreground_task:
     dependency: "direct main"
     description:
-      name: flutter_foreground_task
-      sha256: d40a1ddd5f275450d2e32055e7f884796c028a02ac26c751c20916576f79e132
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "6.2.0"
+      path: "."
+      ref: "4a122e9d872f05b617318b71ebb120d61b1fc060"
+      resolved-ref: "4a122e9d872f05b617318b71ebb120d61b1fc060"
+      url: "https://github.com/HumorSmith/flutter_foreground_task"
+    source: git
+    version: "6.5.0"
   flutter_image_compress:
     dependency: "direct main"
     description:

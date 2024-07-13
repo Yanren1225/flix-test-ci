@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   bonsoir_windows
+  clipboard_watcher
   connectivity_plus
   desktop_drop
   downloadsfolder

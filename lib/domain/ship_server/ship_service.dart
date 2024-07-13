@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:flix/domain/bubble_pool.dart';
+import 'package:flix/domain/clipboard/clipboard_manager.dart';
 import 'package:flix/domain/constants.dart';
 import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_manager.dart';
@@ -23,6 +24,7 @@ import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/stream_cancelable.dart';
 import 'package:flix/utils/stream_progress.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:mutex/mutex.dart';
@@ -315,7 +317,7 @@ class ShipService implements ApInterface {
   Future<HttpServer?> _startShipServerInner(Router app, int serverPort,
       String tag, Future<HttpServer?> Function() onFailed) async {
     try {
-      final server = await io.serve(app, '0.0.0.0', serverPort, shared: false);
+      final server = await io.serve(app, '0.0.0.0', serverPort, shared: true);
       talker.debug('Serving at http://0.0.0.0:$serverPort');
       port = serverPort;
       return server;
@@ -685,6 +687,12 @@ class ShipService implements ApInterface {
           //发送端收到确认删除
           await DeviceManager.instance.deletePairDevice(deleteDeviceId);
           break;
+        case TransAction.clipboard:
+          var text = intent.extra?[Constants.text].toString();
+          FlixClipboardManager.instance.stopWatcher();
+          Clipboard.setData(ClipboardData(text: text.toString()));
+          FlixClipboardManager.instance.startWatcher();
+          break;
       }
 
       return Response.ok('ok');
@@ -992,7 +1000,32 @@ class ShipService implements ApInterface {
       talker.error('_replyPairDevice failed: ', e, stackTrace);
     }
   }
-}
+
+  Future<void> sendClipboard(String to, String lastText) async {
+    try {
+      talker.debug("pairDevice", "sendClipboard to = $to");
+      var uri = Uri.parse(await _intentUrl(to));
+      var response = await http.post(
+        uri,
+        body: TransIntent(
+                bubbleId: '',
+                action: TransAction.clipboard,
+                extra: HashMap()..[Constants.text] = lastText,
+                deviceId: did)
+            .toJson(),
+        headers: {"Content-type": "application/json; charset=UTF-8"},
+      );
+      if (response.statusCode == 200) {
+        talker.debug('剪贴板发送成功: response: ${response.body}');
+      } else {
+        talker.error(
+            '剪贴板发送失败: status code: ${response.statusCode}, ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      talker.error('剪贴板发送失败 failed: ', e, stackTrace);
+    }
+  }
+
 
   String getAddressByDeviceId(String deviceId) {
     return '${DeviceManager.instance.getNetAdressByDeviceId(deviceId)}';

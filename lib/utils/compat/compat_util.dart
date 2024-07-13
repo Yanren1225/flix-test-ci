@@ -1,4 +1,5 @@
 import 'package:flix/domain/device/device_manager.dart';
+import 'package:flix/model/device_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 
 class CompatUtil {

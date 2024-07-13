@@ -6,6 +6,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flix/domain/analytics/flix_analytics.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/bubble_pool.dart';
+import 'package:flix/domain/clipboard/clipboard_manager.dart';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
@@ -86,6 +87,7 @@ Future<void> main(List<String> arguments) async {
     await initSystemManager();
     _initDatabase();
     final deviceInfo = await _initDeviceManager();
+    initClipboard();
     _logAppContext(deviceInfo);
     _initAppLifecycle();
     _initSystemChrome();
@@ -101,6 +103,19 @@ Future<void> main(List<String> arguments) async {
       ),
     )));
   }
+}
+
+void initClipboard() {
+  DeviceManager.instance.addPairDeviceChangeListener((pairDevices) {
+    if(pairDevices.isNotEmpty){
+      if (FlixClipboardManager.instance.isAlive) {
+        return;
+      }
+      FlixClipboardManager.instance.startWatcher();
+    } else {
+      FlixClipboardManager.instance.stopWatcher();
+    }
+  });
 }
 
 void _initForegroundTask() {

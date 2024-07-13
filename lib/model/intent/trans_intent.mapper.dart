@@ -39,6 +39,8 @@ class TransActionMapper extends EnumMapper<TransAction> {
         return TransAction.deletePairDevice;
       case 'confirmDeletePairDevice':
         return TransAction.confirmDeletePairDevice;
+      case 'clipboard':
+        return TransAction.clipboard;
       case 'cancel':
         return TransAction.cancel;
       default:
@@ -63,6 +65,8 @@ class TransActionMapper extends EnumMapper<TransAction> {
         return 'deletePairDevice';
       case TransAction.confirmDeletePairDevice:
         return 'confirmDeletePairDevice';
+      case TransAction.clipboard:
+        return 'clipboard';
       case TransAction.cancel:
         return 'cancel';
     }
