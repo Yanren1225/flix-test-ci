@@ -34,7 +34,7 @@ class SwitchableItem extends StatelessWidget {
               Theme.of(context).flixColors.switchable.active.track,
           activeColor: Theme.of(context).flixColors.switchable.active.thumb,
           thumbColor: null,
-          trackOutlineColor: WidgetStateColor.resolveWith((states) => Colors.transparent),
+          trackOutlineColor: MaterialStateColor.resolveWith((states) => Colors.transparent),
         )
       ],
     );

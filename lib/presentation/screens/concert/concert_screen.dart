@@ -553,10 +553,10 @@ class InputAreaState extends State<InputArea> {
                         // padding: const EdgeInsets.all(9.0),
                         iconSize: 22,
                         style: ButtonStyle(
-                            backgroundColor: WidgetStateColor.resolveWith(
+                            backgroundColor: MaterialStateColor.resolveWith(
                                 (states) =>
                                     const Color.fromRGBO(0, 122, 255, 1)),
-                            shape: const WidgetStatePropertyAll<SmoothRectangleBorder>(SmoothRectangleBorder(
+                            shape: const MaterialStatePropertyAll<SmoothRectangleBorder>(SmoothRectangleBorder(
                               borderRadius: SmoothBorderRadius.all(SmoothRadius(
                                 cornerRadius: 10,
                                 cornerSmoothing: 0.6,
