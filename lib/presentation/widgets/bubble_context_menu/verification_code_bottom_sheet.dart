@@ -17,11 +17,6 @@ class CrossDeviceShowCodeBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlixBottomSheet(
-      backgroundGradient: const [
-        Color.fromRGBO(232, 243, 255, 1),
-        Color.fromRGBO(255, 255, 255, 1),
-        Color.fromRGBO(255, 255, 255, 1),
-      ],
       buttonColor: const Color(0xFF007AFF),
       title: '本机关联码',
       subTitle: '对方输入你的关联码，即可开启跨设备复制粘贴。5分钟内有效。',

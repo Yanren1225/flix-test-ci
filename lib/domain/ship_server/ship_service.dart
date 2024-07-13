@@ -588,14 +588,14 @@ class ShipService implements ApInterface {
       final body = await request.readAsString();
       final intent = TransIntent.fromJson(body);
       final bubble = await _bubblePool.findLastById(intent.bubbleId);
-      if (bubble == null ||
-          (bubble is! PrimitiveFileBubble &&
-              bubble is! PrimitiveDirectoryBubble)) {
-        return Response.notFound('bubble not found');
-      }
       talker.debug("_receiveIntent","action = ${intent.action}, bubble = $bubble");
       switch (intent.action) {
         case TransAction.confirmReceive:
+          if (bubble == null ||
+              (bubble is! PrimitiveFileBubble &&
+                  bubble is! PrimitiveDirectoryBubble)) {
+            return Response.notFound('bubble not found');
+          }
           if (bubble is PrimitiveFileBubble) {
             final updatedBubble = await updateBubbleShareState(
                     _bubblePool, intent.bubbleId, FileState.inTransit,
@@ -612,11 +612,21 @@ class ShipService implements ApInterface {
           await _checkCancel(bubble.id);
           break;
         case TransAction.cancel:
+          if (bubble == null ||
+              (bubble is! PrimitiveFileBubble &&
+                  bubble is! PrimitiveDirectoryBubble)) {
+            return Response.notFound('bubble not found');
+          }
           await updateBubbleShareState(
               _bubblePool, intent.bubbleId, FileState.cancelled);
           await _checkCancel(intent.bubbleId);
           break;
         case TransAction.confirmBreakPoint:
+          if (bubble == null ||
+              (bubble is! PrimitiveFileBubble &&
+                  bubble is! PrimitiveDirectoryBubble)) {
+            return Response.notFound('bubble not found');
+          }
           final updatedBubble = await updateBubbleShareState(
                   _bubblePool, intent.bubbleId, FileState.inTransit)
               as PrimitiveFileBubble;

@@ -20,11 +20,6 @@ class DeleteConfirmBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlixBottomSheet(
-      backgroundGradient: const [
-        Color.fromRGBO(255, 243, 242, 1),
-        Color.fromRGBO(255, 255, 255, 1),
-        Color.fromRGBO(255, 255, 255, 1),
-      ],
       buttonColor: const Color.fromRGBO(255, 59, 48, 1),
       title: title,
       subTitle: subTitle ?? "",

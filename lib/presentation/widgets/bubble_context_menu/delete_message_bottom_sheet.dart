@@ -12,11 +12,6 @@ class DeleteMessageBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlixBottomSheet(
-      backgroundGradient: const [
-        Color.fromRGBO(255, 243, 242, 1),
-        Color.fromRGBO(255, 255, 255, 1),
-        Color.fromRGBO(255, 255, 255, 1),
-      ],
       buttonColor: const Color.fromRGBO(255, 59, 48, 1),
       title: '删除消息记录',
       subTitle: '如果文件正在传输，删除消息会中断传输',
