@@ -240,8 +240,7 @@ class PrimitiveDirectoryBubble extends PrimitiveBubble<DirectoryTransfer> {
       String? to,
       BubbleType? type,
       DirectoryTransfer? content,
-      int? time,
-      String? groupId}) {
+      int? time, String? groupId}) {
     var fileBubble = PrimitiveDirectoryBubble(
         id: id ?? this.id,
         from: from ?? this.from,
@@ -249,7 +248,7 @@ class PrimitiveDirectoryBubble extends PrimitiveBubble<DirectoryTransfer> {
         type: type ?? this.type,
         content: content ?? this.content,
         time: time ?? this.time,
-        groupId: groupId ?? this.groupId);
+        groupId: groupId);
     return fileBubble;
   }
 
@@ -259,12 +258,11 @@ class PrimitiveDirectoryBubble extends PrimitiveBubble<DirectoryTransfer> {
       required this.to,
       required this.type,
       required this.content,
-      required this.time,
-      this.groupId});
+      required this.time, this.groupId});
 
   @override
   String toString() {
-    return 'PrimitiveDirectoryBubble{id: $id, from: $from, to: $to, type: $type, content: $content, time: $time}';
+    return 'PrimitiveDirectoryBubble{id: $id, from: $from, to: $to, type: $type, content: $content, time: $time, groupId: $groupId}';
   }
 }
 

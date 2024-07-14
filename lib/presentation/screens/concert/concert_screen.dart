@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_bottom_sheet_util.dart';
@@ -378,6 +379,10 @@ class InputAreaState extends State<InputArea> {
           break;
         case PickedFileType.Directory:
           final directory = (element as PickableDirectory);
+          if(directory.content.isEmpty){
+            FlixToast.withContext(context).info("文件夹为空，发送取消咯");
+            return;
+          }
           submitDirectory(directory.meta, directory.content);
           break;
         default:

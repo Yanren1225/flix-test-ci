@@ -44,7 +44,7 @@ class BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
   String get dirBubbleId => widget.dirBubbleId;
 
   String get dirName => widget.dirName;
-  List<PrimitiveBubble>? files;
+  List<PrimitiveBubble>? _bubbles;
   Timer? _timer;
 
   @override
@@ -64,7 +64,7 @@ class BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
   Future<void> _loadData(bool refresh) async {
     try {
       final bubbles =
-          await appDatabase.bubblesDao.getPrimitiveBubbleByGroupId(dirBubbleId);
+          await appDatabase.bubblesDao.getDirectoryFileByGroupid(dirBubbleId);
       var state = _bottomSheetState;
       if (bubbles == null) {
         if(refresh) return;
@@ -76,7 +76,7 @@ class BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
         state = _BottomSheetState.list;
       }
       setState(() {
-        files = bubbles;
+        _bubbles = bubbles;
         _bottomSheetState = state;
       });
     } catch (e) {
@@ -105,6 +105,7 @@ class BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
   }
 
   Widget _buildContent() {
+    List<PrimitiveBubble>? realBubbles = _bubbles?.where((element) => element.type != BubbleType.Directory).toList();
     switch (_bottomSheetState) {
       case _BottomSheetState.loading:
         return const Center(
@@ -119,9 +120,9 @@ class BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
                     decelerationRate: ScrollDecelerationRate.fast)),
             padding: EdgeInsets.zero,
             shrinkWrap: true,
-            itemCount: files?.length ?? 0,
+            itemCount: realBubbles?.length ?? 0,
             itemBuilder: (context, index) {
-              final file = files![index];
+              final file = realBubbles![index];
               return _SendFileItem(entity: toUIBubble(file));
             });
       case _BottomSheetState.error:
