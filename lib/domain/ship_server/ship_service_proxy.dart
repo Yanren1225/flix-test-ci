@@ -82,6 +82,11 @@ class ShipServiceProxy extends ApInterface {
     _shipService.resend(fromUIBubble(uiBubble));
   }
 
+  Future<void> reReceive(UIBubble uiBubble) async {
+    await _awaitServerReady();
+    _shipService.reReceive(fromUIBubble(uiBubble));
+  }
+
   Future<void> askPairDevice(String deviceId, String code) async {
     await _shipService.askPairDevice(deviceId, code);
   }

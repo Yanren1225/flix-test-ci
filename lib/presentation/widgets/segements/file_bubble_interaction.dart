@@ -117,11 +117,10 @@ class BubbleInteractionState extends State<BubbleInteraction>
                   }
                 });
               } else if (sharedRes is SharedDirectory) {
-                if (sharedRes.state == FileState.inTransit ||
-                    sharedRes.state == FileState.waitToAccepted) {
+                if (sharedRes.state == FileState.inTransit) {
                   showDirectoryDetailBottomSheet(
                       context, sharedRes.id, sharedRes.meta.name);
-                } else {
+                } else if(sharedRes.state != FileState.waitToAccepted){
                   _openDirectoryDir();
                 }
               } else {
