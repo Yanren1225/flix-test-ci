@@ -45,7 +45,8 @@ class OptionItem extends StatelessWidget {
             removeOnPop: true,
             barrierDismissible: true,
             barrierColor: Colors.black.withOpacity(0.45),
-            offset: const Offset(-70, 0),
+            modalAlignment: Alignment.centerRight,
+            offset: const Offset(10, 0),
             child: OptionModal(
               options: options,
               value: value,
@@ -142,21 +143,25 @@ class _OptionModalState extends State<OptionModal>
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
-            constraints: const BoxConstraints(maxHeight: 300),
+            constraints: const BoxConstraints(
+                maxHeight: 300, maxWidth: 300, minWidth: 170),
             child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  ...widget.options
-                      .map((e) => OptionSelectItem(
-                            value: e,
-                            selected: widget.value,
-                            onTap: () {
-                              removeModal(widget.tag);
-                              widget.onChanged(e);
-                            },
-                          ))
-                      .toList()
-                ],
+              child: IntrinsicWidth(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ...widget.options
+                        .map((e) => OptionSelectItem(
+                              value: e,
+                              selected: widget.value,
+                              onTap: () {
+                                removeModal(widget.tag);
+                                widget.onChanged(e);
+                              },
+                            ))
+                        .toList()
+                  ],
+                ),
               ),
             ),
           ),
@@ -184,14 +189,14 @@ class OptionSelectItem extends StatelessWidget {
     return InkWell(
       onTap: () => onTap(),
       child: Container(
-        height: 44,
-        width: 170,
+        // width: 170,
         color: isSelected
             ? const Color(0xff007AFF).withOpacity(0.1)
             : Theme.of(context).flixColors.background.primary,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(value.label,
                   style: TextStyle(
@@ -200,7 +205,7 @@ class OptionSelectItem extends StatelessWidget {
                       color: isSelected
                           ? const Color(0xff007AFF)
                           : Theme.of(context).flixColors.text.primary)),
-              const Spacer(),
+              const SizedBox(width: 10),
               Visibility(
                 visible: isSelected,
                 child: const Icon(
