@@ -78,18 +78,21 @@ class CrossDeviceClipboardScreenState
       return !pairSet.contains(element.id);
     }).toList();
 
+    //TODO: 这里或许需要更优雅的处理方式, 以处理这个不是一直都需要出现的返回键
     final appBar = AppBar(
-        leading: GestureDetector(
-      onTap: () {
-        Navigator.pop(context);
-      },
-      child: Icon(
-        Icons.arrow_back_ios,
-        color: Theme.of(context).flixColors.text.primary,
-        size: 20,
+      leading: GestureDetector(
+        onTap: () {
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
+        },
+        child: Icon(
+          Icons.arrow_back_ios,
+          color: Theme.of(context).flixColors.text.primary,
+          size: Navigator.canPop(context) ? 20 : 0,
+        ),
       ),
-    ),
-    backgroundColor: Theme.of(context).flixColors.background.secondary,
+      backgroundColor: Theme.of(context).flixColors.background.secondary,
     );
     return Scaffold(
       appBar: appBar,
@@ -222,9 +225,7 @@ class CrossDeviceClipboardScreenState
         child: Container(
             height: 54,
             decoration: const BoxDecoration(
-              color: true
-                  ? FlixColor.blue
-                  : Colors.transparent, // 设置背景颜色
+              color: true ? FlixColor.blue : Colors.transparent, // 设置背景颜色
               borderRadius: BorderRadius.all(Radius.circular(14)), // 设置圆角
             ),
             child: Row(
