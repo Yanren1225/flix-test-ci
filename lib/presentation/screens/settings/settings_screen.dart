@@ -168,10 +168,11 @@ class SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
               child: Text(
                 '进阶功能',
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.normal,
-                    color: Color.fromRGBO(60, 60, 67, 0.6)).fix(),
+                style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal,
+                        color: Theme.of(context).flixColors.text.secondary)
+                    .fix(),
               ),
             ),
             Padding(
@@ -200,7 +201,7 @@ class SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
               child: Text(
                 '接收设置',
-                style:  TextStyle(
+                style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.normal,
                         color: Theme.of(context).flixColors.text.secondary)

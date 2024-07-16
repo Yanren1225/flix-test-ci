@@ -1,5 +1,7 @@
 import 'dart:collection';
 
+import 'package:flix/presentation/style/colors/flix_color.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
@@ -81,15 +83,18 @@ class CrossDeviceClipboardScreenState
       onTap: () {
         Navigator.pop(context);
       },
-      child: const Icon(
+      child: Icon(
         Icons.arrow_back_ios,
-        color: Colors.black,
+        color: Theme.of(context).flixColors.text.primary,
         size: 20,
       ),
-    ));
+    ),
+    backgroundColor: Theme.of(context).flixColors.background.secondary,
+    );
     return Scaffold(
       appBar: appBar,
       body: buildRoot(context, pairDevices, devices, notPairDevice),
+      backgroundColor: Theme.of(context).flixColors.background.secondary,
     );
   }
 
@@ -106,6 +111,8 @@ class CrossDeviceClipboardScreenState
               width: 40,
               height: 40,
               fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                  Theme.of(context).flixColors.text.primary, BlendMode.srcIn),
             ),
             const SizedBox(height: 30),
             const Text(
@@ -113,10 +120,11 @@ class CrossDeviceClipboardScreenState
               style: TextStyle(fontSize: 30),
             ),
             const SizedBox(height: 2),
-            const Text(
+            Text(
               "关联设备后，复制的文字、图片可共享",
               style: TextStyle(
-                  fontSize: 16, color: Color.fromARGB(255, 60, 60, 67)),
+                  fontSize: 16,
+                  color: Theme.of(context).flixColors.text.secondary),
             ),
             const SizedBox(height: 30),
             creteButton(
@@ -126,11 +134,12 @@ class CrossDeviceClipboardScreenState
                 child: const SizedBox(height: 20)),
             Visibility(
                 visible: pairDevices.isNotEmpty,
-                child: const SizedBox(
+                child: SizedBox(
                   width: double.infinity,
                   child: Text(
                     "已关联的设备",
-                    style: TextStyle(color: Color(0x993C3C43)),
+                    style: TextStyle(
+                        color: Theme.of(context).flixColors.text.secondary),
                   ),
                 ))
             // ... 放置多个 Widget
@@ -145,7 +154,7 @@ class CrossDeviceClipboardScreenState
                   child: CrossDeviceItem(
                       ValueKey(pairDevices[index].id), pairDevices[index], true,
                       () async {
-                        shipService.deletePairDevice(pairDevices[index].id);
+                    shipService.deletePairDevice(pairDevices[index].id);
                     setState(() {});
                   }),
                 );
@@ -156,11 +165,12 @@ class CrossDeviceClipboardScreenState
             const Visibility(visible: true, child: SizedBox(height: 20)),
             Visibility(
                 visible: notPairDevice.isNotEmpty,
-                child: const SizedBox(
+                child: SizedBox(
                   width: double.infinity,
                   child: Text(
                     "当前网络下的其他可用设备：",
-                    style: TextStyle(color: Color(0x993C3C43)),
+                    style: TextStyle(
+                        color: Theme.of(context).flixColors.text.secondary),
                   ),
                 )),
             const SizedBox(height: 8),
@@ -213,7 +223,7 @@ class CrossDeviceClipboardScreenState
             height: 54,
             decoration: const BoxDecoration(
               color: true
-                  ? Color.fromARGB(255, 0, 122, 255)
+                  ? FlixColor.blue
                   : Colors.transparent, // 设置背景颜色
               borderRadius: BorderRadius.all(Radius.circular(14)), // 设置圆角
             ),
