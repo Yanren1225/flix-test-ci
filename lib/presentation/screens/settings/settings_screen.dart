@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flix/presentation/widgets/settings/option_item.dart';
 import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/presentation/screens/settings/cross_device_clipboard_screen.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/text/text_extension.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -17,11 +16,8 @@ import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffol
 import 'package:flix/presentation/widgets/settings/clickable_item.dart';
 import 'package:flix/presentation/widgets/settings/settings_item_wrapper.dart';
 import 'package:flix/presentation/widgets/settings/switchable_item.dart';
-import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/platform_utils.dart';
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +25,9 @@ import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 class SettingsScreen extends StatefulWidget {
-  VoidCallback crossDeviceCallback;
+  final VoidCallback crossDeviceCallback;
 
-  SettingsScreen({required this.crossDeviceCallback});
+  const SettingsScreen({super.key, required this.crossDeviceCallback});
 
   @override
   State<StatefulWidget> createState() {
@@ -317,63 +313,34 @@ class SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16),
-                  child: SettingsItemWrapper(
-                      topRadius: false,
-                      bottomRadius: false,
-                      child: StreamBuilder<bool>(
-                        initialData: SettingsRepo.instance.darkFollowSystem,
-                        stream:
-                            SettingsRepo.instance.darkFollowSystemStream.stream,
-                        builder: (context, snapshot) {
-                          return SwitchableItem(
-                            label: "深色模式跟随系统",
-                            checked: snapshot.data ?? false,
-                            onChanged: (value) {
-                              setState(() {
-                                if (value != null) {
-                                  SettingsRepo.instance
-                                      .setDarkFollowSystem(value);
-                                }
+                StreamBuilder<String>(
+                    stream: SettingsRepo.instance.darkModeTagStream.stream,
+                    initialData: SettingsRepo.instance.darkModeTag,
+                    builder: (context, snapshot) {
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 16),
+                        child: Builder(builder: (context) {
+                          final options = [
+                            const OptionData(
+                                label: '跟随系统', tag: 'follow_system'),
+                            const OptionData(label: '始终开启', tag: 'always_on'),
+                            const OptionData(label: '始终关闭', tag: 'always_off')
+                          ];
+
+                          return OptionItem(
+                              topRadius: false,
+                              bottomRadius: false,
+                              label: '深色模式',
+                              tag: 'dark_mode',
+                              options: options,
+                              value: options.firstWhereOrNull(
+                                      (e) => e.tag == snapshot.data) ??
+                                  options[0],
+                              onChanged: (value) {
+                                SettingsRepo.instance.setDarkModeTag(value.tag);
                               });
-                            },
-                          );
-                        },
-                      )),
-                ),
-                StreamBuilder<bool>(
-                    stream: SettingsRepo.instance.darkFollowSystemStream.stream,
-                    initialData: SettingsRepo.instance.darkFollowSystem,
-                    builder: (context, darkFollowSystem) {
-                      return darkFollowSystem.data == true
-                          ? const SizedBox()
-                          : Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 16, right: 16),
-                              child: SettingsItemWrapper(
-                                  topRadius: false,
-                                  bottomRadius: false,
-                                  child: StreamBuilder<bool>(
-                                    initialData: SettingsRepo.instance.darkMode,
-                                    stream: SettingsRepo
-                                        .instance.darkModeStream.stream,
-                                    builder: (context, snapshot) {
-                                      return SwitchableItem(
-                                        label: "深色模式",
-                                        checked: snapshot.data ?? false,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            if (value != null) {
-                                              SettingsRepo.instance
-                                                  .setDarkMode(value);
-                                            }
-                                          });
-                                        },
-                                      );
-                                    },
-                                  )),
-                            );
+                        }),
+                      );
                     }),
                 Padding(
                   padding:
