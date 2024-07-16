@@ -177,23 +177,20 @@ class SettingsScreenState extends State<SettingsScreen> {
             ),
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
-              child: SettingsItemWrapper(
-                topRadius: true,
-                bottomRadius: true,
-                child: StreamBuilder<bool>(
-                  initialData: SettingsRepo.instance.autoReceive,
-                  stream: SettingsRepo.instance.autoReceiveStream.stream,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                    return ClickableItem(
-                      label: '跨设备复制粘贴',
-                      des: '复制文字、图片后，可共享数据',
-                      onClick: () {
-                        widget.crossDeviceCallback();
-                      },
-                    );
-                  },
-                ),
+              child: StreamBuilder<bool>(
+                initialData: SettingsRepo.instance.autoReceive,
+                stream: SettingsRepo.instance.autoReceiveStream.stream,
+                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  return ClickableItem(
+                    label: '跨设备复制粘贴',
+                    des: '复制文字、图片后，可共享数据',
+                    topRadius: true,
+                    bottomRadius: true,
+                    onClick: () {
+                      widget.crossDeviceCallback();
+                    },
+                  );
+                },
               ),
             ),
             // 高度1pt的分割线
