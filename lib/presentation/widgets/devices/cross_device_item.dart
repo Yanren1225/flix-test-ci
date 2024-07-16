@@ -1,3 +1,4 @@
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/presentation/screens/concert/droper.dart';
@@ -47,7 +48,7 @@ class CrossDeviceItemState extends State<CrossDeviceItem> {
       },
       child: Material(
         color:
-            droping ? const Color.fromRGBO(204, 204, 204, 0.1) : Colors.white,
+            Theme.of(context).flixColors.background.primary,
         borderRadius:
             selected ? null : const BorderRadius.all(Radius.circular(20)),
         clipBehavior: Clip.antiAlias,
@@ -106,8 +107,8 @@ class CrossDeviceItemState extends State<CrossDeviceItem> {
                       child: Text(
                         deviceInfo.name,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                                color: Colors.black,
+                        style: TextStyle(
+                                color: Theme.of(context).flixColors.text.primary,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500)
                             .fix(),

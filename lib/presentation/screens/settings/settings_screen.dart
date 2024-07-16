@@ -168,31 +168,29 @@ class SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
               child: Text(
                 '进阶功能',
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.normal,
-                    color: Color.fromRGBO(60, 60, 67, 0.6)).fix(),
+                style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal,
+                        color: Theme.of(context).flixColors.text.secondary)
+                    .fix(),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
-              child: SettingsItemWrapper(
-                topRadius: true,
-                bottomRadius: true,
-                child: StreamBuilder<bool>(
-                  initialData: SettingsRepo.instance.autoReceive,
-                  stream: SettingsRepo.instance.autoReceiveStream.stream,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                    return ClickableItem(
-                      label: '跨设备复制粘贴',
-                      des: '复制文字、图片后，可共享数据',
-                      onClick: () {
-                        widget.crossDeviceCallback();
-                      },
-                    );
-                  },
-                ),
+              child: StreamBuilder<bool>(
+                initialData: SettingsRepo.instance.autoReceive,
+                stream: SettingsRepo.instance.autoReceiveStream.stream,
+                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  return ClickableItem(
+                    label: '跨设备复制粘贴',
+                    des: '复制文字、图片后，可共享数据',
+                    topRadius: true,
+                    bottomRadius: true,
+                    onClick: () {
+                      widget.crossDeviceCallback();
+                    },
+                  );
+                },
               ),
             ),
             // 高度1pt的分割线
@@ -200,7 +198,7 @@ class SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
               child: Text(
                 '接收设置',
-                style:  TextStyle(
+                style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.normal,
                         color: Theme.of(context).flixColors.text.secondary)

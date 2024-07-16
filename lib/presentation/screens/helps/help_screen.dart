@@ -78,7 +78,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                           child: ClickableItem(
                             label: '检查更新',
                             tail: tail,
-                            tailColor: FlixColor.blue,
+                            tailColor: snapshot.data?.isNotEmpty == true ? FlixColor.blue: Theme.of(context).flixColors.text.secondary,
                             onClick: () {
                               VersionChecker.checkNewVersion(context,
                                   ignorePromptCount: true);
