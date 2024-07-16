@@ -12,6 +12,7 @@ import 'package:flix/presentation/widgets/bubble_context_menu/delete_message_bot
 import 'package:flix/presentation/widgets/bubbles/share_dir_detail_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/segements/bubble_context_menu.dart';
 import 'package:flix/utils/android/android_utils.dart';
+import 'package:flix/utils/download_nonweb_logs.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
@@ -176,7 +177,11 @@ class BubbleInteractionState extends State<BubbleInteraction>
         widget.bubble,
         items, {
       BubbleContextMenuItemType.Location: () {
-        _openFileDir();
+        if (widget.bubble.shareable is SharedDirectory) {
+          _openDirectoryDir();
+        } else {
+          _openFileDir();
+        }
       },
       BubbleContextMenuItemType.MultiSelect: () {
         concertProvider.enterEditing();
