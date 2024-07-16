@@ -1,3 +1,4 @@
+import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shareable.dart';
 
@@ -13,5 +14,10 @@ class UIBubble {
 
   bool isFromMe(String deviceId) {
     return from == deviceId;
+  }
+
+  /// 当前设备是否是发送方
+  bool isSender() {
+    return isFromMe(DeviceProfileRepo.instance.did);
   }
 }

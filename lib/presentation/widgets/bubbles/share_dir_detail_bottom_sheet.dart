@@ -195,7 +195,7 @@ class _SendFileItemState extends State<_SendFileItem>
     Color? stateDesColor;
     List<Color>? stateDesGradient;
     bool clickable = false;
-    bool isSender = widget.entity.isFromMe(DeviceProfileRepo.instance.did);
+    bool isSender = widget.entity.isSender();
     if (isSender) {
       switch (sharedFile.state) {
         case FileState.picked:

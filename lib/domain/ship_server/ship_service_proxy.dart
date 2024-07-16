@@ -71,7 +71,7 @@ class ShipServiceProxy extends ApInterface {
   }
 
   Future<void> cancelReceive(UIBubble uiBubble) async {
-    final bubble = fromUIBubble(uiBubble) as PrimitiveFileBubble;
+    final bubble = fromUIBubble(uiBubble);
     await updateBubbleShareState(
         BubblePool.instance, bubble.id, FileState.cancelled,
         create: bubble);
