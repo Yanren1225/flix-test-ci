@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flix/domain/database/database.dart';
-import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
@@ -205,7 +204,7 @@ class _SendFileItemState extends State<_SendFileItem>
           stateDesColor = const Color.fromRGBO(60, 60, 67, 0.6);
           break;
         case FileState.inTransit:
-          stateDes = '${(sharedFile.progress * 100).toStringAsFixed(1)}%';
+          stateDes = _formatToPercentage(sharedFile.progress);
           stateDesGradient = [
             const Color.fromRGBO(0, 122, 255, 1),
             const Color.fromRGBO(81, 181, 252, 1)
@@ -250,7 +249,7 @@ class _SendFileItemState extends State<_SendFileItem>
           break;
         case FileState.inTransit:
         case FileState.sendCompleted:
-          stateDes = '${(sharedFile.progress * 100).toStringAsFixed(1)}%';
+          stateDes = _formatToPercentage(sharedFile.progress);
           stateDesGradient = [
             const Color.fromRGBO(0, 122, 255, 1),
             const Color.fromRGBO(81, 181, 252, 1)
@@ -394,5 +393,10 @@ class _SendFileItemState extends State<_SendFileItem>
             ],
           ),
         ));
+  }
+
+  String _formatToPercentage(double number) {
+    double percentage = (number * 100) % 100;
+    return '${percentage.toStringAsFixed(1)}%';
   }
 }
