@@ -107,7 +107,7 @@ Future<void> main(List<String> arguments) async {
 
 void initClipboard() {
   DeviceManager.instance.addPairDeviceChangeListener((pairDevices) {
-    if(pairDevices.isNotEmpty){
+    if (pairDevices.isNotEmpty) {
       if (FlixClipboardManager.instance.isAlive) {
         return;
       }
@@ -167,7 +167,8 @@ Future<DeviceInfoResult> _initDeviceManager() async {
   DeviceManager.instance.init();
   shipService.startShipServer().then((isSuccess) async {
     if (isSuccess) {
-      await DeviceDiscover.instance.start(shipService, await shipService.getPort());
+      await DeviceDiscover.instance
+          .start(shipService, await shipService.getPort());
     }
   });
   return deviceInfo;
@@ -199,8 +200,8 @@ Future<void> initFireBase() async {
     };
     PlatformDispatcher.instance.onError = (error, stack) {
       if (kReleaseMode) {
-        FirebaseCrashlytics.instance
-            .recordError(error, stack, fatal: true, information: ['platform errors']);
+        FirebaseCrashlytics.instance.recordError(error, stack,
+            fatal: true, information: ['platform errors']);
       } else {
         talker.critical('platform errors', error, stack);
       }
@@ -312,43 +313,41 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => SettingProvider()),
-        ChangeNotifierProvider<MultiCastClientProvider>(create: (_) => MultiCastClientProvider()),
-        ChangeNotifierProvider(create: (context) => AndropContext())
-      ],
-      child: StreamBuilder<bool>(
-          initialData: SettingsRepo.instance.darkFollowSystem,
-          stream: SettingsRepo.instance.darkFollowSystemStream.stream,
-          builder: (context, followSystem) {
-            return StreamBuilder<bool>(
-                initialData: SettingsRepo.instance.darkMode,
-                stream: SettingsRepo.instance.darkModeStream.stream,
-                builder: (context, darkMode) {
-                  bool userDarkMode = followSystem.data ?? false
-                      ? MediaQuery.of(context).platformBrightness == Brightness.dark
-                      : darkMode.data ?? false;
+        providers: [
+          ChangeNotifierProvider(create: (_) => SettingProvider()),
+          ChangeNotifierProvider<MultiCastClientProvider>(
+              create: (_) => MultiCastClientProvider()),
+          ChangeNotifierProvider(create: (context) => AndropContext())
+        ],
+        child: StreamBuilder<String>(
+            initialData: SettingsRepo.instance.darkModeTag,
+            stream: SettingsRepo.instance.darkModeTagStream.stream,
+            builder: (context, darkModeTag) {
+              bool userDarkMode = darkModeTag.data == "follow_system"
+                  ? MediaQuery.of(context).platformBrightness == Brightness.dark
+                  : darkModeTag.data == "always_on";
 
-                  return MaterialApp(
-                    title: 'Flix',
-                    navigatorObservers: [modalsRouteObserver],
-                    navigatorKey: navigatorKey,
-                    localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
-                      GlobalMaterialLocalizations.delegate,
-                      GlobalWidgetsLocalizations.delegate,
-                      GlobalCupertinoLocalizations.delegate,
-                    ],
-                    supportedLocales: const [
-                      Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN'),
-                    ],
-                    theme: userDarkMode ? flixDark() : flixLight(),
-                    // initialRoute: 'home',
-                    builder: FToastBuilder(),
-                    home: const MyHomePage(title: 'Flutter Demo Home Page'),
-                  );
-                });
-          }),
-    );
+              return MaterialApp(
+                title: 'Flix',
+                navigatorObservers: [modalsRouteObserver],
+                navigatorKey: navigatorKey,
+                localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [
+                  Locale.fromSubtags(
+                      languageCode: 'zh',
+                      scriptCode: 'Hans',
+                      countryCode: 'CN'),
+                ],
+                theme: userDarkMode ? flixDark() : flixLight(),
+                // initialRoute: 'home',
+                builder: FToastBuilder(),
+                home: const MyHomePage(title: 'Flutter Demo Home Page'),
+              );
+            }));
   }
 }
 
@@ -442,7 +441,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
     Navigator.pushAndRemoveUntil(
             context,
             CupertinoPageRoute<DeviceInfo?>(
-                builder: (context) => PickDeviceScreen(sharedMedia: sharedMedia)),
+                builder: (context) =>
+                    PickDeviceScreen(sharedMedia: sharedMedia)),
             ModalRoute.withName('/'))
         .then((deviceInfo) {
       if (deviceInfo == null) {
@@ -479,7 +479,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
   }
 
   void _initNotificationListener() {
-    flixNotification.receptionNotificationStream.stream.listen((receptionNotification) async {
+    flixNotification.receptionNotificationStream.stream
+        .listen((receptionNotification) async {
       if (Platform.isWindows) {
         // trick: 直接使用show, 大概率无法把窗口展示在最上方
         await windowManager.setAlwaysOnTop(true);
@@ -560,7 +561,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
       backgroundColor: Theme.of(context).flixColors.background.secondary,
       body: NarrowBody(),
       bottomNavigationBar: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: 70 + MediaQuery.of(context).padding.bottom),
+        constraints: BoxConstraints(
+            minHeight: 70 + MediaQuery.of(context).padding.bottom),
         child: BottomNavigationBar(
           items: [
             BottomNavigationBarItem(
@@ -568,8 +570,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                   width: 26,
                   height: 26,
                   'assets/images/ic_share.svg',
-                  colorFilter:
-                      ColorFilter.mode(getColor(context, 0, selectedIndex), BlendMode.srcIn),
+                  colorFilter: ColorFilter.mode(
+                      getColor(context, 0, selectedIndex), BlendMode.srcIn),
                 ),
                 label: '互传'),
             BottomNavigationBarItem(
@@ -577,8 +579,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                   width: 26,
                   height: 26,
                   'assets/images/ic_config.svg',
-                  colorFilter:
-                      ColorFilter.mode(getColor(context, 1, selectedIndex), BlendMode.srcIn),
+                  colorFilter: ColorFilter.mode(
+                      getColor(context, 1, selectedIndex), BlendMode.srcIn),
                 ),
                 label: '配置'),
             BottomNavigationBarItem(
@@ -586,8 +588,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                   width: 26,
                   height: 26,
                   'assets/images/ic_help.svg',
-                  colorFilter:
-                      ColorFilter.mode(getColor(context, 2, selectedIndex), BlendMode.srcIn),
+                  colorFilter: ColorFilter.mode(
+                      getColor(context, 2, selectedIndex), BlendMode.srcIn),
                 ),
                 label: '帮助'),
           ],
@@ -596,8 +598,10 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           unselectedItemColor: Theme.of(context).flixColors.text.secondary,
           selectedFontSize: 12,
           unselectedFontSize: 12,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
+          selectedLabelStyle:
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
+          unselectedLabelStyle:
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
           backgroundColor: Theme.of(context).flixColors.background.primary,
           elevation: 0,
           onTap: (value) => setSelectedIndex(value),
@@ -620,14 +624,12 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                       ))),
         );
       case 1:
-        return SettingsScreen(
-            crossDeviceCallback:(){
-              Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                      builder: (context) => CrossDeviceClipboardScreen()));
-            }
-        );
+        return SettingsScreen(crossDeviceCallback: () {
+          Navigator.push(
+              context,
+              CupertinoPageRoute(
+                  builder: (context) => CrossDeviceClipboardScreen()));
+        });
       case 2:
         return HelpScreen(
           goVersionScreen: () {
@@ -667,8 +669,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                     'assets/images/ic_share.svg',
                     width: 26,
                     height: 26,
-                    colorFilter:
-                        ColorFilter.mode(getColor(context, 0, selectedIndex), BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(
+                        getColor(context, 0, selectedIndex), BlendMode.srcIn),
                   ),
                   label: const Text('互传')),
               NavigationRailDestination(
@@ -676,8 +678,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                     'assets/images/ic_config.svg',
                     width: 26,
                     height: 26,
-                    colorFilter:
-                        ColorFilter.mode(getColor(context, 1, selectedIndex), BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(
+                        getColor(context, 1, selectedIndex), BlendMode.srcIn),
                   ),
                   label: const Text('配置')),
               NavigationRailDestination(
@@ -685,8 +687,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                     'assets/images/ic_help.svg',
                     width: 26,
                     height: 26,
-                    colorFilter:
-                        ColorFilter.mode(getColor(context, 2, selectedIndex), BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(
+                        getColor(context, 2, selectedIndex), BlendMode.srcIn),
                   ),
                   label: const Text('帮助'))
             ],
@@ -698,10 +700,10 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
             extended: false,
             elevation: null,
             selectedIndex: selectedIndex,
-            selectedIconTheme:
-                IconThemeData(size: 26, color: Theme.of(context).flixColors.text.primary),
-            unselectedIconTheme:
-                IconThemeData(size: 26, color: Theme.of(context).flixColors.text.tertiary),
+            selectedIconTheme: IconThemeData(
+                size: 26, color: Theme.of(context).flixColors.text.primary),
+            unselectedIconTheme: IconThemeData(
+                size: 26, color: Theme.of(context).flixColors.text.tertiary),
             selectedLabelTextStyle: TextStyle(
               color: Theme.of(context).flixColors.text.primary,
               fontSize: 12,
@@ -740,13 +742,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           },
         );
       case 1:
-        return SettingsScreen(
-            crossDeviceCallback:(){
-              setState(() {
-                thirdWidget = CrossDeviceClipboardScreen();
-              });
-            }
-        );
+        return SettingsScreen(crossDeviceCallback: () {
+          setState(() {
+            thirdWidget = CrossDeviceClipboardScreen();
+          });
+        });
       case 2:
         return HelpScreen(
           goVersionScreen: () {

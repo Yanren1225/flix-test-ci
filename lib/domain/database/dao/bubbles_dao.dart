@@ -186,7 +186,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
     });
   }
 
-  Future<List<PrimitiveBubble>?> getPrimitiveBubbleByGroupId(String groupId) async {
+  Future<List<PrimitiveBubble>?> getDirectoryFileByGroupid(String groupId) async {
     final bubbleEntity = await (select(bubbleEntities)
           ..where((tbl) => tbl.groupId.equals(groupId)))
         .get();
@@ -259,6 +259,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
       // directory
       await (delete(directoryContents)..where((tbl) => tbl.id.equals(id))).go();
       await (delete(fileContents)..where((tbl) => tbl.groupId.equals(id))).go();
+      await (delete(bubbleEntities)..where((tbl) => tbl.groupId.equals(id))).go();
     });
   }
 

@@ -236,12 +236,14 @@ class PickActionAreaState extends State<PickActionsArea> {
     try {
       if (mounted) {
         if (await checkStoragePermission(context,
-            manageExternalStorage: false)) {
+            manageExternalStorage: true)) {
           // if (Platform.isAndroid) {
           setState(() {
             _isDirectoryLoading = true;
           });
           String? result = await FilePicker.platform.getDirectoryPath(lockParentWindow:true);
+
+
           setState(() {
             _isDirectoryLoading = false;
           });
@@ -252,8 +254,7 @@ class PickActionAreaState extends State<PickActionsArea> {
                 name: path_utils.basenameWithoutExtension(directory.path),
                 size: directory.statSync().size,
                 path: directory.path);
-            List<FileSystemEntity> entities =
-                directory.listSync(recursive: true);
+            List<FileSystemEntity> entities =  await directory.list(recursive: true).toList();
             List<FileMeta> picks = [];
             int totalSize = 0;
             for (FileSystemEntity entity in entities) {

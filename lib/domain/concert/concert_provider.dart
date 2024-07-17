@@ -67,8 +67,13 @@ class ConcertProvider extends ChangeNotifier {
   }
 
   Future<void> deleteBubble(UIBubble uiBubble) async {
-    if (uiBubble.shareable is SharedFile) {
-      await _cancelReceive(uiBubble);
+    if (uiBubble.shareable is SharedFile ||
+        uiBubble.shareable is SharedDirectory) {
+      if (uiBubble.isSender()) {
+        await cancelSend(uiBubble);
+      } else {
+        await _cancelReceive(uiBubble);
+      }
     }
     await _concertService.deleteBubble(uiBubble);
   }

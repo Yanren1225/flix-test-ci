@@ -35,6 +35,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 class ShipService implements ApInterface {
+  final String sendTag = "SendFile";
   final String did;
   final _bubblePool = BubblePool.instance;
   final lock = Mutex();
@@ -48,19 +49,30 @@ class ShipService implements ApInterface {
   }
 
   Future<String> _pongUrl(String deviceId) async {
-    return 'http://${getAddressByDeviceId(deviceId)}/pong';
+    var pongUrl = 'http://${getAddressByDeviceId(deviceId)}/pong';
+    talker.debug("url==>","_pongUrl = $pongUrl");
+    return pongUrl;
   }
 
   Future<String> _intentUrl(String deviceId) async {
-    return 'http://${getAddressByDeviceId(deviceId)}/intent';
+    var intentUrl = 'http://${getAddressByDeviceId(deviceId)}/intent';
+    talker.debug("url==>","_intentUrl = $intentUrl");
+    return intentUrl;
   }
 
   Future<String> _getSendBubbleUrl(
-          PrimitiveBubble<dynamic> primitiveBubble) async =>
-      'http://${getAddressByDeviceId(primitiveBubble.to)}/bubble';
+          PrimitiveBubble<dynamic> primitiveBubble) async {
+    var bubbleUrl = 'http://${getAddressByDeviceId(primitiveBubble.to)}/bubble';
+    talker.debug("url==>","_getSendBubbleUrl = $bubbleUrl");
+   return bubbleUrl;
+  }
 
-  Future<String> _getSendFileUrl(PrimitiveFileBubble fileBubble) async =>
-      'http://${getAddressByDeviceId(fileBubble.to)}/file';
+
+  Future<String> _getSendFileUrl(PrimitiveFileBubble fileBubble) async{
+    var url = 'http://${getAddressByDeviceId(fileBubble.to)}/file';
+    talker.debug("url==>","_getSendFileUrl = $url");
+    return url;
+  }
 
   String _getBaseUrl(String deviceId) {
     return 'http://${getAddressByDeviceId(deviceId)}';
@@ -258,7 +270,33 @@ class ShipService implements ApInterface {
           content: bubble.content.copy(state: FileState.waitToAccepted)));
     } else if (bubble is PrimitiveDirectoryBubble) {
       await _sendBasicBubble(bubble.copy(
-          content: bubble.content.copy(state: FileState.waitToAccepted)));
+          content: bubble.content.copy(state: FileState.waitToAccepted),groupId: bubble.groupId));
+    }
+  }
+
+  Future<void> reReceive(PrimitiveBubble bubble) async {
+    try {
+      await updateBubbleShareState(_bubblePool, bubble.id, FileState.waitToAccepted);
+      var uri = Uri.parse(await _intentUrl(bubble.to));
+
+      var response = await http.post(
+        uri,
+        body: TransIntent(
+            deviceId: did,
+            bubbleId: bubble.id,
+            action: TransAction.reReceive,
+            extra: {}).toJson(),
+        headers: {"Content-type": "application/json; charset=UTF-8"},
+      );
+
+      if (response.statusCode == 200) {
+        talker.debug('reReceive发送成功: response: ${response.body}');
+      } else {
+        talker.error(
+            'reReceive 发送失败: status code: ${response.statusCode}, ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      talker.error('reReceive failed: ', e, stackTrace);
     }
   }
 
@@ -415,7 +453,7 @@ class ShipService implements ApInterface {
       talker.debug("_receiveBubble===>", data);
       // _notifyNewBubble(bubble);
       if (await SettingsRepo.instance.getAutoReceiveAsync() &&
-          (bubble is PrimitiveFileBubble || bubble is PrimitiveDirectoryBubble)) {
+          (bubble is PrimitiveFileBubble || bubble.type == BubbleType.Directory)) {
         await _bubblePool.add(bubble);
         await confirmReceiveBubble(bubble.from, bubble.id);
       } else if (bubble is PrimitiveFileBubble) {
@@ -441,7 +479,7 @@ class ShipService implements ApInterface {
             await confirmReceiveBubble(bubble.from, bubble.id);
           } else {
             await _bubblePool.add(bubble.copy(
-                content: bubble.content.copy(state: FileState.waitToAccepted)));
+                content: bubble.content.copy(state: FileState.waitToAccepted),groupId: bubble.groupId));
           }
         } else {
           await _bubblePool.add(bubble);
@@ -459,6 +497,7 @@ class ShipService implements ApInterface {
   Future<void> _sendFileReal(PrimitiveFileBubble fileBubble) async {
     _addLongTask();
     try {
+      talker.debug(sendTag,"start=>$fileBubble");
       await _checkCancel(fileBubble.id);
       final shardFile = fileBubble.content.meta;
       await shardFile.resolvePath((path) async {
@@ -471,7 +510,6 @@ class ShipService implements ApInterface {
 
         var receiveBytes = 0;
         var supportBreakPoint = CompatUtil.supportBreakPoint(fileBubble.to);
-        talker.debug("breakPoint", "supportBreakPoint = $supportBreakPoint");
         if (supportBreakPoint) {
           final String mode;
           receiveBytes = fileBubble.content.receiveBytes;
@@ -483,8 +521,7 @@ class ShipService implements ApInterface {
           parameters['mode'] = mode;
         }
 
-        talker.debug("breakPoint=>_sendFileReal receiveBytes",
-            "=receiveBytes:$receiveBytes===shardFileSize = ${shardFile.size}  offset = ${fileSize - receiveBytes}");
+
 
         final response =
             await dio.Dio(dio.BaseOptions(baseUrl: _getBaseUrl(fileBubble.to)))
@@ -498,12 +535,12 @@ class ShipService implements ApInterface {
         );
 
         if (response.statusCode == 200) {
-          talker.debug('发送成功 ${response.data.toString()}');
+          talker.debug(sendTag, '发送成功 ${response.data.toString()}');
           updateBubbleShareState(
               _bubblePool, fileBubble.id, FileState.sendCompleted);
           _deleteCachedFile(fileBubble, path);
         } else {
-          talker.error(
+          talker.error(sendTag,
               '发送失败: status code: ${response.statusCode}, ${response.data.toString()}');
           updateBubbleShareState(
               _bubblePool, fileBubble.id, FileState.sendFailed);
@@ -547,8 +584,11 @@ class ShipService implements ApInterface {
         final String desDir = SettingsRepo.instance.savedDir;
         await resolvePathOnMacOS(desDir, (desDir) async {
           assert(fileName != null, "$shareId filename can't be null");
+          if(bubble!.content.meta.path?.startsWith("..") == true){
+            bubble.content.meta.path =  bubble.content.meta.path?.replaceFirst("..", "");
+          }
           await _saveFileAndAddBubble(
-              joinPaths(desDir, bubble!.content.meta.path ?? ''), request, bubble);
+              joinPaths(desDir, bubble.content.meta.path ?? ''), request, bubble);
         });
       } on Error catch (e) {
         talker.error('receive file error: ', e);
@@ -605,8 +645,11 @@ class ShipService implements ApInterface {
             final updatedBubble = await updateBubbleShareState(
                     _bubblePool, intent.bubbleId, FileState.inTransit,
                 create: bubble) as PrimitiveDirectoryBubble;
+            talker.debug(sendTag,"confirmReceive");
             for (var element in updatedBubble.content.fileBubbles) {
-              _sendFileReal(element);
+              talker.debug(sendTag,
+                  "confirmed start send = $element");
+              await _sendFileReal(element);
             }
           }
           await _checkCancel(bubble.id);
@@ -703,6 +746,12 @@ class ShipService implements ApInterface {
           Clipboard.setData(ClipboardData(text: text.toString()));
           FlixClipboardManager.instance.startWatcher();
           break;
+        case TransAction.reReceive:
+          if (bubble == null) {
+            return Response.notFound('bubble not found');
+          }
+          resend(bubble);
+          break;
       }
 
       return Response.ok('ok');
@@ -714,7 +763,7 @@ class ShipService implements ApInterface {
 
   Future<void> _saveFileAndAddBubble(
       String desDir, Request request, PrimitiveFileBubble bubble) async {
-    talker.debug("breakPoint=>", "_saveFileAndAddBubble");
+    talker.debug("_saveFileAndAddBubble=>", "dir =$desDir  bubble = $bubble");
     File outFile = await _saveFile(desDir, request, bubble);
     String? path = outFile.path;
     String? resourceId;
@@ -722,15 +771,6 @@ class ShipService implements ApInterface {
       resourceId = await _saveMediaToAlbumOnMobile(
           outFile, bubble.type == BubbleType.Image,
           tag: bubble.id);
-      // 保存到相册成功，删除副本
-      try {
-        if (resourceId != null) {
-          path = null;
-          await outFile.delete();
-        }
-      } catch (e, s) {
-        talker.error('${bubble.id} delete file failed', e, s);
-      }
     }
 
     final updatedBubble = bubble.copy(
@@ -785,11 +825,8 @@ class ShipService implements ApInterface {
       deleteExist = false;
       fileMode = FileMode.append;
     }
-    talker.debug(
-        'breakPoint=>_saveFile is append = ${fileMode == FileMode.append} deleteExist = $deleteExist receiveBytes = $receiveBytes');
+    talker.debug("sendFile",'_saveFile is append = ${fileMode == FileMode.append} deleteExist = $deleteExist receiveBytes = $receiveBytes');
     final outFile = await createFile(desDir, bubble.content.meta.name, deleteExist: deleteExist);
-    talker.debug(
-        'breakPoint=>_saveFile file.length = ${(await outFile.length())}');
     bubble.content.meta.path = outFile.path;
     final out = outFile.openWrite(mode: fileMode);
     talker.debug('writing file to ${outFile.path}');

@@ -60,7 +60,7 @@ dependencies:
   shared_storage: ^0.8.1
   file_picker: ^6.1.1
   mime: ^1.0.5
-  drift: ^2.15.0
+  drift: ^2.19.0
   sqlite3_flutter_libs: ^0.5.23
   path: ^1.9.0
   flutter_local_notifications: ^16.3.2
