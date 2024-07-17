@@ -251,7 +251,7 @@ Future<void> initSystemManager() async {
 /// 支持一个鼠标键显示菜单、另一个鼠标键显示窗口
 class ShowUpTrayListener with TrayListener {
   @override
-  void onTrayIconMouseUp() {
+  void onTrayIconMouseDown() {
     if (Platform.isWindows) {
       windowManager.show();
     } else {
@@ -260,7 +260,7 @@ class ShowUpTrayListener with TrayListener {
   }
 
   @override
-  void onTrayIconRightMouseUp() {
+  void onTrayIconRightMouseDown() {
     if (Platform.isWindows) {
       trayManager.popUpContextMenu();
     } else {
@@ -595,7 +595,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           ],
           currentIndex: selectedIndex,
           selectedItemColor: Theme.of(context).flixColors.text.primary,
-          unselectedItemColor: Theme.of(context).flixColors.text.secondary,
+          unselectedItemColor: Theme.of(context).flixColors.text.tertiary,
           selectedFontSize: 12,
           unselectedFontSize: 12,
           selectedLabelStyle:

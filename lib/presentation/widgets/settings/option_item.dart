@@ -44,7 +44,7 @@ class OptionItem extends StatelessWidget {
             anchorTag: tag,
             removeOnPop: true,
             barrierDismissible: true,
-            barrierColor: Colors.black.withOpacity(0.1),
+            barrierColor: Colors.black.withOpacity(0.45),
             modalAlignment: Alignment.centerRight,
             offset: const Offset(10, 0),
             child: OptionModal(
