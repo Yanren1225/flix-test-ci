@@ -37,6 +37,7 @@ import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/setting/setting_provider.dart';
 import 'package:flix/theme/theme.dart';
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/theme/theme_util.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/device_info_helper.dart';
 import 'package:flix/utils/iterable_extension.dart';
@@ -382,7 +383,13 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset('assets/images/img_placeholder.svg'),
+          Image.asset(
+              isDarkMode(context)
+                  ? 'assets/images/image_placeholder_dark.png'
+                  : 'assets/images/image_placeholder_light.png',
+            fit: BoxFit.contain,
+            width: 200,
+          ),
           const SizedBox(
             height: 16,
           ),

@@ -192,6 +192,8 @@ class CrossDeviceClipboardScreenState
                     showCupertinoModalPopup(
                         context: context,
                         builder: (context) => CrossDeviceShowCodeBottomSheet(
+                              title: '输入关联码',
+                              subtitle: '输入对方设备上的4位数字，即可开启跨设备复制粘贴。5分钟内有效。',
                               onConfirm: (code) {
                                 if (code.isNotEmpty && code.length == 4) {
                                   shipService.askPairDevice(
@@ -218,6 +220,8 @@ class CrossDeviceClipboardScreenState
           showCupertinoModalPopup(
               context: context,
               builder: (context) => CrossDeviceShowCodeBottomSheet(
+                    title: '本机关联码',
+                    subtitle: '对方输入你的关联码，即可开启跨设备复制粘贴。5分钟内有效。',
                     isEdit: false,
                     code: pairCode,
                   ));
