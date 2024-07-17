@@ -274,6 +274,32 @@ class ShipService implements ApInterface {
     }
   }
 
+  Future<void> reReceive(PrimitiveBubble bubble) async {
+    try {
+      await updateBubbleShareState(_bubblePool, bubble.id, FileState.waitToAccepted);
+      var uri = Uri.parse(await _intentUrl(bubble.to));
+
+      var response = await http.post(
+        uri,
+        body: TransIntent(
+            deviceId: did,
+            bubbleId: bubble.id,
+            action: TransAction.reReceive,
+            extra: {}).toJson(),
+        headers: {"Content-type": "application/json; charset=UTF-8"},
+      );
+
+      if (response.statusCode == 200) {
+        talker.debug('reReceive发送成功: response: ${response.body}');
+      } else {
+        talker.error(
+            'reReceive 发送失败: status code: ${response.statusCode}, ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      talker.error('reReceive failed: ', e, stackTrace);
+    }
+  }
+
   Future<void> _sendCancelMessage(String bubbleId, String to) async {
     try {
       await updateBubbleShareState(_bubblePool, bubbleId, FileState.cancelled);
@@ -719,6 +745,12 @@ class ShipService implements ApInterface {
           FlixClipboardManager.instance.stopWatcher();
           Clipboard.setData(ClipboardData(text: text.toString()));
           FlixClipboardManager.instance.startWatcher();
+          break;
+        case TransAction.reReceive:
+          if (bubble == null) {
+            return Response.notFound('bubble not found');
+          }
+          resend(bubble);
           break;
       }
 

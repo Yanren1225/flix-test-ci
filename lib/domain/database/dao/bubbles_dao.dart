@@ -259,6 +259,7 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
       // directory
       await (delete(directoryContents)..where((tbl) => tbl.id.equals(id))).go();
       await (delete(fileContents)..where((tbl) => tbl.groupId.equals(id))).go();
+      await (delete(bubbleEntities)..where((tbl) => tbl.groupId.equals(id))).go();
     });
   }
 

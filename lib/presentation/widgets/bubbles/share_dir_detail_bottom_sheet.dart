@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:flix/domain/database/database.dart';
-import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/bubble_convert.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/file/size_utils.dart';
@@ -99,7 +100,7 @@ class BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
         title: '文件夹内容',
         subTitle: dirName,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
           child: _buildContent(),
         ));
   }
@@ -126,13 +127,21 @@ class BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
               return _SendFileItem(entity: toUIBubble(file));
             });
       case _BottomSheetState.error:
-        return const Center(
-          child: Text('加载错误了哦，一会再试试吧~'),
-        );
+        return Container(
+            margin: const EdgeInsets.only(bottom: 15),
+            width: double.infinity,
+            height: 80,
+            child: const Center(
+              child: Text('加载错误了哦，一会再试试吧~'),
+            ));
       case _BottomSheetState.empty:
-        return const Center(
-          child: Text('无数据'),
-        );
+        return Container(
+            margin: const EdgeInsets.only(bottom: 15),
+            width: double.infinity,
+            height: 80,
+            child: const Center(
+              child: Text('无数据'),
+            ));
       default:
         return Container();
     }
@@ -184,7 +193,9 @@ class _SendFileItemState extends State<_SendFileItem>
     String? stateDes;
     Color? stateDesColor;
     List<Color>? stateDesGradient;
-    if (widget.entity.isFromMe(DeviceProfileRepo.instance.did)) {
+    bool clickable = false;
+    bool isSender = widget.entity.isSender();
+    if (isSender) {
       switch (sharedFile.state) {
         case FileState.picked:
           break;
@@ -193,7 +204,7 @@ class _SendFileItemState extends State<_SendFileItem>
           stateDesColor = const Color.fromRGBO(60, 60, 67, 0.6);
           break;
         case FileState.inTransit:
-          stateDes = '${(sharedFile.progress * 100).toStringAsFixed(1)}%';
+          stateDes = _formatToPercentage(sharedFile.progress);
           stateDesGradient = [
             const Color.fromRGBO(0, 122, 255, 1),
             const Color.fromRGBO(81, 181, 252, 1)
@@ -218,6 +229,10 @@ class _SendFileItemState extends State<_SendFileItem>
         case FileState.failed:
           stateDes = '发送异常';
           stateDesColor = const Color.fromRGBO(255, 59, 48, 1);
+          clickable = true;
+          stateIcon = SvgPicture.asset(
+            'assets/images/ic_send_fail.svg',
+          );
           break;
         case FileState.cancelled:
           stateDes = '已取消';
@@ -234,7 +249,7 @@ class _SendFileItemState extends State<_SendFileItem>
           break;
         case FileState.inTransit:
         case FileState.sendCompleted:
-          stateDes = '${(sharedFile.progress * 100).toStringAsFixed(1)}%';
+          stateDes = _formatToPercentage(sharedFile.progress);
           stateDesGradient = [
             const Color.fromRGBO(0, 122, 255, 1),
             const Color.fromRGBO(81, 181, 252, 1)
@@ -257,7 +272,11 @@ class _SendFileItemState extends State<_SendFileItem>
         case FileState.receiveFailed:
         case FileState.failed:
           stateDes = '接收失败';
+          clickable = true;
           stateDesColor = const Color.fromRGBO(255, 59, 48, 1);
+          stateIcon = SvgPicture.asset(
+            'assets/images/ic_send_fail.svg',
+          );
           break;
         case FileState.cancelled:
           stateDes = '已取消';
@@ -270,93 +289,114 @@ class _SendFileItemState extends State<_SendFileItem>
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: FlixDecoration(borderRadius: BorderRadius.circular(6)),
-            alignment: Alignment.center,
-            child: SvgPicture.asset(mimeIcon(sharedFile.content.path ?? '')),
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  sharedFile.content.name,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                          decoration: TextDecoration.none)
-                      .fix(),
-                ),
-                const SizedBox(
-                  height: 2,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: InkWell(
+          onTap:  () {
+            if(!clickable) {
+              return;
+            }
+            if (isSender) {
+              shipService.resend(widget.entity);
+              flixToast.info("重新发送文件");
+            } else {
+              shipService.reReceive(widget.entity);
+              flixToast.info("重新接收文件");
+            }
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration:
+                    FlixDecoration(borderRadius: BorderRadius.circular(6)),
+                alignment: Alignment.center,
+                child:
+                    SvgPicture.asset(mimeIcon(sharedFile.content.path ?? '')),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Visibility(
-                      visible: sharedFile.content.size > 0,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 10.0),
-                        child: Text(
-                          size,
-                          style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color.fromRGBO(60, 60, 67, 0.6))
-                              .fix(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+                    Text(
+                      sharedFile.content.name,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                              decoration: TextDecoration.none)
+                          .fix(),
                     ),
-                    Visibility(
-                      visible: stateDes != null,
-                      child: stateDesGradient == null
-                          ? Text(
-                              stateDes ?? '',
-                              style: TextStyle(
+                    const SizedBox(
+                      height: 2,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Visibility(
+                          visible: sharedFile.content.size > 0,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 10.0),
+                            child: Text(
+                              size,
+                              style: const TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,
-                                      color: stateDesColor ?? Colors.grey)
+                                      color: Color.fromRGBO(60, 60, 67, 0.6))
                                   .fix(),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                            )
-                          : GradientText(
-                              text: stateDes ?? '',
-                              gradient: LinearGradient(colors: stateDesGradient),
-                              style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
-                                      color: contentColor.withOpacity(0.5))
-                                  .fix(),
                             ),
+                          ),
+                        ),
+                        Visibility(
+                          visible: stateDes != null,
+                          child: stateDesGradient == null
+                              ? Text(
+                                  stateDes ?? '',
+                                  style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400,
+                                          color: stateDesColor ?? Colors.grey)
+                                      .fix(),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                )
+                              : GradientText(
+                                  text: stateDes ?? '',
+                                  gradient:
+                                      LinearGradient(colors: stateDesGradient),
+                                  style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400,
+                                          color: contentColor.withOpacity(0.5))
+                                      .fix(),
+                                ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: stateIcon,
+              )
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: stateIcon,
-          )
-        ],
-      ),
-    );
+        ));
+  }
+
+  String _formatToPercentage(double number) {
+    double percentage = (number * 100) % 100;
+    return '${percentage.toStringAsFixed(1)}%';
   }
 }
