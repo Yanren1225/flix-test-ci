@@ -50,7 +50,7 @@ class CrossDeviceShowCodeBottomSheet extends StatelessWidget {
       length: 4,
       editable: true,
       text: code,
-      textStyle: const TextStyle(color: Colors.black, fontSize: 25.0),
+      textStyle: Theme.of(context).textTheme.headlineMedium!,
       onCompleted: (String value) {
         curCode = value;
       },
