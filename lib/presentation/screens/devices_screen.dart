@@ -55,13 +55,6 @@ class _DeviceScreenState extends State<DeviceScreen>
             color: Theme.of(context).flixColors.background.secondary),
         child: Stack(
           children: [
-            ClipRect(
-              child: SizedBox(
-                  width: double.infinity,
-                  height: 140,
-                  child: Lottie.asset('assets/animations/radar.json',
-                      fit: BoxFit.cover, alignment: Alignment.topRight)),
-            ),
             Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,

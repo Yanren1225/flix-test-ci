@@ -19,12 +19,14 @@ void showDevicePairMenu(BuildContext context, String tag) {
     barrierColor: const Color.fromRGBO(0, 0, 0, 0.45),
     removeOnPop: true,
     barrierDismissible: true,
-    child: const DevicePairMenu(),
+    child: DevicePairMenu(navigator: Navigator.of(context)),
   ));
 }
 
 class DevicePairMenu extends StatefulWidget {
-  const DevicePairMenu({super.key});
+  final NavigatorState navigator;
+
+  const DevicePairMenu({required this.navigator, super.key});
 
 
   @override
@@ -52,7 +54,7 @@ class DevicePairMenuState extends AnimatablePopMenuState<DevicePairMenu> {
                 icon: 'assets/images/ic_scan.svg',
                 onTap: () {
                   removeAllModals();
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => HotpotsScannerScreen(showBack: true)));
+                  widget.navigator.push(MaterialPageRoute(builder: (context) => HotpotsScannerScreen(showBack: true)));
                 },
               ),
               Visibility(
@@ -72,7 +74,7 @@ class DevicePairMenuState extends AnimatablePopMenuState<DevicePairMenu> {
                   icon: 'assets/images/ic_qrcode.svg',
                   onTap:() {
                     removeAllModals();
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => HotspotScreen(showBack: true)));
+                    widget.navigator.push(MaterialPageRoute(builder: (context) => HotspotScreen(showBack: true)));
                   },
                 ),
               ),
