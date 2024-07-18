@@ -145,7 +145,7 @@ class BonjourImpl extends MultiCastApi {
             if (versionString == null) {
               version = 0;
             } else {
-              version = int.parse(versionString)
+              version = int.parse(versionString);
             }
             if (alias == null || deviceType == null || deviceModel == null || fingerprint == null) {
               talker.error('mDns Service resolved error: $serviceAttributes');

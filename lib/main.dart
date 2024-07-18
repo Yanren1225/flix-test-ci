@@ -193,7 +193,7 @@ Future<void> initFireBase() async {
 
     FlutterError.onError = (FlutterErrorDetails details) async {
       if (kReleaseMode) {
-        FirebaseCrashlytics.instance.recordFlutterFatalError;
+        await FirebaseCrashlytics.instance.recordFlutterError(details);
       } else {
         talker.critical(details);
       }
