@@ -43,10 +43,6 @@ class CrossDeviceShowCodeBottomSheet extends StatelessWidget {
 
   CustomVerificationCode createVerification(BuildContext context) {
     return CustomVerificationCode(
-      underlineColor:
-          isEdit ? Theme.of(context).primaryColor : Colors.transparent,
-      underlineUnfocusedColor:
-          isEdit ? Theme.of(context).primaryColor : Colors.transparent,
       length: 4,
       editable: true,
       text: code,
