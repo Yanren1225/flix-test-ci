@@ -1,5 +1,6 @@
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,7 +9,7 @@ class IconLabelButton extends StatelessWidget {
   final String icon;
   final String label;
   final Color iconColor;
-  final Color labelColor;
+  final Color? labelColor;
   final bool isLeft;
   final VoidCallback? onTap;
 
@@ -18,7 +19,7 @@ class IconLabelButton extends StatelessWidget {
     required this.label,
     required this.isLeft,
     this.iconColor = FlixColor.blue,
-    this.labelColor = FlixColor.labels_primary,
+    this.labelColor,
     this.onTap,
   });
 
@@ -29,7 +30,11 @@ class IconLabelButton extends StatelessWidget {
       child: Container(
         height: 43,
         decoration: FlixDecoration(
-            color: FlixColor.white_half_transparent,
+            color: Theme.of(context)
+                .flixColors
+                .background
+                .primary
+                .withOpacity(0.5),
             borderRadius: isLeft
                 ? const BorderRadius.only(
                     topLeft: Radius.circular(21.5),
@@ -56,7 +61,8 @@ class IconLabelButton extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: TextStyle(
-                          color: labelColor,
+                      color: labelColor ??
+                              Theme.of(context).flixColors.text.primary,
                           fontSize: 16,
                           fontWeight: FontWeight.w400)
                       .fix()),

@@ -4,7 +4,7 @@ class AnimatablePopMenuState<T extends StatefulWidget> extends State<T>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  late Widget child;
+  Widget? child;
 
   AnimatablePopMenuState();
 

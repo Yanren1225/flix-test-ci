@@ -1,5 +1,6 @@
 
 import 'package:flix/presentation/style/flix_text_style.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -29,11 +30,15 @@ class DevicePairMenuItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
-              SvgPicture.asset(icon),
+              SvgPicture.asset(
+                icon,
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).flixColors.text.primary, BlendMode.srcIn),
+              ),
               const SizedBox(width: 10),
               Text(
                 lable,
-                style: FlixTextStyle.title,
+                style: context.title(),
               ),
             ],
           ),

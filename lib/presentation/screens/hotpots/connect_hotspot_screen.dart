@@ -4,6 +4,7 @@ import 'package:flix/domain/hotspot/direct_wifi_manager.dart';
 import 'package:flix/domain/lifecycle/app_lifecycle.dart';
 import 'package:flix/presentation/screens/hotpots/hotspot_screen.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:wifi_iot/wifi_iot.dart';
 
@@ -68,7 +69,7 @@ class ConnectHotspotScreenState extends State<ConnectHotspotScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: FlixColor.surface,
+      backgroundColor: Theme.of(context).flixColors.background.secondary,
       appBar: AppBar(
         leading: GestureDetector(
           onTap: () {
@@ -80,8 +81,8 @@ class ConnectHotspotScreenState extends State<ConnectHotspotScreen>
             size: 20,
           ),
         ),
-        backgroundColor: FlixColor.surface,
-        surfaceTintColor: FlixColor.surface,
+        backgroundColor: Theme.of(context).flixColors.background.secondary,
+        surfaceTintColor: Theme.of(context).flixColors.background.secondary,
       ),
       body: () {
         final Widget content;
@@ -108,11 +109,13 @@ class ConnectHotspotScreenState extends State<ConnectHotspotScreen>
   }
 
   Widget _buildLoadingContent(String label) {
-    return buildHotspotContent(label: label, color: FlixColor.orange);
+    return buildHotspotContent(
+        context: context, label: label, color: FlixColor.orange);
   }
 
   Widget _buildWifiDisabledContent() {
     return buildHotspotContent(
+        context: context,
         label: "WiFi未开启",
         color: FlixColor.red,
         action: "开启",
@@ -129,6 +132,7 @@ class ConnectHotspotScreenState extends State<ConnectHotspotScreen>
 
   Widget _buildConnectedContent() {
     return buildHotspotContent(
+        context: context,
         label: "热点连接成功",
         color: FlixColor.blue,
         action: "返回传输",
@@ -143,6 +147,7 @@ class ConnectHotspotScreenState extends State<ConnectHotspotScreen>
 
   Widget _buildEnableFailedContent() {
     return buildHotspotContent(
+        context: context,
         label: "热点连接失败",
         color: FlixColor.red,
         action: "重试",
