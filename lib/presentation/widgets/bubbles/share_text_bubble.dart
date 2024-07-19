@@ -135,6 +135,7 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
               return _buildContextMenu(concertProvider, context,
                   editableTextState.contextMenuAnchors);
             },
+            options: const LinkifyOptions(humanize: false,excludeLastPeriod: false),
             linkStyle: textStyle,
             style: textStyle,
             cursorColor: Colors.black,

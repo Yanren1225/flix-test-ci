@@ -524,7 +524,7 @@ class ShipService implements ApInterface {
 
 
         final response =
-            await dio.Dio(dio.BaseOptions(baseUrl: _getBaseUrl(fileBubble.to)))
+            await dio.Dio(dio.BaseOptions(baseUrl: _getBaseUrl(fileBubble.to),contentType: "application/octet-stream"))
                 .post(
           '/file',
           queryParameters: parameters,
@@ -584,11 +584,7 @@ class ShipService implements ApInterface {
         final String desDir = SettingsRepo.instance.savedDir;
         await resolvePathOnMacOS(desDir, (desDir) async {
           assert(fileName != null, "$shareId filename can't be null");
-          if(bubble!.content.meta.path?.startsWith("..") == true){
-            bubble.content.meta.path =  bubble.content.meta.path?.replaceFirst("..", "");
-          }
-          await _saveFileAndAddBubble(
-              joinPaths(desDir, bubble.content.meta.path ?? ''), request, bubble);
+          await _saveFileAndAddBubble(desDir, request, bubble!);
         });
       } on Error catch (e) {
         talker.error('receive file error: ', e);
