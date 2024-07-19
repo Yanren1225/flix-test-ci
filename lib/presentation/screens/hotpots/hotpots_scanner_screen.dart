@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/presentation/screens/hotpots/connect_hotspot_screen.dart';
-import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/style/flix_text_style.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/permission/flix_permission_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +58,7 @@ class _HotpotsScannerScreenState extends State<HotpotsScannerScreen> {
 
   Widget _buildScannerWidget() {
     return Scaffold(
-        backgroundColor: FlixColor.surface,
+        backgroundColor: Theme.of(context).flixColors.background.secondary,
         appBar: AppBar(
           leading: GestureDetector(
             onTap: () {
@@ -70,17 +70,16 @@ class _HotpotsScannerScreenState extends State<HotpotsScannerScreen> {
               size: 20,
             ),
           ),
-          backgroundColor: FlixColor.surface,
-          surfaceTintColor: FlixColor.surface,
+          backgroundColor: Theme.of(context).flixColors.background.secondary,
+          surfaceTintColor: Theme.of(context).flixColors.background.secondary,
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("扫一扫", style: FlixTextStyle.h1),
-              Text("打开 Flix 二维码，快速建立热点连接。",
-                  style: FlixTextStyle.title_secondary),
+              Text("扫一扫", style: context.h1()),
+              Text("打开 Flix 二维码，快速建立热点连接。", style: context.titleSecondary()),
               const SizedBox(height: 40),
               FlixClipRRect(
                 borderRadius: BorderRadius.circular(30),

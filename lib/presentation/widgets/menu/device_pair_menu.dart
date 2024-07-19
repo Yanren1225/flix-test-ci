@@ -5,6 +5,7 @@ import 'package:flix/presentation/screens/hotpots/hotpots_scanner_screen.dart';
 import 'package:flix/presentation/screens/hotpots/hotspot_screen.dart';
 import 'package:flix/presentation/widgets/basic/animatable_pop_menu.dart';
 import 'package:flix/presentation/widgets/menu/device_pair_menu_item.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:modals/modals.dart';
 
@@ -35,10 +36,9 @@ class DevicePairMenu extends StatefulWidget {
 
 class DevicePairMenuState extends AnimatablePopMenuState<DevicePairMenu> {
   @override
-  void initState() {
-    super.initState();
-    child = Material(
-      color: Colors.white,
+  Widget build(BuildContext context) {
+    child ??= Material(
+      color: Theme.of(context).flixColors.background.primary.withOpacity(0.9),
       borderRadius: BorderRadius.circular(14),
       child: SizedBox(
         width: 170,
@@ -54,7 +54,9 @@ class DevicePairMenuState extends AnimatablePopMenuState<DevicePairMenu> {
                 icon: 'assets/images/ic_scan.svg',
                 onTap: () {
                   removeAllModals();
-                  widget.navigator.push(MaterialPageRoute(builder: (context) => HotpotsScannerScreen(showBack: true)));
+                  widget.navigator.push(MaterialPageRoute(
+                      builder: (context) =>
+                          HotpotsScannerScreen(showBack: true)));
                 },
               ),
               Visibility(
@@ -62,7 +64,9 @@ class DevicePairMenuState extends AnimatablePopMenuState<DevicePairMenu> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16.0),
                   child: Container(
-                    decoration: FlixDecoration(color: const Color.fromRGBO(242, 242, 242, 1)),
+                    decoration: FlixDecoration(
+                        color:
+                            Theme.of(context).flixColors.background.tertiary),
                     height: 0.5,
                   ),
                 ),
@@ -72,9 +76,10 @@ class DevicePairMenuState extends AnimatablePopMenuState<DevicePairMenu> {
                 child: DevicePairMenuItem(
                   lable: '我的二维码',
                   icon: 'assets/images/ic_qrcode.svg',
-                  onTap:() {
+                  onTap: () {
                     removeAllModals();
-                    widget.navigator.push(MaterialPageRoute(builder: (context) => HotspotScreen(showBack: true)));
+                    widget.navigator.push(MaterialPageRoute(
+                        builder: (context) => HotspotScreen(showBack: true)));
                   },
                 ),
               ),
@@ -83,5 +88,6 @@ class DevicePairMenuState extends AnimatablePopMenuState<DevicePairMenu> {
         ),
       ),
     );
+    return super.build(context);
   }
 }

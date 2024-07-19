@@ -12,6 +12,7 @@ import 'package:flix/presentation/widgets/device_name/name_edit_bottom_sheet.dar
 import 'package:flix/presentation/widgets/devices/device_list.dart';
 import 'package:flix/presentation/widgets/menu/device_pair_menu.dart';
 import 'package:flix/presentation/widgets/net/net_info_bottom_sheet.dart';
+import 'package:flix/resource_extension.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/android/android_utils.dart';
 import 'package:flix/utils/device/device_utils.dart';
@@ -22,7 +23,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
-import 'package:lottie/lottie.dart';
 import 'package:modals/modals.dart';
 
 final _menuKey = GlobalKey(debugLabel: "pair_device_menu");
@@ -70,7 +70,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SvgPicture.asset("assets/images/slogan.svg"),
+                      SvgPicture.asset(context.imagePath("slogan.svg")),
                       Visibility(
                         visible: isMobile(),
                         child: ModalAnchor(
@@ -83,7 +83,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                               splashRadius: 36,
                               padding: EdgeInsets.zero,
                               icon: SvgPicture.asset(
-                                'assets/images/ic_open_menu.svg',
+                                context.imagePath("ic_open_menu.svg"),
                                 width: 36,
                                 height: 36,
                               ),

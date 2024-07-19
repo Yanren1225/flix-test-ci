@@ -6,6 +6,7 @@ import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/style/flix_text_style.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/permission/flix_permission_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,7 +25,8 @@ class HotspotScreen extends StatefulWidget {
   }
 }
 
-class HotspotScreenState extends State<HotspotScreen> implements LifecycleListener{
+class HotspotScreenState extends State<HotspotScreen>
+    implements LifecycleListener {
   ApState _apState = ApState.checking;
   String _sPreviousAPSSID = "";
   String _sPreviousPreSharedKey = "";
@@ -42,9 +44,9 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
     super.dispose();
   }
 
-
   _initAp(bool refresh) {
-    if (refresh && _apState == ApState.checking || _apState == ApState.enabling) {
+    if (refresh && _apState == ApState.checking ||
+        _apState == ApState.enabling) {
       return;
     }
     if (!refresh) {
@@ -53,7 +55,8 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
       _setApState(ApState.checking);
     }
     Future.delayed(Duration.zero).then((value) {
-      FlixPermissionUtils.checkHotspotPermission(context).then((value) async {
+      FlixPermissionUtils.checkHotspotPermission(this.context)
+          .then((value) async {
         if (value) {
           if (!await WiFiForIoTPlugin.isEnabled()) {
             _setApState(ApState.wifiDisabled);
@@ -112,7 +115,7 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: FlixColor.surface,
+      backgroundColor: Theme.of(context).flixColors.background.secondary,
       appBar: AppBar(
         leading: GestureDetector(
           onTap: () {
@@ -124,8 +127,8 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
             size: 20,
           ),
         ),
-        backgroundColor: FlixColor.surface,
-        surfaceTintColor: FlixColor.surface,
+        backgroundColor: Theme.of(context).flixColors.background.secondary,
+        surfaceTintColor: Theme.of(context).flixColors.background.secondary,
       ),
       body: () {
         final Widget content;
@@ -161,7 +164,8 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
   }
 
   Widget _buildLoadingContent(String label) {
-    return buildHotspotContent(label: label, color: FlixColor.orange);
+    return buildHotspotContent(
+        context: this.context, label: label, color: FlixColor.orange);
   }
 
   Widget _buildEnabledContent() {
@@ -174,14 +178,14 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
               alignment: Alignment.topLeft,
               child: Padding(
                 padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
-                child: Text("我的二维码", style: FlixTextStyle.h1),
+                child: Text("我的二维码", style: this.context.h1()),
               )),
           Align(
               alignment: Alignment.topLeft,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text("打开 Flix 扫一扫，快速建立热点连接。",
-                    style: FlixTextStyle.title_secondary),
+                    style: this.context.titleSecondary()),
               )),
           const SizedBox(
             height: 20,
@@ -190,23 +194,32 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
               width: 200,
               height: 200,
               child: QrImageView(
+                  eyeStyle: QrEyeStyle(
+                    eyeShape: QrEyeShape.square,
+                    color: Theme.of(this.context).flixColors.text.primary,
+                  ),
+                  dataModuleStyle: QrDataModuleStyle(
+                      dataModuleShape: QrDataModuleShape.square,
+                      color: Theme.of(this.context).flixColors.text.primary),
                   data: _encodeApInfo(),
                   padding: const EdgeInsets.all(25.0))),
           const SizedBox(
             height: 10,
           ),
-          buildApInfoWidget(context, _sPreviousAPSSID, _sPreviousPreSharedKey)
+          buildApInfoWidget(
+              this.context, _sPreviousAPSSID, _sPreviousPreSharedKey)
         ]);
   }
 
   Widget _buildEnableFailedContent() {
     return buildHotspotContent(
+        context: this.context,
         label: "开启热点失败",
         color: FlixColor.red,
         action: "重新尝试",
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Text("请关闭系统热点\n重新打开WiFi后重试。", style: FlixTextStyle.body),
+          child: Text("请关闭系统热点\n重新打开WiFi后重试。", style: this.context.body()),
         ),
         onTap: () {
           _retry();
@@ -215,6 +228,7 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
 
   Widget _buildNoPermissionContent() {
     return buildHotspotContent(
+        context: this.context,
         label: "缺少必要权限",
         color: FlixColor.red,
         action: "授予必要权限",
@@ -225,6 +239,7 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
 
   Widget _buildGetApInfoFailedContent() {
     return buildHotspotContent(
+        context: this.context,
         label: "未能获取热点信息",
         color: FlixColor.red,
         action: "重试",
@@ -235,6 +250,7 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
 
   Widget _buildDisabledContent() {
     return buildHotspotContent(
+        context: this.context,
         label: "热点已关闭",
         color: FlixColor.red,
         action: "重新开启",
@@ -251,9 +267,9 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
     return uri.toString();
   }
 
-
   Widget _buildWifiDisabledContent() {
     return buildHotspotContent(
+        context: this.context,
         label: "WiFi未开启",
         color: FlixColor.red,
         action: "开启",
@@ -274,7 +290,6 @@ class HotspotScreenState extends State<HotspotScreen> implements LifecycleListen
       _initAp(true);
     }
   }
-
 }
 
 enum ApState {
@@ -289,7 +304,8 @@ enum ApState {
 }
 
 Widget buildHotspotContent(
-    {required String label,
+    {required BuildContext context,
+    required String label,
     required Color color,
     Widget? child,
     String? action,
@@ -319,7 +335,7 @@ Widget buildHotspotContent(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: Text(
                   label,
-                  style: FlixTextStyle.h2.copyWith(color: color),
+                  style: context.h2().copyWith(color: color),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -335,15 +351,16 @@ Widget buildHotspotContent(
                   padding:
                       const EdgeInsets.only(left: 16, right: 16, bottom: 50),
                   child: Container(
-                    width: double.infinity,
+                      width: double.infinity,
                       height: 54,
                       decoration: FlixDecoration(
                           color: FlixColor.blue,
-                          borderRadius: const BorderRadius.all(Radius.circular(16))),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16))),
                       child: Center(
                         child: Text(
                           action ?? "",
-                          style: FlixTextStyle.button,
+                          style: context.onButton(),
                           textAlign: TextAlign.center,
                         ),
                       )),
@@ -363,8 +380,8 @@ Widget buildApInfoWidget(BuildContext context, String ssid, String ssidKey) {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("热点名称：", style: FlixTextStyle.body),
-              Text(ssid, style: FlixTextStyle.body)
+              Text("热点名称：", style: context.body()),
+              Text(ssid, style: context.body())
             ]),
         const SizedBox(
           height: 2,
@@ -378,8 +395,8 @@ Widget buildApInfoWidget(BuildContext context, String ssid, String ssidKey) {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("热点密码：", style: FlixTextStyle.body),
-                Text(ssidKey, style: FlixTextStyle.body_variant),
+                Text("热点密码：", style: context.body()),
+                Text(ssidKey, style: context.bodyVariant()),
                 const SizedBox(
                   width: 8,
                 ),
