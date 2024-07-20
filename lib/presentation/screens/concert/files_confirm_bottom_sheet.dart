@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
@@ -61,21 +63,62 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
 
   Future<void> _sendFiles(List<XFile> files) async {
     for (var file in files) {
-      final fileType = getFileType(file.path);
-      // final fileType = FileType.other;
+      final fileType = await getFileType(file.path);
+
       final meta = await file.toFileMeta(
           isImg: fileType == FileType.image,
           isVideo: fileType == FileType.video);
-      final bubbleType = fileType == FileType.image
-          ? BubbleType.Image
-          : fileType == FileType.video
-              ? BubbleType.Video
-              : BubbleType.File;
+
+      var bubbleFileType = BubbleType.File;
+      switch (fileType) {
+        case FileType.image:
+          bubbleFileType = BubbleType.Image;
+          break;
+        case FileType.video:
+          bubbleFileType = BubbleType.Video;
+          break;
+        case FileType.directory:
+          bubbleFileType = BubbleType.Directory;
+          break;
+        case FileType.other:
+          bubbleFileType = BubbleType.File;
+          break;
+      }
+
+      if (bubbleFileType == BubbleType.Directory) {
+        final directoryId = const Uuid().v4();
+        List<SharedFile> fileList = [];
+        await for (final entity in Directory(file.path).list(recursive: true)) {
+          if (entity is File) {
+            FileMeta fileMeta = await entity.toFileMeta();
+            fileList.add(SharedFile(id: fileMeta.name, content: fileMeta));
+          }
+        }
+
+        final directoryMeta = DirectoryMeta(
+            name: directoryId,
+            size: meta.size,
+            path: file.path);
+
+        shipService.send(UIBubble(
+            time: DateTime
+                .now()
+                .millisecondsSinceEpoch,
+            from: DeviceProfileRepo.instance.did,
+            to: deviceInfo.id,
+            type: bubbleFileType,
+            shareable: SharedDirectory(
+                id: directoryId,
+                state: FileState.picked,
+                meta: directoryMeta,
+                content: fileList)));
+        return;
+    }
       shipService.send(UIBubble(
           time: DateTime.now().millisecondsSinceEpoch,
           from: DeviceProfileRepo.instance.did,
           to: deviceInfo.id,
-          type: bubbleType,
+          type: bubbleFileType,
           shareable: SharedFile(
               id: const Uuid().v4(), state: FileState.picked, content: meta)));
     }
@@ -102,9 +145,15 @@ class ReadSendFileItemState extends State<ReadSendFileItem> {
   @override
   void initState() {
     super.initState();
-    widget.file.length().then((value) => setState(() {
-          fileSize = value;
-        }));
+    File _file = File(widget.file.path);
+    File(widget.file.path).isFile().then((value) async {
+      if(value){
+        fileSize = await _file.length();
+      }else{
+        fileSize = await Directory(widget.file.path).getSize();
+      }
+      setState(() {});
+    });
   }
 
   @override
