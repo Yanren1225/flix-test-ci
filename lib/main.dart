@@ -132,7 +132,6 @@ Future<void> _initHighRefreshRate() async {
 }
 
 void _initAppLifecycle() {
-  appLifecycle.init();
   appLifecycle.addListener(logPersistence);
   if (Platform.isAndroid || Platform.isIOS) {
     appLifecycle.addListener(flixForegroundService);
@@ -308,8 +307,27 @@ class MyApp extends StatefulWidget {
   State<StatefulWidget> createState() => MyAppState();
 }
 
-class MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   // This widget is the root of your application.
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    appLifecycle.dispatchLifecycleEvent(state);
+  }
 
   @override
   Widget build(BuildContext context) {
