@@ -249,7 +249,7 @@ class ShipService implements ApInterface {
   Future<void> cancelSend(PrimitiveBubble bubble) async {
     await updateBubbleShareState(_bubblePool, bubble.id, FileState.cancelled,
         create: bubble);
-    await _sendCancelMessage(bubble.id, bubble.to);
+    _sendCancelMessage(bubble.id, bubble.to);
   }
 
   Future<void> resend(PrimitiveBubble bubble) async {
@@ -302,7 +302,6 @@ class ShipService implements ApInterface {
 
   Future<void> _sendCancelMessage(String bubbleId, String to) async {
     try {
-      await updateBubbleShareState(_bubblePool, bubbleId, FileState.cancelled);
       var uri = Uri.parse(await _intentUrl(to));
 
       var response = await http.post(

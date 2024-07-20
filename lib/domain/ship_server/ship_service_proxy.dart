@@ -110,7 +110,7 @@ class ShipServiceProxy extends ApInterface {
 
   Future<void> cancelSend(UIBubble uiBubble) async {
     await _awaitServerReady();
-    _shipService.cancelSend(fromUIBubble(uiBubble));
+    await _shipService.cancelSend(fromUIBubble(uiBubble));
   }
 
   void receivePong(Pong pong) {
