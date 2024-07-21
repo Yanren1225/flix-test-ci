@@ -26,10 +26,8 @@ class NameEditBottomSheetState extends State<NameEditBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: FlixBottomSheet(
+    return
+      FlixBottomSheet(
         title: '输入本机名称',
         buttonText: '完成',
         onClickFuture: () async {
@@ -63,7 +61,6 @@ class NameEditBottomSheetState extends State<NameEditBottomSheet> {
             },
           ),
         ),
-      ),
     );
   }
 
