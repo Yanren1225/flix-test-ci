@@ -151,7 +151,7 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
         case BubbleContextMenuItemType.Location:
 
           items.add(BubbleContextMenuItem(
-            title: Platform.isAndroid ? '以文件打开' :  '文件位置',
+            title: Platform.isAndroid ? '文件打开' :  '文件位置',
             icon: 'assets/images/ic_location.svg',
             onTap: onTap(type),
           ));
