@@ -8,6 +8,7 @@ import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/bubble_convert.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/file/size_utils.dart';
@@ -186,7 +187,8 @@ class _SendFileItemState extends State<_SendFileItem>
   Widget build(BuildContext context) {
     final SharedFile sharedFile = widget.entity.shareable as SharedFile;
 
-    const Color contentColor = Colors.black;
+    Color backgroundColor = Theme.of(context).flixColors.background.primary;
+    Color contentColor = Theme.of(context).flixColors.text.primary;;
 
     Widget stateIcon = const SizedBox(width: 20, height: 20);
     final size = sharedFile.content.size.formateBinarySize();
@@ -328,10 +330,10 @@ class _SendFileItemState extends State<_SendFileItem>
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
-                              color: Colors.black,
+                              color: contentColor,
                               decoration: TextDecoration.none)
                           .fix(),
                     ),
@@ -365,7 +367,11 @@ class _SendFileItemState extends State<_SendFileItem>
                                   style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w400,
-                                          color: stateDesColor ?? Colors.grey)
+                                          color: stateDesColor ??
+                                              Theme.of(context)
+                                                  .flixColors
+                                                  .text
+                                                  .tertiary)
                                       .fix(),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,

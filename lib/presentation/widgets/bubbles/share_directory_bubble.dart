@@ -3,12 +3,14 @@ import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/basic/progressbar/linear/animated_progress_bar.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/segements/cancel_send_button.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/receive_button.dart';
 import 'package:flix/presentation/widgets/segements/resend_button.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/file/size_utils.dart';
 import 'package:flix/utils/file/speed_utils.dart';
@@ -43,8 +45,8 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
 
     final SharedDirectory sharedDirectory = entity.shareable as SharedDirectory;
 
-    const Color backgroundColor = Colors.white;
-    const Color contentColor = Colors.black;
+    Color backgroundColor = Theme.of(context).flixColors.background.primary;
+    Color contentColor = Theme.of(context).flixColors.text.primary;
 
     final MainAxisAlignment alignment;
     if (entity.isFromMe(andropContext.deviceId)) {
@@ -80,7 +82,7 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
             const Color.fromRGBO(81, 181, 252, 1)
           ];
           stateDes = '等待对方确认';
-          stateDesColor = const Color.fromRGBO(60, 60, 67, 0.6);
+          stateDesColor = Theme.of(context).flixColors.text.tertiary;
           clickable = true;
           stateIcon =
               CancelSendButton(key: _cancelSendButtonKey, entity: entity);
@@ -216,7 +218,7 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
     }
 
     final innerBubble0 = Container(
-      decoration: const BoxDecoration(color: backgroundColor),
+      decoration: FlixDecoration(color: backgroundColor),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return SizedBox(
@@ -234,7 +236,7 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
                       children: [
                         Flexible(
                             child: ExtendedText(sharedDirectory.meta.name,
-                                style: const TextStyle(
+                                style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
                                         color: contentColor)
@@ -244,7 +246,7 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
                                 overflowWidget: TextOverflowWidget(
                                   position: TextOverflowPosition.middle,
                                   child: Text('\u2026 ',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
                                               color: contentColor)
@@ -294,7 +296,11 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
                                 style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w400,
-                                        color: stateDesColor ?? Colors.grey)
+                                        color: stateDesColor ??
+                                            Theme.of(context)
+                                                .flixColors
+                                                .text
+                                                .secondary)
                                     .fix(),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -322,7 +328,7 @@ class ShareDirectoryBubbleState<T extends ShareDirectoryBubble>
                       duration: const Duration(milliseconds: 200),
                       width: double.infinity,
                       height: 6,
-                      backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+                      backgroundColor: Theme.of(context).flixColors.background.primary,
                       gradient: LinearGradient(colors: progressBarColors)),
                   secondChild: const SizedBox(
                     height: 6,
