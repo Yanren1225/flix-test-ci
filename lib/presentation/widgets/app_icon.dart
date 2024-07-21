@@ -6,20 +6,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 @immutable
-class AppIcon extends ImageProvider<AppIcon> {
+class AppIcon extends ImageProvider<String> {
   final Application app;
 
   const AppIcon({required this.app});
 
   @override
-  Future<AppIcon> obtainKey(ImageConfiguration configuration) =>
-      SynchronousFuture(this);
+  Future<String> obtainKey(ImageConfiguration configuration) =>
+      SynchronousFuture(app.packageName);
 
   @override
-  ImageStreamCompleter loadImage(AppIcon key, ImageDecoderCallback decode) {
+  ImageStreamCompleter loadImage(String key, ImageDecoderCallback decode) {
     return OneFrameImageStreamCompleter((() async {
       var appWithIcon =
-          (await DeviceApps.getApp(key.app.packageName, true)) as ApplicationWithIcon;
+          (await DeviceApps.getApp(key, true)) as ApplicationWithIcon;
       return ImageInfo(image: await _loadImageFromBytes(appWithIcon.icon));
     })());
   }

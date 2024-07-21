@@ -25,8 +25,6 @@ class AppsScreenState extends State<AppsScreen> {
   List<String> originSortPackageNames = List.empty();
   Map<String, Application> package2AppMap = {};
 
-  Map<String, AppIcon> package2AppIcon = {};
-
   ValueNotifier<Set<Application>> selectedApps = ValueNotifier({});
 
   void _back() {
@@ -104,7 +102,6 @@ class AppsScreenState extends State<AppsScreen> {
         itemBuilder: (context, index) {
           final packageName = sortedPackageNames[index];
           final Application app = package2AppMap[packageName]!;
-          final AppIcon? icon = package2AppIcon[packageName];
           return AppItem(
               application: app,
               checked: selectedApps.value.contains(app),
@@ -117,7 +114,6 @@ class AppsScreenState extends State<AppsScreen> {
                   selectedApps.notifyListeners();
                 }
               },
-              icon: icon
           );
         });
   }
@@ -162,8 +158,6 @@ class AppsScreenState extends State<AppsScreen> {
           package2AppMap = apps
               .asMap()
               .map((key, value) => MapEntry(value.packageName, value));
-          package2AppIcon = apps.asMap().map(
-              (key, value) => MapEntry(value.packageName, AppIcon(app: value)));
         });
       }
     });
