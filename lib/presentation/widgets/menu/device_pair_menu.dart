@@ -38,7 +38,7 @@ class DevicePairMenuState extends AnimatablePopMenuState<DevicePairMenu> {
   @override
   Widget build(BuildContext context) {
     child ??= Material(
-      color: Theme.of(context).flixColors.background.primary.withOpacity(0.9),
+      color: Theme.of(context).flixColors.background.primary,
       borderRadius: BorderRadius.circular(14),
       child: SizedBox(
         width: 170,
