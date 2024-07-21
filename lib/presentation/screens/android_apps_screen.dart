@@ -42,6 +42,7 @@ class AppsScreenState extends State<AppsScreen> {
           size: 20,
         ),
       ),
+      centerTitle: true,
       title: const Text('选择本机应用'),
       titleTextStyle: TextStyle(
               color: Theme.of(context).flixColors.text.primary,
