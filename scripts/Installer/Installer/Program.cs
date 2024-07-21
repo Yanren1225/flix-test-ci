@@ -1,7 +1,7 @@
 ﻿/*
  
 Flix Installer 
-Build date: 2024/07/09
+Build date: 2024/07/21
 © 2024 Gnayoah. All rights reserved.
 
 */
