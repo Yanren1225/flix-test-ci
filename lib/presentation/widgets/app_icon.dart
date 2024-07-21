@@ -13,13 +13,13 @@ class AppIcon extends ImageProvider<String> {
 
   @override
   Future<String> obtainKey(ImageConfiguration configuration) =>
-      SynchronousFuture(app.packageName);
+      SynchronousFuture("app_icon://${app.packageName}");
 
   @override
   ImageStreamCompleter loadImage(String key, ImageDecoderCallback decode) {
     return OneFrameImageStreamCompleter((() async {
       var appWithIcon =
-          (await DeviceApps.getApp(key, true)) as ApplicationWithIcon;
+          (await DeviceApps.getApp(app.packageName, true)) as ApplicationWithIcon;
       return ImageInfo(image: await _loadImageFromBytes(appWithIcon.icon));
     })());
   }
