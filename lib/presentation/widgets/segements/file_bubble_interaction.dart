@@ -231,6 +231,17 @@ class BubbleInteractionState extends State<BubbleInteraction>
     } else if (Platform.isIOS ) {
       _openDownloadDir();
     } else if (Platform.isAndroid) {
+      // OpenFilex.open(path).then((value){
+      //   if (value.type != ResultType.done) {
+      //     _openDownloadDir();
+      //   }
+      // });
+      // if (result.type == ResultType.done) {
+      //   return true;
+      // } else {
+      //   talker.error('Failed open file: $path, result: $result');
+      //   return false;
+      // }
       AndroidUtils.openFile(path).then((value) {
         if (!value){
           _openDownloadDir();
