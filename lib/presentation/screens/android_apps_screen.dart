@@ -1,4 +1,3 @@
-
 import 'package:device_apps/device_apps.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/app_icon.dart';
@@ -25,6 +24,8 @@ class AppsScreenState extends State<AppsScreen> {
   List<String> sortedPackageNames = List.empty();
   List<String> originSortPackageNames = List.empty();
   Map<String, Application> package2AppMap = {};
+
+  Map<String, AppIcon> package2AppIcon = {};
 
   ValueNotifier<Set<Application>> selectedApps = ValueNotifier({});
 
@@ -103,6 +104,7 @@ class AppsScreenState extends State<AppsScreen> {
         itemBuilder: (context, index) {
           final packageName = sortedPackageNames[index];
           final Application app = package2AppMap[packageName]!;
+          final AppIcon? icon = package2AppIcon[packageName];
           return AppItem(
               application: app,
               checked: selectedApps.value.contains(app),
@@ -114,7 +116,9 @@ class AppsScreenState extends State<AppsScreen> {
                   selectedApps.value.remove(app);
                   selectedApps.notifyListeners();
                 }
-              });
+              },
+              icon: icon
+          );
         });
   }
 
@@ -158,6 +162,8 @@ class AppsScreenState extends State<AppsScreen> {
           package2AppMap = apps
               .asMap()
               .map((key, value) => MapEntry(value.packageName, value));
+          package2AppIcon = apps.asMap().map(
+              (key, value) => MapEntry(value.packageName, AppIcon(app: value)));
         });
       }
     });
@@ -201,12 +207,11 @@ class AppsScreenState extends State<AppsScreen> {
   }
 }
 
-
-
 typedef OnChecked = void Function(bool checked);
 
 class AppItem extends StatefulWidget {
   final Application application;
+  final AppIcon? icon;
   final OnChecked onChecked;
   late final ValueNotifier<bool> _checked = ValueNotifier<bool>(false);
 
@@ -214,7 +219,8 @@ class AppItem extends StatefulWidget {
       {super.key,
       required this.application,
       required bool checked,
-      required this.onChecked}) {
+      required this.onChecked,
+      AppIcon? this.icon}) {
     _checked.value = checked;
   }
 
@@ -248,7 +254,7 @@ class AppItemState extends State<AppItem> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image(
-                image: AppIcon(app: application),
+                image: widget.icon ?? AppIcon(app: application),
                 width: 50,
                 height: 50,
               ),
