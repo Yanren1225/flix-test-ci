@@ -57,7 +57,7 @@ extension FlixTextStyle on BuildContext {
 
   TextStyle onButton() {
     return const TextStyle(
-            fontSize: 14, fontWeight: FontWeight.normal, color: FlixColor.blue)
+            fontSize: 14, fontWeight: FontWeight.normal, color: Colors.white)
         .fix();
   }
 }
