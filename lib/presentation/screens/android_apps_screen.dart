@@ -176,7 +176,7 @@ class AppsScreenState extends State<AppsScreen> {
       List<String> searchKeyList = keyword.toLowerCase().split(",");
       package2AppMap.forEach((key, value) {
         for (var searchKey in searchKeyList) {
-          if (key.toLowerCase().contains(searchKey) || value.appName.toLowerCase().contains(searchKey)) {
+          if (fuzzySearch((key + value.appName).toLowerCase(), searchKey)) {
             searchResult.add(value.packageName);
             break;
           }
@@ -187,7 +187,21 @@ class AppsScreenState extends State<AppsScreen> {
       });
     });
   }
+
+  bool fuzzySearch(String content, String key) {
+    var i = 0;
+    var j = 0;
+    while (i < content.length && j < key.length) {
+      if (content[i] == key[j]) {
+        j++;
+      }
+      i++;
+    }
+    return j == key.length;
+  }
 }
+
+
 
 typedef OnChecked = void Function(bool checked);
 
