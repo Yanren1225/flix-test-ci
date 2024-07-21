@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
@@ -18,6 +19,7 @@ import 'package:uuid/uuid.dart';
 
 // TODO： 兼容ContentProvider
 class FilesConfirmBottomSheet extends StatefulWidget {
+  static const tag = "FilesConfirmBottomSheet";
   final DeviceInfo deviceInfo;
   final List<XFile> files;
 
@@ -84,7 +86,7 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
           bubbleFileType = BubbleType.File;
           break;
       }
-
+      talker.debug(FilesConfirmBottomSheet.tag,"_sendFiles type = $bubbleFileType");
       if (bubbleFileType == BubbleType.Directory) {
         final directoryId = const Uuid().v4();
         List<SharedFile> fileList = [];
@@ -99,7 +101,7 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
             name: directoryId,
             size: meta.size,
             path: file.path);
-
+        talker.debug(FilesConfirmBottomSheet.tag,"_sendFiles directoryMeta = $directoryMeta");
         shipService.send(UIBubble(
             time: DateTime
                 .now()

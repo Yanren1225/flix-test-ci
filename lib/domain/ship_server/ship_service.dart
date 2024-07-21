@@ -151,6 +151,7 @@ class ShipService implements ApInterface {
   Future<void> send(PrimitiveBubble primitiveBubble) async {
     try {
       // await checkCancel(uiBubble.shareable.id);
+      talker.debug(sendTag,"send primitiveBubble = $primitiveBubble");
       switch (primitiveBubble.type) {
         case BubbleType.Text:
           await _bubblePool.add(primitiveBubble);
