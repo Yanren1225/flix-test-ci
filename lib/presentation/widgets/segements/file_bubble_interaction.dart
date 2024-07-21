@@ -232,9 +232,26 @@ class BubbleInteractionState extends State<BubbleInteraction>
       }).catchError((e) {
         talker.error("failed to open ios album: $e");
       });
-    } else if (Platform.isIOS || Platform.isAndroid) {
+    } else if (Platform.isIOS ) {
       _openDownloadDir();
-    } else {
+    } else if (Platform.isAndroid) {
+      // OpenFilex.open(path).then((value){
+      //   if (value.type != ResultType.done) {
+      //     _openDownloadDir();
+      //   }
+      // });
+      // if (result.type == ResultType.done) {
+      //   return true;
+      // } else {
+      //   talker.error('Failed open file: $path, result: $result');
+      //   return false;
+      // }
+      AndroidUtils.openFile(path).then((value) {
+        if (!value){
+          _openDownloadDir();
+        }
+      });
+    }else {
       if (Platform.isWindows) {
         openFileDirectoryOnWindows(path);
       } else {
