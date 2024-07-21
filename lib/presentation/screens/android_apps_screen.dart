@@ -25,7 +25,6 @@ class AppsScreenState extends State<AppsScreen> {
   List<String> sortedPackageNames = List.empty();
   List<String> originSortPackageNames = List.empty();
   Map<String, Application> package2AppMap = {};
-  Map<String, Application> name2AppMap = {};
 
   ValueNotifier<Set<Application>> selectedApps = ValueNotifier({});
 
@@ -159,8 +158,6 @@ class AppsScreenState extends State<AppsScreen> {
           package2AppMap = apps
               .asMap()
               .map((key, value) => MapEntry(value.packageName, value));
-          name2AppMap =
-              apps.asMap().map((key, value) => MapEntry(value.appName, value));
         });
       }
     });
@@ -175,9 +172,14 @@ class AppsScreenState extends State<AppsScreen> {
         return;
       }
       List<String> searchResult = [];
-      name2AppMap.forEach((key, value) {
-        if (key.contains(keyword)) {
-          searchResult.add(value.packageName);
+
+      List<String> searchKeyList = keyword.toLowerCase().split(",");
+      package2AppMap.forEach((key, value) {
+        for (var searchKey in searchKeyList) {
+          if (key.toLowerCase().contains(searchKey) || value.appName.toLowerCase().contains(searchKey)) {
+            searchResult.add(value.packageName);
+            break;
+          }
         }
       });
       setState(() {
