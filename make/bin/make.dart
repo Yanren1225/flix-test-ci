@@ -62,13 +62,13 @@ void printUsage(ArgParser parser, List<String> allowedCommands) {
 void buildWindows(String? version) async {
   print("build windows");
 
-  await runCommand('flutter', ['pub', 'get']);
+  // await runCommand('flutter', ['pub', 'get']);
 
-  await runCommand('flutter', ['build', 'windows']);
+  // await runCommand('flutter', ['build', 'windows']);
 
   /// 复制 release 产物并命名为 flix
   final flixDir = '$basePath\\build\\windows\\x64\\Runner\\flix\\';
-  final releaseDir = '$basePath\\build\\windows\\x64\\Runner\\Release\\';
+  final releaseDir = '$basePath\\build\\windows\\x64\\Runner\\Release';
 
   if (await Directory(flixDir).exists()) {
     await Directory(flixDir).delete(recursive: true);
@@ -90,7 +90,7 @@ void buildWindows(String? version) async {
 
   final encoder = ZipFileEncoder();
   encoder.create('$zipFilePath.zip');
-  encoder.addDirectory(Directory(flixDir));
+  encoder.addDirectory(Directory(flixDir), includeDirName: false);
   encoder.close();
 
   /// 执行 dotnet publish 命令
