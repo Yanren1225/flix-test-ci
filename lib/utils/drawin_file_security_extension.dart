@@ -164,17 +164,36 @@ String ensureTrailingSeparator(String p) {
   return p;
 }
 
-String joinPaths(String basePath, String relativePath) {
+/// 安全的文件路径拼接：平台分隔符处理、路径拼接边界处理
+String safeJoinPaths(String basePath, String relativePath) {
+  talker.debug("safeJoinPaths: basePath=$basePath, relativePath=$relativePath");
+  String safeBasePath = basePath;
+  if(containsNonPlatformSeparator(safeBasePath)) {
+    safeBasePath = normalizePath(safeBasePath);
+  }
+  safeBasePath=path.normalize(safeBasePath);
+
+  String safeRelativePath = relativePath;
+  if (containsNonPlatformSeparator(safeRelativePath)) {
+    safeRelativePath = normalizePath(safeRelativePath);
+  }
+  safeRelativePath = path.normalize(safeRelativePath);
+
+  if(safeRelativePath.startsWith(safeBasePath)){
+    talker.debug("safeJoinPaths: safeRelativePath=$safeRelativePath");
+    return safeRelativePath;
+  }
   // 确保 basePath 以分隔符结尾
-  basePath = ensureTrailingSeparator(basePath);
+  safeBasePath = ensureTrailingSeparator(safeBasePath);
 
   // 确保 relativePath 不以分隔符开头
-  if (relativePath.startsWith(path.separator)) {
-    relativePath = relativePath.substring(1);
+  if (safeRelativePath.startsWith(path.separator)) {
+    safeRelativePath = safeRelativePath.substring(1);
   }
 
-  // 使用 path 包的 join 方法拼接路径
-  return path.join(basePath, relativePath);
+  String fullPath = path.absolute(safeBasePath, safeRelativePath);
+  talker.debug("safeJoinPaths: fullPath=$fullPath");
+  return fullPath;
 }
 
 String getRelativePath(String fullPath, String rootPath) {
@@ -187,4 +206,20 @@ String getRelativePath(String fullPath, String rootPath) {
     relativeDirectory = relativeDirectory.substring(1);
   }
   return relativeDirectory;
+}
+
+/// 判断是否存在非此平台的文件分隔符
+bool containsNonPlatformSeparator(String filePath) {
+  String currentSeparator = path.separator;
+  String nonPlatformSeparator = currentSeparator == '/' ? '\\' : '/';
+
+  return filePath.contains(nonPlatformSeparator);
+}
+
+/// 将传入的路径标准化为当前平台的路径格式
+String normalizePath(String originalPath) {
+  // 分割原始路径为路径段
+  List<String> segments = path.split(originalPath);
+  // 使用当前平台的路径分隔符重新拼接路径
+  return path.joinAll(segments);
 }
