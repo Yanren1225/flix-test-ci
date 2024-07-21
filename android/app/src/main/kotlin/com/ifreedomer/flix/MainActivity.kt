@@ -1,5 +1,6 @@
 package com.ifreedomer.flix
 
+import android.app.DownloadManager
 import android.content.ClipboardManager
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -12,6 +13,13 @@ import android.content.Context
 import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
+import com.crazecoder.openfile.FileProvider
+import android.provider.DocumentsContract
+import android.net.Uri
+import java.io.File
+
+
+
 
 
 class MainActivity : FlutterActivity() {
@@ -20,6 +28,7 @@ class MainActivity : FlutterActivity() {
         const val PAY_CHANNEL = "com.ifreedomer.flix/pay"
         const val CLIPBOARD_CHANNEL = "com.ifreedomer.flix/clipboard"
         const val LOCK_CHANNEL = "com.ifreedomer.flix/lock"
+        const val FILE_CHANNEL = "com.ifreedomer.flix/file"
         const val TAG = "MainActivity"
 
         const val FROM = "from"
@@ -109,6 +118,45 @@ class MainActivity : FlutterActivity() {
             } else {
                 result.notImplemented();
             }
+        }
+
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            FILE_CHANNEL
+        ).setMethodCallHandler { call, result ->
+            if (call.method == "openFile"){
+                val path = call.argument<String>("path")
+                Log.i(TAG, "openFile path = $path")
+                if (path.isNullOrEmpty()) {
+                    return@setMethodCallHandler result.success(false)
+                }
+                try {
+                    // var uri: android.net.Uri? = android.net.Uri.parse("content://com.android.externalstorage.documents/document/primary:" + path)
+                    val file = File(path)
+                    val uri = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                        FileProvider.getUriForFile(applicationContext, applicationContext.packageName + ".fileProvider.com.crazecoder.openfile", file)
+                    } else {
+                        Uri.fromFile(file)
+                    }
+                    Log.i(TAG, "openFile uri = $uri")
+                    Log.i(TAG, "openFile parentUri = $parentUri")
+                    //DownloadManager.ACTION_VIEW_DOWNLOADS
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    intent.setDataAndType(uri, "*/*")
+                    intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri)
+                    intent.addCategory(Intent.CATEGORY_DEFAULT)
+                    Log.i(TAG, "openFile intent action = ${intent.action}")
+                    startActivity(intent)
+                    return@setMethodCallHandler result.success(true)
+                }catch (e: Exception) {
+                    e.printStackTrace()
+                    return@setMethodCallHandler result.success(false)
+                }
+
+            }
+
         }
 
     }
