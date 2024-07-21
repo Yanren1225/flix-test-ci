@@ -62,9 +62,9 @@ void printUsage(ArgParser parser, List<String> allowedCommands) {
 void buildWindows(String? version) async {
   print("build windows");
 
-  // await runCommand('flutter', ['pub', 'get']);
+  await runCommand('flutter', ['pub', 'get']);
 
-  // await runCommand('flutter', ['build', 'windows']);
+  await runCommand('flutter', ['build', 'windows']);
 
   /// 复制 release 产物并命名为 flix
   final flixDir = '$basePath\\build\\windows\\x64\\Runner\\flix\\';
