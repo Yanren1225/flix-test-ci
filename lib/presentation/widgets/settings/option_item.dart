@@ -150,16 +150,21 @@ class _OptionModalState extends State<OptionModal>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ...widget.options
-                        .map((e) => OptionSelectItem(
-                              value: e,
-                              selected: widget.value,
-                              onTap: () {
-                                removeModal(widget.tag);
-                                widget.onChanged(e);
-                              },
-                            ))
-                        .toList()
+                    ...widget.options.asMap().entries.map((e) {
+                      final index = e.key;
+
+                      return OptionSelectItem(
+                        isFirst: index == 0,
+                        isLast: index == widget.options.length - 1,
+                        index: index,
+                        value: e.value,
+                        selected: widget.value,
+                        onTap: () {
+                          removeModal(widget.tag);
+                          widget.onChanged(e.value);
+                        },
+                      );
+                    }).toList()
                   ],
                 ),
               ),
@@ -175,12 +180,18 @@ class OptionSelectItem extends StatelessWidget {
   final OptionData value;
   final OptionData selected;
   final Function onTap;
+  final bool isFirst;
+  final bool isLast;
+  final int index;
 
   const OptionSelectItem(
       {super.key,
       required this.value,
       required this.selected,
-      required this.onTap});
+      required this.onTap,
+      this.isFirst = false,
+      this.isLast = false,
+      required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +205,8 @@ class OptionSelectItem extends StatelessWidget {
             ? const Color(0xff007AFF).withOpacity(0.1)
             : Theme.of(context).flixColors.background.primary,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10)
+              .copyWith(top: isFirst ? 16 : 10, bottom: isLast ? 16 : 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

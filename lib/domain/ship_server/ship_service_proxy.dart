@@ -71,7 +71,7 @@ class ShipServiceProxy extends ApInterface {
   }
 
   Future<void> cancelReceive(UIBubble uiBubble) async {
-    final bubble = fromUIBubble(uiBubble) as PrimitiveFileBubble;
+    final bubble = fromUIBubble(uiBubble);
     await updateBubbleShareState(
         BubblePool.instance, bubble.id, FileState.cancelled,
         create: bubble);
@@ -80,6 +80,11 @@ class ShipServiceProxy extends ApInterface {
   Future<void> resend(UIBubble uiBubble) async {
     await _awaitServerReady();
     _shipService.resend(fromUIBubble(uiBubble));
+  }
+
+  Future<void> reReceive(UIBubble uiBubble) async {
+    await _awaitServerReady();
+    _shipService.reReceive(fromUIBubble(uiBubble));
   }
 
   Future<void> askPairDevice(String deviceId, String code) async {
@@ -105,7 +110,7 @@ class ShipServiceProxy extends ApInterface {
 
   Future<void> cancelSend(UIBubble uiBubble) async {
     await _awaitServerReady();
-    _shipService.cancelSend(fromUIBubble(uiBubble));
+    await _shipService.cancelSend(fromUIBubble(uiBubble));
   }
 
   void receivePong(Pong pong) {

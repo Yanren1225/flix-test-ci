@@ -156,18 +156,9 @@ class AppDatabase extends _$AppDatabase {
     return false;
   }
 
-  migration8_9(Migrator m) {
-    var pairExist = allTables.where((element) => element.entityName == pairDevices.tableName);
-    talker.debug(tag,"directoryExist = $pairExist");
-    if(pairExist.isEmpty){
-      m.createTable(pairDevices);
-    }
-
-    var directoryExist = allTables.where((element) => element.entityName == directoryContents.tableName);
-    talker.debug(tag,"directoryExist = $directoryExist");
-    if(pairExist.isEmpty){
-      m.createTable(directoryContents);
-    }
+  migration8_9(Migrator m) async {
+    await m.createTable(directoryContents);
+    await m.createTable(pairDevices);
   }
 }
 

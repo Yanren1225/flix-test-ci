@@ -249,7 +249,7 @@ class ShipService implements ApInterface {
   Future<void> cancelSend(PrimitiveBubble bubble) async {
     await updateBubbleShareState(_bubblePool, bubble.id, FileState.cancelled,
         create: bubble);
-    await _sendCancelMessage(bubble.id, bubble.to);
+    _sendCancelMessage(bubble.id, bubble.to);
   }
 
   Future<void> resend(PrimitiveBubble bubble) async {
@@ -274,9 +274,34 @@ class ShipService implements ApInterface {
     }
   }
 
+  Future<void> reReceive(PrimitiveBubble bubble) async {
+    try {
+      await updateBubbleShareState(_bubblePool, bubble.id, FileState.waitToAccepted);
+      var uri = Uri.parse(await _intentUrl(bubble.to));
+
+      var response = await http.post(
+        uri,
+        body: TransIntent(
+            deviceId: did,
+            bubbleId: bubble.id,
+            action: TransAction.reReceive,
+            extra: {}).toJson(),
+        headers: {"Content-type": "application/json; charset=UTF-8"},
+      );
+
+      if (response.statusCode == 200) {
+        talker.debug('reReceive发送成功: response: ${response.body}');
+      } else {
+        talker.error(
+            'reReceive 发送失败: status code: ${response.statusCode}, ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      talker.error('reReceive failed: ', e, stackTrace);
+    }
+  }
+
   Future<void> _sendCancelMessage(String bubbleId, String to) async {
     try {
-      await updateBubbleShareState(_bubblePool, bubbleId, FileState.cancelled);
       var uri = Uri.parse(await _intentUrl(to));
 
       var response = await http.post(
@@ -498,7 +523,7 @@ class ShipService implements ApInterface {
 
 
         final response =
-            await dio.Dio(dio.BaseOptions(baseUrl: _getBaseUrl(fileBubble.to)))
+            await dio.Dio(dio.BaseOptions(baseUrl: _getBaseUrl(fileBubble.to),contentType: "application/octet-stream"))
                 .post(
           '/file',
           queryParameters: parameters,
@@ -558,11 +583,7 @@ class ShipService implements ApInterface {
         final String desDir = SettingsRepo.instance.savedDir;
         await resolvePathOnMacOS(desDir, (desDir) async {
           assert(fileName != null, "$shareId filename can't be null");
-          if(bubble!.content.meta.path?.startsWith("..") == true){
-            bubble.content.meta.path =  bubble.content.meta.path?.replaceFirst("..", "");
-          }
-          await _saveFileAndAddBubble(
-              joinPaths(desDir, bubble.content.meta.path ?? ''), request, bubble);
+          await _saveFileAndAddBubble(desDir, request, bubble!);
         });
       } on Error catch (e) {
         talker.error('receive file error: ', e);
@@ -719,6 +740,12 @@ class ShipService implements ApInterface {
           FlixClipboardManager.instance.stopWatcher();
           Clipboard.setData(ClipboardData(text: text.toString()));
           FlixClipboardManager.instance.startWatcher();
+          break;
+        case TransAction.reReceive:
+          if (bubble == null) {
+            return Response.notFound('bubble not found');
+          }
+          resend(bubble);
           break;
       }
 

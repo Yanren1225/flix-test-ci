@@ -37,6 +37,7 @@ import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/setting/setting_provider.dart';
 import 'package:flix/theme/theme.dart';
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/theme/theme_util.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/device_info_helper.dart';
 import 'package:flix/utils/iterable_extension.dart';
@@ -131,7 +132,6 @@ Future<void> _initHighRefreshRate() async {
 }
 
 void _initAppLifecycle() {
-  appLifecycle.init();
   appLifecycle.addListener(logPersistence);
   if (Platform.isAndroid || Platform.isIOS) {
     appLifecycle.addListener(flixForegroundService);
@@ -193,7 +193,7 @@ Future<void> initFireBase() async {
 
     FlutterError.onError = (FlutterErrorDetails details) async {
       if (kReleaseMode) {
-        FirebaseCrashlytics.instance.recordFlutterFatalError;
+        await FirebaseCrashlytics.instance.recordFlutterError(details);
       } else {
         talker.critical(details);
       }
@@ -251,7 +251,7 @@ Future<void> initSystemManager() async {
 /// 支持一个鼠标键显示菜单、另一个鼠标键显示窗口
 class ShowUpTrayListener with TrayListener {
   @override
-  void onTrayIconMouseUp() {
+  void onTrayIconMouseDown() {
     if (Platform.isWindows) {
       windowManager.show();
     } else {
@@ -260,7 +260,7 @@ class ShowUpTrayListener with TrayListener {
   }
 
   @override
-  void onTrayIconRightMouseUp() {
+  void onTrayIconRightMouseDown() {
     if (Platform.isWindows) {
       trayManager.popUpContextMenu();
     } else {
@@ -307,8 +307,27 @@ class MyApp extends StatefulWidget {
   State<StatefulWidget> createState() => MyAppState();
 }
 
-class MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   // This widget is the root of your application.
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    appLifecycle.dispatchLifecycleEvent(state);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -382,7 +401,13 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset('assets/images/img_placeholder.svg'),
+          Image.asset(
+              isDarkMode(context)
+                  ? 'assets/images/image_placeholder_dark.png'
+                  : 'assets/images/image_placeholder_light.png',
+            fit: BoxFit.contain,
+            width: 200,
+          ),
           const SizedBox(
             height: 16,
           ),
@@ -595,7 +620,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           ],
           currentIndex: selectedIndex,
           selectedItemColor: Theme.of(context).flixColors.text.primary,
-          unselectedItemColor: Theme.of(context).flixColors.text.secondary,
+          unselectedItemColor: Theme.of(context).flixColors.text.tertiary,
           selectedFontSize: 12,
           unselectedFontSize: 12,
           selectedLabelStyle:

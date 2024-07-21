@@ -170,6 +170,13 @@ class MainActivity : FlutterActivity() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.DONUT) {
             return false
         }
+        if (multicastLock != null && multicastLock?.isHeld == true) {
+            return true
+        }
+        if (multicastLock != null) {
+            multicastLock?.acquire()
+            return true
+        }
         val wifi = context.getSystemService(WIFI_SERVICE) as WifiManager
         multicastLock = wifi.createMulticastLock("discovery-multicast-lock")
         multicastLock?.acquire()
@@ -180,7 +187,9 @@ class MainActivity : FlutterActivity() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.DONUT) {
             return false
         }
-        multicastLock?.release()
+        if (multicastLock?.isHeld == true) {
+            multicastLock?.release()
+        }
         return true
     }
 
@@ -219,7 +228,9 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun releaseWakeLock(): Boolean {
-        wakeLock?.release()
+        if (wakeLock?.isHeld == true) {
+            wakeLock?.release()
+        }
         return true
     }
 
@@ -242,7 +253,9 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun releaseWifiLock(): Boolean {
-        wifiLock?.release()
+        if (wifiLock?.isHeld == true) {
+            wifiLock?.release()
+        }
         return true
     }
 
