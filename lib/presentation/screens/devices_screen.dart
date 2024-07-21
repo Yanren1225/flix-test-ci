@@ -142,8 +142,10 @@ class _DeviceScreenState extends State<DeviceScreen>
                       await Future.delayed(const Duration(seconds: 2));
                       return IndicatorResult.success;
                     },
-                    header: const MaterialHeader(
-                        color: Color.fromRGBO(0, 122, 255, 1)),
+                    header: MaterialHeader(
+                        color: FlixColor.blue,
+                        backgroundColor:
+                            Theme.of(context).flixColors.background.primary),
                     child: CustomScrollView(
                       slivers: [
                         const SliverPadding(padding: EdgeInsets.only(top: 10)),
