@@ -1,6 +1,7 @@
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class SearchBox extends StatefulWidget {
   OnSearch onSearch;
@@ -22,14 +23,14 @@ class SearchBoxState extends State<SearchBox> {
       children: [
         Container(
           width: screenWidth,
-          height: 54,
+          height: 46,
           margin: EdgeInsets.only(
               left: marginLeft.toDouble(),
               right: marginLeft.toDouble(),
               top: 10,
               bottom: 10),
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
               color: Theme.of(context).flixColors.background.primary),
           child: TextField(
             cursorColor: Theme.of(context).flixColors.text.primary,
@@ -37,17 +38,34 @@ class SearchBoxState extends State<SearchBox> {
                 border: InputBorder.none,
                 hintText: '搜索',
                 hintStyle: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).flixColors.text.secondary)
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Theme.of(context)
+                            .flixColors
+                            .text
+                            .secondary
+                            .withAlpha(77))
                     .fix(),
                 contentPadding: const EdgeInsets.only(
-                    left: 48, top: 14, right: 12, bottom: 14),
-                prefixIcon: const Icon(
-                  Icons.search_rounded,
-                  size: 20,
-                ),
-                prefixIconColor: Theme.of(context).flixColors.text.primary),
+                    left: 0, top: 12, right: 12, bottom: 12),
+                prefixIcon: Container(
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    top: 16,
+                    bottom: 16,
+                    right: 7,
+                  ),
+                  child: SvgPicture.asset('assets/images/ic_search.svg',
+                      width: 14,
+                      height: 14,
+                      colorFilter: ColorFilter.mode(
+                          Theme.of(context)
+                              .flixColors
+                              .text
+                              .secondary
+                              .withAlpha(77),
+                          BlendMode.srcIn)),
+                )),
             maxLines: 1,
             autocorrect: false,
             keyboardType: TextInputType.text,
