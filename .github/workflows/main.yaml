@@ -31,7 +31,6 @@ jobs:
           with:
             name: android-apk
             path: build/app/outputs/flutter-apk/app-release.apk
-        - run: rm -rf ./dist/
         - run: flutter build appbundle
         - name: Upload artifact
           uses: actions/upload-artifact@v4
