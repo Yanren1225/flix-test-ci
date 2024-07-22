@@ -265,7 +265,7 @@ class BubbleInteractionState extends State<BubbleInteraction>
 
   Future<void> _openDirectoryDir() async {
     if (widget.bubble.shareable is SharedDirectory) {
-      final p = joinPaths((await getDownloadDirectory()).path,
+      final p = safeJoinPaths((await getDownloadDirectory()).path,
           (widget.bubble.shareable as SharedDirectory).meta.name);
       try {
         final Uri uri = Uri.file(p);

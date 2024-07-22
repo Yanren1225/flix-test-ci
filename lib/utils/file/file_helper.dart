@@ -367,10 +367,16 @@ Future<File> createFile(String desDir, String fileName,
   }
 
   final tag = copyIndex == 0 ? "" : "($copyIndex)";
+
+  //check
+  desDir = path_utils.dirname(desDir);
+
   if(!desDir.endsWith("/")){
     desDir = desDir+Platform.pathSeparator;
   }
   String filePath = '$desDir$fileNameWithoutSuffix$tag$fileSuffix';
+  talker.debug("createFile filePath=$filePath");
+
   final outFile = File(filePath);
   if (await outFile.exists()) {
     if (!deleteExist) {

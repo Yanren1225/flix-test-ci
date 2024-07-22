@@ -24,7 +24,6 @@ class BubblePool {
   }
 
   Future<void> add(PrimitiveBubble bubble) async {
-    talker.debug('add bubble $bubble');
     try {
       notify(bubble);
       await _appDatabase.bubblesDao.insert(bubble);
