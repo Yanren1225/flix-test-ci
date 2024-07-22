@@ -87,8 +87,8 @@ jobs:
        - name: Upload artifact
          uses: actions/upload-artifact@v4
          with:
-           name: linux
-           path: build/linux/debian/
+           name: linux-deb
+           path: dist/
 
    linux-rpm:
      runs-on: ubuntu-latest
@@ -106,8 +106,8 @@ jobs:
        - name: Upload artifact
          uses: actions/upload-artifact@v4
          with:
-           name: linux
-           path: build/linux/rpm/
+           name: linux-rpm
+           path: dist/
 
    windows:
     runs-on: windows-latest
