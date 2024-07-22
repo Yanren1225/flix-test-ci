@@ -3,9 +3,9 @@ name: Flutter Build
 on:
   workflow_dispatch:
   push:
-    branches: ['deploy','main']
-  pull_request:
-    branches: [ "deploy" ]
+    branches: ['main']
+    tags:
+        - 'v*'
 
 jobs:
    android:
@@ -25,12 +25,15 @@ jobs:
           with:
             flutter-version: 3.19.2
         - run: flutter pub get
-        - run: flutter build apk
+        - name: Build apks split per abi
+          run: flutter build apk --target-platform android-arm,android-arm64,android-x64 --split-per-abi --release
+        - name: Build single huge apk
+          run: flutter build apk --target-platform android-arm,android-arm64,android-x64 --release
         - name: Upload artifact
           uses: actions/upload-artifact@v4
           with:
             name: android-apk
-            path: build/app/outputs/flutter-apk/app-release.apk
+            path: build/app/outputs/flutter-apk/
         - run: flutter build appbundle
         - name: Upload artifact
           uses: actions/upload-artifact@v4
