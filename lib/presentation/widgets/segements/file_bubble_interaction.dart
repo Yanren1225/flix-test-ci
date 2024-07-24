@@ -49,12 +49,10 @@ class BubbleInteractionState extends State<BubbleInteraction>
   var tapDownTime = 0;
   Offset? tapDown;
   late String contextMenuTag;
-  late String path;
   @override
   void initState() {
     super.initState();
     contextMenuTag = const Uuid().v4();
-    path = widget.path;
   }
 
   @override
@@ -112,9 +110,9 @@ class BubbleInteractionState extends State<BubbleInteraction>
               if (!widget.clickable) return;
               // _controller.forward().whenComplete(() => _controller.reverse());
               if (sharedRes is SharedFile) {
-                _openFile(sharedRes.content.resourceId, path).then((isSuccess) {
+                _openFile(sharedRes.content.resourceId, widget.path).then((isSuccess) {
                   if (!isSuccess) {
-                    _openFileDir();
+                    _openFileDir(widget.path);
                   }
                 });
               } else if (sharedRes is SharedDirectory) {
@@ -180,7 +178,7 @@ class BubbleInteractionState extends State<BubbleInteraction>
         if (widget.bubble.shareable is SharedDirectory) {
           _openDirectoryDir();
         } else {
-          _openFileDir();
+          _openFileDir(widget.path);
         }
       },
       BubbleContextMenuItemType.MultiSelect: () {
@@ -204,9 +202,6 @@ class BubbleInteractionState extends State<BubbleInteraction>
         if (asset != null) {
           final file = await asset.originFile;
           filePath = file?.path ?? '';
-          setState(() {
-            path = filePath;
-          });
         }
       }
     }
@@ -215,12 +210,12 @@ class BubbleInteractionState extends State<BubbleInteraction>
     if (result.type == ResultType.done) {
       return true;
     } else {
-      talker.error('Failed open file: $path, result: $result');
+      //talker.error('Failed open file: $path, result: $result');
       return false;
     }
   }
 
-  void _openFileDir() {
+  void _openFileDir(String path) {
     // fixme 打开android目录
     if (widget.bubble.shareable is! SharedFile) return;
     final sharedFile = widget.bubble.shareable as SharedFile;
@@ -265,7 +260,7 @@ class BubbleInteractionState extends State<BubbleInteraction>
 
   Future<void> _openDirectoryDir() async {
     if (widget.bubble.shareable is SharedDirectory) {
-      final p = joinPaths((await getDownloadDirectory()).path,
+      final p = safeJoinPaths((await getDownloadDirectory()).path,
           (widget.bubble.shareable as SharedDirectory).meta.name);
       try {
         final Uri uri = Uri.file(p);
@@ -285,10 +280,10 @@ class BubbleInteractionState extends State<BubbleInteraction>
       _openDownloadDir();
     } else {
       if (Platform.isWindows) {
-        openFileDirectoryOnWindows(path);
+        openFileDirectoryOnWindows(widget.path);
       } else {
         OpenDir()
-            .openNativeDir(path: path)
+            .openNativeDir(path: widget.path)
             .catchError(
                 (error) => print('Failed to open download folder: $error'));
       }

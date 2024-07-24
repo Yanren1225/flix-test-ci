@@ -83,11 +83,13 @@ class PickActionAreaState extends State<PickActionsArea> {
             icon: 'assets/images/ic_file.svg',
             onTap: _onFileButtonPressed,
           ),
-          ProgressAction(
+          Visibility(
+            visible: false,
+              child: ProgressAction(
             showProgress: _isDirectoryLoading,
             icon: 'assets/images/ic_dir_pick.svg',
             onTap: _onDirectoryButtonPressed,
-          ),
+          )),
         ],
       ),
     );

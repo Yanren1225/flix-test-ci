@@ -11,12 +11,13 @@
     <Authors>Haoyang</Authors>
     <Product>Flix Installer</Product>
     <PackageIcon>logo.png</PackageIcon>
-    <FileVersion>2024.07.21</FileVersion>
+    <FileVersion>2024.07.23</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="flix.zip" />
     <None Remove="installer.zip" />
+    <None Remove="setting.ico" />
     <None Remove="uninstall.exe" />
     <None Remove="uninstall.zip" />
   </ItemGroup>
@@ -28,6 +29,7 @@
   <ItemGroup>
     <EmbeddedResource Include="flix.zip" />
     <EmbeddedResource Include="installer.zip" />
+    <EmbeddedResource Include="setting.ico" />
     <EmbeddedResource Include="uninstall.exe" />
   </ItemGroup>
 

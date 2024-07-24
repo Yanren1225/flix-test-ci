@@ -71,29 +71,42 @@ class _DeviceScreenState extends State<DeviceScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SvgPicture.asset(context.imagePath("slogan.svg")),
-                      Visibility(
-                        visible: isMobile(),
-                        child: ModalAnchor(
-                          key: _menuKey,
-                          tag: "open_menu",
-                          child: SizedBox(
-                            width: 36,
-                            height: 36,
-                            child: IconButton(
-                              splashRadius: 36,
-                              padding: EdgeInsets.zero,
-                              icon: SvgPicture.asset(
-                                context.imagePath("ic_open_menu.svg"),
+                      Container(child: Row(
+                        children: [
+                            Visibility(
+                              visible: isDesktop(),
+                                child: InkWell(
+                                  onTap: (){
+                                    _refreshDevice();
+                                  },
+                              child: SvgPicture.asset(
+                                  context.imagePath("ic_refresh_menu.svg")),
+                            )),
+                            Visibility(
+                            visible: isMobile(),
+                            child: ModalAnchor(
+                              key: _menuKey,
+                              tag: "open_menu",
+                              child: SizedBox(
                                 width: 36,
                                 height: 36,
+                                child: IconButton(
+                                  splashRadius: 36,
+                                  padding: EdgeInsets.zero,
+                                  icon: SvgPicture.asset(
+                                    context.imagePath("ic_open_menu.svg"),
+                                    width: 36,
+                                    height: 36,
+                                  ),
+                                  onPressed: () {
+                                    showDevicePairMenu(context, 'open_menu');
+                                  },
+                                ),
                               ),
-                              onPressed: () {
-                                showDevicePairMenu(context, 'open_menu');
-                              },
                             ),
-                          ),
-                        ),
-                      )
+                          )
+                        ],
+                      ),)
                     ],
                   ),
                 ),
@@ -249,9 +262,13 @@ class _DeviceScreenState extends State<DeviceScreen>
     deviceProvider.connectivityResultStream.stream.listen((event) {
       if (event != ConnectivityResult.none &&
           event != ConnectivityResult.mobile) {
-        _refreshController.callRefresh(overOffset: 6);
+        _refreshDevice();
       }
     });
+  }
+
+  void _refreshDevice() {
+      _refreshController.callRefresh(overOffset: 6);
   }
 
   @override

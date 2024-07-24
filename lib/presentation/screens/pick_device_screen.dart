@@ -1,4 +1,3 @@
-
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
@@ -10,6 +9,7 @@ import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/widgets/devices/device_list.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/meida/media_utils.dart';
@@ -37,24 +37,29 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
     final devices =
         deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 247, 247, 247),
+      backgroundColor: Theme.of(context).flixColors.background.secondary,
       extendBodyBehindAppBar: false,
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 247, 247, 247),
+        backgroundColor: Theme.of(context).flixColors.background.secondary,
         title: Text('选择一个设备',
-            style: const TextStyle(color: Colors.black,
-                fontSize: 14,
-                fontWeight: FontWeight.w500).fix()),
+            style: TextStyle(
+                    color: Theme.of(context).flixColors.text.primary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500)
+                .fix()),
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 20, bottom: 20),
         child: CustomScrollView(
-          slivers: [DeviceList(
-            devices: devices,
-            onDeviceSelected: (deviceInfo, _) => _onDeviceSelected(deviceInfo),
-            showHistory: false,
+          slivers: [
+            DeviceList(
+              devices: devices,
+              onDeviceSelected: (deviceInfo, _) =>
+                  _onDeviceSelected(deviceInfo),
+              showHistory: false,
               history: const [],
-            )],
+            )
+          ],
         ),
       ),
     );
@@ -69,7 +74,8 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
       if (isOverMediumWidth(context)) {
         Navigator.pop(context, deviceInfo);
       } else {
-        Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context) {
+        Navigator.pushReplacement(context,
+            CupertinoPageRoute(builder: (context) {
           return ConcertScreen(
             deviceInfo: deviceInfo,
             showBackButton: true,
@@ -88,7 +94,7 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
       final bubbles = <UIBubble>[];
       if (widget.sharedMedia.attachments?.isNotEmpty == true) {
         for (final SharedAttachment? attachment
-        in widget.sharedMedia.attachments ?? []) {
+            in widget.sharedMedia.attachments ?? []) {
           if (attachment != null) {
             final shareable = SharedFile(
                 id: const Uuid().v4(),
