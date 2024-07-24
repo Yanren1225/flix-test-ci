@@ -70,8 +70,8 @@ jobs:
        - name: Upload artifact
          uses: actions/upload-artifact@v4
          with:
-           name: release-ipa
-           path: build/ios/ipa/App.ipa
+           name: ios-ipa
+           path: build/ios/ipa/
 
    linux-deb:
      runs-on: ubuntu-latest
