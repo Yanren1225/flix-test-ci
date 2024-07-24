@@ -31,6 +31,7 @@ import 'package:mutex/mutex.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
+import 'package:uri_content/uri_content.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
@@ -500,14 +501,14 @@ class ShipService implements ApInterface {
       talker.debug(sendTag,"start=>$fileBubble");
       await _checkCancel(fileBubble.id);
       final shardFile = fileBubble.content.meta;
-      await shardFile.resolvePath((path) async {
+
+      await shardFile.resolveFileUri((uri) async {
         var fileSize = shardFile.size;
 
         final parameters = {
           'share_id': fileBubble.id,
           'file_name': shardFile.name,
         };
-
         var receiveBytes = 0;
         var supportBreakPoint = CompatUtil.supportBreakPoint(fileBubble.to);
         if (supportBreakPoint) {
@@ -521,30 +522,44 @@ class ShipService implements ApInterface {
           parameters['mode'] = mode;
         }
 
+        String path = "";
+        dynamic data;
+
+        if (uri.isScheme("content") && Platform.isAndroid) {
+          final uriContent = UriContent();
+          data = uriContent.getContentStream(uri).chain((stream) async {
+            await _checkCancel(fileBubble.id);
+          }).progress(fileBubble, receiveBytes);
 
 
-        final response =
-            await dio.Dio(dio.BaseOptions(baseUrl: _getBaseUrl(fileBubble.to),contentType: "application/octet-stream"))
-                .post(
+        } else {
+          path = uri.path;
+          data = File(path).openRead(receiveBytes, fileSize).chain((stream) async {
+            await _checkCancel(fileBubble.id);
+          }).progress(fileBubble, receiveBytes);
+        }
+
+        final response = await dio.Dio(dio.BaseOptions(baseUrl: _getBaseUrl(fileBubble.to),contentType: "application/octet-stream"))
+            .post(
           '/file',
           queryParameters: parameters,
-          data:
-              File(path).openRead(receiveBytes, fileSize).chain((stream) async {
-            await _checkCancel(fileBubble.id);
-          }).progress(fileBubble, receiveBytes),
+          data: data,
         );
 
         if (response.statusCode == 200) {
           talker.debug(sendTag, '发送成功 ${response.data.toString()}');
           updateBubbleShareState(
               _bubblePool, fileBubble.id, FileState.sendCompleted);
-          _deleteCachedFile(fileBubble, path);
+          if (path.isNotEmpty) {
+            _deleteCachedFile(fileBubble, path);
+          }
         } else {
           talker.error(sendTag,
               '发送失败: status code: ${response.statusCode}, ${response.data.toString()}');
           updateBubbleShareState(
               _bubblePool, fileBubble.id, FileState.sendFailed);
         }
+
       });
     } on CancelException catch (e, stackTrace) {
       talker.warning('发送取消: ', e, stackTrace);

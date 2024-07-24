@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
+import 'package:flix/utils/android/android_file_info.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
@@ -111,6 +112,22 @@ extension AttachmentConvert on SharedAttachment {
         size: await file.length(),
         width: size.width,
         height: size.height);
+  }
+}
+
+extension AndroidFileInfo on FileInfo {
+  Future<FileMeta> toFileMeta() async {
+    if (this.uri == null) {
+      throw UnsupportedError('PlatformFile.path must not be null');
+    }
+    return FileMeta(
+        resourceId: '',
+        androidContentUri: uri,
+        name: name,
+        path: this.path,
+        mimeType: lookupMimeType(name) ?? 'application/octet-stream',
+        nameWithSuffix: name,
+        size: size);
   }
 }
 
