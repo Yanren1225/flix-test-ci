@@ -641,8 +641,8 @@ class ShipService implements ApInterface {
           await _saveFileAndAddBubble(
               safeJoinPaths(desDir, bubble?.content.meta.path ?? ''), request, bubble!);
         });
-      } on Error catch (e) {
-        talker.error('receive file error: ', e);
+      } on Error catch (e, s) {
+        talker.error('receive file error: ', e, s);
         final updatedBubble = bubble.copy(
             content: bubble.content
                 .copy(state: FileState.receiveFailed, progress: 1.0));

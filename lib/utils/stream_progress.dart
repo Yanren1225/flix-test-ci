@@ -14,8 +14,7 @@ extension StreamProgress on Stream<List<int>> {
       final current = DateTime.now().millisecondsSinceEpoch;
       final timeDiff = current - lastTime;
       final byteDiff = byteCount - lastByteCount;
-      //小于 100k，不显示进度
-      if (timeDiff > 1000 || bubble.content.meta.size< 100*1000) {
+      if (timeDiff > 1000) {
         lastTime = current;
         lastByteCount = byteCount;
         final updatedBubble = bubble.copy(
