@@ -1,7 +1,7 @@
 ﻿/*
  
 Flix Installer 
-Build date: 2024/07/21
+Build date: 2024/07/23
 © 2024 Gnayoah. All rights reserved.
 
 */
@@ -66,6 +66,10 @@ class Program
         string targetFolderPath = Path.Combine(localAppDataPath, "Flix");
         string installerZipPath = Path.Combine(targetFolderPath, "installer.zip");
         string flixZipPath = Path.Combine(targetFolderPath, "flix.zip");
+        string iconFilePath = Path.Combine(targetFolderPath, "setting.ico");
+
+
+
         Directory.CreateDirectory(targetFolderPath);
         if (!ExtractEmbeddedResource("Installer.installer.zip", targetFolderPath))
         {
@@ -75,6 +79,11 @@ class Program
         if (!CopyEmbeddedResourceToFile("Installer.flix.zip", flixZipPath))
         {
             Console.WriteLine("Failed to copy the flix.zip file.");
+            return;
+        }
+        if (!CopyEmbeddedResourceToFile("Installer.setting.ico", iconFilePath))
+        {
+            Console.WriteLine("Failed to copy the lo.ico file.");
             return;
         }
         if (!AddUninstallerToZip(flixZipPath, "Installer.uninstall.exe"))
