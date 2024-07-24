@@ -85,6 +85,14 @@ class PickActionAreaState extends State<PickActionsArea> {
           ),
           Visibility(
             visible: false,
+            child: ProgressAction(
+              showProgress: _isFileLoading,
+              icon: 'assets/images/ic_file.svg',
+              onTap: _onFileButtonPressedOld,
+            ),
+          ),
+          Visibility(
+              visible: false,
               child: ProgressAction(
             showProgress: _isDirectoryLoading,
             icon: 'assets/images/ic_dir_pick.svg',
@@ -194,6 +202,44 @@ class PickActionAreaState extends State<PickActionsArea> {
           PickableFile(
               type: PickedFileType.App, content: await app.toFileMeta())
       ]);
+    }
+  }
+
+  Future<void> _onFileButtonPressedOld() async {
+    try {
+      if (mounted) {
+        if (await checkStoragePermission(context,
+            manageExternalStorage: false)) {
+          final result = await FilePicker.platform.pickFiles(
+              allowMultiple: true,
+              onFileLoading: (FilePickerStatus pickerStatus) {
+                if (mounted) {
+                  switch (pickerStatus) {
+                    case FilePickerStatus.picking:
+                      setState(() {
+                        _isFileLoading = true;
+                      });
+                      break;
+                    case FilePickerStatus.done:
+                      setState(() {
+                        _isFileLoading = false;
+                      });
+                      break;
+                  }
+                }
+              });
+          if (result != null) {
+            onPicked([
+              for (final file in result.files)
+                PickableFile(
+                    type: PickedFileType.File,
+                    content: await file.toFileMeta())
+            ]);
+          }
+        }
+      }
+    } catch (e, stackTrace) {
+      talker.error('pick file failed', e, stackTrace);
     }
   }
 

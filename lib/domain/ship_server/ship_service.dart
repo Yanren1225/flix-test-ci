@@ -559,7 +559,7 @@ class ShipService implements ApInterface {
 
 
         } else {
-          path = uri.path;
+          path = Uri.decodeComponent(uri.path);
           data = File(path).openRead(receiveBytes, fileSize).chain((stream) async {
             await _checkCancel(fileBubble.id);
           }).progress(fileBubble, receiveBytes);
