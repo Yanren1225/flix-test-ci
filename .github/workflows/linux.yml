@@ -1,4 +1,4 @@
-name: Build Deb+Rpm
+name: Build deb and rpm
 on:
   workflow_dispatch:
   workflow_call:

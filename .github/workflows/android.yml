@@ -1,4 +1,4 @@
-name: Build Apk+Bundle
+name: Build apk and bundle
 on:
   workflow_dispatch:
   workflow_call:
