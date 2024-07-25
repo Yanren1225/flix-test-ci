@@ -128,10 +128,23 @@ class AboutUSScreenState extends State<AboutUSScreen> {
       padding: const EdgeInsets.all(10.0),
       child: Text.rich(TextSpan(
           children: [
-            const TextSpan(text: '如果你有任何想法，欢迎你'),
-            ClickableSpan('点我进入官方QQ群 🌸', () {
+            const TextSpan(text: '欢迎加入QQ群和我们联系~\n'),
+            const TextSpan(text: '用户QQ群1:\n'),
+            ClickableSpan('539943326\n', () {
               final Uri url = Uri.parse(
-                  'http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=sLHZTbK8nxPPoKl2BWApIKoO9TBBGua8&authKey=XBVLWiLqFFt5UD72Gc8tOhyj2Y02J%2FF%2Bw4ijEv%2FsWrYVPy8Y%2B5lbbxvLyx6EQwMP&noverify=0&group_code=539943326');
+                  'https://qm.qq.com/q/9RTeAZaHRK');
+              launchUrl(url).then((value) {
+                if (!value) {
+                  talker.error('join qq error');
+                }
+              }).onError((error, stackTrace) {
+                talker.error('join qq error', error, stackTrace);
+              });
+            }),
+            const TextSpan(text: '\n用户QQ群2:\n'),
+            ClickableSpan('992894289', () {
+              final Uri url = Uri.parse(
+                  'https://qm.qq.com/q/aiGWJo7CYo');
               launchUrl(url).then((value) {
                 if (!value) {
                   talker.error('join qq error');
