@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  linux:
+  linux-deb:
     runs-on: ubuntu-latest
     container:
       image: registry.cn-hangzhou.aliyuncs.com/tekton/linux-flutter-build:ubuntu-22.04-amd64
@@ -22,8 +22,17 @@ jobs:
         with:
           name: linux-deb
           path: dist/
-      - name: Clear dist
-        run: rm -rf dist/
+
+  linux-rpm:
+    runs-on: ubuntu-latest
+    container:
+      image: registry.cn-hangzhou.aliyuncs.com/tekton/linux-flutter-build:fedora-38-amd64
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@main
+      - name: install rust
+        run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf > rustup.sh && sh rustup.sh -y && echo 'source $HOME/.cargo/env' >> /etc/bash.bashrc
+      - run: flutter pub get
       - run: flutter build linux -vv
         name: flutter debug compile
       - run: flutter_distributor package --platform linux --targets rpm
