@@ -11,7 +11,7 @@
     <Authors>Haoyang</Authors>
     <Product>Flix Installer</Product>
     <PackageIcon>logo.png</PackageIcon>
-    <FileVersion>2024.07.23</FileVersion>
+    <FileVersion>2024.07.25</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

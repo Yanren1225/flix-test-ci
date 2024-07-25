@@ -91,7 +91,7 @@ class Program
             Console.WriteLine("Failed to add uninstaller to flix.zip.");
             return;
         }
-        string installerPath = Path.Combine(targetFolderPath, "installer.exe");
+        string installerPath = Path.Combine(targetFolderPath, "Flix Installer.exe");
         if (File.Exists(installerPath))
         {
             if (TerminateProcess("flix") && DeleteFilesAndDirectoriesWithAdminPrivileges())
@@ -179,7 +179,8 @@ class Program
 
     static void RunInstallerWithPowerShell(string filePath)
     {
-        string script = $"Start-Process -FilePath \"{filePath}\" -NoNewWindow";
+        // PowerShell命令，用于以管理员权限启动指定的exe文件
+        string script = $"Start-Process -FilePath \"{filePath}\" -Verb RunAs";
         string escapedArgs = script.Replace("\"", "\\\"");
 
         var psi = new ProcessStartInfo
