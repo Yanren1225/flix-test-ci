@@ -1,0 +1,34 @@
+name: Build Deb+Rpm
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    container:
+      image: registry.cn-hangzhou.aliyuncs.com/tekton/linux-flutter-build:ubuntu-22.04-amd64
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@main
+      - name: install rust
+        run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf > rustup.sh && sh rustup.sh -y && echo 'source $HOME/.cargo/env' >> /etc/bash.bashrc
+      - run: flutter pub get
+      - run: flutter build linux -vv
+        name: flutter debug compile
+      - run: flutter_distributor package --platform linux --targets deb
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-deb
+          path: dist/
+      - name: Clear dist
+        run: rm -rf dist/
+      - run: flutter build linux -vv
+        name: flutter debug compile
+      - run: flutter_distributor package --platform linux --targets rpm
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-rpm
+          path: dist/
