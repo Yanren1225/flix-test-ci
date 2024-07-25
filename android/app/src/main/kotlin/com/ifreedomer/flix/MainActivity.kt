@@ -1,6 +1,5 @@
 package com.ifreedomer.flix
 
-import android.app.DownloadManager
 import android.content.ClipboardManager
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -17,6 +16,7 @@ import com.crazecoder.openfile.FileProvider
 import android.provider.DocumentsContract
 import android.net.Uri
 import java.io.File
+import com.ifreedomer.flix.android_filepicker.AndroidFilePickerPlugin
 
 
 
@@ -61,6 +61,8 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         GeneratedPluginRegistrant.registerWith(flutterEngine);
+        flutterEngine.plugins.add(AndroidFilePickerPlugin())
+
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             MULTICAST_LOCK_CHANNEL

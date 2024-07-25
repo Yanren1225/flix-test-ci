@@ -11,6 +11,18 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 mixin DrawinFileSecurityExtension {
   final secureBookmarks = SecureBookmarks();
 
+  Future<void> resolveFileUri(Future<void> Function(Uri uri) callback) async {
+    final fileMeta = this as FileMeta;
+
+    if (Platform.isAndroid && fileMeta.androidContentUri.isNotEmpty) {
+      await callback.call(Uri.parse(fileMeta.androidContentUri));
+    } else {
+      await _resolvePath(fileMeta.resourceId, fileMeta.path!, (path) async {
+        await callback.call(Uri.file(path));
+      });
+    }
+  }
+
   Future<void> resolvePath(Future<void> Function(String path) callback) async {
     final fileMeta = this as FileMeta;
     await _resolvePath(fileMeta.resourceId, fileMeta.path!, callback);
