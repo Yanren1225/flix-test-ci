@@ -1,25 +1,22 @@
 package com.ifreedomer.flix
 
-import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.os.Bundle
+import android.os.PowerManager
+import android.provider.DocumentsContract
+import android.util.Log
+import com.crazecoder.openfile.FileProvider
+import com.ifreedomer.flix.android_filepicker.AndroidFilePickerPlugin
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
-import android.content.Intent
-import android.content.Context
-import android.os.Bundle
-import android.os.PowerManager
-import android.util.Log
-import com.crazecoder.openfile.FileProvider
-import android.provider.DocumentsContract
-import android.net.Uri
+import io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin
 import java.io.File
-import com.ifreedomer.flix.android_filepicker.AndroidFilePickerPlugin
-
-
-
 
 
 class MainActivity : FlutterActivity() {
@@ -30,16 +27,12 @@ class MainActivity : FlutterActivity() {
         const val LOCK_CHANNEL = "com.ifreedomer.flix/lock"
         const val FILE_CHANNEL = "com.ifreedomer.flix/file"
         const val TAG = "MainActivity"
-
+        const val IS_FROM_NOTIFICATION = "is_from_notification"
+        const val SHARED_PREFERENCES_NAME: String = "FlutterSharedPreferences"
         const val FROM = "from"
         const val FROM_CLIPBOARD_NOTIFICATION = "send_clipboard_action"
+
         var clipboardChannel: MethodChannel? = null
-        fun notifyClipboardCopy(context: Context) {
-            val clipboardManager =
-                context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            Log.i(TAG, "notifyStartClipboardCopy ${clipboardManager.text}", Exception())
-            clipboardChannel?.invokeMethod("return_send_clipboard", clipboardManager.text)
-        }
     }
 
     private var multicastLock: WifiManager.MulticastLock? = null
@@ -54,7 +47,7 @@ class MainActivity : FlutterActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        Log.i(TAG,"onCreate action = ${intent.action}")
+        Log.i(TAG,"onNewIntent action = ${intent.action}")
         isFromNotification = isFromNotification(intent)
     }
 
@@ -94,12 +87,9 @@ class MainActivity : FlutterActivity() {
         )
 
         clipboardChannel?.setMethodCallHandler { call, result ->
-            if (call.method.equals("send_clipboard")) {
-                startActivity(Intent(applicationContext, MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    putExtra(FROM, FROM_CLIPBOARD_NOTIFICATION)
-                })
-                result.success("")
+            if (call.method.equals(IS_FROM_NOTIFICATION)) {
+                result.success(isFromNotification)
+                isFromNotification = false
             } else {
                 result.notImplemented();
             }
