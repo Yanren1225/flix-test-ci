@@ -2,6 +2,9 @@ name: Build All
 
 on:
   workflow_dispatch:
+  #build at 04:00 UTC+8 every Sunday
+  schedule:
+    - cron: '0 0 20 0 0 6 *'
   push:
     tags:
         - 'v*'
