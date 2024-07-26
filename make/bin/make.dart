@@ -93,6 +93,11 @@ void buildWindows(String? version) async {
   encoder.addDirectory(Directory(flixDir), includeDirName: false);
   encoder.close();
 
+  /// 拷贝 flix_win 到
+  final portableParentDir = '$basePath\\scripts\\Installer\\portable';
+  final portableDir = '$portableParentDir\\flix';
+  copyDirectory(Directory(flixDir), Directory(portableDir));
+
   /// 执行 dotnet publish 命令
   final outputDir = '$basePath\\scripts\\Installer\\publish\\${version}';
   await Directory(outputDir).create(recursive: true);
@@ -128,15 +133,12 @@ Future<void> copyDirectory(Directory source, Directory destination) async {
     await destination.create(recursive: true);
   }
 
-  await for (final entity in source.list(recursive: false)) {
+  await for (var entity in source.list(recursive: false, followLinks: false)) {
     if (entity is Directory) {
-      final newDirectory =
-          Directory('${destination.path}\\${entity.uri.pathSegments.last}');
-      await copyDirectory(entity, newDirectory);
+      await copyDirectory(
+          entity, Directory('${destination.path}\\${entity.path.split('\\').last}'));
     } else if (entity is File) {
-      final newFile =
-          File('${destination.path}\\${entity.uri.pathSegments.last}');
-      await newFile.writeAsBytes(await entity.readAsBytes());
+      await entity.copy('${destination.path}\\${entity.path.split('\\').last}');
     }
   }
 }
