@@ -81,7 +81,7 @@ void buildWindows(String? version) async {
   await copyDirectory(Directory('$basePath\\make\\dll'), Directory(flixDir));
 
   /// 压缩 flix_win
-  final zipFilePath = '$basePath\\scripts\\Installer\\Installer\\flix';
+  final zipFilePath = '$basePath\\scripts\\Installer\\flix';
   final zipFile = File('$zipFilePath.zip');
 
   if (await zipFile.exists()) {
