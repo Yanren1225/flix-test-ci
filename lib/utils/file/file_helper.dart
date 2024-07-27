@@ -386,12 +386,16 @@ Future<File> createFile(String desDir, String fileName,
   final tag = copyIndex == 0 ? "" : "($copyIndex)";
 
   //check
-  desDir = path_utils.dirname(desDir);
-
-  if(!desDir.endsWith("/")){
-    desDir = desDir+Platform.pathSeparator;
+  final type = await FileSystemEntity.type(desDir);
+  if (type == FileSystemEntityType.file) {
+    desDir = path_utils.dirname(desDir);
   }
-  String filePath = '$desDir$fileNameWithoutSuffix$tag$fileSuffix';
+
+  talker.debug("createFile desDir=$desDir, fileName=$fileName, type=$type");
+  desDir = path_utils.normalize(desDir);
+
+  String filePath =
+      '$desDir${Platform.pathSeparator}$fileNameWithoutSuffix$tag$fileSuffix';
   talker.debug("createFile filePath=$filePath");
 
   final outFile = File(filePath);
