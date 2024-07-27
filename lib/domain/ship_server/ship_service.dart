@@ -284,8 +284,14 @@ class ShipService implements ApInterface {
         askBreakPoint(bubble);
         return;
       }
-      await _sendBasicBubble(bubble.copy(
-          content: bubble.content.copy(state: FileState.waitToAccepted)));
+      var state = FileState.waitToAccepted;
+      if (bubble.groupId?.isNotEmpty == true) {
+        await updateBubbleShareState(_bubblePool, bubble.id, FileState.inTransit,
+            waitingForAccept: true);
+        state = FileState.inTransit;
+      }
+      await _sendBasicBubble(
+          bubble.copy(content: bubble.content.copy(state: state)));
     } else if (bubble is PrimitiveDirectoryBubble) {
       if (CompatUtil.supportBreakPoint(bubble.to) &&
           bubble.content.progress > 0) {
@@ -293,8 +299,14 @@ class ShipService implements ApInterface {
         askBreakPoint(bubble);
         return;
       }
+      var state = FileState.waitToAccepted;
+      if (bubble.groupId?.isNotEmpty == true) {
+        await updateBubbleShareState(_bubblePool, bubble.id, FileState.inTransit,
+            waitingForAccept: true);
+        state = FileState.inTransit;
+      }
       await _sendBasicBubble(bubble.copy(
-          content: bubble.content.copy(state: FileState.waitToAccepted),groupId: bubble.groupId));
+          content: bubble.content.copy(state: state),groupId: bubble.groupId));
     }
   }
 
