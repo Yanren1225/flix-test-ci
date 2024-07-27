@@ -124,7 +124,7 @@ class CrossDeviceClipboardScreenState
             ),
             const SizedBox(height: 2),
             Text(
-              "关联设备后，复制的文字、图片可共享",
+              "关联设备后，复制的文字可共享",
               style: TextStyle(
                   fontSize: 16,
                   color: Theme.of(context).flixColors.text.secondary),
