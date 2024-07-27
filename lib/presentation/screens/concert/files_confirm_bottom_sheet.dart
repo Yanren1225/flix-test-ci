@@ -16,6 +16,7 @@ import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:uuid/uuid.dart';
+import 'package:path/path.dart' as path_utils;
 
 // TODO： 兼容ContentProvider
 class FilesConfirmBottomSheet extends StatefulWidget {
@@ -89,18 +90,19 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
       talker.debug(FilesConfirmBottomSheet.tag,"_sendFiles type = $bubbleFileType");
       if (bubbleFileType == BubbleType.Directory) {
         final directoryId = const Uuid().v4();
+        final directoryMeta = DirectoryMeta(
+            name: path_utils.basenameWithoutExtension(file.path),
+            size: meta.size,
+            path: file.path);
+
         List<SharedFile> fileList = [];
         await for (final entity in Directory(file.path).list(recursive: true)) {
           if (entity is File) {
-            FileMeta fileMeta = await entity.toFileMeta();
-            fileList.add(SharedFile(id: fileMeta.name, content: fileMeta));
+            FileMeta fileMeta = await entity.toFileMeta(parent: directoryMeta);
+            fileList.add(SharedFile(id: fileMeta.name, content: fileMeta, groupId: directoryId));
           }
         }
 
-        final directoryMeta = DirectoryMeta(
-            name: directoryId,
-            size: meta.size,
-            path: file.path);
         talker.debug(FilesConfirmBottomSheet.tag,"_sendFiles directoryMeta = $directoryMeta");
         shipService.send(UIBubble(
             time: DateTime
@@ -114,15 +116,17 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
                 state: FileState.picked,
                 meta: directoryMeta,
                 content: fileList)));
-        return;
-    }
-      shipService.send(UIBubble(
-          time: DateTime.now().millisecondsSinceEpoch,
-          from: DeviceProfileRepo.instance.did,
-          to: deviceInfo.id,
-          type: bubbleFileType,
-          shareable: SharedFile(
-              id: const Uuid().v4(), state: FileState.picked, content: meta)));
+      } else {
+        shipService.send(UIBubble(
+            time: DateTime.now().millisecondsSinceEpoch,
+            from: DeviceProfileRepo.instance.did,
+            to: deviceInfo.id,
+            type: bubbleFileType,
+            shareable: SharedFile(
+                id: const Uuid().v4(),
+                state: FileState.picked,
+                content: meta)));
+      }
     }
   }
 }
@@ -143,6 +147,7 @@ class ReadSendFileItem extends StatefulWidget {
 
 class ReadSendFileItemState extends State<ReadSendFileItem> {
   var fileSize = 0;
+  var isDir = false;
 
   @override
   void initState() {
@@ -151,8 +156,10 @@ class ReadSendFileItemState extends State<ReadSendFileItem> {
     File(widget.file.path).isFile().then((value) async {
       if(value){
         fileSize = await _file.length();
+        isDir = false;
       }else{
         fileSize = await Directory(widget.file.path).getSize();
+        isDir = true;
       }
       setState(() {});
     });
@@ -171,7 +178,7 @@ class ReadSendFileItemState extends State<ReadSendFileItem> {
             height: 44,
             decoration: FlixDecoration(borderRadius: BorderRadius.circular(6)),
             alignment: Alignment.center,
-            child: SvgPicture.asset(mimeIcon(widget.file.path)),
+            child: SvgPicture.asset(mimeIcon(isDir ? "/" : widget.file.path)),
           ),
           const SizedBox(
             width: 10,
