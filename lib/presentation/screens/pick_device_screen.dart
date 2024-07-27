@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
@@ -109,13 +111,28 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
           }
         }
       } else if (widget.sharedMedia.content?.isNotEmpty == true) {
-        bubbles.add(UIBubble(
-            time: DateTime.now().millisecondsSinceEpoch,
-            from: self,
-            to: deviceInfo.id,
-            type: BubbleType.Text,
-            shareable: SharedText(
-                id: const Uuid().v4(), content: widget.sharedMedia.content!)));
+        if (Platform.isAndroid &&
+            (widget.sharedMedia.content!.startsWith('content://') ||
+                widget.sharedMedia.content!.startsWith('file://'))) {
+          //TODO: 实现从content://和file://读取文件
+          //fixme: 未实现
+          bubbles.add(UIBubble(
+              time: DateTime.now().millisecondsSinceEpoch,
+              from: self,
+              to: deviceInfo.id,
+              type: BubbleType.Text,
+              shareable:
+                  SharedText(id: const Uuid().v4(), content: "暂不支持的功能！")));
+        } else {
+          bubbles.add(UIBubble(
+              time: DateTime.now().millisecondsSinceEpoch,
+              from: self,
+              to: deviceInfo.id,
+              type: BubbleType.Text,
+              shareable: SharedText(
+                  id: const Uuid().v4(),
+                  content: widget.sharedMedia.content!)));
+        }
       } else {
         talker.error('无法创建UIBubble，分享内容为空');
       }
