@@ -180,7 +180,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                   return ClickableItem(
                     label: '跨设备复制粘贴',
-                    des: '复制文字、图片后，可共享数据',
+                    des: "关联设备后，复制的文字可共享",
                     topRadius: true,
                     bottomRadius: true,
                     onClick: () {
