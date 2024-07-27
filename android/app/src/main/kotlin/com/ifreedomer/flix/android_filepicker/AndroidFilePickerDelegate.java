@@ -243,7 +243,8 @@ public class AndroidFilePickerDelegate implements PluginRegistry.ActivityResultL
         this.dispatchEventStatus(false);
         ArrayList<Map<String, Object>> fileList = new ArrayList<>();
         if (uriList == null) {
-            this.pendingResult.success(fileList);
+            if (this.pendingResult != null)
+                this.pendingResult.success(fileList);
             this.clearPendingResult();
             return;
         }
