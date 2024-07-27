@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:mime/mime.dart';
+import 'package:path/path.dart' as path_utils;
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
@@ -112,17 +114,31 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
         }
       } else if (widget.sharedMedia.content?.isNotEmpty == true) {
         if (Platform.isAndroid &&
-            (widget.sharedMedia.content!.startsWith('content://') ||
-                widget.sharedMedia.content!.startsWith('file://'))) {
-          //TODO: 实现从content://和file://读取文件
-          //fixme: 未实现
+            (widget.sharedMedia.content!.startsWith('content://'))) {
+
+          final contentUri = Uri.parse(widget.sharedMedia.content!);
+          final path = contentUri.path;
+          final name = path_utils.basename(path);
+          final nameWithOutSuffix = path_utils.basenameWithoutExtension(path);
+
+          final meta = FileMeta(
+            androidContentUri: widget.sharedMedia.content!,
+            resourceId: '',
+            name: name,
+            mimeType: lookupMimeType(name) ?? 'application/octet-stream',
+            nameWithSuffix: name,
+            size: 0, //TODO: 这里大抵不该是 0
+          );
+
           bubbles.add(UIBubble(
               time: DateTime.now().millisecondsSinceEpoch,
               from: self,
               to: deviceInfo.id,
-              type: BubbleType.Text,
-              shareable:
-                  SharedText(id: const Uuid().v4(), content: "暂不支持的功能！")));
+              type: BubbleType.File,
+              shareable: SharedFile(
+                id: const Uuid().v4(),
+                content: meta,
+              )));
         } else {
           bubbles.add(UIBubble(
               time: DateTime.now().millisecondsSinceEpoch,
