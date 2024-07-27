@@ -242,7 +242,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                         label: '文件接收目录',
                         des: snapshot.data,
                         topRadius: false,
-                        bottomRadius: false,
+                        bottomRadius: !showAutoSaveMedia,
                         onClick: () async {
                           if (!(await checkStoragePermission(context,
                               manageExternalStorage: true))) {
@@ -275,6 +275,14 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
+
+            Visibility(
+                visible: showAutoSaveMedia,
+                child: Container(
+                  margin: const EdgeInsets.only(left: 14),
+                  height: 0.5,
+                  color: const Color.fromRGBO(0, 0, 0, 0.08),
+                ),),
 
 
             Visibility(
