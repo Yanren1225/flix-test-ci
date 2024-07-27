@@ -242,6 +242,11 @@ public class AndroidFilePickerDelegate implements PluginRegistry.ActivityResultL
     private void finishWithSuccess(List<String> uriList) {
         this.dispatchEventStatus(false);
 
+        if (uriList == null) {
+            this.pendingResult.success(fileList);
+            this.clearPendingResult();
+            return;
+        }
         // Temporary fix, remove this null-check after Flutter Engine 1.14 has landed on stable
         if (this.pendingResult != null) {
 
