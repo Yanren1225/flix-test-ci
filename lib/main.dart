@@ -122,6 +122,7 @@ void initClipboard() {
 void _initForegroundTask() {
   if (Platform.isAndroid || Platform.isIOS) {
     flixForegroundService.init();
+    flixForegroundService.start();
   }
 }
 
