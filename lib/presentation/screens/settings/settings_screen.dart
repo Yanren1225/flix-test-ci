@@ -69,6 +69,7 @@ class SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool showAutoSaveMedia = Platform.isAndroid;
     final bool showCustomSaveDir = !Platform.isIOS;
     final bool showAppLaunchConfig = isDesktop();
 
@@ -241,7 +242,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                         label: '文件接收目录',
                         des: snapshot.data,
                         topRadius: false,
-                        bottomRadius: true,
+                        bottomRadius: false,
                         onClick: () async {
                           if (!(await checkStoragePermission(context,
                               manageExternalStorage: true))) {
@@ -274,6 +275,38 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
+
+
+            Visibility(
+              visible: showAutoSaveMedia,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16),
+                child:SettingsItemWrapper(
+                  topRadius: false,
+                  bottomRadius: true,
+                  child:    StreamBuilder<bool>(
+                    initialData: SettingsRepo.instance.autoSaveToGallery,
+                    stream: SettingsRepo.instance.autoSaveToGalleryStream.stream,
+                    builder: (context, snapshot) {
+                      return SwitchableItem(
+                        label: '自动将图片视频保存到相册',
+                        des: '不保存到接收目录',
+                        checked: snapshot.data ?? false,
+                        onChanged: (value) {
+                          setState(() {
+                            if (value != null) {
+                              SettingsRepo.instance.setAutoSaveToGallery(value);
+                            }
+                          });
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+
+
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

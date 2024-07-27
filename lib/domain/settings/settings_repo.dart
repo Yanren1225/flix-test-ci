@@ -47,6 +47,10 @@ class SettingsRepo {
   String get savedDir => _savedDir;
   StreamController<String> savedDirStream = StreamController.broadcast();
 
+  bool _autoSaveToGallery = true;
+  bool get autoSaveToGallery => _autoSaveToGallery;
+  StreamController<bool> autoSaveToGalleryStream = StreamController.broadcast();
+
   bool _enableMdns = true;
   bool get enableMdns => _enableMdns;
   StreamController<bool> enableMdnsStream = StreamController.broadcast();
@@ -54,6 +58,13 @@ class SettingsRepo {
   String _darkModeTag = "";
   String get darkModeTag => _darkModeTag;
   StreamController<String> darkModeTagStream = StreamController.broadcast();
+
+  Future<void> setAutoSaveToGallery(bool autoSaveToGallery) async {
+    _autoSaveToGallery = autoSaveToGallery;
+    autoSaveToGalleryStream.add(autoSaveToGallery);
+    var sharePreference = await SharedPreferences.getInstance();
+    await sharePreference.setBool(autoReceiveKey, autoSaveToGallery);
+  }
 
   Future<void> setAutoReceive(bool autoReceive) async {
     _setAutoReceive(autoReceive);
