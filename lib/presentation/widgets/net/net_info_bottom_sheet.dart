@@ -125,7 +125,7 @@ class NetInfoListTile extends StatelessWidget {
                 Flexible(
                   child: Text(
                     label,
-                    style: FlixTextStyle.title,
+                    style: context.title(),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -148,7 +148,7 @@ class NetInfoListTile extends StatelessWidget {
                           child: Center(
                             child: Text(
                               action ?? "",
-                              style: FlixTextStyle.button,
+                              style: context.onButton(),
                             ),
                           ))))),
         ],

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flix/theme/theme_extensions.dart';
@@ -148,8 +149,9 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
           ));
           break;
         case BubbleContextMenuItemType.Location:
+
           items.add(BubbleContextMenuItem(
-            title: '文件位置',
+            title: Platform.isAndroid ? '文件打开' :  '文件位置',
             icon: 'assets/images/ic_location.svg',
             onTap: onTap(type),
           ));

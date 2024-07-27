@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
+import 'package:flix/utils/android/android_file_info.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
@@ -58,12 +59,25 @@ extension XFileConvert on XFile {
       {bool isImg = false, bool isVideo = false}) async {
     await authPersistentAccess(this.path);
     var size = const Size(0, 0);
+
+    var directory = Directory(this.path);
+    if(await directory.exists()){
+      return FileMeta(
+          resourceId: '',
+          name: name,
+          path: this.path,
+          mimeType: mimeType ?? 'application/octet-stream',
+          nameWithSuffix: name,
+          size: await directory.getSize(),
+          width: size.width,
+          height: size.height);
+    }
+
     if (isImg) {
       size = await getImgSize(size, this.path);
     } else if (isVideo) {
       size = await getVideoSize(size, this.path);
     }
-
     return FileMeta(
         resourceId: '',
         name: name,
@@ -98,6 +112,22 @@ extension AttachmentConvert on SharedAttachment {
         size: await file.length(),
         width: size.width,
         height: size.height);
+  }
+}
+
+extension AndroidFileInfo on FileInfo {
+  Future<FileMeta> toFileMeta() async {
+    if (this.uri == null) {
+      throw UnsupportedError('PlatformFile.path must not be null');
+    }
+    return FileMeta(
+        resourceId: '',
+        androidContentUri: uri,
+        name: name,
+        path: this.path,
+        mimeType: lookupMimeType(name) ?? 'application/octet-stream',
+        nameWithSuffix: name,
+        size: size);
   }
 }
 
@@ -325,14 +355,18 @@ String mimeIcon(String filePath) {
 }
 
 // 判断文件是图片、视频还是其他
-FileType getFileType(String filePath) {
-  final mimeType = lookupMimeType(filePath) ?? "";
-  if (mimeType.startsWith('image')) {
-    return FileType.image;
-  } else if (mimeType.startsWith('video')) {
-    return FileType.video;
+Future<FileType> getFileType(String filePath) async {
+  if (await File(filePath).isFile()) {
+    final mimeType = lookupMimeType(filePath) ?? "";
+    if (mimeType.startsWith('image')) {
+      return FileType.image;
+    } else if (mimeType.startsWith('video')) {
+      return FileType.video;
+    } else {
+      return FileType.other;
+    }
   } else {
-    return FileType.other;
+    return FileType.directory;
   }
 }
 
@@ -350,10 +384,16 @@ Future<File> createFile(String desDir, String fileName,
   }
 
   final tag = copyIndex == 0 ? "" : "($copyIndex)";
+
+  //check
+  desDir = path_utils.dirname(desDir);
+
   if(!desDir.endsWith("/")){
     desDir = desDir+Platform.pathSeparator;
   }
   String filePath = '$desDir$fileNameWithoutSuffix$tag$fileSuffix';
+  talker.debug("createFile filePath=$filePath");
+
   final outFile = File(filePath);
   if (await outFile.exists()) {
     if (!deleteExist) {
@@ -402,9 +442,30 @@ Future<void> openFileDirectoryOnWindows(String path) async {
 
 }
 
+extension DirectoryExtension on Directory{
+  Future<int> getSize() async {
+    int totalSize = 0;
+    await for (final entity in list(recursive: true)){
+        if (entity is File) {
+          totalSize += await entity.length();
+        }
+    }
+    return totalSize;
+  }
+}
+
+extension FileExtension on File {
+  Future<bool> isFile() async {
+    // 尝试将路径视为文件
+    File file = File(this.path);
+    return (await file.exists());
+  }
+}
+
 enum FileType {
   image,
   video,
+  directory,
   other;
 }
 

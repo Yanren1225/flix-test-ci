@@ -1,0 +1,14 @@
+C:\Users\ASUS\source\repos\Installer\Installer\bin\Release\net8.0\Installer.exe
+C:\Users\ASUS\source\repos\Installer\Installer\bin\Release\net8.0\Installer.deps.json
+C:\Users\ASUS\source\repos\Installer\Installer\bin\Release\net8.0\Installer.runtimeconfig.json
+C:\Users\ASUS\source\repos\Installer\Installer\bin\Release\net8.0\Installer.dll
+C:\Users\ASUS\source\repos\Installer\Installer\bin\Release\net8.0\Installer.pdb
+C:\Users\ASUS\source\repos\Installer\Installer\obj\Release\net8.0\Installer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ASUS\source\repos\Installer\Installer\obj\Release\net8.0\Installer.AssemblyInfoInputs.cache
+C:\Users\ASUS\source\repos\Installer\Installer\obj\Release\net8.0\Installer.AssemblyInfo.cs
+C:\Users\ASUS\source\repos\Installer\Installer\obj\Release\net8.0\Installer.csproj.CoreCompileInputs.cache
+C:\Users\ASUS\source\repos\Installer\Installer\obj\Release\net8.0\Installer.dll
+C:\Users\ASUS\source\repos\Installer\Installer\obj\Release\net8.0\refint\Installer.dll
+C:\Users\ASUS\source\repos\Installer\Installer\obj\Release\net8.0\Installer.pdb
+C:\Users\ASUS\source\repos\Installer\Installer\obj\Release\net8.0\Installer.genruntimeconfig.cache
+C:\Users\ASUS\source\repos\Installer\Installer\obj\Release\net8.0\ref\Installer.dll

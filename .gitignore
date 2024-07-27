@@ -48,3 +48,8 @@ app.*.map.json
 
 build.py
 build.bat
+
+scripts/Installer/flix.zip
+scripts/Installer/publish/
+scripts/Installer/portable/
+scripts/.vs/*

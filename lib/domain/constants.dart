@@ -1,6 +1,7 @@
 class Constants{
   //断点续传
   static const receiveBytes = "receiveBytes";
+  static const receiveMaps = "receiveMaps";
   //设备匹配
   static const verifyCode = "verifyCode";
   static const verifyDevice = "verifyDevice";

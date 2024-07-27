@@ -9,6 +9,7 @@ import 'package:flix/presentation/screens/android_apps_screen.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/actions/progress_action.dart';
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/utils/android/android_pick_files.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -82,11 +83,21 @@ class PickActionAreaState extends State<PickActionsArea> {
             icon: 'assets/images/ic_file.svg',
             onTap: _onFileButtonPressed,
           ),
-          ProgressAction(
+          Visibility(
+            visible: false,
+            child: ProgressAction(
+              showProgress: _isFileLoading,
+              icon: 'assets/images/ic_file.svg',
+              onTap: _onFileButtonPressedOld,
+            ),
+          ),
+          Visibility(
+              visible: false,
+              child: ProgressAction(
             showProgress: _isDirectoryLoading,
             icon: 'assets/images/ic_dir_pick.svg',
             onTap: _onDirectoryButtonPressed,
-          ),
+          )),
         ],
       ),
     );
@@ -194,12 +205,11 @@ class PickActionAreaState extends State<PickActionsArea> {
     }
   }
 
-  Future<void> _onFileButtonPressed() async {
+  Future<void> _onFileButtonPressedOld() async {
     try {
       if (mounted) {
         if (await checkStoragePermission(context,
             manageExternalStorage: false)) {
-          // if (Platform.isAndroid) {
           final result = await FilePicker.platform.pickFiles(
               allowMultiple: true,
               onFileLoading: (FilePickerStatus pickerStatus) {
@@ -222,8 +232,77 @@ class PickActionAreaState extends State<PickActionsArea> {
             onPicked([
               for (final file in result.files)
                 PickableFile(
-                    type: PickedFileType.File, content: await file.toFileMeta())
+                    type: PickedFileType.File,
+                    content: await file.toFileMeta())
             ]);
+          }
+        }
+      }
+    } catch (e, stackTrace) {
+      talker.error('pick file failed', e, stackTrace);
+    }
+  }
+
+  Future<void> _onFileButtonPressed() async {
+    try {
+      if (mounted) {
+        if (await checkStoragePermission(context,
+            manageExternalStorage: false)) {
+          if (Platform.isAndroid) {
+            final result = await AndroidPickFiles.pickFiles(
+              allowMultipleSelection: true,
+                onFileLoading: (FilePickerStatus pickerStatus) {
+                  if (mounted) {
+                    switch (pickerStatus) {
+                      case FilePickerStatus.picking:
+                        setState(() {
+                          _isFileLoading = true;
+                        });
+                        break;
+                      case FilePickerStatus.done:
+                        setState(() {
+                          _isFileLoading = false;
+                        });
+                        break;
+                    }
+                  }
+                }
+            );
+            if (result != null) {
+              onPicked([
+                for (final file in result.infoList)
+                  PickableFile(
+                      type: PickedFileType.File, content: await file.toFileMeta())
+              ]);
+            }
+            result;
+          } else {
+            final result = await FilePicker.platform.pickFiles(
+                allowMultiple: true,
+                onFileLoading: (FilePickerStatus pickerStatus) {
+                  if (mounted) {
+                    switch (pickerStatus) {
+                      case FilePickerStatus.picking:
+                        setState(() {
+                          _isFileLoading = true;
+                        });
+                        break;
+                      case FilePickerStatus.done:
+                        setState(() {
+                          _isFileLoading = false;
+                        });
+                        break;
+                    }
+                  }
+                });
+            if (result != null) {
+              onPicked([
+                for (final file in result.files)
+                  PickableFile(
+                      type: PickedFileType.File,
+                      content: await file.toFileMeta())
+              ]);
+            }
           }
         }
       }

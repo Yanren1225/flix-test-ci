@@ -119,6 +119,7 @@ class DirectoryMeta {
 }
 
 class FileMeta with DrawinFileSecurityExtension {
+  final String androidContentUri;
   final String resourceId;
   final String name;
   final String mimeType;
@@ -137,6 +138,7 @@ class FileMeta with DrawinFileSecurityExtension {
       required this.mimeType,
       required this.nameWithSuffix,
       required this.size,
+      this.androidContentUri = '',
       this.path, this.parent,
       this.width = 0,
       this.height = 0});
@@ -149,13 +151,15 @@ class FileMeta with DrawinFileSecurityExtension {
         size = json['size'],
         path = json['path'],
         width = json['width'],
-        height = json['height'];
+        height = json['height'],
+        androidContentUri = json['androidContentUri'] ?? '';
 
   Map<String, dynamic> toJson({required FilePathSaveType pathSaveType}) {
     final map = {
       'name': name,
       'mimeType': mimeType,
       'nameWithSuffix': nameWithSuffix,
+      'androidContentUri': androidContentUri,
       'size': size,
       'width': width,
       'height': height,
@@ -183,7 +187,8 @@ class FileMeta with DrawinFileSecurityExtension {
       String? path,
       int? width,
       int? height,
-      DirectoryMeta? parent}) {
+      DirectoryMeta? parent,
+      String? androidContentUri,}) {
     return FileMeta(
         resourceId: resourceId ?? this.resourceId,
         name: name ?? this.name,
@@ -194,12 +199,13 @@ class FileMeta with DrawinFileSecurityExtension {
         width: width ?? this.width,
         height: height ?? this.height,
         parent: parent ?? this.parent,
+        androidContentUri: androidContentUri ?? this.androidContentUri,
     );
   }
 
   @override
   String toString() {
-    return 'resourceId: $resourceId, name: $name, mimeType: $mimeType, nameWithSuffix: $nameWithSuffix, size: $size, path: $path, width: $width, height: $height';
+    return 'resourceId: $resourceId, name: $name, mimeType: $mimeType, nameWithSuffix: $nameWithSuffix, size: $size, path: $path, width: $width, height: $height, androidContentUri: $androidContentUri';
   }
 }
 

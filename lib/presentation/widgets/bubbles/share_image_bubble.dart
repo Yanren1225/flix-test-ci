@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flix/domain/androp_context.dart';
@@ -17,6 +18,7 @@ import 'package:flix/presentation/widgets/segements/preview_error_widget.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/platform_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 class ShareImageBubble extends BaseFileBubble {
@@ -294,6 +296,12 @@ class ShareImageBubbleState extends BaseFileBubbleState<ShareImageBubble> {
           error,
           stackTrace);
       return _imageErrorWidget();
+    }
+
+    talker.debug("_image path = ${sharedFile.content.nameWithSuffix} content_path = ${sharedFile.content.path}");
+    if (sharedFile.content.nameWithSuffix.isNotEmpty &&
+        sharedFile.content.nameWithSuffix.endsWith(".svg")) {
+      return SvgPicture.file(File(sharedFile.content.path.toString()));
     }
 
     return Image(

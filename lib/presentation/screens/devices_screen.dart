@@ -12,6 +12,7 @@ import 'package:flix/presentation/widgets/device_name/name_edit_bottom_sheet.dar
 import 'package:flix/presentation/widgets/devices/device_list.dart';
 import 'package:flix/presentation/widgets/menu/device_pair_menu.dart';
 import 'package:flix/presentation/widgets/net/net_info_bottom_sheet.dart';
+import 'package:flix/resource_extension.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/android/android_utils.dart';
 import 'package:flix/utils/device/device_utils.dart';
@@ -22,7 +23,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
-import 'package:lottie/lottie.dart';
 import 'package:modals/modals.dart';
 
 final _menuKey = GlobalKey(debugLabel: "pair_device_menu");
@@ -55,13 +55,6 @@ class _DeviceScreenState extends State<DeviceScreen>
             color: Theme.of(context).flixColors.background.secondary),
         child: Stack(
           children: [
-            ClipRect(
-              child: SizedBox(
-                  width: double.infinity,
-                  height: 140,
-                  child: Lottie.asset('assets/animations/radar.json',
-                      fit: BoxFit.cover, alignment: Alignment.topRight)),
-            ),
             Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -77,30 +70,43 @@ class _DeviceScreenState extends State<DeviceScreen>
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SvgPicture.asset("assets/images/slogan.svg"),
-                      Visibility(
-                        visible: isMobile(),
-                        child: ModalAnchor(
-                          key: _menuKey,
-                          tag: "open_menu",
-                          child: SizedBox(
-                            width: 36,
-                            height: 36,
-                            child: IconButton(
-                              splashRadius: 36,
-                              padding: EdgeInsets.zero,
-                              icon: SvgPicture.asset(
-                                'assets/images/ic_open_menu.svg',
+                      SvgPicture.asset(context.imagePath("slogan.svg")),
+                      Container(child: Row(
+                        children: [
+                            Visibility(
+                              visible: isDesktop(),
+                                child: InkWell(
+                                  onTap: (){
+                                    _refreshDevice();
+                                  },
+                              child: SvgPicture.asset(
+                                  context.imagePath("ic_refresh_menu.svg")),
+                            )),
+                            Visibility(
+                            visible: isMobile(),
+                            child: ModalAnchor(
+                              key: _menuKey,
+                              tag: "open_menu",
+                              child: SizedBox(
                                 width: 36,
                                 height: 36,
+                                child: IconButton(
+                                  splashRadius: 36,
+                                  padding: EdgeInsets.zero,
+                                  icon: SvgPicture.asset(
+                                    context.imagePath("ic_open_menu.svg"),
+                                    width: 36,
+                                    height: 36,
+                                  ),
+                                  onPressed: () {
+                                    showDevicePairMenu(context, 'open_menu');
+                                  },
+                                ),
                               ),
-                              onPressed: () {
-                                showDevicePairMenu(context, 'open_menu');
-                              },
                             ),
-                          ),
-                        ),
-                      )
+                          )
+                        ],
+                      ),)
                     ],
                   ),
                 ),
@@ -149,8 +155,10 @@ class _DeviceScreenState extends State<DeviceScreen>
                       await Future.delayed(const Duration(seconds: 2));
                       return IndicatorResult.success;
                     },
-                    header: const MaterialHeader(
-                        color: Color.fromRGBO(0, 122, 255, 1)),
+                    header: MaterialHeader(
+                        color: FlixColor.blue,
+                        backgroundColor:
+                            Theme.of(context).flixColors.background.primary),
                     child: CustomScrollView(
                       slivers: [
                         const SliverPadding(padding: EdgeInsets.only(top: 10)),
@@ -254,9 +262,13 @@ class _DeviceScreenState extends State<DeviceScreen>
     deviceProvider.connectivityResultStream.stream.listen((event) {
       if (event != ConnectivityResult.none &&
           event != ConnectivityResult.mobile) {
-        _refreshController.callRefresh(overOffset: 6);
+        _refreshDevice();
       }
     });
+  }
+
+  void _refreshDevice() {
+      _refreshController.callRefresh(overOffset: 6);
   }
 
   @override

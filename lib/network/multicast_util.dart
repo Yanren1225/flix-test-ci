@@ -17,30 +17,38 @@ class MultiCastUtil {
 
   static Future<List<SocketResult>> getSockets(String multicastGroup,
       int multicastPort) async {
-    final interfaces = await NetworkInterface.list();
-    final sockets = <SocketResult>[];
-    for (final interface in interfaces) {
-      try {
-        final socket =
-            await RawDatagramSocket.bind(InternetAddress.anyIPv4, multicastPort);
-        // 不允许接收自己发送的消息
-        // socket.multicastLoopback = false;
-        socket.joinMulticast(InternetAddress(multicastGroup), interface);
-        // 不允许接收自己发送的消息
-        socket.multicastLoopback = false;
-        sockets.add(SocketResult(interface, socket));
-        talker.debug('$socket $interface');
-      } catch (e) {
-        talker.error(
-            'Could not bind UDP multicast port (ip: ${interface.addresses.map((a) => a.address).toList()}, group: $multicastGroup, port: $multicastPort)',
-            e);
+    try {
+      final interfaces = await NetworkInterface.list();
+      final sockets = <SocketResult>[];
+      for (final interface in interfaces) {
+        try {
+          final socket =
+          await RawDatagramSocket.bind(InternetAddress.anyIPv4, multicastPort);
+          // 不允许接收自己发送的消息
+          // socket.multicastLoopback = false;
+          socket.joinMulticast(InternetAddress(multicastGroup), interface);
+          // 不允许接收自己发送的消息
+          socket.multicastLoopback = false;
+          sockets.add(SocketResult(interface, socket));
+          talker.debug('$socket $interface');
+        } catch (e) {
+          talker.error(
+              'Could not bind UDP multicast port (ip: ${interface.addresses
+                  .map((a) => a.address)
+                  .toList()}, group: $multicastGroup, port: $multicastPort)',
+              e);
+        }
       }
+      return sockets;
+    } catch (e, s) {
+      talker.error("failed to get network interfaces", e, s);
+      return [];
     }
-    return sockets;
   }
 
 
-  static Future<void> startScan(String group, int port, DeviceScanCallback deviceScanCallback) async {
+  static Future<void> startScan(String group, int port,
+      DeviceScanCallback deviceScanCallback) async {
     // if (_listening) {
     //   Logger.log('Already listening to multicast');
     //   return;
@@ -116,7 +124,8 @@ class MultiCastUtil {
   }
 
   /// Sends an announcement which triggers a response on every LocalSend member of the network.
-  static Future<void> ping(String group, int port, DeviceModal deviceModal) async {
+  static Future<void> ping(String group, int port,
+      DeviceModal deviceModal) async {
     // final sockets = await getSockets(defaultMulticastGroup);
     final message = jsonEncode(Ping(deviceModal).toJson());
     if (Platform.isIOS) {
@@ -140,7 +149,8 @@ class MultiCastUtil {
   // 通过AP接口发送的multicast是不可靠的，
   // 实测Android开启热点其他设备无法接收到AP设备的组播数据
   // 见 https://forum.mikrotik.com/viewtopic.php?t=28756
-  static Future<void> pong(String group, int port, DeviceModal from, DeviceModal to) async {
+  static Future<void> pong(String group, int port, DeviceModal from,
+      DeviceModal to) async {
     // final sockets = await getSockets(defaultMulticastGroup);
     final message = jsonEncode(Pong(from, to).toJson());
     if (Platform.isIOS) {
@@ -159,9 +169,9 @@ class MultiCastUtil {
   }
 
   static const MULTICAST_LOCK_CHANNEL =
-      MethodChannel('com.ifreedomer.flix/multicast-lock');
+  MethodChannel('com.ifreedomer.flix/multicast-lock');
   static const MULTICAST_IOS_CHANNEL =
-      MethodChannel("com.ifreedomer.flix/multicast");
+  MethodChannel("com.ifreedomer.flix/multicast");
 
   static Future aquireMulticastLock() async {
     if (Platform.isAndroid) {

@@ -5,7 +5,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:flix/domain/bubble_pool.dart';
-import 'package:flix/domain/clipboard/clipboard_manager.dart';
+import 'package:flix/domain/clipboard/flix_clipboard_manager.dart';
 import 'package:flix/domain/constants.dart';
 import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_manager.dart';
@@ -31,6 +31,7 @@ import 'package:mutex/mutex.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
+import 'package:uri_content/uri_content.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
@@ -151,6 +152,7 @@ class ShipService implements ApInterface {
   Future<void> send(PrimitiveBubble primitiveBubble) async {
     try {
       // await checkCancel(uiBubble.shareable.id);
+      talker.debug(sendTag,"send primitiveBubble = $primitiveBubble");
       switch (primitiveBubble.type) {
         case BubbleType.Text:
           await _bubblePool.add(primitiveBubble);
@@ -179,22 +181,24 @@ class ShipService implements ApInterface {
       await updateBubbleShareState(_bubblePool, bubbleId, FileState.inTransit,
           waitingForAccept: false);
       var uri = Uri.parse(await _intentUrl(from));
-      var fileBubble =
-          (await _bubblePool.findLastById(bubbleId)) as PrimitiveFileBubble;
+      var bubble = (await _bubblePool.findLastById(bubbleId));
       var receiveBytesMap = HashMap<String, Object>();
-      var filePath = fileBubble.content.meta.path;
-      if (filePath?.isNotEmpty == true) {
-        final file = File(filePath!);
-        int fileLen = 0;
-        if (await file.exists()) {
-          fileLen = await File(filePath).length();
+      if (bubble is PrimitiveFileBubble) {
+        await _confirmBreakPointFileCreate(bubble, receiveBytesMap);
+      } else if (bubble is PrimitiveDirectoryBubble) {
+        var filesMaps = HashMap<String, Object>();
+        for (var fileBubble in bubble.content.fileBubbles) {
+          final HashMap<String, Object> temp = HashMap<String, Object>();
+          await _confirmBreakPointFileCreate(fileBubble, temp);
+          filesMaps[fileBubble.id] = temp;
         }
-        receiveBytesMap[Constants.receiveBytes] = fileLen;
-        fileBubble.content.receiveBytes = fileLen;
-        _bubblePool.add(fileBubble);
+        receiveBytesMap[Constants.receiveMaps] = filesMaps;
+      } else {
+        talker.error('confirmBreakPoint 接收失败: 异常类型 = $bubble');
+        return;
       }
       talker.debug("breakPoint",
-          "confirmBreakPoint receiveBytes = ${receiveBytesMap[Constants.receiveBytes]}");
+          "confirmBreakPoint receiveBytes = $receiveBytesMap");
       var response = await http.post(
         uri,
         body: TransIntent(
@@ -214,6 +218,20 @@ class ShipService implements ApInterface {
       }
     } catch (e, stackTrace) {
       talker.error('confirmReceiveFile failed: ', e, stackTrace);
+    }
+  }
+
+  Future<void> _confirmBreakPointFileCreate(PrimitiveFileBubble fileBubble, HashMap<String, Object> receiveBytesMap) async {
+    var filePath = fileBubble.content.meta.path;
+    if (filePath?.isNotEmpty == true) {
+      final file = File(filePath!);
+      int fileLen = 0;
+      if (await file.exists()) {
+        fileLen = await file.length();
+      }
+      receiveBytesMap[Constants.receiveBytes] = fileLen;
+      fileBubble.content.receiveBytes = fileLen;
+      _bubblePool.add(fileBubble);
     }
   }
 
@@ -249,7 +267,7 @@ class ShipService implements ApInterface {
   Future<void> cancelSend(PrimitiveBubble bubble) async {
     await updateBubbleShareState(_bubblePool, bubble.id, FileState.cancelled,
         create: bubble);
-    await _sendCancelMessage(bubble.id, bubble.to);
+    _sendCancelMessage(bubble.id, bubble.to);
   }
 
   Future<void> resend(PrimitiveBubble bubble) async {
@@ -269,6 +287,12 @@ class ShipService implements ApInterface {
       await _sendBasicBubble(bubble.copy(
           content: bubble.content.copy(state: FileState.waitToAccepted)));
     } else if (bubble is PrimitiveDirectoryBubble) {
+      if (CompatUtil.supportBreakPoint(bubble.to) &&
+          bubble.content.progress > 0) {
+        talker.debug("breakPoint", "start dir ask");
+        askBreakPoint(bubble);
+        return;
+      }
       await _sendBasicBubble(bubble.copy(
           content: bubble.content.copy(state: FileState.waitToAccepted),groupId: bubble.groupId));
     }
@@ -302,7 +326,6 @@ class ShipService implements ApInterface {
 
   Future<void> _sendCancelMessage(String bubbleId, String to) async {
     try {
-      await updateBubbleShareState(_bubblePool, bubbleId, FileState.cancelled);
       var uri = Uri.parse(await _intentUrl(to));
 
       var response = await http.post(
@@ -495,19 +518,23 @@ class ShipService implements ApInterface {
   }
 
   Future<void> _sendFileReal(PrimitiveFileBubble fileBubble) async {
+    if (fileBubble.content.state == FileState.sendCompleted) {
+      talker.debug(sendTag, "_sendFileReal sendCompleted");
+      return;
+    }
     _addLongTask();
     try {
       talker.debug(sendTag,"start=>$fileBubble");
       await _checkCancel(fileBubble.id);
       final shardFile = fileBubble.content.meta;
-      await shardFile.resolvePath((path) async {
+
+      await shardFile.resolveFileUri((uri) async {
         var fileSize = shardFile.size;
 
         final parameters = {
           'share_id': fileBubble.id,
           'file_name': shardFile.name,
         };
-
         var receiveBytes = 0;
         var supportBreakPoint = CompatUtil.supportBreakPoint(fileBubble.to);
         if (supportBreakPoint) {
@@ -521,30 +548,45 @@ class ShipService implements ApInterface {
           parameters['mode'] = mode;
         }
 
+        String path = "";
+        dynamic data;
+
+        if (uri.isScheme("content") && Platform.isAndroid) {
+          final uriContent = UriContent();
+          data = uriContent.getContentStream(uri).chain((stream) async {
+            await _checkCancel(fileBubble.id);
+          }).progress(fileBubble, receiveBytes);
 
 
-        final response =
-            await dio.Dio(dio.BaseOptions(baseUrl: _getBaseUrl(fileBubble.to)))
-                .post(
+        } else {
+          path = uri.toFilePath(windows: Platform.isWindows);
+
+          data = File(path).openRead(receiveBytes, fileSize).chain((stream) async {
+            await _checkCancel(fileBubble.id);
+          }).progress(fileBubble, receiveBytes);
+        }
+
+        final response = await dio.Dio(dio.BaseOptions(baseUrl: _getBaseUrl(fileBubble.to),contentType: "application/octet-stream"))
+            .post(
           '/file',
           queryParameters: parameters,
-          data:
-              File(path).openRead(receiveBytes, fileSize).chain((stream) async {
-            await _checkCancel(fileBubble.id);
-          }).progress(fileBubble, receiveBytes),
+          data: data,
         );
 
         if (response.statusCode == 200) {
           talker.debug(sendTag, '发送成功 ${response.data.toString()}');
           updateBubbleShareState(
               _bubblePool, fileBubble.id, FileState.sendCompleted);
-          _deleteCachedFile(fileBubble, path);
+          if (path.isNotEmpty) {
+            _deleteCachedFile(fileBubble, path);
+          }
         } else {
           talker.error(sendTag,
               '发送失败: status code: ${response.statusCode}, ${response.data.toString()}');
           updateBubbleShareState(
               _bubblePool, fileBubble.id, FileState.sendFailed);
         }
+
       });
     } on CancelException catch (e, stackTrace) {
       talker.warning('发送取消: ', e, stackTrace);
@@ -580,18 +622,28 @@ class ShipService implements ApInterface {
       assert(fileName != null, '$shareId filename can\'t be null');
       bubble = (await _bubblePool.findLastById(bubble.id)) as PrimitiveFileBubble?;
       await _checkCancel(bubble!.id);
+
+      // // 断点续传优化
+      // if (bubble.content.receiveBytes >= bubble.content.meta.size) {
+      //   talker.debug(
+      //       sendTag, "_receiveFile($fileName) receiveBytes(${bubble.content.receiveBytes}) >= size=(${bubble.content.meta.size}) received");
+      //   final updatedBubble = bubble.copy(
+      //       content: bubble.content
+      //           .copy(state: FileState.receiveCompleted, progress: 1.0));
+      //   await _bubblePool.add(updatedBubble);
+      //   return Response.ok('$shareId $fileName received');
+      // }
+
       try {
         final String desDir = SettingsRepo.instance.savedDir;
         await resolvePathOnMacOS(desDir, (desDir) async {
           assert(fileName != null, "$shareId filename can't be null");
-          if(bubble!.content.meta.path?.startsWith("..") == true){
-            bubble.content.meta.path =  bubble.content.meta.path?.replaceFirst("..", "");
-          }
+          // safeJoinPaths 相对路径拼接，文件夹发送处理
           await _saveFileAndAddBubble(
-              joinPaths(desDir, bubble.content.meta.path ?? ''), request, bubble);
+              safeJoinPaths(desDir, bubble?.content.meta.path ?? ''), request, bubble!);
         });
-      } on Error catch (e) {
-        talker.error('receive file error: ', e);
+      } on Error catch (e, s) {
+        talker.error('receive file error: ', e, s);
         final updatedBubble = bubble.copy(
             content: bubble.content
                 .copy(state: FileState.receiveFailed, progress: 1.0));
@@ -671,16 +723,30 @@ class ShipService implements ApInterface {
             return Response.notFound('bubble not found');
           }
           final updatedBubble = await updateBubbleShareState(
-                  _bubblePool, intent.bubbleId, FileState.inTransit)
-              as PrimitiveFileBubble;
-          var receiveBytes = intent.extra?[Constants.receiveBytes];
-          updatedBubble.content.waitingForAccept = false;
-          updatedBubble.content.receiveBytes = receiveBytes as int;
-          _sendFileReal(updatedBubble);
+              _bubblePool, intent.bubbleId, FileState.inTransit);
+          if (updatedBubble is PrimitiveFileBubble) {
+            var receiveBytes = intent.extra?[Constants.receiveBytes];
+            _confirmBreakPointFileReal(updatedBubble, receiveBytes);
+          } else if (updatedBubble is PrimitiveDirectoryBubble) {
+            var receiveMaps = intent.extra?[Constants.receiveMaps];
+            if (receiveMaps is Map<String, dynamic>) {
+              receiveMaps.forEach((key, value) async {
+                final fileUpdateBubble = await updateBubbleShareState(
+                    _bubblePool, key, FileState.inTransit);
+                _confirmBreakPointFileReal(
+                    fileUpdateBubble as PrimitiveFileBubble,
+                    value[Constants.receiveBytes]);
+              });
+            } else {
+              talker.error("confirmBreakPoint type=${receiveMaps.runtimeType}");
+            }
+          }
           break;
         case TransAction.askBreakPoint:
           final bubble = await _bubblePool.findLastById(intent.bubbleId);
-          if (bubble == null || bubble is! PrimitiveFileBubble) {
+          if (bubble == null ||
+              bubble is! PrimitiveFileBubble &&
+                  bubble is! PrimitiveDirectoryBubble) {
             return Response.notFound('bubble not found');
           }
           confirmBreakPoint(bubble.from, bubble.id);
@@ -759,6 +825,12 @@ class ShipService implements ApInterface {
       talker.error('receive intent error: ', e, stackTrace);
       return Response.badRequest();
     }
+  }
+
+  void _confirmBreakPointFileReal(PrimitiveFileBubble updatedBubble, Object? receiveBytes) {
+     updatedBubble.content.waitingForAccept = false;
+    updatedBubble.content.receiveBytes = receiveBytes as int;
+    _sendFileReal(updatedBubble);
   }
 
   Future<void> _saveFileAndAddBubble(
@@ -966,7 +1038,7 @@ class ShipService implements ApInterface {
   }
 
 
-  Future<void> askBreakPoint(PrimitiveFileBubble bubble) async {
+  Future<void> askBreakPoint(PrimitiveBubble bubble) async {
     try {
       talker.debug("breakPoint=>", "askBreakPoint = ${bubble.to}");
       // 更新接收方状态为接收中

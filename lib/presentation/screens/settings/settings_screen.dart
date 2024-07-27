@@ -21,6 +21,7 @@ import 'package:flix/utils/platform_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
@@ -179,7 +180,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                   return ClickableItem(
                     label: '跨设备复制粘贴',
-                    des: '复制文字、图片后，可共享数据',
+                    des: "关联设备后，复制的文字可共享",
                     topRadius: true,
                     bottomRadius: true,
                     onClick: () {
@@ -342,6 +343,14 @@ class SettingsScreenState extends State<SettingsScreen> {
                         }),
                       );
                     }),
+                Padding(
+                  padding: const EdgeInsets.only(left: 30, right: 16),
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 14),
+                    height: 0.5,
+                    color: const Color.fromRGBO(0, 0, 0, 0.08),
+                  ),
+                ),
                 Padding(
                   padding:
                       const EdgeInsets.only(left: 16, right: 16, bottom: 16),
