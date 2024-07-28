@@ -47,38 +47,29 @@ class BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
 
   String get dirName => widget.dirName;
   List<PrimitiveBubble>? _bubbles;
-  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-
     _loadData(false);
-    _startTimer();
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
   }
 
   Future<void> _loadData(bool refresh) async {
     try {
       final bubbles =
-          await appDatabase.bubblesDao.getDirectoryFileByGroupid(dirBubbleId);
+          await appDatabase.bubblesDao.getPrimitiveBubbleById(dirBubbleId);
       var state = _bottomSheetState;
-      if (bubbles == null) {
+      if (bubbles == null || bubbles.type != BubbleType.Directory) {
         if(refresh) return;
         state = _BottomSheetState.error;
-      } else if (bubbles.isEmpty) {
+      } else if ((bubbles as PrimitiveDirectoryBubble).content.fileBubbles.isEmpty) {
         if(refresh) return;
         state = _BottomSheetState.empty;
       } else {
         state = _BottomSheetState.list;
       }
       setState(() {
-        _bubbles = bubbles;
+        _bubbles = (bubbles as PrimitiveDirectoryBubble).content.fileBubbles;
         _bottomSheetState = state;
       });
     } catch (e) {
@@ -87,12 +78,12 @@ class BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
         _bottomSheetState = _BottomSheetState.error;
       });
     }
+    _startDelayLoop();
   }
 
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      _loadData(true);
-    });
+  Future<void> _startDelayLoop() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    _loadData(true);
   }
 
   @override
