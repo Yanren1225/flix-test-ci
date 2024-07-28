@@ -118,10 +118,8 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
             (widget.sharedMedia.content!.startsWith('content://'))) {
 
           final contentUri = Uri.parse(widget.sharedMedia.content!);
-          final path = contentUri.path;
-          final name = path_utils.basename(path);
-
           final info = await AndroidUtils.queryFileInfo(widget.sharedMedia.content!);
+          final name = info?.name ?? path_utils.basename(contentUri.path);
 
           final meta = FileMeta(
             androidContentUri: widget.sharedMedia.content!,
@@ -130,7 +128,7 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
             mimeType: lookupMimeType(name) ?? 'application/octet-stream',
             nameWithSuffix: name,
             size: info?.size ?? 0,
-            path: info?.path ?? '',
+            path: info?.path ?? contentUri.path,
           );
 
           bubbles.add(UIBubble(
