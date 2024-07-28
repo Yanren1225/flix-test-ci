@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/utils/android/android_utils.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path_utils;
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
@@ -119,7 +120,8 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
           final contentUri = Uri.parse(widget.sharedMedia.content!);
           final path = contentUri.path;
           final name = path_utils.basename(path);
-          final nameWithOutSuffix = path_utils.basenameWithoutExtension(path);
+
+          final info = await AndroidUtils.queryFileInfo(widget.sharedMedia.content!);
 
           final meta = FileMeta(
             androidContentUri: widget.sharedMedia.content!,
@@ -127,7 +129,8 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
             name: name,
             mimeType: lookupMimeType(name) ?? 'application/octet-stream',
             nameWithSuffix: name,
-            size: 0, //TODO: 这里大抵不该是 0
+            size: info?.size ?? 0,
+            path: info?.path ?? '',
           );
 
           bubbles.add(UIBubble(
