@@ -5,7 +5,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:flix/domain/bubble_pool.dart';
-import 'package:flix/domain/clipboard/clipboard_manager.dart';
+import 'package:flix/domain/clipboard/flix_clipboard_manager.dart';
 import 'package:flix/domain/constants.dart';
 import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_manager.dart';

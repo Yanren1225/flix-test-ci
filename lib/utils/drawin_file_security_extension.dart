@@ -73,6 +73,8 @@ Future<void> _resolvePath(String resourceId, String path,
     }
   } else if (Platform.isIOS && path.isNotEmpty) {
     await callback.call(await replaceSandboxPath(path));
+  } else if (Platform.isWindows && path.isNotEmpty && path.startsWith("/")) {
+    await callback.call(path.substring(1));
   } else {
     await callback.call(path);
   }

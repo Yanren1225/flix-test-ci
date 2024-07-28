@@ -123,7 +123,7 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
               selectionChangedCause = cause;
             },
             contextMenuBuilder: (
-              BuildContext context,
+              BuildContext _,
               EditableTextState editableTextState,
             ) {
               if (selectionChangedCause == SelectionChangedCause.longPress) {

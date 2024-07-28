@@ -91,13 +91,11 @@ class PickActionAreaState extends State<PickActionsArea> {
               onTap: _onFileButtonPressedOld,
             ),
           ),
-          Visibility(
-              visible: false,
-              child: ProgressAction(
+          ProgressAction(
             showProgress: _isDirectoryLoading,
             icon: 'assets/images/ic_dir_pick.svg',
             onTap: _onDirectoryButtonPressed,
-          )),
+          )
         ],
       ),
     );
@@ -320,12 +318,8 @@ class PickActionAreaState extends State<PickActionsArea> {
           setState(() {
             _isDirectoryLoading = true;
           });
-          String? result = await FilePicker.platform.getDirectoryPath(lockParentWindow:true);
-
-
-          setState(() {
-            _isDirectoryLoading = false;
-          });
+          String? result = await FilePicker.platform
+              .getDirectoryPath(lockParentWindow: true);
 
           if (result != null) {
             var directory = Directory(result);
@@ -344,11 +338,15 @@ class PickActionAreaState extends State<PickActionsArea> {
               }
             }
             directoryMeta.size = totalSize;
-            onPicked([
-              PickableDirectory(
-                  content: picks,
-                  meta: directoryMeta)
-            ]);
+            setState(() {
+              _isDirectoryLoading = false;
+            });
+
+            onPicked([PickableDirectory(content: picks, meta: directoryMeta)]);
+          } else {
+            setState(() {
+              _isDirectoryLoading = false;
+            });
           }
         }
       }

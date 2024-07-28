@@ -14,8 +14,13 @@ jobs:
         with:
           flutter-version: 3.19.2
       - run: dart run make windows
-      - name: Upload artifact
+      - name: Upload Installer
         uses: actions/upload-artifact@v4
         with:
-          name: windows
+          name: windows-installer
           path: ./scripts/Installer/publish
+      - name: Upload Portable Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-portable
+          path: ./scripts/Installer/portable

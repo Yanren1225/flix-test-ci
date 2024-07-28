@@ -6,7 +6,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flix/domain/analytics/flix_analytics.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/bubble_pool.dart';
-import 'package:flix/domain/clipboard/clipboard_manager.dart';
+import 'package:flix/domain/clipboard/flix_clipboard_manager.dart';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
@@ -122,6 +122,7 @@ void initClipboard() {
 void _initForegroundTask() {
   if (Platform.isAndroid || Platform.isIOS) {
     flixForegroundService.init();
+    flixForegroundService.start();
   }
 }
 
@@ -140,6 +141,7 @@ void _initAppLifecycle() {
   appLifecycle.addListener(shipServiceLifecycleWatcher);
   platformStateDispatcher.addListener(shipServiceLifecycleWatcher);
   appLifecycle.addListener(hotspotManager);
+  appLifecycle.addListener(FlixClipboardManager.instance);
 }
 
 void _initDatabase() {

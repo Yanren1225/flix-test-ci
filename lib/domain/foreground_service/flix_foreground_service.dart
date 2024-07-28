@@ -92,7 +92,7 @@ class FlixForegroundService extends LifecycleListener {
   }
 
   Future<void> start() async {
-    if (await FlutterForegroundTask.isAppOnForeground && !await FlutterForegroundTask.isRunningService) {
+    if (!await FlutterForegroundTask.isRunningService) {
       await _requestPermissionForAndroid();
       await _startForegroundTask();
     }
