@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/utils/android/android_utils.dart';
+import 'package:mime/mime.dart';
+import 'package:path/path.dart' as path_utils;
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
@@ -109,13 +114,42 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
           }
         }
       } else if (widget.sharedMedia.content?.isNotEmpty == true) {
-        bubbles.add(UIBubble(
-            time: DateTime.now().millisecondsSinceEpoch,
-            from: self,
-            to: deviceInfo.id,
-            type: BubbleType.Text,
-            shareable: SharedText(
-                id: const Uuid().v4(), content: widget.sharedMedia.content!)));
+        if (Platform.isAndroid &&
+            (widget.sharedMedia.content!.startsWith('content://'))) {
+
+          final contentUri = Uri.parse(widget.sharedMedia.content!);
+          final info = await AndroidUtils.queryFileInfo(widget.sharedMedia.content!);
+          final name = info?.name ?? path_utils.basename(contentUri.path);
+
+          final meta = FileMeta(
+            androidContentUri: widget.sharedMedia.content!,
+            resourceId: '',
+            name: name,
+            mimeType: lookupMimeType(name) ?? 'application/octet-stream',
+            nameWithSuffix: name,
+            size: info?.size ?? 0,
+            path: info?.path ?? contentUri.path,
+          );
+
+          bubbles.add(UIBubble(
+              time: DateTime.now().millisecondsSinceEpoch,
+              from: self,
+              to: deviceInfo.id,
+              type: BubbleType.File,
+              shareable: SharedFile(
+                id: const Uuid().v4(),
+                content: meta,
+              )));
+        } else {
+          bubbles.add(UIBubble(
+              time: DateTime.now().millisecondsSinceEpoch,
+              from: self,
+              to: deviceInfo.id,
+              type: BubbleType.Text,
+              shareable: SharedText(
+                  id: const Uuid().v4(),
+                  content: widget.sharedMedia.content!)));
+        }
       } else {
         talker.error('无法创建UIBubble，分享内容为空');
       }

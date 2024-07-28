@@ -43,13 +43,13 @@ class MainActivity : FlutterActivity() {
     private var isFromNotification = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i(TAG,"onCreate action = ${intent.action}")
+        Log.i(TAG, "onCreate action = ${intent.action}")
         isFromNotification = isFromNotification(intent)
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        Log.i(TAG,"onNewIntent action = ${intent.action}")
+        Log.i(TAG, "onNewIntent action = ${intent.action}")
         isFromNotification = isFromNotification(intent)
     }
 
@@ -118,59 +118,72 @@ class MainActivity : FlutterActivity() {
             flutterEngine.dartExecutor.binaryMessenger,
             FILE_CHANNEL
         ).setMethodCallHandler { call, result ->
-            if (call.method == "openFile"){
-                val path = call.argument<String>("path")
-                Log.i(TAG, "openFile path = $path")
-                if (path.isNullOrEmpty()) {
-                    return@setMethodCallHandler result.success(false)
-                }
-                try {
-                    // var uri: android.net.Uri? = android.net.Uri.parse("content://com.android.externalstorage.documents/document/primary:" + path)
-                    val file = File(path)
-                    val type = getFileType(path)
-                    val uri = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                        FileProvider.getUriForFile(applicationContext, applicationContext.packageName + ".fileProvider.com.crazecoder.openfile", file)
-                    } else {
-                        Uri.fromFile(file)
+            when (call.method) {
+                "openFile" -> {
+                    val path = call.argument<String>("path")
+                    Log.i(TAG, "openFile path = $path")
+                    if (path.isNullOrEmpty()) {
+                        return@setMethodCallHandler result.success(false)
                     }
-                    Log.i(TAG, "openFile uri = $uri type = $type")
-                    //DownloadManager.ACTION_VIEW_DOWNLOADS
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    intent.setDataAndType(uri, type)
-                    intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri)
-                    intent.addCategory(Intent.CATEGORY_DEFAULT)
-                    Log.i(TAG, "openFile intent action = ${intent.action}")
-                    startActivity(intent)
-                    return@setMethodCallHandler result.success(true)
-                }catch (e: Exception) {
-                    e.printStackTrace()
-                    return@setMethodCallHandler result.success(false)
+                    try {
+                        // var uri: android.net.Uri? = android.net.Uri.parse("content://com.android.externalstorage.documents/document/primary:" + path)
+                        val file = File(path)
+                        val type = getFileType(path)
+                        val uri = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                            FileProvider.getUriForFile(
+                                applicationContext,
+                                applicationContext.packageName + ".fileProvider.com.crazecoder.openfile",
+                                file
+                            )
+                        } else {
+                            Uri.fromFile(file)
+                        }
+                        Log.i(TAG, "openFile uri = $uri type = $type")
+                        //DownloadManager.ACTION_VIEW_DOWNLOADS
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        intent.setDataAndType(uri, type)
+                        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri)
+                        intent.addCategory(Intent.CATEGORY_DEFAULT)
+                        Log.i(TAG, "openFile intent action = ${intent.action}")
+                        startActivity(intent)
+                        return@setMethodCallHandler result.success(true)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        return@setMethodCallHandler result.success(false)
+                    }
                 }
 
-            } else if (call.method == "queryFileInfo") {
-                val uri = call.argument<String>("uri")
-                if (uri == null) {
-                    return@setMethodCallHandler result.success(null)
+                "openFile" -> {
+                    //TODO: openFile
                 }
-                val uniFile = UniFile.fromUri(applicationContext, Uri.parse(uri))
-                if (uniFile == null) {
-                    return@setMethodCallHandler result.success(null)
+
+                "queryFileInfo" -> {
+                    val uri = call.argument<String>("uri")
+                    Log.i(TAG, "queryFileInfo uri = $uri")
+                    if (uri == null) {
+                        Log.e(TAG, "queryFileInfo uri is null")
+                        return@setMethodCallHandler result.success(null)
+                    }
+                    val uniFile = UniFile.fromUri(applicationContext, Uri.parse(uri))
+                    if (uniFile == null) {
+                        Log.e(TAG, "queryFileInfo uniFile is null")
+                        return@setMethodCallHandler result.success(null)
+                    }
+                    val fileInfo = hashMapOf<String, String?>()
+                    fileInfo["name"] = uniFile.getName()
+                    fileInfo["path"] = uniFile.getFilePath()
+                    fileInfo["size"] = uniFile.length()!!.toString()
+                    fileInfo["uri"] = uri
+                    return@setMethodCallHandler result.success(fileInfo)
                 }
-                val fileInfo = hashMapOf<String, Any>()
-                fileInfo["name"] = uniFile.getName() ?: return@setMethodCallHandler result.success(null)
-                fileInfo["path"] = uniFile.getFilePath() ?: return@setMethodCallHandler result.success(null)
-                fileInfo["size"] = uniFile.length() ?: return@setMethodCallHandler result.success(null)
-                fileInfo["uri"] = uri
-                return@setMethodCallHandler result.success(fileInfo)
             }
-
         }
 
     }
 
-    private fun isFromNotification(curIntent:Intent) :Boolean{
+    private fun isFromNotification(curIntent: Intent): Boolean {
         val from = curIntent.action
         return FROM_CLIPBOARD_NOTIFICATION == from
     }

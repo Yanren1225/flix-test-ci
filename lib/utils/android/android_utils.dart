@@ -18,7 +18,7 @@ class AndroidUtils {
       return FileInfo(
           name: infoMap['name'] ?? "",
           path: infoMap['path'] ?? "",
-          size: infoMap['size'] ?? -1,
+          size: int.parse(infoMap['size']),
           uri: infoMap['uri']??""
       );
     } catch (e, s) {
