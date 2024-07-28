@@ -30,7 +30,7 @@ class Program
     {
         string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         string desktopFlixPath = Path.Combine(desktopPath, "Flix");
-        string desktopFlixLnkPath = Path.Combine(desktopPath, "Flix.lnk.bak");
+       
 
         // Delete the Flix file on the desktop if it exists
         if (File.Exists(desktopFlixPath))
@@ -47,22 +47,9 @@ class Program
             }
         }
 
-        // Delete the Flix.lnk file on the desktop if it exists
-        if (File.Exists(desktopFlixLnkPath))
-        {
-            try
-            {
-                File.Delete(desktopFlixLnkPath);
-                Console.WriteLine("Existing Flix.lnk file on desktop has been deleted.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to delete existing Flix.lnk file on desktop: {ex.Message}");
-                return;
-            }
-        }
+       
 
-        string localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string localAppDataPath = Path.GetTempPath();
         string targetFolderPath = Path.Combine(localAppDataPath, "Flix");
         string installerZipPath = Path.Combine(targetFolderPath, "installer.zip");
         string flixZipPath = Path.Combine(targetFolderPath, "flix.zip");
