@@ -241,11 +241,17 @@ public class AndroidFilePickerDelegate implements PluginRegistry.ActivityResultL
     @SuppressWarnings("unchecked")
     private void finishWithSuccess(List<String> uriList) {
         this.dispatchEventStatus(false);
-
+        ArrayList<Map<String, Object>> fileList = new ArrayList<>();
+        if (uriList == null) {
+            if (this.pendingResult != null)
+                this.pendingResult.success(fileList);
+            this.clearPendingResult();
+            return;
+        }
         // Temporary fix, remove this null-check after Flutter Engine 1.14 has landed on stable
         if (this.pendingResult != null) {
 
-            ArrayList<Map<String, Object>> fileList = new ArrayList<>();
+
             for (String s : uriList) {
                 UniFile uniFile = UniFile.fromUri(activity, Uri.parse(s));
                 if (uniFile == null) {

@@ -843,6 +843,10 @@ class ShipService implements ApInterface {
       resourceId = await _saveMediaToAlbumOnMobile(
           outFile, bubble.type == BubbleType.Image,
           tag: bubble.id);
+      // 如果是 android 返回 path，这里有点脏后续看怎么优化吧
+      if (Platform.isAndroid) {
+        path = resourceId;
+      }
     }
 
     final updatedBubble = bubble.copy(
@@ -858,20 +862,30 @@ class ShipService implements ApInterface {
       {String? tag}) async {
     try {
       if (Platform.isAndroid) {
-        final AssetEntity? entity;
-        if (isImage) {
-          entity = await PhotoManager.plugin.saveImageWithPath(outFile.path,
-              title: outFile.path.split("/").last);
-        } else {
-          entity = await PhotoManager.plugin
-              .saveVideo(outFile, title: outFile.path.split("/").last);
+        if (SettingsRepo.instance.autoSaveToGallery) {
+          final AssetEntity? entity;
+          if (isImage) {
+            entity = await PhotoManager.plugin.saveImageWithPath(outFile.path,
+                title: outFile.path.split("/").last, relativePath: "Pictures/flix");
+          } else {
+            entity = await PhotoManager.plugin
+                .saveVideo(outFile, title: outFile.path.split("/").last, relativePath: "Movies/flix");
+          }
+          if (entity == null) {
+            talker.error("save to gallery failed");
+            return null;
+          } else {
+
+            final file = await entity.file;
+            if (file != null && await file.exists()) {
+              // 保证写入相册成功后才删除
+              outFile.delete(recursive: true);
+            }
+            return file?.path;
+          }
+
         }
-        if (entity == null) {
-          talker.error("save to gallery failed");
-          return null;
-        } else {
-          return entity.id;
-        }
+
       } else if (Platform.isIOS) {
         final result = await ImageGallerySaver.saveFile(outFile.path,
             isReturnPathOfIOS: true);

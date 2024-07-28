@@ -10,6 +10,8 @@ import android.os.PowerManager
 import android.provider.DocumentsContract
 import android.util.Log
 import com.crazecoder.openfile.FileProvider
+
+import com.hippo.unifile.UniFile
 import com.ifreedomer.flix.android_filepicker.AndroidFilePickerPlugin
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -147,6 +149,21 @@ class MainActivity : FlutterActivity() {
                     return@setMethodCallHandler result.success(false)
                 }
 
+            } else if (call.method == "queryFileInfo") {
+                val uri = call.argument<String>("uri")
+                if (uri == null) {
+                    return@setMethodCallHandler result.success(null)
+                }
+                val uniFile = UniFile.fromUri(applicationContext, Uri.parse(uri))
+                if (uniFile == null) {
+                    return@setMethodCallHandler result.success(null)
+                }
+                val fileInfo = hashMapOf<String, Any>()
+                fileInfo["name"] = uniFile.getName() ?: return@setMethodCallHandler result.success(null)
+                fileInfo["path"] = uniFile.getFilePath() ?: return@setMethodCallHandler result.success(null)
+                fileInfo["size"] = uniFile.length() ?: return@setMethodCallHandler result.success(null)
+                fileInfo["uri"] = uri
+                return@setMethodCallHandler result.success(fileInfo)
             }
 
         }
