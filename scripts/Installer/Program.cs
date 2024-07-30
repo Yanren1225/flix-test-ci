@@ -1,7 +1,7 @@
 ﻿/*
  
 Flix Installer 
-Build date: 2024/07/23
+Build date: 2024/07/30
 © 2024 Gnayoah. All rights reserved.
 
 */
@@ -23,33 +23,37 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
+using System.Runtime.InteropServices;
+
 
 class Program
 {
+
+    // MessageBox API
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    private static extern int MessageBox(IntPtr hWnd, String text, String caption, int options);
+    const int MB_ICONERROR = 0x00000010; 
+
     static void Main()
     {
-        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        string desktopFlixPath = Path.Combine(desktopPath, "Flix");
-       
 
-        // Delete the Flix file on the desktop if it exists
-        if (File.Exists(desktopFlixPath))
+
+        // 系统版本
+        Version osVersion = Environment.OSVersion.Version;
+        Version windows7Version = new Version(6, 1);
+
+        if (osVersion <= windows7Version)
         {
-            try
-            {
-                File.Delete(desktopFlixPath);
-                Console.WriteLine("Existing Flix file on desktop has been deleted.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to delete existing Flix file on desktop: {ex.Message}");
-                return;
-            }
+            MessageBox(IntPtr.Zero, "Flix 最低支持系统版本为 Windows 8", "请升级系统版本后使用", MB_ICONERROR);
+            return;
         }
+        
+        
 
-       
 
-        string localAppDataPath = Path.GetTempPath();
+
+
+        string localAppDataPath = Path.GetTempPath();   //获取Temp目录
         string targetFolderPath = Path.Combine(localAppDataPath, "Flix");
         string installerZipPath = Path.Combine(targetFolderPath, "installer.zip");
         string flixZipPath = Path.Combine(targetFolderPath, "flix.zip");
@@ -98,6 +102,9 @@ class Program
         directoryInfo.Attributes |= FileAttributes.Hidden;
         Console.WriteLine("Installation files have been extracted and flix.zip has been copied. The folder is now hidden.");
     }
+
+
+   
 
     static bool ExtractEmbeddedResource(string resourceName, string extractionPath)
     {
