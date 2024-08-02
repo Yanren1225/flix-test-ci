@@ -17,6 +17,7 @@ import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flix/utils/compat/compat_util.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/meida/media_utils.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -118,16 +119,17 @@ class CrossDeviceClipboardScreenState
                   Theme.of(context).flixColors.text.primary, BlendMode.srcIn),
             ),
             const SizedBox(height: 30),
-            const Text(
+            Text(
               "跨设备复制粘贴",
-              style: TextStyle(fontSize: 30),
+              style: const TextStyle(fontSize: 30).fix(),
             ),
             const SizedBox(height: 2),
             Text(
               "关联设备后，复制的文字可共享",
               style: TextStyle(
-                  fontSize: 16,
-                  color: Theme.of(context).flixColors.text.secondary),
+                      fontSize: 16,
+                      color: Theme.of(context).flixColors.text.secondary)
+                  .fix(),
             ),
             const SizedBox(height: 30),
             creteButton(
