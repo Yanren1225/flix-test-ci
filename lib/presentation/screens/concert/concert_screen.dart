@@ -126,10 +126,6 @@ class _ConcertScreenState extends State<ConcertScreen>
                 // Navigator.pop(context);
               },
               child: GestureDetector(
-                onTapDown: (_) {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  removeAllModals();
-                },
                 child: NavigationAppbarScaffold(
                     showBackButton: showBackButton,
                     title: value,
@@ -458,89 +454,101 @@ class InputAreaState extends State<InputArea> {
                                   },
                                 )
                               },
-                              child: TextField(
-                                contextMenuBuilder: (BuildContext context,
-                                    EditableTextState editableTextState) {
-                                  return AdaptiveTextSelectionToolbar.editable(
-                                    anchors:
-                                        editableTextState.contextMenuAnchors,
-                                    clipboardStatus: ClipboardStatus.pasteable,
-                                    // to apply the normal behavior when click on copy (copy in clipboard close toolbar)
-                                    // use an empty function `() {}` to hide this option from the toolbar
-                                    onCopy: () =>
-                                        editableTextState.copySelection(
-                                            SelectionChangedCause.toolbar),
-                                    // to apply the normal behavior when click on cut
-                                    onCut: () => editableTextState.cutSelection(
-                                        SelectionChangedCause.toolbar),
-                                    onPaste: () {
-                                      // editableTextState.pasteText(SelectionChangedCause.toolbar);
-                                      _paste(concertProvider.deviceInfo);
-                                      editableTextState.hideToolbar();
+                              child: TapRegion(
+                                  onTapOutside: (event) {
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                    removeAllModals();
+                                  },
+                                  child: TextField(
+                                    contextMenuBuilder: (BuildContext context,
+                                        EditableTextState editableTextState) {
+                                      return AdaptiveTextSelectionToolbar
+                                          .editable(
+                                        anchors: editableTextState
+                                            .contextMenuAnchors,
+                                        clipboardStatus:
+                                            ClipboardStatus.pasteable,
+                                        // to apply the normal behavior when click on copy (copy in clipboard close toolbar)
+                                        // use an empty function `() {}` to hide this option from the toolbar
+                                        onCopy: () =>
+                                            editableTextState.copySelection(
+                                                SelectionChangedCause.toolbar),
+                                        // to apply the normal behavior when click on cut
+                                        onCut: () =>
+                                            editableTextState.cutSelection(
+                                                SelectionChangedCause.toolbar),
+                                        onPaste: () {
+                                          // editableTextState.pasteText(SelectionChangedCause.toolbar);
+                                          _paste(concertProvider.deviceInfo);
+                                          editableTextState.hideToolbar();
+                                        },
+                                        // to apply the normal behavior when click on select all
+                                        onSelectAll: () =>
+                                            editableTextState.selectAll(
+                                                SelectionChangedCause.toolbar),
+                                        onLookUp: () =>
+                                            editableTextState.lookUpSelection(
+                                                SelectionChangedCause.toolbar),
+                                        onSearchWeb: () => editableTextState
+                                            .searchWebForSelection(
+                                                SelectionChangedCause.toolbar),
+                                        onShare: () =>
+                                            editableTextState.shareSelection(
+                                                SelectionChangedCause.toolbar),
+                                        onLiveTextInput: () {},
+                                      );
                                     },
-                                    // to apply the normal behavior when click on select all
-                                    onSelectAll: () =>
-                                        editableTextState.selectAll(
-                                            SelectionChangedCause.toolbar),
-                                    onLookUp: () =>
-                                        editableTextState.lookUpSelection(
-                                            SelectionChangedCause.toolbar),
-                                    onSearchWeb: () =>
-                                        editableTextState.searchWebForSelection(
-                                            SelectionChangedCause.toolbar),
-                                    onShare: () =>
-                                        editableTextState.shareSelection(
-                                            SelectionChangedCause.toolbar),
-                                    onLiveTextInput: () {},
-                                  );
-                                },
-                                controller: textEditController,
-                                style: TextStyle(
-                                        color: Theme.of(context)
+                                    controller: textEditController,
+                                    style: TextStyle(
+                                            color: Theme.of(context)
+                                                .flixColors
+                                                .text
+                                                .primary,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal)
+                                        .fix(),
+                                    keyboardType: TextInputType.multiline,
+                                    minLines: null,
+                                    maxLines: null,
+                                    decoration: InputDecoration(
+                                        isDense: true,
+                                        // hintText: 'Input something.',
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide.none,
+                                          gapPadding: 0,
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        filled: true,
+                                        fillColor: Theme.of(context)
                                             .flixColors
-                                            .text
+                                            .background
                                             .primary,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.normal)
-                                    .fix(),
-                                keyboardType: TextInputType.multiline,
-                                minLines: null,
-                                maxLines: null,
-                                decoration: InputDecoration(
-                                    isDense: true,
-                                    // hintText: 'Input something.',
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                      gapPadding: 0,
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    filled: true,
-                                    fillColor: Theme.of(context)
+                                        hoverColor: Theme.of(context)
+                                            .flixColors
+                                            .background
+                                            .primary,
+                                        contentPadding: EdgeInsets.only(
+                                            left: 12,
+                                            right: 12,
+                                            top: 8,
+                                            bottom: Platform.isMacOS ||
+                                                    Platform.isWindows ||
+                                                    Platform.isLinux
+                                                ? 16
+                                                : 8)),
+                                    cursorColor: Theme.of(context)
                                         .flixColors
-                                        .background
+                                        .text
                                         .primary,
-                                    hoverColor: Theme.of(context)
-                                        .flixColors
-                                        .background
-                                        .primary,
-                                    contentPadding: EdgeInsets.only(
-                                        left: 12,
-                                        right: 12,
-                                        top: 8,
-                                        bottom: Platform.isMacOS ||
-                                                Platform.isWindows ||
-                                                Platform.isLinux
-                                            ? 16
-                                            : 8)),
-                                cursorColor:
-                                    Theme.of(context).flixColors.text.primary,
-                                onChanged: (value) {
-                                  input(value);
-                                },
-                                onSubmitted: (value) {
-                                  trySubmitText();
-                                },
-                              ),
+                                    onChanged: (value) {
+                                      input(value);
+                                    },
+                                    onSubmitted: (value) {
+                                      trySubmitText();
+                                    },
+                                  )),
                             ),
                           ),
                         )),
