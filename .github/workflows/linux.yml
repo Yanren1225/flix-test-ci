@@ -7,7 +7,7 @@ jobs:
   linux-deb:
     runs-on: ubuntu-latest
     container:
-      image: registry.cn-hangzhou.aliyuncs.com/tekton/linux-flutter-build:ubuntu-22.04-amd64
+      image: registry.cn-hangzhou.aliyuncs.com/tekton/linux-flutter-build:ubuntu-20.04-amd64
     steps:
       - name: Clone repository
         uses: actions/checkout@main
