@@ -221,6 +221,7 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
             _copyContentToClipboard(sharedText.content.substring(start, end));
           }
         }
+        ContextMenuController.removeAny();
       },
       BubbleContextMenuItemType.MultiSelect: () {
         concertProvider.enterEditing();
