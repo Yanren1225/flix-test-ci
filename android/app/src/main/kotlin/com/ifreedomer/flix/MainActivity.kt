@@ -17,7 +17,6 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
-import io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin
 import java.io.File
 
 
@@ -33,6 +32,7 @@ class MainActivity : FlutterActivity() {
         const val SHARED_PREFERENCES_NAME: String = "FlutterSharedPreferences"
         const val FROM = "from"
         const val FROM_CLIPBOARD_NOTIFICATION = "send_clipboard_action"
+        const val EXIT_APP_ACTION = "exit_app_action"
 
         var clipboardChannel: MethodChannel? = null
     }
@@ -41,19 +41,37 @@ class MainActivity : FlutterActivity() {
     private var wakeLock: PowerManager.WakeLock? = null
     private var wifiLock: WifiManager.WifiLock? = null
     private var isFromNotification = false
+    private var isFromExitApp = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i(TAG, "onCreate action = ${intent.action}")
-        isFromNotification = isFromNotification(intent)
+        isFromNotification = isFromNotificationClipboard(intent)
+        isFromExitApp = isFromNotificationExitApp(intent)
+
+        if (isFromExitApp) {
+            doExit()
+        }
+
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         Log.i(TAG, "onNewIntent action = ${intent.action}")
-        isFromNotification = isFromNotification(intent)
+        isFromNotification = isFromNotificationClipboard(intent)
+        isFromExitApp = isFromNotificationExitApp(intent)
+
+        if (isFromExitApp) {
+            doExit()
+        }
+
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+
+        if (isFromExitApp) {
+            doExit()
+        }
+
         super.configureFlutterEngine(flutterEngine)
         GeneratedPluginRegistrant.registerWith(flutterEngine);
         flutterEngine.plugins.add(AndroidFilePickerPlugin())
@@ -183,9 +201,14 @@ class MainActivity : FlutterActivity() {
 
     }
 
-    private fun isFromNotification(curIntent: Intent): Boolean {
+    private fun isFromNotificationClipboard(curIntent: Intent): Boolean {
         val from = curIntent.action
         return FROM_CLIPBOARD_NOTIFICATION == from
+    }
+
+    private fun isFromNotificationExitApp(curIntent: Intent): Boolean {
+        val from = curIntent.action
+        return EXIT_APP_ACTION == from
     }
 
     private fun aquireMulticastLock(): Boolean {
@@ -279,6 +302,21 @@ class MainActivity : FlutterActivity() {
             wifiLock?.release()
         }
         return true
+    }
+
+    private fun doExit() {
+        releaseMulticastLock()
+        releaseWakeLock()
+        releaseWifiLock()
+
+
+        //stop Service com.pravera.flutter_foreground_task.service.ForegroundService
+        val intent = Intent(this, com.pravera.flutter_foreground_task.service.ForegroundService::class.java)
+        stopService(intent)
+
+        release()
+        finish()
+
     }
 
     private fun getFileType(filePath: String): String? {
