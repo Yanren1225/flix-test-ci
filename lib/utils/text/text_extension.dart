@@ -5,6 +5,7 @@ import 'package:flutter/painting.dart';
 
 extension TextStyleExtension on TextStyle {
   /// Add fontFamilyFallback & fontVariation to original font style
+  @Deprecated("该方法仅应作为临时解决方案")
   TextStyle fix() {
     if (Platform.isWindows) {
       return useSystemChineseFont();

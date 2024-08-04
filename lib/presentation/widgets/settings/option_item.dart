@@ -2,6 +2,7 @@ import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/widgets/settings/settings_label.dart';
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:modals/modals.dart';
 
@@ -72,8 +73,9 @@ class OptionItem extends StatelessWidget {
               Expanded(child: SettingsLabel(label: label, des: des)),
               Text(value.label,
                   style: TextStyle(
-                      color: Theme.of(context).flixColors.text.secondary,
-                      fontSize: 14)),
+                          color: Theme.of(context).flixColors.text.secondary,
+                          fontSize: 14)
+                      .fix()),
               const SizedBox(
                 width: 4,
               ),
