@@ -2,6 +2,7 @@ import 'package:flix/domain/paircode/pair_router_handler.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/net/net_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_loading_dialog/simple_loading_dialog.dart';
 
 class AddDeviceScreen extends StatefulWidget {
 
@@ -92,12 +93,20 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                   SizedBox(height: 32.0),
                   ElevatedButton(
                     onPressed: isAddButtonEnabled ? () async {
-                      final result = await PairRouterHandler.addDevice(PairInfo([_ipController.text],  int.parse(_portController.text)));
-                      if (result) {
-                        flixToast.info("添加成功");
-                      } else {
-                        flixToast.info("添加失败");
+                      Future<void> addDevice() async {
+                        final result = await PairRouterHandler.addDevice(PairInfo([_ipController.text],  int.parse(_portController.text)));
+                        if (result) {
+                          flixToast.info("添加成功");
+                        } else {
+                          flixToast.info("添加失败");
+                        }
                       }
+
+                      await showSimpleLoadingDialog<void>(
+                        context: context,
+                        future: addDevice,
+                      );
+
                     } : null,
                     child: Text('添加设备'),
                     style: ElevatedButton.styleFrom(

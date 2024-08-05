@@ -245,7 +245,7 @@ class DeviceDiscover implements PingPongListener {
   @override
   void onPing(Ping ping) async {
       _onDeviceDiscover(ping.deviceModal);
-      multiCastApi.pong(await shipService.getPort(), ping.deviceModal);
+      apInterface?.pong(await deviceProfileRepo.getDeviceModal(await shipService.getPort()), ping.deviceModal);
   }
 
   @override
