@@ -10,7 +10,7 @@ import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/widgets/basic/icon_label_button.dart';
 import 'package:flix/presentation/widgets/device_name/name_edit_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/devices/device_list.dart';
-import 'package:flix/presentation/widgets/menu/device_pair_menu.dart';
+import 'package:flix/presentation/widgets/menu/main_menu.dart';
 import 'package:flix/presentation/widgets/net/net_info_bottom_sheet.dart';
 import 'package:flix/resource_extension.dart';
 import 'package:flix/theme/theme_extensions.dart';
@@ -82,9 +82,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                               child: SvgPicture.asset(
                                   context.imagePath("ic_refresh_menu.svg")),
                             )),
-                            Visibility(
-                            visible: isMobile(),
-                            child: ModalAnchor(
+                            ModalAnchor(
                               key: _menuKey,
                               tag: "open_menu",
                               child: SizedBox(
@@ -99,12 +97,11 @@ class _DeviceScreenState extends State<DeviceScreen>
                                     height: 36,
                                   ),
                                   onPressed: () {
-                                    showDevicePairMenu(context, 'open_menu');
+                                    showMainMenu(context, 'open_menu');
                                   },
                                 ),
                               ),
-                            ),
-                          )
+                            )
                         ],
                       ),)
                     ],

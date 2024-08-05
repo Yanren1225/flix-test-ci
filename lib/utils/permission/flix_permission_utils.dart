@@ -157,18 +157,18 @@ class FlixPermissionUtils {
   static Future<bool> _checkNecessaryPermissions(BuildContext? context, List<Permission> permissions, String title, String subTitle) async {
     if (Platform.isAndroid || Platform.isIOS || Platform.isWindows) {
       try {
-        bool isGranted = await isAllGranted(permissions);
+        // bool isGranted = await isAllGranted(permissions);
 
-        if (isGranted) {
-          return true;
-        }
-
-        bool isPermanentlyDenied = await isAnyPermanentlyDenied(permissions);
-
-        // 无权限，但未禁止申请，直接申请
-        if (!isGranted && !isPermanentlyDenied) {
-          isGranted = await requestAllPermissions(permissions);
-        }
+        // if (isGranted) {
+        //   return true;
+        // }
+        //
+        // bool isPermanentlyDenied = await isAnyPermanentlyDenied(permissions);
+        //
+        // // 无权限，但未禁止申请，直接申请
+        // if (!isGranted && !isPermanentlyDenied) {
+          bool isGranted = await requestAllPermissions(permissions);
+        // }
 
         // isGranted = await isAllGranted(permissions);
         // talker.debug('storage permission to $isGranted');

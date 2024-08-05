@@ -202,7 +202,8 @@ class HotspotScreenState extends State<HotspotScreen>
                       dataModuleShape: QrDataModuleShape.square,
                       color: Theme.of(this.context).flixColors.text.primary),
                   data: _encodeApInfo(),
-                  padding: const EdgeInsets.all(25.0))),
+                  padding: const EdgeInsets.all(25.0))
+          ),
           const SizedBox(
             height: 10,
           ),

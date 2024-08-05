@@ -25,6 +25,12 @@ extension FlixTextStyle on BuildContext {
         .fix();
   }
 
+  TextStyle header() => TextStyle(
+          color: Theme.of(this).flixColors.text.primary,
+          fontSize: 18,
+          fontWeight: FontWeight.w500)
+      .fix();
+
   TextStyle title() {
     return TextStyle(
             fontSize: 16,

@@ -5,14 +5,16 @@ import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/settings_repo.dart';
+import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/network/bonjour_impl.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
+import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/net/net_utils.dart';
 
-class DeviceDiscover {
+class DeviceDiscover implements PingPongListener {
   DeviceDiscover._privateConstructor();
 
   static final DeviceDiscover _instance = DeviceDiscover._privateConstructor();
@@ -25,6 +27,7 @@ class DeviceDiscover {
   final settingsRepo = SettingsRepo.instance;
   ApInterface? apInterface;
 
+  final _backupDeviceList = <DeviceModal>{};
   final deviceList = <DeviceModal>{};
   final _deviceId2Device = <String, DeviceModal>{};
   final deviceListChangeListeners = <OnDeviceListChanged>{};
@@ -38,9 +41,7 @@ class DeviceDiscover {
 
   Future<void> start(ApInterface apInterface, int port) async {
     this.apInterface = apInterface;
-    this.apInterface?.listenPong((pong) {
-      _onDeviceDiscover(pong.from);
-    });
+    this.apInterface?.listenPingPong(this);
     SettingsRepo.instance.enableMdnsStream.stream.listen((enableMdns) async {
       if (enableMdns) {
         await startBonjourScanService(port);
@@ -69,6 +70,8 @@ class DeviceDiscover {
     if (await settingsRepo.getEnableMdnsAsync()) {
       await startBonjourScanService(port);
     }
+
+    await pingBackupDevices();
   }
 
   Future<void> startBonjourScanService(int port) async {
@@ -78,10 +81,25 @@ class DeviceDiscover {
     unawaited(bonjourApi.ping(port));
   }
 
+  Future<void> pingBackupDevices() async {
+    final from = await deviceProfileRepo.getDeviceModal(await shipService.getPort());
+    for (var device in _backupDeviceList) {
+      if (device.ip.isNotEmpty) {
+        apInterface?.ping(device.ip, device.port ?? 8891, from);
+      }
+    }
+  }
+
   Future<void> stop() async {
     multiCastApi.stop();
     // always stop bonjour service
     bonjourApi.stop();
+  }
+
+  Future<void> pingIp(int srcPort, String ip, int port) async {
+    final from = await deviceProfileRepo
+        .getDeviceModal(srcPort);
+    await apInterface?.ping(ip, port, from);
   }
 
   Future<void> ping(int port) async {
@@ -149,6 +167,8 @@ class DeviceDiscover {
   }
 
   void clearDevices() {
+    _backupDeviceList.clear();
+    _backupDeviceList.addAll(deviceList);
     deviceList.clear();
     _deviceId2Device.clear();
     notifyDeviceListChanged();
@@ -220,6 +240,17 @@ class DeviceDiscover {
       flixToast.alert('设备已离线');
     }
     return null;
+  }
+
+  @override
+  void onPing(Ping ping) async {
+      _onDeviceDiscover(ping.deviceModal);
+      multiCastApi.pong(await shipService.getPort(), ping.deviceModal);
+  }
+
+  @override
+  void onPong(Pong pong) {
+    _onDeviceDiscover(pong.from);
   }
 }
 

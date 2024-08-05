@@ -141,6 +141,7 @@ dependencies:
       ref: "98a4eeee760b64fd3481a5458d6775450e06e0f2"
   figma_squircle: ^0.5.3
   uri_content: ^2.2.0
+  simple_loading_dialog: ^1.0.0
 #  simple_native_image_compress: ^1.1.0
 # thumbnailer: ^2.2.0
 

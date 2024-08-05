@@ -4,8 +4,8 @@ import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class DevicePairMenuItem extends StatelessWidget {
-  const DevicePairMenuItem({
+class MenuItem extends StatelessWidget {
+  const MenuItem({
     Key? key,
     required this.icon,
     required this.lable,
