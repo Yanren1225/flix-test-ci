@@ -7,12 +7,15 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/settings_repo.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/network/bonjour_impl.dart';
+import 'package:flix/network/multicast_api.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/net/net_utils.dart';
+
+import '../../network/http_discover.dart';
 
 class DeviceDiscover implements PingPongListener {
   DeviceDiscover._privateConstructor();
@@ -39,6 +42,12 @@ class DeviceDiscover implements PingPongListener {
   late BonjourImpl bonjourApi =
       BonjourImpl(deviceProfileRepo: deviceProfileRepo);
 
+  late MultiCastApi httpDiscover = HttpDiscover(
+      deviceProfileRepo: deviceProfileRepo,
+      apInterface: apInterface,
+      shipService: shipService,
+      ports: [8891, 8892, 8893]);
+
   Future<void> start(ApInterface apInterface, int port) async {
     this.apInterface = apInterface;
     this.apInterface?.listenPingPong(this);
@@ -55,6 +64,7 @@ class DeviceDiscover implements PingPongListener {
   }
 
   Future<void> startScan(port) async {
+    // unawaited(httpDiscover.startScan((a, b) {}));
     await multiCastApi.startScan((deviceModal, needPong) {
       talker.debug('discover device: $deviceModal');
       if (needPong) {
