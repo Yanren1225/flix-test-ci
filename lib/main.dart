@@ -363,7 +363,15 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       scriptCode: 'Hans',
                       countryCode: 'CN'),
                 ],
-                theme: userDarkMode ? flixDark() : flixLight(),
+                theme: (userDarkMode ? flixDark() : flixLight()).copyWith(
+                  canvasColor: Theme.of(context).flixColors.background.primary,
+                  scaffoldBackgroundColor: Theme.of(context)
+                      .flixColors
+                      .background
+                      .primary,
+                  cardColor: Theme.of(context).flixColors.background.primary,
+                ),
+
                 // initialRoute: 'home',
                 builder: FToastBuilder(),
                 home: const MyHomePage(title: 'Flutter Demo Home Page'),
