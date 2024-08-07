@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.DocumentsContract
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.crazecoder.openfile.FileProvider
 
 import com.hippo.unifile.UniFile
@@ -315,7 +316,13 @@ class MainActivity : FlutterActivity() {
         stopService(intent)
 
         release()
-        finish()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            finishAndRemoveTask()
+            System.exit(0);
+        }else{
+            finish()
+            System.exit(0);
+        }
 
     }
 
