@@ -30,6 +30,7 @@ class SettingsRepo {
   static SettingsRepo get instance => _instance;
 
   static const autoReceiveKey = "autoReceive";
+  static const autoSaveGalleryKey = "autoSaveGallery";
   static const isMinimizedKey = "isMinimized";
   static const savedDirKey = "savedDir";
   static const enableMdnsKey = "enableMdns";
@@ -63,7 +64,7 @@ class SettingsRepo {
     _autoSaveToGallery = autoSaveToGallery;
     autoSaveToGalleryStream.add(autoSaveToGallery);
     var sharePreference = await SharedPreferences.getInstance();
-    await sharePreference.setBool(autoReceiveKey, autoSaveToGallery);
+    await sharePreference.setBool(autoSaveGalleryKey, autoSaveToGallery);
   }
 
   Future<void> setAutoReceive(bool autoReceive) async {
