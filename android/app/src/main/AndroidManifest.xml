@@ -74,6 +74,10 @@
                 <action android:name="send_clipboard_action" />
             </intent-filter>
             <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="exit_app_action" />
+            </intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>

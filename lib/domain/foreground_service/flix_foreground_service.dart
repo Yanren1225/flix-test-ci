@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
@@ -22,7 +21,6 @@ void startCallback() {
 class FirstTaskHandler extends TaskHandler {
   SendPort? sendPort = null;
 
-
   @override
   void onStart(DateTime timestamp, SendPort? sendPort) async {
     // TODO
@@ -30,30 +28,25 @@ class FirstTaskHandler extends TaskHandler {
   }
 
   @override
-  void onRepeatEvent(DateTime timestamp, SendPort? sendPort) async {
-
-  }
+  void onRepeatEvent(DateTime timestamp, SendPort? sendPort) async {}
 
   @override
   Future<void> onNotificationButtonPressed(String id) async {
     super.onNotificationButtonPressed(id);
-    talker.debug("onNotificationButtonPressed","clip $id");
-    if(id == "send_clipboard"){
+    talker.debug("onNotificationButtonPressed", "clip $id");
+    if (id == "send_clipboard") {
       this.sendPort?.send("$id");
     }
   }
 
   @override
-  void onDestroy(DateTime timestamp, SendPort? sendPort) async {
-  }
+  void onDestroy(DateTime timestamp, SendPort? sendPort) async {}
 }
 
 class FlixForegroundService extends LifecycleListener {
   ReceivePort? _receivePort;
 
-
   void init() {
-
     FlutterForegroundTask.init(
       androidNotificationOptions: AndroidNotificationOptions(
         channelId: 'foreground_service',
@@ -68,12 +61,17 @@ class FlixForegroundService extends LifecycleListener {
         ),
         buttons: [
           const NotificationButton(
-            id: 'send_clipboard',
-            text: '发送到剪贴板',
-            launchType: NotificationButton.ACTIVITY,
-            action: "send_clipboard_action",
-            textColor: Colors.blue
-          ),
+              id: 'send_clipboard',
+              text: '发送到剪贴板',
+              launchType: NotificationButton.ACTIVITY,
+              action: "send_clipboard_action",
+              textColor: Colors.blue),
+          const NotificationButton(
+              id: 'exit_app',
+              text: '退出',
+              launchType: NotificationButton.ACTIVITY,
+              action: "exit_app_action",
+              textColor: Colors.red)
         ],
       ),
       iosNotificationOptions: const IOSNotificationOptions(
@@ -88,7 +86,6 @@ class FlixForegroundService extends LifecycleListener {
         allowWifiLock: false,
       ),
     );
-
   }
 
   Future<void> start() async {
@@ -120,12 +117,11 @@ class FlixForegroundService extends LifecycleListener {
 
     // Android 13 and higher, you need to allow notification permission to expose foreground service notification.
     final NotificationPermission notificationPermissionStatus =
-    await FlutterForegroundTask.checkNotificationPermission();
+        await FlutterForegroundTask.checkNotificationPermission();
     if (notificationPermissionStatus != NotificationPermission.granted) {
       await FlutterForegroundTask.requestNotificationPermission();
     }
   }
-
 
   Future<bool> _startForegroundTask() async {
     // You can save data using the saveData function.
