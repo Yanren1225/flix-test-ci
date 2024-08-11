@@ -370,53 +370,6 @@ Future<FileType> getFileType(String filePath) async {
   }
 }
 
-Future<File> createFile(String desDir, String fileName,
-    {int copyIndex = 0,bool deleteExist = true}) async {
-  final dotIndex = fileName.lastIndexOf('.');
-  final String fileSuffix;
-  final String fileNameWithoutSuffix;
-  if (dotIndex == -1) {
-    fileSuffix = "";
-    fileNameWithoutSuffix = fileName;
-  } else {
-    fileSuffix = fileName.substring(dotIndex);
-    fileNameWithoutSuffix = fileName.substring(0, dotIndex);
-  }
-
-  final tag = copyIndex == 0 ? "" : "($copyIndex)";
-
-  //check
-  final type = await FileSystemEntity.type(desDir);
-  if (type == FileSystemEntityType.file) {
-    desDir = path_utils.dirname(desDir);
-  }
-
-  talker.debug("createFile desDir=$desDir, fileName=$fileName, type=$type");
-  desDir = path_utils.normalize(desDir);
-
-  String filePath =
-      '$desDir${Platform.pathSeparator}$fileNameWithoutSuffix$tag$fileSuffix';
-  talker.debug("createFile filePath=$filePath");
-
-  final outFile = File(filePath);
-  if (await outFile.exists()) {
-    if (!deleteExist) {
-      return outFile;
-    }
-    try {
-      await outFile.delete();
-    } catch (e, stackTrace) {
-      talker.warning('delete file failed: ', e, stackTrace);
-    }
-  }
-
-  if (!(await outFile.exists())) {
-    await outFile.create(recursive: true);
-    return outFile;
-  }
-
-  return await createFile(desDir, fileName, copyIndex: copyIndex + 1);
-}
 
 Future<void> openDir(String path) async {
   if (Platform.isWindows) {

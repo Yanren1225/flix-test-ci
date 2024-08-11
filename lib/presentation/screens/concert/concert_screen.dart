@@ -7,6 +7,7 @@ import 'package:flix/theme/theme_extensions.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_bottom_sheet_util.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
+import 'package:flix/utils/file/file_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
@@ -458,7 +459,6 @@ class InputAreaState extends State<InputArea> {
                                   onTapOutside: (event) {
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
-                                    removeAllModals();
                                   },
                                   child: TextField(
                                     contextMenuBuilder: (BuildContext context,
@@ -620,7 +620,7 @@ class InputAreaState extends State<InputArea> {
       if (imageBytes != null) {
         final cachePath = await getCachePath();
         final imageFile =
-            await createFile(cachePath, '${const Uuid().v4()}.jpg');
+            await FileUtils.getTargetFile(cachePath, '${const Uuid().v4()}.jpg');
         await imageFile.writeAsBytes(imageBytes);
         showCupertinoModalPopup(
             context: context,

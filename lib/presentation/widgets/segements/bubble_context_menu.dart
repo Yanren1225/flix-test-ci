@@ -181,54 +181,58 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
       }
     }
     return AnimatedBuilder(
-      animation: _animation,
-      builder: (BuildContext context, Widget? child) {
-        return Transform.scale(
-          scale: _animation.value,
-          child: FadeTransition(
-            opacity: _animation,
-            child: child,
-          ),
-        );
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0),
-        child: DecoratedBox(
-          decoration: FlixDecoration(boxShadow: const [
-            BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.1),
-              offset: Offset(2, 10),
-              blurRadius: 20,
+        animation: _animation,
+        builder: (BuildContext context, Widget? child) {
+          return Transform.scale(
+            scale: _animation.value,
+            child: FadeTransition(
+              opacity: _animation,
+              child: child,
             ),
-          ]),
-          child: FlixClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .flixColors
-                      .background
-                      .primary
-                      .withOpacity(0.9),
+          );
+        },
+        child: TapRegion(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: DecoratedBox(
+              decoration: FlixDecoration(boxShadow: const [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, 0.1),
+                  offset: Offset(2, 10),
+                  blurRadius: 20,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 10, top: 6, right: 10, bottom: 6),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [...items],
+              ]),
+              child: FlixClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .flixColors
+                          .background
+                          .primary
+                          .withOpacity(0.9),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 10, top: 6, right: 10, bottom: 6),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [...items],
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
-    );
+          onTapOutside: (event) {
+            removeAllModals();
+          },
+        ));
   }
 
   VoidCallback onTap(BubbleContextMenuItemType type) {
@@ -318,20 +322,25 @@ class BubbleContextMenuWithMaskState extends BubbleContextMenuState {
         MediaQuery.paddingOf(context).top -
         appBarHeight;
     final fitsAbove = _getMenuHeight(widget.itemTypes) <= availableHeight;
-    return CustomSingleChildLayout(
-        delegate: isDesktop()
-            ? DesktopTextSelectionToolbarLayoutDelegate(
-                anchor: anchors.primaryAnchor,
-              )
-            : TextSelectionToolbarLayoutDelegate(
-                anchorAbove: anchors.primaryAnchor - const Offset(0, margin),
-                anchorBelow: (anchors.secondaryAnchor == null
-                        ? anchors.primaryAnchor
-                        : anchors.secondaryAnchor!) +
-                    const Offset(0, margin),
-                fitsAbove: fitsAbove,
-              ),
-        child: super.build(context));
+    return TapRegion(
+      child: CustomSingleChildLayout(
+          delegate: isDesktop()
+              ? DesktopTextSelectionToolbarLayoutDelegate(
+                  anchor: anchors.primaryAnchor,
+                )
+              : TextSelectionToolbarLayoutDelegate(
+                  anchorAbove: anchors.primaryAnchor - const Offset(0, margin),
+                  anchorBelow: (anchors.secondaryAnchor == null
+                          ? anchors.primaryAnchor
+                          : anchors.secondaryAnchor!) +
+                      const Offset(0, margin),
+                  fitsAbove: fitsAbove,
+                ),
+          child: super.build(context)),
+      onTapOutside: (event) {
+        removeAllModals();
+      },
+    );
   }
 }
 

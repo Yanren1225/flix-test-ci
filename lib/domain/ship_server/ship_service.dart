@@ -22,6 +22,8 @@ import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/utils/compat/compat_util.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
+import 'package:flix/utils/file/file_utils.dart';
+import 'package:flix/utils/permission/flix_permission_utils.dart';
 import 'package:flix/utils/stream_cancelable.dart';
 import 'package:flix/utils/stream_progress.dart';
 import 'package:flutter/services.dart';
@@ -31,6 +33,7 @@ import 'package:mutex/mutex.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
+import 'package:slang/builder/utils/path_utils.dart';
 import 'package:uri_content/uri_content.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
@@ -222,12 +225,13 @@ class ShipService implements ApInterface {
   }
 
   Future<void> _confirmBreakPointFileCreate(PrimitiveFileBubble fileBubble, HashMap<String, Object> receiveBytesMap) async {
-    var filePath = fileBubble.content.meta.path;
-    if (filePath?.isNotEmpty == true) {
-      final file = File(filePath!);
+    var filePath = fileBubble.content.meta.path??"";
+    filePath = SettingsRepo.instance.savedDir+filePath;
+    if (filePath.isNotEmpty == true) {
+      var tempFile = await FileUtils.getOrCreateTempWithFolder(filePath,fileBubble.content.meta.name);
       int fileLen = 0;
-      if (await file.exists()) {
-        fileLen = await file.length();
+      if (await tempFile.exists()) {
+        fileLen = await tempFile.length();
       }
       receiveBytesMap[Constants.receiveBytes] = fileLen;
       fileBubble.content.receiveBytes = fileLen;
@@ -265,9 +269,10 @@ class ShipService implements ApInterface {
   }
 
   Future<void> cancelSend(PrimitiveBubble bubble) async {
+    talker.debug("cancelSend4 =>$bubble");
     await updateBubbleShareState(_bubblePool, bubble.id, FileState.cancelled,
         create: bubble);
-    _sendCancelMessage(bubble.id, bubble.to);
+    await _sendCancelMessage(bubble.id, bubble.to);
   }
 
   Future<void> resend(PrimitiveBubble bubble) async {
@@ -338,6 +343,8 @@ class ShipService implements ApInterface {
 
   Future<void> _sendCancelMessage(String bubbleId, String to) async {
     try {
+      talker.debug("cancelSend 5");
+      talker.debug('_sendCancelMessage=> to = $to intent = ${_intentUrl(to)}');
       var uri = Uri.parse(await _intentUrl(to));
 
       var response = await http.post(
@@ -849,7 +856,7 @@ class ShipService implements ApInterface {
       String desDir, Request request, PrimitiveFileBubble bubble) async {
     talker.debug("_saveFileAndAddBubble=>", "dir =$desDir  bubble = $bubble");
     File outFile = await _saveFile(desDir, request, bubble);
-    String? path = outFile.path;
+    String? path = bubble.content.meta.path;
     String? resourceId;
     if (bubble.type == BubbleType.Image || bubble.type == BubbleType.Video) {
       resourceId = await _saveMediaToAlbumOnMobile(
@@ -916,16 +923,14 @@ class ShipService implements ApInterface {
 
   Future<File> _saveFile(
       String desDir, Request request, PrimitiveFileBubble bubble) async {
-    var deleteExist = true;
     var fileMode = FileMode.write;
     var receiveBytes = bubble.content.receiveBytes;
-    if (receiveBytes > 0) {
-      deleteExist = false;
+    if (receiveBytes > 0 || receiveBytes != bubble.content.meta.size) {
       fileMode = FileMode.append;
     }
-    talker.debug("sendFile",'_saveFile is append = ${fileMode == FileMode.append} deleteExist = $deleteExist receiveBytes = $receiveBytes');
-    final outFile = await createFile(desDir, bubble.content.meta.name, deleteExist: deleteExist);
-    bubble.content.meta.path = outFile.path;
+    talker.debug("sendFile",'_saveFile is append = ${fileMode == FileMode.append} receiveBytes = $receiveBytes');
+    //需要传入文件夹，因为文件夹传输需要用到
+    final outFile = await FileUtils.getOrCreateTempWithFolder(desDir,bubble.content.meta.name);
     final out = outFile.openWrite(mode: fileMode);
     talker.debug('writing file to ${outFile.path}');
     await request
@@ -937,7 +942,12 @@ class ShipService implements ApInterface {
         .pipe(out);
     out.flush();
     out.close();
-    return outFile;
+    var targetFile = await FileUtils.getTargetFile(desDir, bubble.content.meta.name);
+    String targetPath = targetFile.path;
+    talker.debug("_saveFile","before rename ${outFile.path} => ${targetFile.path}");
+    targetFile = await outFile.rename(targetPath);
+    talker.debug("_saveFile","rename ${outFile.path} => ${targetFile.path}");
+    return targetFile;
   }
 
   Future<void> _deleteCachedFile(
