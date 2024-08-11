@@ -5,5 +5,5 @@ bool isDesktop() {
 }
 
 bool isMobile() {
-  return Platform.isAndroid || Platform.isIOS;
+  return Platform.isAndroid || Platform.isIOS|| Platform.isFuchsia;
 }

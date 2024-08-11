@@ -7,8 +7,12 @@ import 'package:flix/presentation/screens/paircode/pair_code_screen.dart';
 import 'package:flix/presentation/widgets/basic/animatable_pop_menu.dart';
 import 'package:flix/presentation/widgets/menu/menu_item.dart';
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modals/modals.dart';
+
+import '../../../utils/platform_utils.dart';
+import '../../screens/paircode/add_device_screen.dart';
 
 void showMainMenu(BuildContext context, String tag) {
   showModal(ModalEntry.anchored(
@@ -49,8 +53,9 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              MenuItem(
+            children: [Visibility(
+            visible: isMobile(),
+              child:MenuItem(
                 lable: '扫一扫',
                 icon: 'assets/images/ic_scan.svg',
                 onTap: () {
@@ -60,6 +65,7 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
                           QrcodeScanScreen(showBack: true)));
                 },
               ),
+            ),
               Visibility(
                 visible: Platform.isAndroid,
                 child: Padding(
@@ -85,14 +91,22 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
                 ),
               ),
               MenuItem(
-                lable: '添加设备',
-                icon: 'assets/images/ic_add_device.svg',
+                lable: '添加此设备',
+                icon: 'assets/images/ic_ap.svg',
                 onTap: () {
                   removeAllModals();
                   widget.navigator.push(MaterialPageRoute(
                       builder: (context) => const PairCodeScreen()));
                 },
               ),
+              MenuItem(
+                lable: '手动添加设备',
+                icon: 'assets/images/ic_add_device.svg',
+                onTap: () {
+                  widget.navigator.push(MaterialPageRoute(
+                      builder: (context) => const AddDeviceScreen()));
+                },
+              )
             ],
           ),
         ),
