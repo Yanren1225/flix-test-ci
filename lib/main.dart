@@ -33,6 +33,8 @@ import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
 import 'package:flix/presentation/screens/helps/donate_us.dart';
 import 'package:flix/presentation/screens/helps/help_screen.dart';
+import 'package:flix/presentation/screens/paircode/add_device_screen.dart';
+import 'package:flix/presentation/screens/paircode/pair_code_screen.dart';
 import 'package:flix/presentation/screens/pick_device_screen.dart';
 import 'package:flix/presentation/screens/settings/cross_device_clipboard_screen.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
@@ -335,7 +337,6 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
     super.dispose();
   }
 
-
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
@@ -376,10 +377,8 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 ],
                 theme: (userDarkMode ? flixDark() : flixLight()).copyWith(
                   canvasColor: Theme.of(context).flixColors.background.primary,
-                  scaffoldBackgroundColor: Theme.of(context)
-                      .flixColors
-                      .background
-                      .primary,
+                  scaffoldBackgroundColor:
+                      Theme.of(context).flixColors.background.primary,
                   cardColor: Theme.of(context).flixColors.background.primary,
                 ),
 
@@ -423,9 +422,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
         mainAxisSize: MainAxisSize.min,
         children: [
           Image.asset(
-              isDarkMode(context)
-                  ? 'assets/images/image_placeholder_dark.png'
-                  : 'assets/images/image_placeholder_light.png',
+            isDarkMode(context)
+                ? 'assets/images/image_placeholder_dark.png'
+                : 'assets/images/image_placeholder_light.png',
             fit: BoxFit.contain,
             width: 200,
           ),
@@ -668,14 +667,34 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                         showBackButton: true,
                         playable: true,
                       ))),
-        );
-      case 1:
-        return SettingsScreen(crossDeviceCallback: () {
-          Navigator.push(
+          onViewConnectInfo: () => Navigator.push(context,
+              CupertinoPageRoute(builder: (context) => const PairCodeScreen())),
+          onGoManualAdd: () => Navigator.push(
               context,
               CupertinoPageRoute(
-                  builder: (context) => CrossDeviceClipboardScreen()));
-        });
+                  builder: (context) => const AddDeviceScreen())),
+        );
+      case 1:
+        return SettingsScreen(
+          crossDeviceCallback: () {
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => CrossDeviceClipboardScreen()));
+          },
+          showConnectionInfoCallback: () {
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => const PairCodeScreen()));
+          },
+          goManualAddCallback: () {
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => const AddDeviceScreen()));
+          },
+        );
       case 2:
         return HelpScreen(
           goVersionScreen: () {
@@ -786,11 +805,29 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               );
             });
           },
+          onViewConnectInfo: () {
+            setState(() {
+              thirdWidget = const PairCodeScreen();
+            });
+          },
+          onGoManualAdd: () {
+            setState(() {
+              thirdWidget = const AddDeviceScreen();
+            });
+          },
         );
       case 1:
         return SettingsScreen(crossDeviceCallback: () {
           setState(() {
             thirdWidget = CrossDeviceClipboardScreen();
+          });
+        }, showConnectionInfoCallback: () {
+          setState(() {
+            thirdWidget = const PairCodeScreen();
+          });
+        }, goManualAddCallback: () {
+          setState(() {
+            thirdWidget = const AddDeviceScreen();
           });
         });
       case 2:

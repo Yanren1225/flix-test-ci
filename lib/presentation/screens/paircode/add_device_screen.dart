@@ -1,11 +1,15 @@
 import 'package:flix/design_widget/design_blue_round_button.dart';
 import 'package:flix/design_widget/design_text_field.dart';
 import 'package:flix/domain/paircode/pair_router_handler.dart';
+import 'package:flix/presentation/screens/paircode/pair_code_screen.dart';
+import 'package:flix/presentation/style/flix_text_style.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/toolbar.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/net/net_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:simple_loading_dialog/simple_loading_dialog.dart';
 
 class AddDeviceScreen extends StatefulWidget {
@@ -35,9 +39,10 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //TODO: 统一header
     return NavigationScaffold(
       title: "手动输入添加",
-      showBackButton: true,
+      showBackButton: Navigator.canPop(context),
       builder: (EdgeInsets padding) {
         return Container(
           margin: const EdgeInsets.only(left: 16, right: 16, top: 20),
