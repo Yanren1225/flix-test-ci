@@ -11,6 +11,7 @@ import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/hotspot/ap_router_handler.dart';
 import 'package:flix/domain/hotspot/hotspot_manager.dart';
 import 'package:flix/domain/lifecycle/app_lifecycle.dart';
 import 'package:flix/domain/lifecycle/platform_state.dart';
@@ -18,9 +19,11 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
 import 'package:flix/domain/notification/flix_notification.dart';
 import 'package:flix/domain/notification/notification_service.dart';
+import 'package:flix/domain/paircode/pair_router_handler.dart';
 import 'package:flix/domain/settings/settings_repo.dart';
 import 'package:flix/domain/ship_server/ship_service_lifecycle_watcher.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
+import 'package:flix/domain/uri_router.dart';
 import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/domain/window/flix_window_manager.dart';
 import 'package:flix/model/device_info.dart';
@@ -92,6 +95,7 @@ Future<void> main(List<String> arguments) async {
     _logAppContext(deviceInfo);
     _initAppLifecycle();
     _initSystemChrome();
+    _initUriNavigator();
     runApp(const WithForegroundTask(child: MyApp()));
   } catch (e, s) {
     talker.error('launch error', e, s);
@@ -104,6 +108,13 @@ Future<void> main(List<String> arguments) async {
       ),
     )));
   }
+}
+
+void _initUriNavigator() {
+  final apRouterHandler = ApRouterHandler();
+  final pairRouterHandler = PairRouterHandler();
+  uriRouter.registerHandler(apRouterHandler.host, apRouterHandler);
+  uriRouter.registerHandler(pairRouterHandler.host, pairRouterHandler);
 }
 
 void initClipboard() {

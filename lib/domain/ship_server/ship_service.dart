@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:flix/domain/bubble_pool.dart';
@@ -46,10 +47,15 @@ class ShipService implements ApInterface {
   var _longTaskCount = 0;
   HttpServer? _server;
   int port = defaultPort;
-  PongListener? _pongListener;
+  List<PingPongListener> _pingPongListeners = [];
 
   ShipService({required this.did}) {
     talker.debug("ShipService", "did = $did");
+  }
+
+  Future<String> _pingUrl(String ip, int port) async {
+    var pongUrl = 'http://$ip:$port/ping';
+    return pongUrl;
   }
 
   Future<String> _pongUrl(String deviceId) async {
@@ -128,6 +134,27 @@ class ShipService implements ApInterface {
       talker.error('restart server failed: ', e, stacktrace);
     }
     return false;
+  }
+  
+  Future<void> ping(String ip, int port, DeviceModal from) async {
+    try {
+      var uri = Uri.parse(await _pingUrl(ip, port));
+
+      var response = await http.post(
+        uri,
+        body: Ping(from).toJson(),
+        headers: {"Content-type": "application/json; charset=UTF-8"},
+      );
+
+      if (response.statusCode == 200) {
+        talker.debug('ping success: response: ${response.body}');
+      } else {
+        talker.error(
+            'ping failed: status code: ${response.statusCode}, ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      talker.error('ping failed: ', e, stackTrace);
+    }
   }
 
   @override
@@ -373,6 +400,7 @@ class ShipService implements ApInterface {
     app.post('/bubble', _receiveBubble);
     app.post('/intent', _receiveIntent);
     app.post('/file', _receiveFile);
+    app.post('/ping', _receivePing);
     app.post('/pong', _receivePong);
     app.post('/heartbeat', _heartbeat);
 
@@ -963,9 +991,33 @@ class ShipService implements ApInterface {
     }
   }
 
+  Future<Response> _receivePing(Request request) async {
+    try {
+      final body = await request.readAsString();
+      final ping = Ping.fromJson(body);
+      final ip =
+          (request.context['shelf.io.connection_info'] as HttpConnectionInfo?)
+              ?.remoteAddress
+              .address;
+      if (ip != null) {
+        ping.deviceModal.ip = ip;
+        talker.debug('receive tcp ping: $ping');
+        notifyPing(ping);
+      } else {
+        talker.error('receive tcp ping, but can\'t get ip');
+      }
+      return Response.ok('ok');
+    } on Exception catch (e, stack) {
+      talker.error('receive ping error: ', e, stack);
+      return Response.badRequest();
+    }
+  }
+
+
   Future<Response> _receivePong(Request request) async {
     try {
       final body = await request.readAsString();
+      talker.debug('receive pong $body');
       final pong = Pong.fromJson(body);
       final ip =
           (request.context['shelf.io.connection_info'] as HttpConnectionInfo?)
@@ -1195,12 +1247,20 @@ class ShipService implements ApInterface {
   }
 
   @override
-  void listenPong(PongListener listener) {
-    _pongListener = listener;
+  void listenPingPong(PingPongListener listener) {
+    _pingPongListeners.add(listener);
+  }
+  
+  void notifyPing(Ping ping) {
+    for (var value in _pingPongListeners) {
+      value.onPing(ping);
+    }
   }
 
   void notifyPong(Pong pong) {
-    _pongListener?.call(pong);
+    for (var value in _pingPongListeners) {
+      value.onPong(pong);
+    }
   }
 }
 

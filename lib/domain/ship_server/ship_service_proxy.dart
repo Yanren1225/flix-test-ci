@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:flix/domain/bubble_pool.dart';
-import 'package:flix/domain/constants.dart';
-import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
@@ -12,16 +10,13 @@ import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
-import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/network/protocol/device_modal.dart';
-import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/utils/bubble_convert.dart';
 
 import '../../utils/compat/compat_util.dart';
 
 class ShipServiceProxy extends ApInterface {
   final syncTasks = <String, Completer>{};
-  PongListener? _pongListener;
   final _serverReadyTask = Completer<bool>();
   final ShipService _shipService =
       ShipService(did: DeviceProfileRepo.instance.did);
@@ -44,8 +39,8 @@ class ShipServiceProxy extends ApInterface {
   }
 
   @override
-  void listenPong(PongListener listener) {
-    _shipService.listenPong(listener);
+  void listenPingPong(PingPongListener listener) {
+    _shipService.listenPingPong(listener);
   }
 
   @override
@@ -114,10 +109,6 @@ class ShipServiceProxy extends ApInterface {
     await _shipService.cancelSend(fromUIBubble(uiBubble));
   }
 
-  void receivePong(Pong pong) {
-    _pongListener?.call(pong);
-  }
-
   Future<bool> _awaitServerReady() async {
     return _serverReadyTask.future;
   }
@@ -151,6 +142,11 @@ class ShipServiceProxy extends ApInterface {
         _shipService.sendClipboard(element.fingerprint,lastText);
       }
     }
+  }
+
+  @override
+  Future<void> ping(String ip, int port, DeviceModal from) async {
+    await _shipService.ping(ip, port, from);
   }
 }
 

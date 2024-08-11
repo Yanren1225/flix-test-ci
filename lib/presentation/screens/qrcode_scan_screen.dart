@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/domain/uri_router.dart';
 import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/presentation/screens/hotpots/connect_hotspot_screen.dart';
 import 'package:flix/presentation/style/flix_text_style.dart';
@@ -11,18 +12,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-class HotpotsScannerScreen extends StatefulWidget {
+class QrcodeScanScreen extends StatefulWidget {
   bool showBack;
 
-  HotpotsScannerScreen({super.key, this.showBack = true});
+  QrcodeScanScreen({super.key, this.showBack = true});
 
   @override
   State<StatefulWidget> createState() {
-    return _HotpotsScannerScreenState();
+    return _QrcodeScanScreenState();
   }
 }
 
-class _HotpotsScannerScreenState extends State<HotpotsScannerScreen> {
+class _QrcodeScanScreenState extends State<QrcodeScanScreen> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? result;
   QRViewController? controller;
@@ -98,20 +99,12 @@ class _HotpotsScannerScreenState extends State<HotpotsScannerScreen> {
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
+    controller.scannedDataStream.listen((scanData) async {
       if (result != null) return;
       talker.info("qrcode result: ${scanData.code}");
       if (scanData.code?.startsWith("qrcode://") == true) {
-        final uri = Uri.parse(scanData.code!);
-        if (uri.host == "ap" && uri.pathSegments.length >= 2) {
-          result = scanData;
-          Navigator.of(context).pushReplacement(CupertinoPageRoute(
-            builder: (context) => ConnectHotspotScreen(
-              apSSID: uri.pathSegments[0],
-              apKey: uri.pathSegments[1],
-            ),
-          ));
-        }
+        result = scanData;
+        await uriRouter.navigateTo(context, scanData.code!);
       }
     });
   }
