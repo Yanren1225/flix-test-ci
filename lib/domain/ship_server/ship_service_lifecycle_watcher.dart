@@ -17,7 +17,7 @@ class ShipServiceLifecycleWatcher
         _reactive();
         break;
       case AppLifecycleState.paused:
-        _inactive();
+        // _inactive();
         break;
       default:
         break;
