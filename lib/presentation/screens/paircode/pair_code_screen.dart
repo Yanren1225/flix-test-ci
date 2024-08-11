@@ -37,20 +37,19 @@ class PairCodeState extends State<PairCodeScreen> {
               surfaceTintColor:
                   Theme.of(context).flixColors.background.secondary,
               centerTitle: false,
-              leading: IconButton(
-                  icon: SvgPicture.asset("assets/images/ic_back.svg",
-                      colorFilter: ColorFilter.mode(
-                          Theme.of(context).flixColors.text.primary,
-                          BlendMode.srcIn)),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
+              leading: Navigator.canPop(context)
+                  ? IconButton(
+                      icon: SvgPicture.asset("assets/images/ic_back.svg",
+                          colorFilter: ColorFilter.mode(
+                              Theme.of(context).flixColors.text.primary,
+                              BlendMode.srcIn)),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      })
+                  : null,
               title: const Text('添加设备'),
               toolbarTextStyle: context.header(),
               // titleTextStyle: context.h1(),
-              actions: <Widget>[
-                IconButton(icon: const Icon(Icons.more_vert), onPressed: () {}),
-              ],
             ),
             // Just some content big enough to have something to scroll.
             SliverToBoxAdapter(
@@ -88,7 +87,6 @@ class PairCodeContentComponentState extends State with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-
     if (state == AppLifecycleState.resumed) {
       refreshPairCode();
     }
@@ -96,7 +94,7 @@ class PairCodeContentComponentState extends State with WidgetsBindingObserver {
 
   void refreshPairCode() {
     final pairCodeProvider =
-    Provider.of<PairCodeProvider>(context, listen: false);
+        Provider.of<PairCodeProvider>(context, listen: false);
     pairCodeProvider.refreshPairCode();
   }
 
@@ -120,100 +118,112 @@ class PairCodeContentComponentState extends State with WidgetsBindingObserver {
         child: CircularProgressIndicator(),
       );
     } else {
-      return ConstrainedSliverWidth(
-        maxWidth: 400,
+      return Container(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    getPlatformIcon(),
-                    size: 40,
-                    color: Colors.blue,
-                  ),
-                  const SizedBox(width: 10),
-                  StreamBuilder<String>(
-                      initialData: deviceProvider.deviceName,
-                      stream: deviceProvider.deviceNameStream.stream,
-                      builder: (context, snapshot) {
-                        return Text(
-                          snapshot.requireData,
-                          style: TextStyle(
-                              fontSize: 24,
-                            color: Theme.of(context).flixColors.text.primary,
-                          ),
-                        );
-                      }),
-                  ]),
+              ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          getPlatformIcon(),
+                          size: 40,
+                          color: Colors.blue,
+                        ),
+                        const SizedBox(width: 10),
+                        StreamBuilder<String>(
+                            initialData: deviceProvider.deviceName,
+                            stream: deviceProvider.deviceNameStream.stream,
+                            builder: (context, snapshot) {
+                              return Text(
+                                snapshot.requireData,
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  color:
+                                      Theme.of(context).flixColors.text.primary,
+                                ),
+                              );
+                            }),
+                      ])),
               const SizedBox(height: 20),
-              QrImageView(
-                  eyeStyle: QrEyeStyle(
-                    eyeShape: QrEyeShape.square,
-                    color: Theme.of(this.context).flixColors.text.primary,
-                  ),
-                  dataModuleStyle: QrDataModuleStyle(
-                      dataModuleShape: QrDataModuleShape.square,
-                      color: Theme.of(this.context).flixColors.text.primary),
-                  data: pairCodeProvider.pairCodeUri ?? "error://no_pair_code",
-                  padding: const EdgeInsets.all(25.0)),
+              ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 200),
+                  child: QrImageView(
+                      eyeStyle: QrEyeStyle(
+                        eyeShape: QrEyeShape.square,
+                        color: Theme.of(this.context).flixColors.text.primary,
+                      ),
+                      dataModuleStyle: QrDataModuleStyle(
+                          dataModuleShape: QrDataModuleShape.square,
+                          color:
+                              Theme.of(this.context).flixColors.text.primary),
+                      data: pairCodeProvider.pairCodeUri ??
+                          "error://no_pair_code",
+                      padding: const EdgeInsets.all(25.0))),
               const SizedBox(height: 10),
               const Text(
                 'Flix 扫一扫，添加本设备',
                 style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
+              ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('本机 IP'),
-                      const SizedBox(height: 10),
-                      Text(
-                        pairCodeProvider.netInterfaces
-                            .map((e) => e.address)
-                            .fold(
-                                "",
-                                (previousValue, element) =>
-                                    "$previousValue\n$element").trim(),
-                        style: TextStyle(
-                            color: Theme.of(this.context)
-                                .flixColors
-                                .text
-                                .secondary),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('本机 IP'),
+                          const SizedBox(height: 10),
+                          Text(
+                            pairCodeProvider.netInterfaces
+                                .map((e) => e.address)
+                                .fold(
+                                    "",
+                                    (previousValue, element) =>
+                                        "$previousValue\n$element")
+                                .trim(),
+                            style: TextStyle(
+                                color: Theme.of(this.context)
+                                    .flixColors
+                                    .text
+                                    .secondary),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          const Text('本机网络端口'),
+                          const SizedBox(height: 10),
+                          Text(
+                            pairCodeProvider.port.toString(),
+                            style: TextStyle(
+                                color: Theme.of(this.context)
+                                    .flixColors
+                                    .text
+                                    .secondary),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const Text('本机网络端口'),
-                      const SizedBox(height: 10),
-                      Text(
-                        pairCodeProvider.port.toString(),
-                        style: TextStyle(
-                            color: Theme.of(this.context)
-                                .flixColors
-                                .text
-                                .secondary),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                  )),
               const SizedBox(height: 20),
-              CupertinoButton(
-                onPressed: () {
-                  Navigator.of(context).push(CupertinoPageRoute(
-                      builder: (context) => const AddDeviceScreen()));
-                },
-                child: const Text('手动输入添加'),
-              ),
+              Visibility(
+                  visible: isMobile(),
+                  child: CupertinoButton(
+                    onPressed: () {
+                      Navigator.of(context).push(CupertinoPageRoute(
+                          builder: (context) => const AddDeviceScreen()));
+                    },
+                    child: const Text('手动输入添加'),
+                  )),
             ],
           ),
         ),

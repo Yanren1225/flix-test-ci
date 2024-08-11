@@ -29,8 +29,10 @@ final _menuKey = GlobalKey(debugLabel: "pair_device_menu");
 
 class DeviceScreen extends StatefulWidget {
   final void Function(DeviceInfo deviceInfo, bool isHistory) onDeviceSelected;
+  final void Function()? onViewConnectInfo;
+  final void Function()? onGoManualAdd;
 
-  const DeviceScreen({super.key, required this.onDeviceSelected});
+  const DeviceScreen({super.key, required this.onDeviceSelected, this.onViewConnectInfo, this.onGoManualAdd});
 
   @override
   // ignore: no_logic_in_create_state
@@ -98,7 +100,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                                     height: 36,
                                   ),
                                   onPressed: () {
-                                    showMainMenu(context, 'open_menu');
+                                    showMainMenu(context, 'open_menu', widget.onViewConnectInfo, widget.onGoManualAdd);
                                   },
                                 ),
                               ),

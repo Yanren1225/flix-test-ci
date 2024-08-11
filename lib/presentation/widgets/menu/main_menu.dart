@@ -14,7 +14,8 @@ import 'package:modals/modals.dart';
 import '../../../utils/platform_utils.dart';
 import '../../screens/paircode/add_device_screen.dart';
 
-void showMainMenu(BuildContext context, String tag) {
+void showMainMenu(BuildContext context, String tag,
+    void Function()? onViewConnectInfo, void Function()? onGoManualAdd) {
   showModal(ModalEntry.anchored(
     context,
     tag: 'device_pair_menu',
@@ -25,15 +26,23 @@ void showMainMenu(BuildContext context, String tag) {
     barrierColor: const Color.fromRGBO(0, 0, 0, 0.45),
     removeOnPop: true,
     barrierDismissible: true,
-    child: MainMenu(navigator: Navigator.of(context)),
+    child: MainMenu(
+        navigator: Navigator.of(context),
+        onViewConnectInfo: onViewConnectInfo ?? () {},
+        onGoManualAdd: onGoManualAdd ?? () {}),
   ));
 }
 
 class MainMenu extends StatefulWidget {
   final NavigatorState navigator;
+  final void Function() onViewConnectInfo;
+  final void Function() onGoManualAdd;
 
-  const MainMenu({required this.navigator, super.key});
-
+  const MainMenu(
+      {required this.navigator,
+      super.key,
+      required this.onViewConnectInfo,
+      required this.onGoManualAdd});
 
   @override
   State<StatefulWidget> createState() => MainMenuState();
@@ -53,19 +62,20 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [Visibility(
-            visible: isMobile(),
-              child:MenuItem(
-                lable: '扫一扫',
-                icon: 'assets/images/ic_scan.svg',
-                onTap: () {
-                  removeAllModals();
-                  widget.navigator.push(MaterialPageRoute(
-                      builder: (context) =>
-                          QrcodeScanScreen(showBack: true)));
-                },
+            children: [
+              Visibility(
+                visible: isMobile(),
+                child: MenuItem(
+                  lable: '扫一扫',
+                  icon: 'assets/images/ic_scan.svg',
+                  onTap: () {
+                    removeAllModals();
+                    widget.navigator.push(MaterialPageRoute(
+                        builder: (context) =>
+                            QrcodeScanScreen(showBack: true)));
+                  },
+                ),
               ),
-            ),
               Visibility(
                 visible: Platform.isAndroid,
                 child: Padding(
@@ -91,22 +101,35 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
                 ),
               ),
               MenuItem(
-                lable: '添加此设备',
-                icon: 'assets/images/ic_ap.svg',
+                lable: isMobile() ? '手动添加设备' : "添加此设备",
+                icon: isMobile()
+                    ? 'assets/images/ic_add_device.svg'
+                    : 'assets/images/ic_ap.svg',
                 onTap: () {
+                  /*
                   removeAllModals();
-                  widget.navigator.push(MaterialPageRoute(
+                  widget.navigator.push(CupertinoPageRoute(
                       builder: (context) => const PairCodeScreen()));
+
+                   */
+                  removeAllModals();
+                  widget.onViewConnectInfo();
                 },
               ),
-              MenuItem(
-                lable: '手动添加设备',
-                icon: 'assets/images/ic_add_device.svg',
-                onTap: () {
-                  widget.navigator.push(MaterialPageRoute(
+              Visibility(
+                  visible: isDesktop(),
+                  child: MenuItem(
+                    lable: '手动添加设备',
+                    icon: 'assets/images/ic_add_device.svg',
+                    onTap: () {
+                      /*
+                  widget.navigator.push(CupertinoPageRoute(
                       builder: (context) => const AddDeviceScreen()));
-                },
-              )
+                   */
+                      removeAllModals();
+                      widget.onGoManualAdd();
+                    },
+                  ))
             ],
           ),
         ),
