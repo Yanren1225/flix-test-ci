@@ -1,18 +1,20 @@
+import 'package:flix/design_widget/design_blue_round_button.dart';
+import 'package:flix/design_widget/design_text_field.dart';
 import 'package:flix/domain/paircode/pair_router_handler.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
+import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
+import 'package:flix/presentation/widgets/toolbar.dart';
 import 'package:flix/utils/net/net_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_loading_dialog/simple_loading_dialog.dart';
 
 class AddDeviceScreen extends StatefulWidget {
-
   const AddDeviceScreen({super.key});
 
   @override
   State<StatefulWidget> createState() {
     return AddDeviceScreenState();
   }
-
 }
 
 class AddDeviceScreenState extends State<AddDeviceScreen> {
@@ -25,101 +27,97 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
     super.initState();
   }
 
-  void checkInput() {
-    final isValid = isValidIp(_ipController.text) && isValidPort(_portController.text);
-    if (isValid && !isAddButtonEnabled) {
-      setState(() {
-        isAddButtonEnabled = true;
-      });
-    } else if (!isValid && isAddButtonEnabled) {
-      setState(() {
-        isAddButtonEnabled = false;
-      });
-    }
+  bool checkInput() {
+    final isValid =
+        isValidIp(_ipController.text) && isValidPort(_portController.text);
+    return isValid;
   }
-
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                // 返回操作
-                Navigator.pop(context);
-              },
-            ),
-            pinned: true,
-            expandedHeight: 100.0,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text('手动输入添加', style: TextStyle(fontWeight: FontWeight.bold)),
-              centerTitle: true,
-            ),
+    return NavigationScaffold(
+      title: "手动输入添加",
+      showBackButton: true,
+      builder: (EdgeInsets padding) {
+        return Container(
+          margin: const EdgeInsets.only(left: 16, right: 16, top: 20),
+          width: double.infinity,
+          child: Column(
+            children: [
+              const SizedBox(height: 40),
+              buildPadding(context),
+              const SizedBox(height: 32.0),
+              Expanded(
+                  child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 130),
+                  width: 200,
+                  child: buildDesignBlueRoundButton(context),
+                ),
+              )),
+            ],
           ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'IP',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    controller: _ipController,
-                    onChanged: (value) {
-                        checkInput();
-                      },
-                  ),
-                  SizedBox(height: 16.0),
-                  TextField(
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: '网络端口',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    controller: _portController,
-                    onChanged: (value) {
-                        checkInput();
-                      },
-                  ),
-                  SizedBox(height: 32.0),
-                  ElevatedButton(
-                    onPressed: isAddButtonEnabled ? () async {
-                      Future<void> addDevice() async {
-                        final result = await PairRouterHandler.addDevice(PairInfo([_ipController.text],  int.parse(_portController.text)));
-                        if (result) {
-                          flixToast.info("添加成功");
-                        } else {
-                          flixToast.info("添加失败");
-                        }
-                      }
+        );
+      },
+    );
+  }
 
-                      await showSimpleLoadingDialog<void>(
-                        context: context,
-                        future: addDevice,
-                      );
-
-                    } : null,
-                    child: Text('添加设备'),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 16.0),
-                      textStyle: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+  Padding buildPadding(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("IP",
+              style:
+                  TextStyle(fontSize: 14, color: Theme.of(context).hintColor)),
+          const SizedBox(height: 4),
+          DesignTextField(
+            controller: _ipController,
+            onChanged: (value) {
+              checkInput();
+            },
+          ),
+          const SizedBox(height: 20.0),
+          Text("网络端口",
+              style:
+                  TextStyle(fontSize: 14, color: Theme.of(context).hintColor)),
+          const SizedBox(height: 4),
+          DesignTextField(
+            keyboardType: TextInputType.number,
+            controller: _portController,
+            onChanged: (value) {
+              checkInput();
+            },
           ),
         ],
       ),
     );
+  }
+
+  Widget buildDesignBlueRoundButton(BuildContext context) {
+    return DesignBlueRoundButton(
+        text: '添加设备',
+        onPressed: () async {
+          if (!checkInput()) {
+            FlixToast.instance.info('IP或者端口不正确');
+            return;
+          }
+          Future<void> addDevice() async {
+            final result = await PairRouterHandler.addDevice(PairInfo(
+                [_ipController.text], int.parse(_portController.text)));
+            if (result) {
+              flixToast.info("添加成功");
+            } else {
+              flixToast.info("添加失败");
+            }
+          }
+
+          await showSimpleLoadingDialog<void>(
+            context: context,
+            future: addDevice,
+          );
+        });
   }
 }
