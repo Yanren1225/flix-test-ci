@@ -188,6 +188,7 @@ String safeJoinPaths(String basePath, String relativePath) {
   safeBasePath=path.normalize(safeBasePath);
 
   String safeRelativePath = relativePath;
+
   if (containsNonPlatformSeparator(safeRelativePath)) {
     safeRelativePath = normalizePath(safeRelativePath);
   }
@@ -232,8 +233,15 @@ bool containsNonPlatformSeparator(String filePath) {
 
 /// 将传入的路径标准化为当前平台的路径格式
 String normalizePath(String originalPath) {
-  // 分割原始路径为路径段
-  List<String> segments = path.split(originalPath);
+  // path.split window相对路径处理异常，所以单独兼容
+  List<String> segments = [originalPath];
+  if (originalPath.contains('\\')) {
+    // 使用Windows风格的Context处理路径
+    var windowsContext = path.Context(style: path.Style.windows);
+    segments = windowsContext.split(originalPath);
+  } else {
+    segments = path.split(originalPath);
+  }
   // 使用当前平台的路径分隔符重新拼接路径
   return path.joinAll(segments);
 }
