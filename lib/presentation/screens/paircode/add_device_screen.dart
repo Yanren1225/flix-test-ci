@@ -45,11 +45,10 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
       showBackButton: Navigator.canPop(context),
       builder: (EdgeInsets padding) {
         return Container(
-          margin: const EdgeInsets.only(left: 16, right: 16, top: 20),
           width: double.infinity,
           child: Column(
             children: [
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
               buildPadding(context),
               const SizedBox(height: 32.0),
               Expanded(
@@ -57,7 +56,8 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
                 alignment: Alignment.bottomCenter,
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 130),
-                  width: 200,
+                  height: 54,
+                  width: 160,
                   child: buildDesignBlueRoundButton(context),
                 ),
               )),

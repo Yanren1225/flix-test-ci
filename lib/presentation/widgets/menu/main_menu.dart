@@ -91,7 +91,7 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
               Visibility(
                 visible: Platform.isAndroid,
                 child: MenuItem(
-                  lable: '我的热点',
+                  lable: '我的热点码',
                   icon: 'assets/images/ic_qrcode.svg',
                   onTap: () {
                     removeAllModals();
@@ -103,8 +103,8 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
               MenuItem(
                 lable: isMobile() ? '手动添加设备' : "添加此设备",
                 icon: isMobile()
-                    ? 'assets/images/ic_add_device.svg'
-                    : 'assets/images/ic_ap.svg',
+                    ? 'assets/images/ic_manul_add.svg'
+                    : 'assets/images/ic_qrcode.svg',
                 onTap: () {
                   /*
                   removeAllModals();
@@ -119,8 +119,8 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
               Visibility(
                   visible: isDesktop(),
                   child: MenuItem(
-                    lable: '手动添加设备',
-                    icon: 'assets/images/ic_add_device.svg',
+                    lable: '手动输入添加',
+                    icon: 'assets/images/ic_manul_add.svg',
                     onTap: () {
                       /*
                   widget.navigator.push(CupertinoPageRoute(

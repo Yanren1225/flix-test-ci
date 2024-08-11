@@ -6,6 +6,7 @@ import 'package:flix/presentation/basic/constrainted_sliver_width.dart';
 import 'package:flix/presentation/screens/paircode/add_device_screen.dart';
 import 'package:flix/presentation/style/flix_text_style.dart';
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/utils/device/device_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -98,13 +99,13 @@ class PairCodeContentComponentState extends State with WidgetsBindingObserver {
     pairCodeProvider.refreshPairCode();
   }
 
-  IconData getPlatformIcon() {
+  String getPlatformIcon() {
     if (isMobile()) {
-      return Icons.phone_android_outlined;
+      return 'phone.webp';
     } else if (isDesktop()) {
-      return Icons.desktop_windows_outlined;
+      return 'pc.webp';
     } else {
-      return Icons.device_unknown;
+      return 'pc.webp';
     }
   }
 
@@ -129,10 +130,12 @@ class PairCodeContentComponentState extends State with WidgetsBindingObserver {
                   child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          getPlatformIcon(),
-                          size: 40,
-                          color: Colors.blue,
+                        Image(
+                          image:
+                              AssetImage('assets/images/${getPlatformIcon()}'),
+                          width: 36,
+                          height: 36,
+                          fit: BoxFit.fill,
                         ),
                         const SizedBox(width: 10),
                         StreamBuilder<String>(
