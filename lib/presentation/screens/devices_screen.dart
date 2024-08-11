@@ -82,6 +82,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                               child: SvgPicture.asset(
                                   context.imagePath("ic_refresh_menu.svg")),
                             )),
+                            const SizedBox(width: 8),
                             ModalAnchor(
                               key: _menuKey,
                               tag: "open_menu",

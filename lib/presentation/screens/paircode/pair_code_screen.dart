@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flix/domain/paircode/pair_code_provider.dart';
 import 'package:flix/presentation/basic/constrainted_sliver_width.dart';
 import 'package:flix/presentation/screens/paircode/add_device_screen.dart';
@@ -8,6 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+
+import '../../../network/multicast_client_provider.dart';
+import '../../../utils/platform_utils.dart';
 
 class PairCodeScreen extends StatefulWidget {
   const PairCodeScreen({super.key});
@@ -94,10 +100,21 @@ class PairCodeContentComponentState extends State with WidgetsBindingObserver {
     pairCodeProvider.refreshPairCode();
   }
 
+  IconData getPlatformIcon() {
+    if (isMobile()) {
+      return Icons.phone_android_outlined;
+    } else if (isDesktop()) {
+      return Icons.desktop_windows_outlined;
+    } else {
+      return Icons.device_unknown;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final pairCodeProvider =
         Provider.of<PairCodeProvider>(context, listen: true);
+    final deviceProvider = MultiCastClientProvider.of(context, listen: true);
     if (pairCodeProvider.pairCodeUri == null) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -109,20 +126,28 @@ class PairCodeContentComponentState extends State with WidgetsBindingObserver {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              const Row(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.phone_android,
+                    getPlatformIcon(),
                     size: 40,
                     color: Colors.blue,
                   ),
-                  SizedBox(width: 10),
-                  Text(
-                    'Xiaomi 14 Ultra',
-                    style: TextStyle(fontSize: 24),
-                  ),
-                ],
-              ),
+                  const SizedBox(width: 10),
+                  StreamBuilder<String>(
+                      initialData: deviceProvider.deviceName,
+                      stream: deviceProvider.deviceNameStream.stream,
+                      builder: (context, snapshot) {
+                        return Text(
+                          snapshot.requireData,
+                          style: TextStyle(
+                              fontSize: 24,
+                            color: Theme.of(context).flixColors.text.primary,
+                          ),
+                        );
+                      }),
+                  ]),
               const SizedBox(height: 20),
               QrImageView(
                   eyeStyle: QrEyeStyle(
@@ -142,6 +167,7 @@ class PairCodeContentComponentState extends State with WidgetsBindingObserver {
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,7 +180,7 @@ class PairCodeContentComponentState extends State with WidgetsBindingObserver {
                             .fold(
                                 "",
                                 (previousValue, element) =>
-                                    "$previousValue\n$element"),
+                                    "$previousValue\n$element").trim(),
                         style: TextStyle(
                             color: Theme.of(this.context)
                                 .flixColors

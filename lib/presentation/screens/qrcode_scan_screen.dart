@@ -65,9 +65,9 @@ class _QrcodeScanScreenState extends State<QrcodeScanScreen> {
             onTap: () {
               Navigator.pop(context);
             },
-            child: const Icon(
+            child: Icon(
               Icons.arrow_back,
-              color: Colors.black,
+              color: Theme.of(context).flixColors.text.primary,
               size: 20,
             ),
           ),
