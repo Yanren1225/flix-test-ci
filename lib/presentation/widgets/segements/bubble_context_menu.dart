@@ -11,7 +11,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modals/modals.dart';
-
+import 'package:uuid/v8.dart';
+int contextMenuGroupId = 999;
 void showBubbleContextMenu(
     BuildContext context,
     String tag,
@@ -72,10 +73,11 @@ void showBubbleContextMenu(
           clickPosition.dy);
     }
   }
-
+  var bubbleMenu =
+      BubbleContextMenu(itemTypes: itemTypes, itemActions: itemActions);
   showModal(ModalEntry.anchored(
     context,
-    tag: 'menu',
+    tag: bubbleMenu.id,
     anchorTag: tag,
     modalAlignment: modalAlignment,
     anchorAlignment: Alignment.topLeft,
@@ -83,7 +85,7 @@ void showBubbleContextMenu(
     // barrierColor: const Color.fromRGBO(0, 0, 0, 0.45),
     removeOnPop: true,
     barrierDismissible: false,
-    child: BubbleContextMenu(itemTypes: itemTypes, itemActions: itemActions),
+    child: bubbleMenu,
   ));
 }
 
@@ -104,8 +106,9 @@ int _getMenuHeight(List<BubbleContextMenuItemType> itemTypes) {
 class BubbleContextMenu extends StatefulWidget {
   final List<BubbleContextMenuItemType> itemTypes;
   final Map<BubbleContextMenuItemType, VoidCallback> itemActions;
+  final String id = const UuidV8().generate().toString();
 
-  const BubbleContextMenu(
+  BubbleContextMenu(
       {super.key, required this.itemTypes, required this.itemActions});
 
   @override
@@ -149,9 +152,8 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
           ));
           break;
         case BubbleContextMenuItemType.Location:
-
           items.add(BubbleContextMenuItem(
-            title: Platform.isAndroid ? '文件打开' :  '文件位置',
+            title: Platform.isAndroid ? '文件打开' : '文件位置',
             icon: 'assets/images/ic_location.svg',
             onTap: onTap(type),
           ));
@@ -230,14 +232,14 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
             ),
           ),
           onTapOutside: (event) {
-            removeAllModals();
+            // removeModal(id);
           },
         ));
   }
 
   VoidCallback onTap(BubbleContextMenuItemType type) {
     return () {
-      removeAllModals();
+      // removeModal(widget.id);
       Future.delayed(Duration.zero, () => widget.itemActions[type]?.call());
     };
   }
@@ -299,7 +301,7 @@ class BubbleContextMenuItem extends StatelessWidget {
 class BubbleContextMenuWithMask extends BubbleContextMenu {
   final TextSelectionToolbarAnchors anchors;
 
-  const BubbleContextMenuWithMask(
+  BubbleContextMenuWithMask(
       {super.key,
       required this.anchors,
       required super.itemTypes,
@@ -322,25 +324,20 @@ class BubbleContextMenuWithMaskState extends BubbleContextMenuState {
         MediaQuery.paddingOf(context).top -
         appBarHeight;
     final fitsAbove = _getMenuHeight(widget.itemTypes) <= availableHeight;
-    return TapRegion(
-      child: CustomSingleChildLayout(
-          delegate: isDesktop()
-              ? DesktopTextSelectionToolbarLayoutDelegate(
-                  anchor: anchors.primaryAnchor,
-                )
-              : TextSelectionToolbarLayoutDelegate(
-                  anchorAbove: anchors.primaryAnchor - const Offset(0, margin),
-                  anchorBelow: (anchors.secondaryAnchor == null
-                          ? anchors.primaryAnchor
-                          : anchors.secondaryAnchor!) +
-                      const Offset(0, margin),
-                  fitsAbove: fitsAbove,
-                ),
-          child: super.build(context)),
-      onTapOutside: (event) {
-        removeAllModals();
-      },
-    );
+    return CustomSingleChildLayout(
+        delegate: isDesktop()
+            ? DesktopTextSelectionToolbarLayoutDelegate(
+                anchor: anchors.primaryAnchor,
+              )
+            : TextSelectionToolbarLayoutDelegate(
+                anchorAbove: anchors.primaryAnchor - const Offset(0, margin),
+                anchorBelow: (anchors.secondaryAnchor == null
+                        ? anchors.primaryAnchor
+                        : anchors.secondaryAnchor!) +
+                    const Offset(0, margin),
+                fitsAbove: fitsAbove,
+              ),
+        child: super.build(context));
   }
 }
 

@@ -131,9 +131,11 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
                   editableTextState.selectAll(SelectionChangedCause.toolbar);
                 });
               }
-
-              return _buildContextMenu(concertProvider, context,
-                  editableTextState.contextMenuAnchors);
+              return TapRegion(
+                  groupId: contextMenuGroupId,
+                  consumeOutsideTaps: true,
+                  child: _buildContextMenu(concertProvider, context,
+                      editableTextState.contextMenuAnchors));
             },
             options: const LinkifyOptions(humanize: false,excludeLastPeriod: false),
             linkStyle: textStyle,

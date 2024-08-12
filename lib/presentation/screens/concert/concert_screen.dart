@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/theme/theme_extensions.dart';
@@ -40,6 +41,7 @@ import 'package:pasteboard/pasteboard.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../widgets/segements/bubble_context_menu.dart';
 import 'droper.dart';
 
 class ConcertScreen extends StatefulWidget {
@@ -456,47 +458,24 @@ class InputAreaState extends State<InputArea> {
                                 )
                               },
                               child: TapRegion(
+                                  groupId: contextMenuGroupId,
+                                  consumeOutsideTaps: false,
                                   onTapOutside: (event) {
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
+                                    talker.debug("event = "+event.toString()+" down "+event.down.toString());
+                                    FocusScopeNode currentFocus = FocusScope.of(context);
+                                    if (!currentFocus.hasPrimaryFocus) {
+                                      currentFocus.unfocus();
+                                    }
                                   },
                                   child: TextField(
                                     contextMenuBuilder: (BuildContext context,
                                         EditableTextState editableTextState) {
-                                      return AdaptiveTextSelectionToolbar
-                                          .editable(
-                                        anchors: editableTextState
-                                            .contextMenuAnchors,
-                                        clipboardStatus:
-                                            ClipboardStatus.pasteable,
-                                        // to apply the normal behavior when click on copy (copy in clipboard close toolbar)
-                                        // use an empty function `() {}` to hide this option from the toolbar
-                                        onCopy: () =>
-                                            editableTextState.copySelection(
-                                                SelectionChangedCause.toolbar),
-                                        // to apply the normal behavior when click on cut
-                                        onCut: () =>
-                                            editableTextState.cutSelection(
-                                                SelectionChangedCause.toolbar),
-                                        onPaste: () {
-                                          // editableTextState.pasteText(SelectionChangedCause.toolbar);
-                                          _paste(concertProvider.deviceInfo);
-                                          editableTextState.hideToolbar();
-                                        },
-                                        // to apply the normal behavior when click on select all
-                                        onSelectAll: () =>
-                                            editableTextState.selectAll(
-                                                SelectionChangedCause.toolbar),
-                                        onLookUp: () =>
-                                            editableTextState.lookUpSelection(
-                                                SelectionChangedCause.toolbar),
-                                        onSearchWeb: () => editableTextState
-                                            .searchWebForSelection(
-                                                SelectionChangedCause.toolbar),
-                                        onShare: () =>
-                                            editableTextState.shareSelection(
-                                                SelectionChangedCause.toolbar),
-                                        onLiveTextInput: () {},
+                                      return TapRegion(
+                                        groupId: contextMenuGroupId,
+                                        consumeOutsideTaps: true,
+                                        child: buildAdaptiveTextSelectionToolbar(
+                                                editableTextState,
+                                                concertProvider),
                                       );
                                     },
                                     controller: textEditController,
@@ -591,6 +570,44 @@ class InputAreaState extends State<InputArea> {
         ),
       ),
     );
+  }
+
+  AdaptiveTextSelectionToolbar buildAdaptiveTextSelectionToolbar(EditableTextState editableTextState, ConcertProvider concertProvider) {
+    return AdaptiveTextSelectionToolbar
+                                        .editable(
+                                      anchors: editableTextState
+                                          .contextMenuAnchors,
+                                      clipboardStatus:
+                                          ClipboardStatus.pasteable,
+                                      // to apply the normal behavior when click on copy (copy in clipboard close toolbar)
+                                      // use an empty function `() {}` to hide this option from the toolbar
+                                      onCopy: () =>
+                                          editableTextState.copySelection(
+                                              SelectionChangedCause.toolbar),
+                                      // to apply the normal behavior when click on cut
+                                      onCut: () =>
+                                          editableTextState.cutSelection(
+                                              SelectionChangedCause.toolbar),
+                                      onPaste: () {
+                                        // editableTextState.pasteText(SelectionChangedCause.toolbar);
+                                        _paste(concertProvider.deviceInfo);
+                                        editableTextState.hideToolbar();
+                                      },
+                                      // to apply the normal behavior when click on select all
+                                      onSelectAll: () =>
+                                          editableTextState.selectAll(
+                                              SelectionChangedCause.toolbar),
+                                      onLookUp: () =>
+                                          editableTextState.lookUpSelection(
+                                              SelectionChangedCause.toolbar),
+                                      onSearchWeb: () => editableTextState
+                                          .searchWebForSelection(
+                                              SelectionChangedCause.toolbar),
+                                      onShare: () =>
+                                          editableTextState.shareSelection(
+                                              SelectionChangedCause.toolbar),
+                                      onLiveTextInput: () {},
+                                    );
   }
 
   void trySubmitText() {
