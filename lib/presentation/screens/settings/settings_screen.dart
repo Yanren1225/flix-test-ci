@@ -171,53 +171,61 @@ class SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-            Padding(
-              padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
-              child: Text(
-                '辅助功能',
-                style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.normal,
-                        color: Theme.of(context).flixColors.text.secondary)
-                    .fix(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
-              child: StreamBuilder<bool>(
-                initialData: SettingsRepo.instance.autoReceive,
-                stream: SettingsRepo.instance.autoReceiveStream.stream,
-                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                  return ClickableItem(
-                    label: '添加此设备',
-                    des: "查看此设备连接信息以在其他设备上手动添加",
-                    topRadius: true,
-                    bottomRadius: false,
-                    onClick: () {
-                      widget.showConnectionInfoCallback();
-                    },
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16),
-              child: StreamBuilder<bool>(
-                initialData: SettingsRepo.instance.autoReceive,
-                stream: SettingsRepo.instance.autoReceiveStream.stream,
-                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                  return ClickableItem(
-                    label: '手动添加设备',
-                    des: "输入其他设备连接信息以手动添加设备",
-                    topRadius: false,
-                    bottomRadius: true,
-                    onClick: () {
-                      widget.goManualAddCallback();
-                    },
-                  );
-                },
-              ),
-            ),
+            Visibility(
+                visible: false,
+                child: Column(children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20, top: 20, right: 20),
+                    child: Text(
+                      '辅助功能',
+                      style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.normal,
+                              color:
+                                  Theme.of(context).flixColors.text.secondary)
+                          .fix(),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
+                    child: StreamBuilder<bool>(
+                      initialData: SettingsRepo.instance.autoReceive,
+                      stream: SettingsRepo.instance.autoReceiveStream.stream,
+                      builder:
+                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                        return ClickableItem(
+                          label: '添加此设备',
+                          des: "查看此设备连接信息以在其他设备上手动添加",
+                          topRadius: true,
+                          bottomRadius: false,
+                          onClick: () {
+                            widget.showConnectionInfoCallback();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    child: StreamBuilder<bool>(
+                      initialData: SettingsRepo.instance.autoReceive,
+                      stream: SettingsRepo.instance.autoReceiveStream.stream,
+                      builder:
+                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                        return ClickableItem(
+                          label: '手动添加设备',
+                          des: "输入其他设备连接信息以手动添加设备",
+                          topRadius: false,
+                          bottomRadius: true,
+                          onClick: () {
+                            widget.goManualAddCallback();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ])),
 
             Padding(
               padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
