@@ -517,7 +517,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                     padding: const EdgeInsets.only(
                         left: 16, top: 4, right: 16, bottom: 16),
                     child: ClickActionItem(
-                        label: '退出程序',
+                        label: '退出软件',
                         dangerous: true,
                         onClick: () {
                           doExit();
