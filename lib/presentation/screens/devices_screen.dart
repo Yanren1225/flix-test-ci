@@ -76,7 +76,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                       Container(child: Row(
                         children: [
                             Visibility(
-                              visible: isDesktop(),
+                              visible: true,
                                 child: InkWell(
                                   onTap: (){
                                     _refreshDevice();
