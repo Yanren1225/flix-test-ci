@@ -46,9 +46,16 @@ jobs:
           provisioning-profile-base64: ${{ secrets.IOS_DISTRIBUTE_PROVISION_PROFILE }}
           extension-provisioning-profile-base64: ${{ secrets.IOS_DISTRIBUTE_SHARE_EXTENSION_PROVISION_PROFILE }}
           keychain-password: ${{ secrets.IOS_DISTRIBUTE_PASSWORD }}
-      - name: Upload artifact
-        if: ${{ inputs.up_load }}
-        uses: actions/upload-artifact@v4
+#      - name: Upload artifact
+#        if: ${{ inputs.up_load }}
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: ios-ipa
+#          path: build/ios/ipa/
+      - name: 'Upload app to TestFlight'
+        uses: apple-actions/upload-testflight-build@v1
         with:
-          name: ios-ipa
-          path: build/ios/ipa/
+          app-path: 'build/ios/ipa/flix.ipa'
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
