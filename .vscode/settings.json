@@ -1,6 +1,4 @@
 {
   "java.compile.nullAnalysis.mode": "automatic",
   "java.configuration.updateBuildConfiguration": "interactive",
-  "dart.flutterSdkPath": "C:\\Users\\nihaocun\\.puro\\envs\\3.19.2\\flutter",
-    "dart.sdkPath": "C:\\Users\\nihaocun\\.puro\\envs\\3.19.2\\flutter\\bin\\cache\\dart-sdk"
 }

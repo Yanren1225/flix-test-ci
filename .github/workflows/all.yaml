@@ -1,24 +1,47 @@
 name: Build All
-
 on:
   workflow_dispatch:
+    inputs:
+      up_load:
+        description: 'Upload artifacts'
+        type: boolean
+        required: true
+        default: true
   workflow_call:
-  push:
-    tags:
-        - 'v*'
+    inputs:
+      up_load:
+        description: 'Upload artifacts'
+        type: boolean
+        required: true
+        default: true
 
 jobs:
    android:
-     uses: ./.github/workflows/android.yml
+    uses: ./.github/workflows/android.yml
+    with:
+      up_load: ${{ inputs.up_load }}
+      split_per_abi_apk: false
+      single_apk: true
+      app_bundle: false
 
    ios:
-     uses: ./.github/workflows/ios.yml
+    uses: ./.github/workflows/ios.yml
+    with:
+      up_load: ${{ inputs.up_load }}
 
    linux:
-     uses: ./.github/workflows/linux.yml
+    uses: ./.github/workflows/linux.yml
+    with:
+      up_load: ${{ inputs.up_load }}
 
    windows:
-     uses: ./.github/workflows/windows.yml
+    uses: ./.github/workflows/windows.yml
+    with:
+      up_load: ${{ inputs.up_load }}
+      installer: true
+      portable: true
 
    darwin:
-     uses: ./.github/workflows/darwin.yml
+    uses: ./.github/workflows/darwin.yml
+    with:
+      up_load: ${{ inputs.up_load }}

@@ -1,7 +1,19 @@
 name: Build deb and rpm
 on:
   workflow_dispatch:
+    inputs:
+      up_load:
+        description: 'Upload artifacts'
+        type: boolean
+        required: true
+        default: true
   workflow_call:
+    inputs:
+      up_load:
+        description: 'Upload artifacts'
+        type: boolean
+        required: true
+        default: true
 
 jobs:
   linux-deb:
@@ -18,6 +30,7 @@ jobs:
         name: flutter debug compile
       - run: flutter_distributor package --platform linux --targets deb
       - name: Upload artifact
+        if: ${{ inputs.up_load }}
         uses: actions/upload-artifact@v4
         with:
           name: linux-deb
@@ -37,6 +50,7 @@ jobs:
         name: flutter debug compile
       - run: flutter_distributor package --platform linux --targets rpm
       - name: Upload artifact
+        if: ${{ inputs.up_load }}
         uses: actions/upload-artifact@v4
         with:
           name: linux-rpm

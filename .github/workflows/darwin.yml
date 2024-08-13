@@ -1,7 +1,19 @@
 name: Build MacOS
 on:
   workflow_dispatch:
+    inputs:
+      up_load:
+        description: 'Upload artifacts'
+        type: boolean
+        required: true
+        default: true
   workflow_call:
+    inputs:
+      up_load:
+        description: 'Upload artifacts'
+        type: boolean
+        required: true
+        default: true
 
 jobs:
   macos:
@@ -15,6 +27,7 @@ jobs:
           channel: stable
       - run: flutter build macos
       - name: Upload artifact
+        if: ${{ inputs.up_load }}
         uses: actions/upload-artifact@v4
         with:
           name: macos

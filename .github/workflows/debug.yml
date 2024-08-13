@@ -7,3 +7,5 @@ on:
 jobs:
   all:
     uses: ./.github/workflows/all.yaml
+    with:
+      up_load: false
