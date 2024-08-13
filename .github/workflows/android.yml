@@ -11,7 +11,7 @@ on:
         description: 'Build apks split per abi'
         type: boolean
         required: true
-        default: true
+        default: false
       single_apk:
         description: 'Build single huge apk'
         type: boolean
@@ -21,7 +21,7 @@ on:
         description: 'Build app bundle'
         type: boolean
         required: true
-        default: true
+        default: false
   workflow_call:
     inputs:
       up_load:
