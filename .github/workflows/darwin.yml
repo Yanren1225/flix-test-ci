@@ -18,6 +18,8 @@ on:
 jobs:
   macos:
     runs-on: macos-latest
+    env:
+      MACOS_APP_RELEASE_PATH: build/macos/Build/Products/Release
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
