@@ -896,6 +896,13 @@ class ShipService implements ApInterface {
       }
     }
 
+    //路径为空时，证明不是文件夹传输，无相对路径，直接填充文件路径
+    if(path == null || path == ""){
+      path = outFile.path;
+    }
+
+    talker.debug("_saveFileAndAddBubble path = $path");
+
     final updatedBubble = bubble.copy(
         content: bubble.content.copy(
             state: FileState.receiveCompleted,
