@@ -7,6 +7,26 @@ on:
         type: boolean
         required: true
         default: true
+      skip_android:
+        description: 'Skip Android build'
+        type: boolean
+        default: false
+      skip_ios:
+        description: 'Skip iOS build'
+        type: boolean
+        default: true
+      skip_linux:
+        description: 'Skip Linux build'
+        type: boolean
+        default: false
+      skip_windows:
+        description: 'Skip Windows build'
+        type: boolean
+        default: false
+      skip_darwin:
+        description: 'Skip macOS build'
+        type: boolean
+        default: true
   workflow_call:
     inputs:
       up_load:
@@ -14,9 +34,30 @@ on:
         type: boolean
         required: true
         default: true
+      skip_android:
+        description: 'Skip Android build'
+        type: boolean
+        default: false
+      skip_ios:
+        description: 'Skip iOS build'
+        type: boolean
+        default: false
+      skip_linux:
+        description: 'Skip Linux build'
+        type: boolean
+        default: false
+      skip_windows:
+        description: 'Skip Windows build'
+        type: boolean
+        default: false
+      skip_darwin:
+        description: 'Skip macOS build'
+        type: boolean
+        default: false
 
 jobs:
    android:
+    if: ${{ !inputs.skip_android }}
     uses: ./.github/workflows/android.yml
     with:
       up_load: ${{ inputs.up_load }}
@@ -25,16 +66,19 @@ jobs:
       app_bundle: false
 
    ios:
+    if: ${{ !inputs.skip_ios }}
     uses: ./.github/workflows/ios.yml
     with:
       up_load: ${{ inputs.up_load }}
 
    linux:
+    if: ${{ !inputs.skip_linux }}
     uses: ./.github/workflows/linux.yml
     with:
       up_load: ${{ inputs.up_load }}
 
    windows:
+    if: ${{ !inputs.skip_windows }}
     uses: ./.github/workflows/windows.yml
     with:
       up_load: ${{ inputs.up_load }}
@@ -42,6 +86,7 @@ jobs:
       portable: true
 
    darwin:
+    if: ${{ !inputs.skip_darwin }}
     uses: ./.github/workflows/darwin.yml
     with:
       up_load: ${{ inputs.up_load }}

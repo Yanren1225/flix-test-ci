@@ -9,3 +9,4 @@ jobs:
     uses: ./.github/workflows/all.yaml
     with:
       up_load: false
+      skip_darwin: true
