@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       up_load:
-        description: 'Upload artifacts'
+        description: 'Upload artifacts and to TestFlight'
         type: boolean
         required: true
         default: true
@@ -30,7 +30,7 @@ on:
   workflow_call:
     inputs:
       up_load:
-        description: 'Upload artifacts'
+        description: 'Upload artifacts and to TestFlight'
         type: boolean
         required: true
         default: true
@@ -69,7 +69,7 @@ jobs:
     if: ${{ !inputs.skip_ios }}
     uses: ./.github/workflows/ios.yml
     with:
-      up_load: ${{ inputs.up_load }}
+      up_tf: ${{ inputs.up_load }}
 
    linux:
     if: ${{ !inputs.skip_linux }}

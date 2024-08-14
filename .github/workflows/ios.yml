@@ -2,15 +2,15 @@ name: Build iOS
 on:
   workflow_dispatch:
     inputs:
-      up_load:
-        description: 'Upload artifacts'
+      up_tf:
+        description: 'Upload to TestFlight'
         type: boolean
         required: true
         default: true
   workflow_call:
     inputs:
-      up_load:
-        description: 'Upload artifacts'
+      up_tf:
+        description: 'Upload to TestFlight'
         type: boolean
         required: true
         default: true
@@ -53,6 +53,7 @@ jobs:
 #          name: ios-ipa
 #          path: build/ios/ipa/
       - name: 'Upload app to TestFlight'
+        if: ${{ inputs.up_tf }}
         uses: apple-actions/upload-testflight-build@v1
         with:
           app-path: 'build/ios/ipa/flix.ipa'
