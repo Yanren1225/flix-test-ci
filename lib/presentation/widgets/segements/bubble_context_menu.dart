@@ -232,14 +232,14 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
             ),
           ),
           onTapOutside: (event) {
-            // removeModal(id);
+            removeModal(widget.id);
           },
         ));
   }
 
   VoidCallback onTap(BubbleContextMenuItemType type) {
     return () {
-      // removeModal(widget.id);
+      removeModal(widget.id);
       Future.delayed(Duration.zero, () => widget.itemActions[type]?.call());
     };
   }
