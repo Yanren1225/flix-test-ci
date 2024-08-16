@@ -92,7 +92,7 @@ dependencies:
   flutter_native_image: ^0.0.6+1
   easy_refresh: ^3.3.4
   sliver_tools: ^0.2.12
-  share_plus: ^8.0.2
+  share_plus: 10.0.2
   url_launcher: ^6.2.5
   desktop_drop: ^0.4.4
   animated_visibility: ^0.0.4

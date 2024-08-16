@@ -8,7 +8,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:share_plus/share_plus.dart' as SharePlus;
+import 'package:share/share.dart' as Share;
 
 Future<void> downloadFile(BuildContext context, String logs) async {
   final File file;
@@ -75,11 +76,14 @@ Future<File> zipDirectory(String logDir, String zipFilePath) async {
 Future<void> shareFile(BuildContext context, File file) async {
   if (Platform.isWindows) {
     await openFileDirectoryOnWindows(file.path);
+  }else if(Platform.isAndroid){
+    List<String> files = List.empty(growable: true);
+    files.add(file.path);
+    await Share.Share.shareFiles(files);
   } else {
     final box = context.findRenderObject() as RenderBox?;
-
-    await Share.shareXFiles(<XFile>[
-      XFile(file.path),
+    await SharePlus.Share.shareXFiles(<SharePlus.XFile>[
+      SharePlus.XFile(file.path),
     ], sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size);
   }
 }
