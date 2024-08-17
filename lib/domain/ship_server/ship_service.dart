@@ -625,7 +625,7 @@ class ShipService implements ApInterface {
           updateBubbleShareState(
               _bubblePool, fileBubble.id, FileState.sendCompleted);
           if (path.isNotEmpty) {
-            _deleteCachedFile(fileBubble, path);
+            // _deleteCachedFile(fileBubble, path);
           }
         } else {
           talker.error(sendTag,
