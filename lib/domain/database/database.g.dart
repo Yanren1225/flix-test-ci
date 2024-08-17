@@ -2332,62 +2332,6 @@ typedef $$BubbleEntitiesTableUpdateCompanionBuilder = BubbleEntitiesCompanion
   Value<int> rowid,
 });
 
-class $$BubbleEntitiesTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $BubbleEntitiesTable,
-    BubbleEntity,
-    $$BubbleEntitiesTableFilterComposer,
-    $$BubbleEntitiesTableOrderingComposer,
-    $$BubbleEntitiesTableCreateCompanionBuilder,
-    $$BubbleEntitiesTableUpdateCompanionBuilder> {
-  $$BubbleEntitiesTableTableManager(
-      _$AppDatabase db, $BubbleEntitiesTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$BubbleEntitiesTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$BubbleEntitiesTableOrderingComposer(ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<String> id = const Value.absent(),
-            Value<String> fromDevice = const Value.absent(),
-            Value<String> toDevice = const Value.absent(),
-            Value<int> type = const Value.absent(),
-            Value<int> time = const Value.absent(),
-            Value<String> groupId = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              BubbleEntitiesCompanion(
-            id: id,
-            fromDevice: fromDevice,
-            toDevice: toDevice,
-            type: type,
-            time: time,
-            groupId: groupId,
-            rowid: rowid,
-          ),
-          createCompanionCallback: ({
-            required String id,
-            required String fromDevice,
-            required String toDevice,
-            required int type,
-            Value<int> time = const Value.absent(),
-            Value<String> groupId = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              BubbleEntitiesCompanion.insert(
-            id: id,
-            fromDevice: fromDevice,
-            toDevice: toDevice,
-            type: type,
-            time: time,
-            groupId: groupId,
-            rowid: rowid,
-          ),
-        ));
-}
-
 class $$BubbleEntitiesTableFilterComposer
     extends FilterComposer<_$AppDatabase, $BubbleEntitiesTable> {
   $$BubbleEntitiesTableFilterComposer(super.$state);
@@ -2456,6 +2400,86 @@ class $$BubbleEntitiesTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+class $$BubbleEntitiesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $BubbleEntitiesTable,
+    BubbleEntity,
+    $$BubbleEntitiesTableFilterComposer,
+    $$BubbleEntitiesTableOrderingComposer,
+    $$BubbleEntitiesTableCreateCompanionBuilder,
+    $$BubbleEntitiesTableUpdateCompanionBuilder,
+    (
+      BubbleEntity,
+      BaseReferences<_$AppDatabase, $BubbleEntitiesTable, BubbleEntity>
+    ),
+    BubbleEntity,
+    PrefetchHooks Function()> {
+  $$BubbleEntitiesTableTableManager(
+      _$AppDatabase db, $BubbleEntitiesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$BubbleEntitiesTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$BubbleEntitiesTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> fromDevice = const Value.absent(),
+            Value<String> toDevice = const Value.absent(),
+            Value<int> type = const Value.absent(),
+            Value<int> time = const Value.absent(),
+            Value<String> groupId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              BubbleEntitiesCompanion(
+            id: id,
+            fromDevice: fromDevice,
+            toDevice: toDevice,
+            type: type,
+            time: time,
+            groupId: groupId,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String fromDevice,
+            required String toDevice,
+            required int type,
+            Value<int> time = const Value.absent(),
+            Value<String> groupId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              BubbleEntitiesCompanion.insert(
+            id: id,
+            fromDevice: fromDevice,
+            toDevice: toDevice,
+            type: type,
+            time: time,
+            groupId: groupId,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$BubbleEntitiesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $BubbleEntitiesTable,
+    BubbleEntity,
+    $$BubbleEntitiesTableFilterComposer,
+    $$BubbleEntitiesTableOrderingComposer,
+    $$BubbleEntitiesTableCreateCompanionBuilder,
+    $$BubbleEntitiesTableUpdateCompanionBuilder,
+    (
+      BubbleEntity,
+      BaseReferences<_$AppDatabase, $BubbleEntitiesTable, BubbleEntity>
+    ),
+    BubbleEntity,
+    PrefetchHooks Function()>;
 typedef $$TextContentsTableCreateCompanionBuilder = TextContentsCompanion
     Function({
   required String id,
@@ -2468,45 +2492,6 @@ typedef $$TextContentsTableUpdateCompanionBuilder = TextContentsCompanion
   Value<String> content,
   Value<int> rowid,
 });
-
-class $$TextContentsTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $TextContentsTable,
-    TextContent,
-    $$TextContentsTableFilterComposer,
-    $$TextContentsTableOrderingComposer,
-    $$TextContentsTableCreateCompanionBuilder,
-    $$TextContentsTableUpdateCompanionBuilder> {
-  $$TextContentsTableTableManager(_$AppDatabase db, $TextContentsTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$TextContentsTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$TextContentsTableOrderingComposer(ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<String> id = const Value.absent(),
-            Value<String> content = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              TextContentsCompanion(
-            id: id,
-            content: content,
-            rowid: rowid,
-          ),
-          createCompanionCallback: ({
-            required String id,
-            required String content,
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              TextContentsCompanion.insert(
-            id: id,
-            content: content,
-            rowid: rowid,
-          ),
-        ));
-}
 
 class $$TextContentsTableFilterComposer
     extends FilterComposer<_$AppDatabase, $TextContentsTable> {
@@ -2536,6 +2521,69 @@ class $$TextContentsTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+class $$TextContentsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $TextContentsTable,
+    TextContent,
+    $$TextContentsTableFilterComposer,
+    $$TextContentsTableOrderingComposer,
+    $$TextContentsTableCreateCompanionBuilder,
+    $$TextContentsTableUpdateCompanionBuilder,
+    (
+      TextContent,
+      BaseReferences<_$AppDatabase, $TextContentsTable, TextContent>
+    ),
+    TextContent,
+    PrefetchHooks Function()> {
+  $$TextContentsTableTableManager(_$AppDatabase db, $TextContentsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$TextContentsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$TextContentsTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> content = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TextContentsCompanion(
+            id: id,
+            content: content,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String content,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TextContentsCompanion.insert(
+            id: id,
+            content: content,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$TextContentsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $TextContentsTable,
+    TextContent,
+    $$TextContentsTableFilterComposer,
+    $$TextContentsTableOrderingComposer,
+    $$TextContentsTableCreateCompanionBuilder,
+    $$TextContentsTableUpdateCompanionBuilder,
+    (
+      TextContent,
+      BaseReferences<_$AppDatabase, $TextContentsTable, TextContent>
+    ),
+    TextContent,
+    PrefetchHooks Function()>;
 typedef $$FileContentsTableCreateCompanionBuilder = FileContentsCompanion
     Function({
   required String id,
@@ -2572,93 +2620,6 @@ typedef $$FileContentsTableUpdateCompanionBuilder = FileContentsCompanion
   Value<bool> waitingForAccept,
   Value<int> rowid,
 });
-
-class $$FileContentsTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $FileContentsTable,
-    FileContent,
-    $$FileContentsTableFilterComposer,
-    $$FileContentsTableOrderingComposer,
-    $$FileContentsTableCreateCompanionBuilder,
-    $$FileContentsTableUpdateCompanionBuilder> {
-  $$FileContentsTableTableManager(_$AppDatabase db, $FileContentsTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$FileContentsTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$FileContentsTableOrderingComposer(ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<String> id = const Value.absent(),
-            Value<String> groupId = const Value.absent(),
-            Value<String> resourceId = const Value.absent(),
-            Value<String> name = const Value.absent(),
-            Value<String> mimeType = const Value.absent(),
-            Value<String> nameWithSuffix = const Value.absent(),
-            Value<int> size = const Value.absent(),
-            Value<String?> path = const Value.absent(),
-            Value<int> state = const Value.absent(),
-            Value<double> progress = const Value.absent(),
-            Value<int> speed = const Value.absent(),
-            Value<int> width = const Value.absent(),
-            Value<int> height = const Value.absent(),
-            Value<bool> waitingForAccept = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              FileContentsCompanion(
-            id: id,
-            groupId: groupId,
-            resourceId: resourceId,
-            name: name,
-            mimeType: mimeType,
-            nameWithSuffix: nameWithSuffix,
-            size: size,
-            path: path,
-            state: state,
-            progress: progress,
-            speed: speed,
-            width: width,
-            height: height,
-            waitingForAccept: waitingForAccept,
-            rowid: rowid,
-          ),
-          createCompanionCallback: ({
-            required String id,
-            Value<String> groupId = const Value.absent(),
-            Value<String> resourceId = const Value.absent(),
-            required String name,
-            required String mimeType,
-            required String nameWithSuffix,
-            required int size,
-            Value<String?> path = const Value.absent(),
-            required int state,
-            required double progress,
-            Value<int> speed = const Value.absent(),
-            required int width,
-            required int height,
-            Value<bool> waitingForAccept = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              FileContentsCompanion.insert(
-            id: id,
-            groupId: groupId,
-            resourceId: resourceId,
-            name: name,
-            mimeType: mimeType,
-            nameWithSuffix: nameWithSuffix,
-            size: size,
-            path: path,
-            state: state,
-            progress: progress,
-            speed: speed,
-            width: width,
-            height: height,
-            waitingForAccept: waitingForAccept,
-            rowid: rowid,
-          ),
-        ));
-}
 
 class $$FileContentsTableFilterComposer
     extends FilterComposer<_$AppDatabase, $FileContentsTable> {
@@ -2808,6 +2769,117 @@ class $$FileContentsTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+class $$FileContentsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $FileContentsTable,
+    FileContent,
+    $$FileContentsTableFilterComposer,
+    $$FileContentsTableOrderingComposer,
+    $$FileContentsTableCreateCompanionBuilder,
+    $$FileContentsTableUpdateCompanionBuilder,
+    (
+      FileContent,
+      BaseReferences<_$AppDatabase, $FileContentsTable, FileContent>
+    ),
+    FileContent,
+    PrefetchHooks Function()> {
+  $$FileContentsTableTableManager(_$AppDatabase db, $FileContentsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$FileContentsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$FileContentsTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> groupId = const Value.absent(),
+            Value<String> resourceId = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String> mimeType = const Value.absent(),
+            Value<String> nameWithSuffix = const Value.absent(),
+            Value<int> size = const Value.absent(),
+            Value<String?> path = const Value.absent(),
+            Value<int> state = const Value.absent(),
+            Value<double> progress = const Value.absent(),
+            Value<int> speed = const Value.absent(),
+            Value<int> width = const Value.absent(),
+            Value<int> height = const Value.absent(),
+            Value<bool> waitingForAccept = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              FileContentsCompanion(
+            id: id,
+            groupId: groupId,
+            resourceId: resourceId,
+            name: name,
+            mimeType: mimeType,
+            nameWithSuffix: nameWithSuffix,
+            size: size,
+            path: path,
+            state: state,
+            progress: progress,
+            speed: speed,
+            width: width,
+            height: height,
+            waitingForAccept: waitingForAccept,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            Value<String> groupId = const Value.absent(),
+            Value<String> resourceId = const Value.absent(),
+            required String name,
+            required String mimeType,
+            required String nameWithSuffix,
+            required int size,
+            Value<String?> path = const Value.absent(),
+            required int state,
+            required double progress,
+            Value<int> speed = const Value.absent(),
+            required int width,
+            required int height,
+            Value<bool> waitingForAccept = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              FileContentsCompanion.insert(
+            id: id,
+            groupId: groupId,
+            resourceId: resourceId,
+            name: name,
+            mimeType: mimeType,
+            nameWithSuffix: nameWithSuffix,
+            size: size,
+            path: path,
+            state: state,
+            progress: progress,
+            speed: speed,
+            width: width,
+            height: height,
+            waitingForAccept: waitingForAccept,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$FileContentsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $FileContentsTable,
+    FileContent,
+    $$FileContentsTableFilterComposer,
+    $$FileContentsTableOrderingComposer,
+    $$FileContentsTableCreateCompanionBuilder,
+    $$FileContentsTableUpdateCompanionBuilder,
+    (
+      FileContent,
+      BaseReferences<_$AppDatabase, $FileContentsTable, FileContent>
+    ),
+    FileContent,
+    PrefetchHooks Function()>;
 typedef $$PersistenceDevicesTableCreateCompanionBuilder
     = PersistenceDevicesCompanion Function({
   required String alias,
@@ -2834,74 +2906,6 @@ typedef $$PersistenceDevicesTableUpdateCompanionBuilder
   Value<DateTime> insertOrUpdateTime,
   Value<int> rowid,
 });
-
-class $$PersistenceDevicesTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $PersistenceDevicesTable,
-    PersistenceDevice,
-    $$PersistenceDevicesTableFilterComposer,
-    $$PersistenceDevicesTableOrderingComposer,
-    $$PersistenceDevicesTableCreateCompanionBuilder,
-    $$PersistenceDevicesTableUpdateCompanionBuilder> {
-  $$PersistenceDevicesTableTableManager(
-      _$AppDatabase db, $PersistenceDevicesTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$PersistenceDevicesTableFilterComposer(ComposerState(db, table)),
-          orderingComposer: $$PersistenceDevicesTableOrderingComposer(
-              ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<String> alias = const Value.absent(),
-            Value<String?> deviceModel = const Value.absent(),
-            Value<int?> deviceType = const Value.absent(),
-            Value<String> fingerprint = const Value.absent(),
-            Value<int?> port = const Value.absent(),
-            Value<int?> version = const Value.absent(),
-            Value<String?> ip = const Value.absent(),
-            Value<String?> host = const Value.absent(),
-            Value<DateTime> insertOrUpdateTime = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              PersistenceDevicesCompanion(
-            alias: alias,
-            deviceModel: deviceModel,
-            deviceType: deviceType,
-            fingerprint: fingerprint,
-            port: port,
-            version: version,
-            ip: ip,
-            host: host,
-            insertOrUpdateTime: insertOrUpdateTime,
-            rowid: rowid,
-          ),
-          createCompanionCallback: ({
-            required String alias,
-            Value<String?> deviceModel = const Value.absent(),
-            Value<int?> deviceType = const Value.absent(),
-            required String fingerprint,
-            Value<int?> port = const Value.absent(),
-            Value<int?> version = const Value.absent(),
-            Value<String?> ip = const Value.absent(),
-            Value<String?> host = const Value.absent(),
-            Value<DateTime> insertOrUpdateTime = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              PersistenceDevicesCompanion.insert(
-            alias: alias,
-            deviceModel: deviceModel,
-            deviceType: deviceType,
-            fingerprint: fingerprint,
-            port: port,
-            version: version,
-            ip: ip,
-            host: host,
-            insertOrUpdateTime: insertOrUpdateTime,
-            rowid: rowid,
-          ),
-        ));
-}
 
 class $$PersistenceDevicesTableFilterComposer
     extends FilterComposer<_$AppDatabase, $PersistenceDevicesTable> {
@@ -3001,6 +3005,98 @@ class $$PersistenceDevicesTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+class $$PersistenceDevicesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $PersistenceDevicesTable,
+    PersistenceDevice,
+    $$PersistenceDevicesTableFilterComposer,
+    $$PersistenceDevicesTableOrderingComposer,
+    $$PersistenceDevicesTableCreateCompanionBuilder,
+    $$PersistenceDevicesTableUpdateCompanionBuilder,
+    (
+      PersistenceDevice,
+      BaseReferences<_$AppDatabase, $PersistenceDevicesTable, PersistenceDevice>
+    ),
+    PersistenceDevice,
+    PrefetchHooks Function()> {
+  $$PersistenceDevicesTableTableManager(
+      _$AppDatabase db, $PersistenceDevicesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$PersistenceDevicesTableFilterComposer(ComposerState(db, table)),
+          orderingComposer: $$PersistenceDevicesTableOrderingComposer(
+              ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> alias = const Value.absent(),
+            Value<String?> deviceModel = const Value.absent(),
+            Value<int?> deviceType = const Value.absent(),
+            Value<String> fingerprint = const Value.absent(),
+            Value<int?> port = const Value.absent(),
+            Value<int?> version = const Value.absent(),
+            Value<String?> ip = const Value.absent(),
+            Value<String?> host = const Value.absent(),
+            Value<DateTime> insertOrUpdateTime = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PersistenceDevicesCompanion(
+            alias: alias,
+            deviceModel: deviceModel,
+            deviceType: deviceType,
+            fingerprint: fingerprint,
+            port: port,
+            version: version,
+            ip: ip,
+            host: host,
+            insertOrUpdateTime: insertOrUpdateTime,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String alias,
+            Value<String?> deviceModel = const Value.absent(),
+            Value<int?> deviceType = const Value.absent(),
+            required String fingerprint,
+            Value<int?> port = const Value.absent(),
+            Value<int?> version = const Value.absent(),
+            Value<String?> ip = const Value.absent(),
+            Value<String?> host = const Value.absent(),
+            Value<DateTime> insertOrUpdateTime = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PersistenceDevicesCompanion.insert(
+            alias: alias,
+            deviceModel: deviceModel,
+            deviceType: deviceType,
+            fingerprint: fingerprint,
+            port: port,
+            version: version,
+            ip: ip,
+            host: host,
+            insertOrUpdateTime: insertOrUpdateTime,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$PersistenceDevicesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $PersistenceDevicesTable,
+    PersistenceDevice,
+    $$PersistenceDevicesTableFilterComposer,
+    $$PersistenceDevicesTableOrderingComposer,
+    $$PersistenceDevicesTableCreateCompanionBuilder,
+    $$PersistenceDevicesTableUpdateCompanionBuilder,
+    (
+      PersistenceDevice,
+      BaseReferences<_$AppDatabase, $PersistenceDevicesTable, PersistenceDevice>
+    ),
+    PersistenceDevice,
+    PrefetchHooks Function()>;
 typedef $$PairDevicesTableCreateCompanionBuilder = PairDevicesCompanion
     Function({
   required String fingerprint,
@@ -3015,49 +3111,6 @@ typedef $$PairDevicesTableUpdateCompanionBuilder = PairDevicesCompanion
   Value<DateTime> insertOrUpdateTime,
   Value<int> rowid,
 });
-
-class $$PairDevicesTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $PairDevicesTable,
-    PairDevice,
-    $$PairDevicesTableFilterComposer,
-    $$PairDevicesTableOrderingComposer,
-    $$PairDevicesTableCreateCompanionBuilder,
-    $$PairDevicesTableUpdateCompanionBuilder> {
-  $$PairDevicesTableTableManager(_$AppDatabase db, $PairDevicesTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$PairDevicesTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$PairDevicesTableOrderingComposer(ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<String> fingerprint = const Value.absent(),
-            Value<String> code = const Value.absent(),
-            Value<DateTime> insertOrUpdateTime = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              PairDevicesCompanion(
-            fingerprint: fingerprint,
-            code: code,
-            insertOrUpdateTime: insertOrUpdateTime,
-            rowid: rowid,
-          ),
-          createCompanionCallback: ({
-            required String fingerprint,
-            required String code,
-            Value<DateTime> insertOrUpdateTime = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              PairDevicesCompanion.insert(
-            fingerprint: fingerprint,
-            code: code,
-            insertOrUpdateTime: insertOrUpdateTime,
-            rowid: rowid,
-          ),
-        ));
-}
 
 class $$PairDevicesTableFilterComposer
     extends FilterComposer<_$AppDatabase, $PairDevicesTable> {
@@ -3097,6 +3150,67 @@ class $$PairDevicesTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+class $$PairDevicesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $PairDevicesTable,
+    PairDevice,
+    $$PairDevicesTableFilterComposer,
+    $$PairDevicesTableOrderingComposer,
+    $$PairDevicesTableCreateCompanionBuilder,
+    $$PairDevicesTableUpdateCompanionBuilder,
+    (PairDevice, BaseReferences<_$AppDatabase, $PairDevicesTable, PairDevice>),
+    PairDevice,
+    PrefetchHooks Function()> {
+  $$PairDevicesTableTableManager(_$AppDatabase db, $PairDevicesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$PairDevicesTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$PairDevicesTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> fingerprint = const Value.absent(),
+            Value<String> code = const Value.absent(),
+            Value<DateTime> insertOrUpdateTime = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PairDevicesCompanion(
+            fingerprint: fingerprint,
+            code: code,
+            insertOrUpdateTime: insertOrUpdateTime,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String fingerprint,
+            required String code,
+            Value<DateTime> insertOrUpdateTime = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PairDevicesCompanion.insert(
+            fingerprint: fingerprint,
+            code: code,
+            insertOrUpdateTime: insertOrUpdateTime,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$PairDevicesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $PairDevicesTable,
+    PairDevice,
+    $$PairDevicesTableFilterComposer,
+    $$PairDevicesTableOrderingComposer,
+    $$PairDevicesTableCreateCompanionBuilder,
+    $$PairDevicesTableUpdateCompanionBuilder,
+    (PairDevice, BaseReferences<_$AppDatabase, $PairDevicesTable, PairDevice>),
+    PairDevice,
+    PrefetchHooks Function()>;
 typedef $$DirectoryContentsTableCreateCompanionBuilder
     = DirectoryContentsCompanion Function({
   required String id,
@@ -3117,62 +3231,6 @@ typedef $$DirectoryContentsTableUpdateCompanionBuilder
   Value<bool> waitingForAccept,
   Value<int> rowid,
 });
-
-class $$DirectoryContentsTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $DirectoryContentsTable,
-    DirectoryContent,
-    $$DirectoryContentsTableFilterComposer,
-    $$DirectoryContentsTableOrderingComposer,
-    $$DirectoryContentsTableCreateCompanionBuilder,
-    $$DirectoryContentsTableUpdateCompanionBuilder> {
-  $$DirectoryContentsTableTableManager(
-      _$AppDatabase db, $DirectoryContentsTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$DirectoryContentsTableFilterComposer(ComposerState(db, table)),
-          orderingComposer: $$DirectoryContentsTableOrderingComposer(
-              ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<String> id = const Value.absent(),
-            Value<String> name = const Value.absent(),
-            Value<int> size = const Value.absent(),
-            Value<int> state = const Value.absent(),
-            Value<String?> path = const Value.absent(),
-            Value<bool> waitingForAccept = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              DirectoryContentsCompanion(
-            id: id,
-            name: name,
-            size: size,
-            state: state,
-            path: path,
-            waitingForAccept: waitingForAccept,
-            rowid: rowid,
-          ),
-          createCompanionCallback: ({
-            required String id,
-            required String name,
-            required int size,
-            required int state,
-            Value<String?> path = const Value.absent(),
-            Value<bool> waitingForAccept = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
-          }) =>
-              DirectoryContentsCompanion.insert(
-            id: id,
-            name: name,
-            size: size,
-            state: state,
-            path: path,
-            waitingForAccept: waitingForAccept,
-            rowid: rowid,
-          ),
-        ));
-}
 
 class $$DirectoryContentsTableFilterComposer
     extends FilterComposer<_$AppDatabase, $DirectoryContentsTable> {
@@ -3241,6 +3299,87 @@ class $$DirectoryContentsTableOrderingComposer
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
+
+class $$DirectoryContentsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $DirectoryContentsTable,
+    DirectoryContent,
+    $$DirectoryContentsTableFilterComposer,
+    $$DirectoryContentsTableOrderingComposer,
+    $$DirectoryContentsTableCreateCompanionBuilder,
+    $$DirectoryContentsTableUpdateCompanionBuilder,
+    (
+      DirectoryContent,
+      BaseReferences<_$AppDatabase, $DirectoryContentsTable, DirectoryContent>
+    ),
+    DirectoryContent,
+    PrefetchHooks Function()> {
+  $$DirectoryContentsTableTableManager(
+      _$AppDatabase db, $DirectoryContentsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$DirectoryContentsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer: $$DirectoryContentsTableOrderingComposer(
+              ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<int> size = const Value.absent(),
+            Value<int> state = const Value.absent(),
+            Value<String?> path = const Value.absent(),
+            Value<bool> waitingForAccept = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              DirectoryContentsCompanion(
+            id: id,
+            name: name,
+            size: size,
+            state: state,
+            path: path,
+            waitingForAccept: waitingForAccept,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String name,
+            required int size,
+            required int state,
+            Value<String?> path = const Value.absent(),
+            Value<bool> waitingForAccept = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              DirectoryContentsCompanion.insert(
+            id: id,
+            name: name,
+            size: size,
+            state: state,
+            path: path,
+            waitingForAccept: waitingForAccept,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$DirectoryContentsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $DirectoryContentsTable,
+    DirectoryContent,
+    $$DirectoryContentsTableFilterComposer,
+    $$DirectoryContentsTableOrderingComposer,
+    $$DirectoryContentsTableCreateCompanionBuilder,
+    $$DirectoryContentsTableUpdateCompanionBuilder,
+    (
+      DirectoryContent,
+      BaseReferences<_$AppDatabase, $DirectoryContentsTable, DirectoryContent>
+    ),
+    DirectoryContent,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;

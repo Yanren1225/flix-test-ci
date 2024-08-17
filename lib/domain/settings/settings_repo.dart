@@ -10,6 +10,7 @@ class SettingsRepo {
   SettingsRepo._privateConstructor() {
     SharedPreferences.getInstance().then((sp) {
       _setAutoReceive(sp.getBool(autoReceiveKey) ?? false);
+      _setAutoSaveGallery(sp.getBool(autoSaveGalleryKey)??true);
       _setEnableMdns(sp.getBool(enableMdnsKey) ?? true);
       _setMinimizedMode(sp.getBool(isMinimizedKey) ?? true);
       _setDarkModeTag(sp.getString(darkModeTagKey) ?? "follow_system");
@@ -65,6 +66,11 @@ class SettingsRepo {
     autoSaveToGalleryStream.add(autoSaveToGallery);
     var sharePreference = await SharedPreferences.getInstance();
     await sharePreference.setBool(autoSaveGalleryKey, autoSaveToGallery);
+  }
+
+  void _setAutoSaveGallery(bool autoSaveToGallery){
+    _autoSaveToGallery = autoSaveToGallery;
+    autoSaveToGalleryStream.add(autoSaveToGallery);
   }
 
   Future<void> setAutoReceive(bool autoReceive) async {
