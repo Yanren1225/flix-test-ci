@@ -26,6 +26,7 @@ jobs:
       - name: install rust
         run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf > rustup.sh && sh rustup.sh -y && echo 'source $HOME/.cargo/env' >> /etc/bash.bashrc
       - run: flutter pub get
+      - run: dart run build_runner build --delete-conflicting-outputs
       - run: flutter build linux -vv
         name: flutter debug compile
       - run: flutter_distributor package --platform linux --targets deb
@@ -46,6 +47,7 @@ jobs:
       - name: install rust
         run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf > rustup.sh && sh rustup.sh -y && echo 'source $HOME/.cargo/env' >> /etc/bash.bashrc
       - run: flutter pub get
+      - run: dart run build_runner build --delete-conflicting-outputs
       - run: flutter build linux -vv
         name: flutter debug compile
       - run: flutter_distributor package --platform linux --targets rpm

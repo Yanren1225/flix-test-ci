@@ -63,6 +63,12 @@ jobs:
         with:
           flutter-version: 3.19.2
       - run: flutter pub get
+      - name: Cache Android SDK
+        uses: actions/cache@v2
+        with:
+          path: /usr/local/lib/android/
+          key: ${{ runner.os }}-android-sdk-${{ hashFiles('**/pubspec.yaml') }}
+      - run: dart run build_runner build --delete-conflicting-outputs
       - name: Build apks split per abi
         if: ${{ inputs.split_per_abi_apk }}
         run: flutter build apk --target-platform android-arm,android-arm64,android-x64 --split-per-abi --release
