@@ -1,12 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bonsoir/bonsoir.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/domain/paircode/pair_router_handler.dart';
 import 'package:flix/network/multicast_api.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/utils/iterable_extension.dart';
+import 'package:flix/utils/net/net_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mutex/mutex.dart';
 
@@ -38,6 +41,7 @@ class BonjourImpl extends MultiCastApi {
           port: port,
           // Put your service port here.
           attributes: {
+            "network": await getNetworkBase64(),
             "alias": deviceModal.alias,
             "deviceModal": deviceModal.deviceModel ?? '',
             "deviceType": (deviceModal.deviceType ?? DeviceType.mobile).name,
@@ -122,7 +126,7 @@ class BonjourImpl extends MultiCastApi {
         await discovery?.ready;
 
 // If you want to listen to the discovery :
-        discovery?.eventStream?.listen((event) {
+        discovery?.eventStream?.listen((event) async {
           // `eventStream` is not null as the discovery instance is "ready" !
           if (event.type == BonsoirDiscoveryEventType.discoveryServiceFound) {
             talker.debug('mDns Service found : ${event.service?.toJson()}');
@@ -137,6 +141,7 @@ class BonjourImpl extends MultiCastApi {
             final port = remoteService.port;
             final serviceAttributes = remoteService.attributes;
             final alias = serviceAttributes['alias'];
+            final network = serviceAttributes['network'];
             final deviceType = serviceAttributes['deviceType'];
             final deviceModel = serviceAttributes['deviceModal'];
             final fingerprint = serviceAttributes['fingerprint'];
@@ -154,16 +159,16 @@ class BonjourImpl extends MultiCastApi {
             if (_isFromSelf(fingerprint)) {
               return;
             }
-            deviceScanCallback(
-                DeviceModal(
-                    alias: alias,
-                    deviceType: DeviceType.values.find((element) => element.name == deviceType),
-                    fingerprint: fingerprint,
-                    port: port,
-                    version: version,
-                    deviceModel: deviceModel,
-                    host: host),
-                false);
+            if(fingerprint != DeviceProfileRepo.instance.did){
+              talker.debug("bonjour network isEmpty = ${network?.isNotEmpty}");
+              if(network?.isNotEmpty == true){
+                PairInfo pairInfo = decodeBase64ToMultipleIpsAndPort(network!);
+                bool addResult = await PairRouterHandler.addDevice(pairInfo);
+                talker.debug("bonjour connect to ip = $pairInfo");
+                talker.debug("bonjour connect state = $addResult");
+              }
+            }
+            callDeviceScanCallback(deviceScanCallback, alias, deviceType, fingerprint, port, version, deviceModel, host);
           } else if (event.type == BonsoirDiscoveryEventType.discoveryServiceLost) {
             talker.debug('mDns Service lost : ${event.service?.toJson()}');
           }
@@ -177,6 +182,19 @@ class BonjourImpl extends MultiCastApi {
     } catch (e, stackTrace) {
       talker.error('mDns startScan failed', e, stackTrace);
     }
+  }
+
+  void callDeviceScanCallback(DeviceScanCallback deviceScanCallback, String alias, String deviceType, String fingerprint, int port, int version, String deviceModel, String host) {
+           deviceScanCallback(
+        DeviceModal(
+            alias: alias,
+            deviceType: DeviceType.values.find((element) => element.name == deviceType),
+            fingerprint: fingerprint,
+            port: port,
+            version: version,
+            deviceModel: deviceModel,
+            host: host),
+        false);
   }
 
   bool _isFromSelf(String fingerprint) {

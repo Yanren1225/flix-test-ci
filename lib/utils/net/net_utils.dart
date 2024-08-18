@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flutter/foundation.dart';
 
@@ -23,6 +24,11 @@ class NetInterface {
 class PairInfo {
   final List<String> ips;
   final int port;
+
+  @override
+  String toString() {
+    return 'PairInfo{ips: $ips, port: $port}';
+  }
 
   PairInfo(this.ips, this.port);
 }
@@ -203,4 +209,16 @@ bool isValidPort(String port) {
 
   int value = int.tryParse(port) ?? -1;
   return value >= 0 && value <= 65535;
+}
+
+/// 将IP列表和端口封装成一个
+Future<String> getNetworkBase64() async {
+  List<NetInterface> networkInterfaces = await getAvailableNetworkInterfaces();
+  int port = await shipService.getPort();
+  final ips = networkInterfaces.take(3).map((e) => e.address).toList();
+  if (ips.isEmpty) {
+    return "";
+  } else {
+    return encodeMultipleIpsAndPortToBase64(ips, port);
+  }
 }
