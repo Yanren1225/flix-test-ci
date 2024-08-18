@@ -71,10 +71,12 @@ class MultiCastUtil {
           switch (event) {
             case RawSocketEvent.read:
               final datagram = socket.socket.receive();
+              talker.debug('===RawSocketEvent.read datagram=== $datagram');
               if (datagram == null) {
                 return;
               }
               var data = jsonDecode(utf8.decode(datagram.data));
+              talker.debug("read data = $data");
               _receiveMessage(
                   datagram.address.address, data, deviceScanCallback);
               break;
@@ -103,21 +105,26 @@ class MultiCastUtil {
       final ping = Ping.fromJson(message);
       deviceModal = ping.deviceModal;
       if (MultiCastUtil.isFromSelf(deviceModal.fingerprint)) {
+        talker.debug("_receiveMessage myself return");
         return;
       }
       needPong = true;
-    } on MapperException {
+    } catch(e,stack) {
+      talker.debug("_receiveMessage failed",stack);
       final pong = Pong.fromJson(message);
       if (MultiCastUtil.isFromSelf(pong.from.fingerprint)) {
+        talker.debug("_receiveMessage myself return");
         return;
       }
       if (pong.to.fingerprint == DeviceProfileRepo.instance.did) {
         deviceModal = pong.from;
         needPong == false;
       } else {
+        talker.debug("_receiveMessage did error not correct",stack);
         return;
       }
     }
+    talker.debug("_receiveMessage perfect right");
     // final deviceModal = DeviceModal.fromJson(message);
     deviceModal.ip = fromIp;
     deviceScanCallback(deviceModal, needPong);
