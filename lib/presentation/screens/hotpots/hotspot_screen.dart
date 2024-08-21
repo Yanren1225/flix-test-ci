@@ -262,9 +262,9 @@ class HotspotScreenState extends State<HotspotScreen>
 
   String _encodeApInfo() {
     final uri = Uri(
-        scheme: "qrcode",
-        host: "ap",
-        pathSegments: [_sPreviousAPSSID, _sPreviousPreSharedKey]);
+        scheme: "https",
+        host: "flix.center",
+        pathSegments: ['qrcode','ap',_sPreviousAPSSID, _sPreviousPreSharedKey]);
     return uri.toString();
   }
 
