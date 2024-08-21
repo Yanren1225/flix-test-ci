@@ -161,5 +161,8 @@ extension CustomTheme on ThemeData {
   }
 }
 
+CustomColors getLightColors()=> CustomColors.fromJson(_lightColors);
+CustomColors getDarkColors()=> CustomColors.fromJson(_darkColors);
+
 const _lightColors = {"text":{"primary":"#FF000000","secondary":"#993C3C43","tertiary":"#4C3C3C43","quaternary":"#2D3C3C43"},"background":{"primary":"#FFFFFFFF","secondary":"#FFF2F2F2","tertiary":"#CCF2F2F2"},"switchable":{"inactive":{"thumb":"#3F000000","track":"#19000000"},"active":{"thumb":"#FFFFFFFF","track":"#FF007AFF"}},"gradient":{"first":"#FFE8F3FF","second":"#FFFFFFFF","third":"#FFFFFFFF"},"gradientRed":{"first":"#FFFFF3F2","second":"#FFFFFFFF","third":"#FFFFFFFF"}};
 const _darkColors = {"text":{"primary":"#FFFFFFFF","secondary":"#99EBEBF5","tertiary":"#4CEBEBF5","quaternary":"#2DEBEBF5"},"background":{"primary":"#FF1C1C1E","secondary":"#FF2C2C2E","tertiary":"#FF3A3A3C"},"switchable":{"inactive":{"thumb":"#3FFFFFFF","track":"#19FFFFFF"},"active":{"thumb":"#FFFFFFFF","track":"#FF007AFF"}},"gradient":{"first":"#FF1C1C1E","second":"#FF1C1C1E","third":"#FF1C1C1E"},"gradientRed":{"first":"#FF1C1C1E","second":"#FF1C1C1E","third":"#FF1C1C1E"}};
