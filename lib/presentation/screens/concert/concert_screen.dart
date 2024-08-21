@@ -314,17 +314,20 @@ class InputAreaState extends State<InputArea> {
   }
 
   void submitText(String content) {
-    widget.onSubmit(SharedText(id: const Uuid().v4(), content: content), BubbleType.Text);
+    widget.onSubmit(
+        SharedText(id: const Uuid().v4(), content: content), BubbleType.Text);
   }
 
   void submitImage(FileMeta meta) {
-    widget.onSubmit(SharedFile(
+    widget.onSubmit(
+        SharedFile(
             id: const Uuid().v4(), state: FileState.picked, content: meta),
         BubbleType.Image);
   }
 
   void submitVideo(FileMeta meta) {
-    widget.onSubmit(SharedFile(
+    widget.onSubmit(
+        SharedFile(
             id: const Uuid().v4(), state: FileState.picked, content: meta),
         BubbleType.Video);
   }
@@ -378,7 +381,7 @@ class InputAreaState extends State<InputArea> {
           break;
         case PickedFileType.Directory:
           final directory = (element as PickableDirectory);
-          if(directory.content.isEmpty){
+          if (directory.content.isEmpty) {
             FlixToast.withContext(context).info("文件夹为空，发送取消咯");
             return;
           }
@@ -461,8 +464,12 @@ class InputAreaState extends State<InputArea> {
                                   groupId: contextMenuGroupId,
                                   consumeOutsideTaps: false,
                                   onTapOutside: (event) {
-                                    talker.debug("event = "+event.toString()+" down "+event.down.toString());
-                                    FocusScopeNode currentFocus = FocusScope.of(context);
+                                    talker.debug("event = " +
+                                        event.toString() +
+                                        " down " +
+                                        event.down.toString());
+                                    FocusScopeNode currentFocus =
+                                        FocusScope.of(context);
                                     if (!currentFocus.hasPrimaryFocus) {
                                       currentFocus.unfocus();
                                     }
@@ -473,7 +480,8 @@ class InputAreaState extends State<InputArea> {
                                       return TapRegion(
                                         groupId: contextMenuGroupId,
                                         consumeOutsideTaps: true,
-                                        child: buildAdaptiveTextSelectionToolbar(
+                                        child:
+                                            buildAdaptiveTextSelectionToolbar(
                                                 editableTextState,
                                                 concertProvider),
                                       );
@@ -572,42 +580,34 @@ class InputAreaState extends State<InputArea> {
     );
   }
 
-  AdaptiveTextSelectionToolbar buildAdaptiveTextSelectionToolbar(EditableTextState editableTextState, ConcertProvider concertProvider) {
-    return AdaptiveTextSelectionToolbar
-                                        .editable(
-                                      anchors: editableTextState
-                                          .contextMenuAnchors,
-                                      clipboardStatus:
-                                          ClipboardStatus.pasteable,
-                                      // to apply the normal behavior when click on copy (copy in clipboard close toolbar)
-                                      // use an empty function `() {}` to hide this option from the toolbar
-                                      onCopy: () =>
-                                          editableTextState.copySelection(
-                                              SelectionChangedCause.toolbar),
-                                      // to apply the normal behavior when click on cut
-                                      onCut: () =>
-                                          editableTextState.cutSelection(
-                                              SelectionChangedCause.toolbar),
-                                      onPaste: () {
-                                        // editableTextState.pasteText(SelectionChangedCause.toolbar);
-                                        _paste(concertProvider.deviceInfo);
-                                        editableTextState.hideToolbar();
-                                      },
-                                      // to apply the normal behavior when click on select all
-                                      onSelectAll: () =>
-                                          editableTextState.selectAll(
-                                              SelectionChangedCause.toolbar),
-                                      onLookUp: () =>
-                                          editableTextState.lookUpSelection(
-                                              SelectionChangedCause.toolbar),
-                                      onSearchWeb: () => editableTextState
-                                          .searchWebForSelection(
-                                              SelectionChangedCause.toolbar),
-                                      onShare: () =>
-                                          editableTextState.shareSelection(
-                                              SelectionChangedCause.toolbar),
-                                      onLiveTextInput: () {},
-                                    );
+  AdaptiveTextSelectionToolbar buildAdaptiveTextSelectionToolbar(
+      EditableTextState editableTextState, ConcertProvider concertProvider) {
+    return AdaptiveTextSelectionToolbar.editable(
+      anchors: editableTextState.contextMenuAnchors,
+      clipboardStatus: ClipboardStatus.pasteable,
+      // to apply the normal behavior when click on copy (copy in clipboard close toolbar)
+      // use an empty function `() {}` to hide this option from the toolbar
+      onCopy: () =>
+          editableTextState.copySelection(SelectionChangedCause.toolbar),
+      // to apply the normal behavior when click on cut
+      onCut: () =>
+          editableTextState.cutSelection(SelectionChangedCause.toolbar),
+      onPaste: () {
+        // editableTextState.pasteText(SelectionChangedCause.toolbar);
+        _paste(concertProvider.deviceInfo);
+        editableTextState.hideToolbar();
+      },
+      // to apply the normal behavior when click on select all
+      onSelectAll: () =>
+          editableTextState.selectAll(SelectionChangedCause.toolbar),
+      onLookUp: () =>
+          editableTextState.lookUpSelection(SelectionChangedCause.toolbar),
+      onSearchWeb: () => editableTextState
+          .searchWebForSelection(SelectionChangedCause.toolbar),
+      onShare: () =>
+          editableTextState.shareSelection(SelectionChangedCause.toolbar),
+      onLiveTextInput: () {},
+    );
   }
 
   void trySubmitText() {
@@ -636,8 +636,8 @@ class InputAreaState extends State<InputArea> {
       final imageBytes = await Pasteboard.image;
       if (imageBytes != null) {
         final cachePath = await getCachePath();
-        final imageFile =
-            await FileUtils.getTargetFile(cachePath, '${const Uuid().v4()}.jpg');
+        final imageFile = await FileUtils.getTargetFile(
+            cachePath, '${const Uuid().v4()}.jpg');
         await imageFile.writeAsBytes(imageBytes);
         showCupertinoModalPopup(
             context: context,

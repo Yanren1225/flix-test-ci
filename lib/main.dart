@@ -375,12 +375,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       scriptCode: 'Hans',
                       countryCode: 'CN'),
                 ],
-                theme: (userDarkMode ? flixDark() : flixLight()).copyWith(
-                  canvasColor: Theme.of(context).flixColors.background.primary,
-                  scaffoldBackgroundColor:
-                      Theme.of(context).flixColors.background.primary,
-                  cardColor: Theme.of(context).flixColors.background.primary,
-                ),
+                theme: (userDarkMode ? flixDark(context) : flixLight(context)),
 
                 // initialRoute: 'home',
                 builder: FToastBuilder(),
