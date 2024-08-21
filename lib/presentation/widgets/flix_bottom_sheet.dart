@@ -68,9 +68,9 @@ class FlixBottomSheet extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: backgroundGradient.isEmpty
                         ? [
-                            Theme.of(context).flixColors.background.primary,
-                            Theme.of(context).flixColors.background.primary,
-                            Theme.of(context).flixColors.background.primary
+                            Theme.of(context).flixColors.gradient.first,
+                            Theme.of(context).flixColors.gradient.second,
+                            Theme.of(context).flixColors.gradient.third
                           ]
                         : backgroundGradient,
                     stops: const [0, 0.2043, 1],
