@@ -102,7 +102,16 @@ class _QrcodeScanScreenState extends State<QrcodeScanScreen> {
     controller.scannedDataStream.listen((scanData) async {
       if (result != null) return;
       talker.info("qrcode result: ${scanData.code}");
-      if (scanData.code?.startsWith("qrcode://") == true) {
+      if (scanData.code?.startsWith("https://flix.center/qrcode/") == true) {
+        final uri = scanData.code!
+            .replaceFirst("https://flix.center/qrcode/", "qrcode://");
+        await uriRouter.navigateTo(context, uri);
+        result = Barcode(
+          uri,
+          BarcodeFormat.qrcode,
+          scanData.rawBytes,
+        );
+      } else if (scanData.code?.startsWith("qrcode://") == true) {
         result = scanData;
         await uriRouter.navigateTo(context, scanData.code!);
       }
