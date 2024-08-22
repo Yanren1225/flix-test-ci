@@ -9,7 +9,7 @@ class PairCodeProvider extends ChangeNotifier {
   int _port = 0;
 
   String? get pairCode => _pairCode;
-  String? get pairCodeUri => "qrcode://pair/${Uri.encodeComponent(_pairCode ?? "")}";
+  String? get pairCodeUri => "https://flix.center/qrcode/pair/${Uri.encodeComponent(_pairCode ?? "")}";
   List<NetInterface> get netInterfaces => _netInterfaces;
   int get port => _port;
 
