@@ -26,6 +26,7 @@ import 'package:flutter/widgets.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
+import '../../dialog/confirm_exit_app_bottomsheet.dart';
 import '../../widgets/settings/click_action_item.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -521,6 +522,13 @@ class SettingsScreenState extends State<SettingsScreen> {
                         dangerous: true,
                         onClick: () {
                           doExit();
+                          /*
+                          showCupertinoDialog(
+                              context: context,
+                              builder: (context) =>
+                                  const ConfirmExitAppBottomSheet());
+
+                           */
                         }),
                   ),
                 ],

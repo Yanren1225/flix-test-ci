@@ -1,5 +1,7 @@
 import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/void_future_callback.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -12,6 +14,11 @@ class DeleteMessageBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlixBottomSheet(
+      backgroundGradient:  [
+        Theme.of(context).flixColors.gradientRed.first,
+        Theme.of(context).flixColors.gradientRed.second,
+        Theme.of(context).flixColors.gradientRed.third
+      ],
       buttonColor: const Color.fromRGBO(255, 59, 48, 1),
       title: '删除消息记录',
       subTitle: '如果文件正在传输，删除消息会中断传输',
