@@ -6,8 +6,6 @@ import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/settings_repo.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
-import 'package:flix/network/bonjour_impl.dart';
-import 'package:flix/network/multicast_api.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
@@ -15,7 +13,6 @@ import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/net/net_utils.dart';
 
-import '../../network/http_discover.dart';
 
 class DeviceDiscover implements PingPongListener {
   DeviceDiscover._privateConstructor();
@@ -39,27 +36,10 @@ class DeviceDiscover implements PingPongListener {
       multicastGroup: defaultMulticastGroup,
       multicastPort: defaultMulticastPort,
       deviceProfileRepo: deviceProfileRepo);
-  late BonjourImpl bonjourApi =
-      BonjourImpl(deviceProfileRepo: deviceProfileRepo);
-
-  late MultiCastApi httpDiscover = HttpDiscover(
-      deviceProfileRepo: deviceProfileRepo,
-      apInterface: apInterface,
-      shipService: shipService,
-      ports: [8891, 8892, 8893]);
 
   Future<void> start(ApInterface apInterface, int port) async {
     this.apInterface = apInterface;
     this.apInterface?.listenPingPong(this);
-    SettingsRepo.instance.enableMdnsStream.stream.listen((enableMdns) async {
-      if (enableMdns) {
-        await startBonjourScanService(port);
-      } else {
-        await bonjourApi.forceStop();
-        clearDevices();
-        await startScan(port);
-      }
-    });
     startScan(port);
   }
 
@@ -76,20 +56,9 @@ class DeviceDiscover implements PingPongListener {
       _onDeviceDiscover(deviceModal);
     });
     unawaited(multiCastApi.ping(port));
-
-    if (await settingsRepo.getEnableMdnsAsync()) {
-      await startBonjourScanService(port);
-    }
-
     await pingBackupDevices();
   }
 
-  Future<void> startBonjourScanService(int port) async {
-    await bonjourApi.startScan((DeviceModal deviceModal, bool needPong) {
-      _onDeviceDiscover(deviceModal);
-    });
-    unawaited(bonjourApi.ping(port));
-  }
 
   Future<void> pingBackupDevices() async {
     final from = await deviceProfileRepo.getDeviceModal(await shipService.getPort());
@@ -103,7 +72,6 @@ class DeviceDiscover implements PingPongListener {
   Future<void> stop() async {
     multiCastApi.stop();
     // always stop bonjour service
-    bonjourApi.stop();
   }
 
   Future<void> pingIp(int srcPort, String ip, int port) async {
@@ -114,9 +82,6 @@ class DeviceDiscover implements PingPongListener {
 
   Future<void> ping(int port) async {
     multiCastApi.ping(port);
-    if (await SettingsRepo.instance.getEnableMdnsAsync()) {
-      bonjourApi.ping(port);
-    }
   }
 
   void _onDeviceDiscover(DeviceModal device) {

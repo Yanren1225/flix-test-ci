@@ -1,4 +1,5 @@
 import 'package:dart_mappable/dart_mappable.dart';
+import 'package:flix/domain/device/device_manager.dart';
 import 'package:flutter/material.dart';
 
 part 'device_modal.mapper.dart';
@@ -9,7 +10,7 @@ class DeviceModal with DeviceModalMappable {
   final String? deviceModel;
   final DeviceType? deviceType; // nullable since v2
   final String fingerprint;
-  final int? port;
+  int? port;
   final int? version;
   String ip = "";
   String host = "";
@@ -27,6 +28,10 @@ class DeviceModal with DeviceModalMappable {
 
 
   static const fromJson = DeviceModalMapper.fromJson;
+
+  bool heartBeat() {
+    return true;
+  }
 }
 
 @MappableEnum(defaultValue: DeviceType.desktop)

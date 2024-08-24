@@ -27,6 +27,7 @@ import 'package:flix/domain/uri_router.dart';
 import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/domain/window/flix_window_manager.dart';
 import 'package:flix/model/device_info.dart';
+import 'package:flix/network/discover/discover_manager.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
@@ -182,8 +183,7 @@ Future<DeviceInfoResult> _initDeviceManager() async {
   DeviceManager.instance.init();
   shipService.startShipServer().then((isSuccess) async {
     if (isSuccess) {
-      await DeviceDiscover.instance
-          .start(shipService, await shipService.getPort());
+      DiscoverManager.instance.startDiscover(await shipService.getPort());
     }
   });
   return deviceInfo;

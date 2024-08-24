@@ -148,6 +148,7 @@ class ShipServiceProxy extends ApInterface {
   Future<void> ping(String ip, int port, DeviceModal from) async {
     await _shipService.ping(ip, port, from);
   }
+
 }
 
 final shipService = ShipServiceProxy.instance;

@@ -6,6 +6,7 @@ import 'package:flix/model/database/device/pair_devices.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/iterable_extension.dart';
+import 'package:flix/utils/net/net_utils.dart';
 
 import '../../network/protocol/device_modal.dart';
 
@@ -84,6 +85,18 @@ class DeviceManager {
     deviceListChangeListeners.add(onDeviceListChanged);
   }
 
+  bool addDevice(DeviceModal device) {
+    for (var item in deviceList) {
+      if (item.fingerprint == device.fingerprint) {
+        talker.debug("add device failed already has ${item.fingerprint}");
+        return false;
+      }
+    }
+    deviceList.add(device);
+    notifyDeviceListChanged();
+    return true;
+  }
+
   void removeDeviceListChangeListener(OnDeviceListChanged onDeviceListChanged) {
     deviceListChangeListeners.remove(onDeviceListChanged);
   }
@@ -106,7 +119,12 @@ class DeviceManager {
   }
 
   String? getNetAdressByDeviceId(String id) {
-    return deviceDiscover.getNetAdressByDeviceId(id);
+    for (var device in DeviceManager.instance.deviceList) {
+      if (device.fingerprint == id) {
+        return toNetAddress(device.ip, device.port);
+      }
+    }
+    return null;
   }
 
   DeviceInfo? getDeviceInfoById(String id) {

@@ -5,6 +5,7 @@ import 'package:bonsoir/bonsoir.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/paircode/pair_router_handler.dart';
+import 'package:flix/network/discover/discover_param.dart';
 import 'package:flix/network/multicast_api.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/protocol/device_modal.dart';
@@ -14,7 +15,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mutex/mutex.dart';
 
 // Windows反复启动mdns会crash
-class BonjourImpl extends MultiCastApi {
+class BonjourHelper {
   static const SERVICE_TYPE = "_flix-trans._tcp";
 
   bool isStart = false;
@@ -26,28 +27,28 @@ class BonjourImpl extends MultiCastApi {
 
   final DeviceProfileRepo deviceProfileRepo;
 
-  BonjourImpl({required this.deviceProfileRepo});
+  BonjourHelper({required this.deviceProfileRepo});
 
   Future<BonsoirService> makesureServiceInit(int port) async {
     final deviceModal = await deviceProfileRepo.getDeviceModal(port);
 
     // TODO: always return new BonsoirService, test it
     // if (_service == null || _service?.port != port || ) {
-      _service = BonsoirService(
-          name: deviceModal.alias,
-          // Put your service name here.
-          type: SERVICE_TYPE,
-          // Put your service type here. Syntax : _ServiceType._TransportProtocolName. (see http://wiki.ros.org/zeroconf/Tutorials/Understanding%20Zeroconf%20Service%20Types).
-          port: port,
-          // Put your service port here.
-          attributes: {
-            "network": await getNetworkBase64(),
-            "alias": deviceModal.alias,
-            "deviceModal": deviceModal.deviceModel ?? '',
-            "deviceType": (deviceModal.deviceType ?? DeviceType.mobile).name,
-            "fingerprint": deviceModal.fingerprint,
-            "version": (deviceModal.version ?? -1).toString()
-          });
+    _service = BonsoirService(
+        name: deviceModal.alias,
+        // Put your service name here.
+        type: SERVICE_TYPE,
+        // Put your service type here. Syntax : _ServiceType._TransportProtocolName. (see http://wiki.ros.org/zeroconf/Tutorials/Understanding%20Zeroconf%20Service%20Types).
+        port: port,
+        // Put your service port here.
+        attributes: {
+          "network": await getNetworkBase64(),
+          "alias": deviceModal.alias,
+          "deviceModal": deviceModal.deviceModel ?? '',
+          "deviceType": (deviceModal.deviceType ?? DeviceType.mobile).name,
+          "fingerprint": deviceModal.fingerprint,
+          "version": (deviceModal.version ?? -1).toString()
+        });
     // }
 
     return _service!;
@@ -79,10 +80,7 @@ class BonjourImpl extends MultiCastApi {
         talker.error('mDns stop failed', e, stackTrace);
       }
     });
-
   }
-
-
 
   @override
   Future<void> ping(int port) async {
@@ -106,11 +104,9 @@ class BonjourImpl extends MultiCastApi {
     }
   }
 
-  @override
   Future<void> pong(int port, DeviceModal to) async {}
 
-  @override
-  Future<void> startScan(DeviceScanCallback deviceScanCallback) async {
+  Future<void> startScan(DiscoverParam param) async {
     try {
       await m.protect(() async {
         if (isStart) {
@@ -146,30 +142,15 @@ class BonjourImpl extends MultiCastApi {
             final deviceModel = serviceAttributes['deviceModal'];
             final fingerprint = serviceAttributes['fingerprint'];
             final versionString = serviceAttributes['version'];
-            final int version;
-            if (versionString == null) {
-              version = 0;
-            } else {
-              version = int.parse(versionString);
-            }
-            if (alias == null || deviceType == null || deviceModel == null || fingerprint == null) {
-              talker.error('mDns Service resolved error: $serviceAttributes');
-              return;
-            }
-            if (_isFromSelf(fingerprint)) {
-              return;
-            }
-            if(fingerprint != DeviceProfileRepo.instance.did){
-              talker.debug("bonjour network isEmpty = ${network?.isNotEmpty}");
-              if(network?.isNotEmpty == true){
-                PairInfo pairInfo = decodeBase64ToMultipleIpsAndPort(network!);
-                bool addResult = await PairRouterHandler.addDevice(pairInfo);
-                talker.debug("bonjour connect to ip = $pairInfo");
-                talker.debug("bonjour connect state = $addResult");
+
+            if (network?.isNotEmpty == true) {
+              PairInfo pairInfo = decodeBase64ToMultipleIpsAndPort(network!);
+              for (var ip in pairInfo.ips) {
+                param.callback?.call(ip, "bonjour");
               }
             }
-            callDeviceScanCallback(deviceScanCallback, alias, deviceType, fingerprint, port, version, deviceModel, host);
-          } else if (event.type == BonsoirDiscoveryEventType.discoveryServiceLost) {
+          } else if (event.type ==
+              BonsoirDiscoveryEventType.discoveryServiceLost) {
             talker.debug('mDns Service lost : ${event.service?.toJson()}');
           }
         }, onError: (e, s) {
@@ -177,18 +158,26 @@ class BonjourImpl extends MultiCastApi {
         });
 
         await discovery?.start();
-
       });
     } catch (e, stackTrace) {
       talker.error('mDns startScan failed', e, stackTrace);
     }
   }
 
-  void callDeviceScanCallback(DeviceScanCallback deviceScanCallback, String alias, String deviceType, String fingerprint, int port, int version, String deviceModel, String host) {
-           deviceScanCallback(
+  void callDeviceScanCallback(
+      DeviceScanCallback deviceScanCallback,
+      String alias,
+      String deviceType,
+      String fingerprint,
+      int port,
+      int version,
+      String deviceModel,
+      String host) {
+    deviceScanCallback(
         DeviceModal(
             alias: alias,
-            deviceType: DeviceType.values.find((element) => element.name == deviceType),
+            deviceType:
+                DeviceType.values.find((element) => element.name == deviceType),
             fingerprint: fingerprint,
             port: port,
             version: version,
