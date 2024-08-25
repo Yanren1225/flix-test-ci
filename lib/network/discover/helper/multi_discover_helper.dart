@@ -53,7 +53,7 @@ class MultiDiscoverHelper {
     String group = param.group;
     int port = param.port;
     if (Platform.isIOS) {
-      await startScanOnIOS(group, port, param.callback!);
+      await startScanOnIOS(group, port, param.onData!);
     } else {
       await MultiDiscoverHelper.releaseMulticastLock();
       await MultiDiscoverHelper.aquireMulticastLock();
@@ -70,7 +70,7 @@ class MultiDiscoverHelper {
               final datagram = socket.socket.receive();
 
               if (datagram != null) {
-                param.callback?.call(datagram.address.address, "multi");
+                param.onData?.call(datagram.address.address, "multi");
               }
               break;
             case RawSocketEvent.write:

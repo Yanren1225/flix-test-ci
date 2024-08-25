@@ -146,7 +146,7 @@ class BonjourHelper {
             if (network?.isNotEmpty == true) {
               PairInfo pairInfo = decodeBase64ToMultipleIpsAndPort(network!);
               for (var ip in pairInfo.ips) {
-                param.callback?.call(ip, "bonjour");
+                param.onData?.call(ip, "bonjour");
               }
             }
           } else if (event.type ==

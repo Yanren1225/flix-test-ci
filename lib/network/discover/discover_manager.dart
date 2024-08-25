@@ -5,10 +5,16 @@ import 'package:flix/network/discover/discover_api.dart';
 import 'package:flix/network/discover/discover_param.dart';
 import 'package:flix/network/discover/impl/port_discover_impl.dart';
 import 'package:flix/network/discover/network_connect_manager.dart';
-typedef DeviceDiscoverCallback = void Function(
-    String ip, String from);
+import 'package:flix/network/nearby_service_info.dart';
+
+typedef DeviceDiscoverCallback = void Function(String ip, String from);
+typedef DeviceDiscoverFinishCallback = void Function(String from);
+typedef DeviceDiscoverErrorCallback = void Function(
+    String from, int errorCode, String errorMsg);
 
 class DiscoverManager {
+  static const String tag = "DiscoverManager";
+
   DiscoverManager._privateConstructor();
 
   static final DiscoverManager _instance =
@@ -18,28 +24,54 @@ class DiscoverManager {
     return _instance;
   }
 
+  final List<DeviceDiscoverFinishCallback> _onFinishListener = [];
+
+  void addOnFinishListener(DeviceDiscoverFinishCallback onFinish) {
+    _onFinishListener.add(onFinish);
+  }
+
+  void removeOnFinishListener(DeviceDiscoverFinishCallback onFinish) {
+    _onFinishListener.remove(onFinish);
+  }
+
   List<DiscoverApi> discovers = [
     PortDiscoverImpl(),
     // BonjourDiscoverImpl()
     // MultiDiscoverImpl(),
   ];
 
-  void stop(){
-    for(var discover in discovers){
+  void stop() {
+    for (var discover in discovers) {
       discover.stop();
     }
   }
 
   DeviceDiscoverCallback deviceDiscoverCallback = (ip, from) {
-    talker.debug('discover from $from device is $ip');
+    talker.debug(tag, 'discover from $from device is $ip');
     NetworkConnectManager.instance.connect(from, ip);
+  };
+
+  DeviceDiscoverFinishCallback discoverFinishCallback = (from) {
+    talker.debug(tag, "discoverFinishCallback");
+    for (var listener in DiscoverManager.instance._onFinishListener) {
+      listener.call(from);
+    }
+  };
+
+  DeviceDiscoverErrorCallback discoverErrorCallback = (from, errorCode, errorMsg) {
+    talker.debug(tag,
+        "discoverErrorCallback from = $from  errorCode = $errorCode  errorMsg = $errorMsg");
   };
 
   void startDiscover(int port) {
     for (var discoverItem in discovers) {
-      var discoverParam =
-          DiscoverParam.name(deviceDiscoverCallback, discoverItem.getFrom());
-      discoverParam.port = port;
+      var discoverParam = DiscoverParam(
+          defaultMulticastGroup,
+          port,
+          deviceDiscoverCallback,
+          discoverFinishCallback,
+          discoverErrorCallback,
+          discoverItem.getFrom());
       discoverItem.startScan(discoverParam);
     }
   }
