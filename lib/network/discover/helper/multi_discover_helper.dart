@@ -5,6 +5,9 @@ import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/network/discover/discover_manager.dart';
 import 'package:flix/network/discover/discover_param.dart';
+import 'package:flix/network/protocol/device_modal.dart';
+import 'package:flix/network/protocol/ping_pong.dart';
+import 'package:flix/utils/sleep.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -68,7 +71,12 @@ class MultiDiscoverHelper {
           switch (event) {
             case RawSocketEvent.read:
               final datagram = socket.socket.receive();
-
+              talker.debug('===RawSocketEvent.read datagram=== $datagram');
+              if (datagram == null) {
+                return;
+              }
+              var data = jsonDecode(utf8.decode(datagram.data));
+              talker.debug("===RawSocketEvent.read data = $data");
               if (datagram != null) {
                 param.onData?.call(datagram.address.address, "multi");
               }
@@ -175,6 +183,34 @@ class MultiDiscoverHelper {
   static Future<void> pongOnIOS(String content) async {
     return await MULTICAST_IOS_CHANNEL.invokeMethod('pong', content);
   }
+
+
+
+  /// Sends an announcement which triggers a response on every LocalSend member of the network.
+  static Future<void> ping(String group, int port,
+      DeviceModal deviceModal) async {
+    // final sockets = await getSockets(defaultMulticastGroup);
+    final message = jsonEncode(Ping(deviceModal).toJson());
+    if (Platform.isIOS) {
+      pingOnIOS(message);
+    } else {
+      for (final wait in [100, 500, 2000]) {
+        await sleepAsync(wait);
+        for (final socket in _sockets) {
+          try {
+            socket.socket.send(utf8.encode(message),
+                InternetAddress(group), port);
+            // socket.socket.close();
+          } catch (e, stackTrace) {
+            talker.error('ping failed', e, stackTrace);
+          }
+        }
+      }
+    }
+  }
+
+
+
 }
 
 class SocketResult {

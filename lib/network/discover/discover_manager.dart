@@ -7,6 +7,8 @@ import 'package:flix/network/discover/impl/port_discover_impl.dart';
 import 'package:flix/network/discover/network_connect_manager.dart';
 import 'package:flix/network/nearby_service_info.dart';
 
+import 'impl/multi_discover_impl.dart';
+
 typedef DeviceDiscoverCallback = void Function(String ip, String from);
 typedef DeviceDiscoverFinishCallback = void Function(String from);
 typedef DeviceDiscoverErrorCallback = void Function(
@@ -33,11 +35,11 @@ class DiscoverManager {
   void removeOnFinishListener(DeviceDiscoverFinishCallback onFinish) {
     _onFinishListener.remove(onFinish);
   }
-
+  // PortDiscoverImpl(),
+  // BonjourDiscoverImpl(),
   List<DiscoverApi> discovers = [
-    PortDiscoverImpl(),
-    // BonjourDiscoverImpl()
-    // MultiDiscoverImpl(),
+    MultiDiscoverImpl(),
+    PortDiscoverImpl()
   ];
 
   void stop() {

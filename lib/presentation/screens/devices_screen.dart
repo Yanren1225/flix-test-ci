@@ -46,7 +46,7 @@ class _DeviceScreenState extends State<DeviceScreen>
   final _badges = BadgeService.instance.badges;
   List<DeviceInfo> history = List.empty(growable: true);
   List<DeviceInfo> devices = List.empty(growable: true);
-  final _refreshController = EasyRefreshController(controlFinishRefresh: true,controlFinishLoad: true);
+  final _refreshController = EasyRefreshController();
 
   @override
   Widget build(BuildContext context) {
@@ -152,14 +152,12 @@ class _DeviceScreenState extends State<DeviceScreen>
                     controller: _refreshController,
                     callRefreshOverOffset: 1,
                     onRefresh: () async {
-                      _refreshController.callLoad(duration: const Duration(seconds: 20));
                       deviceProvider.clearDevices();
                       deviceProvider.startScan();
                       DiscoverManager.instance.addOnFinishListener((from){
                         talker.debug("addOnFinishListener refresh from = $from");
-                         _refreshController.finishRefresh(IndicatorResult.success,true);
                       });
-                      return IndicatorMode.processing;
+                      return IndicatorResult.success;
                     },
                     header: MaterialHeader(
                         color: FlixColor.blue,
