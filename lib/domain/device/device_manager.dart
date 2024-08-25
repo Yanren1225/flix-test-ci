@@ -86,12 +86,6 @@ class DeviceManager {
   }
 
   bool addDevice(DeviceModal device) {
-    for (var item in deviceList) {
-      if (item.fingerprint == device.fingerprint) {
-        talker.debug("add device failed already has ${item.fingerprint}");
-        return false;
-      }
-    }
     deviceList.add(device);
     notifyDeviceListChanged();
     return true;

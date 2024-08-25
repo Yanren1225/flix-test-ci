@@ -21,16 +21,12 @@ class PingV2Processor {
   static Future<DeviceModal?> pingV2(
       String ip, int port, DeviceModal from) async {
     try {
-      var ipList = await getAvailableNetworkInterfaces();
-      if (ipList.isNotEmpty) {
-        from.ip = ipList[0].address;
-      }
       var uri = Uri.parse(await ShipService.ping_v2_Url(ip, port));
       var response = await http.post(
         uri,
         body: Ping(from).toJson(),
         headers: {"Content-type": "application/json; charset=UTF-8"},
-      );
+      ).timeout(const Duration(milliseconds: 200));
       if (response.statusCode == 200) {
         talker.debug('ping success: response: ${response.body}');
         DeviceModal deviceModal =
