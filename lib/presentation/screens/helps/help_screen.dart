@@ -105,7 +105,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                         builder: (BuildContext context, String value,
                             Widget? child) {
                           return ClickableItem(
-                              label: '❤️捐赠支持我们',
+                              label: '❤️ 捐赠支持我们',
                               bottomRadius: false,
                               onClick: widget.goDonateCallback);
                         },
