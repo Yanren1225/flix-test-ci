@@ -1,4 +1,6 @@
+import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
@@ -39,18 +41,16 @@ class FlixShareBottomSheet extends StatelessWidget {
                   Padding(
                       padding: const EdgeInsets.only(top: 16),
                       child: GestureDetector(
-                          child: Text("官网(点击复制):  flix.center",
-                              style: TextStyle(
-                                      color: Theme.of(context)
-                                          .flixColors
-                                          .text
-                                          .primary,
+                          child: Text("官网（点击复制）:  flix.center",
+                              style: const TextStyle(
+                                      color: FlixColor.blue,
                                       fontSize: 16,
                                       fontWeight: FontWeight.normal)
                                   .fix()),
                           onTap: () {
                             Clipboard.setData(const ClipboardData(
                                 text: "https://flix.center"));
+                            flixToast.info("已复制到剪贴板");
                           })),
                 ],
               ),
