@@ -80,4 +80,11 @@ class AndroidUtils {
     }
     return false;
   }
+
+  static Future<bool> shareFile(String path) async{
+    if (Platform.isAndroid) {
+      return await FILE_CHANNEL.invokeMethod("shareFile", {"path": path});
+    }
+    return false;
+  }
 }

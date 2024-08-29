@@ -9,9 +9,7 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.DocumentsContract
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.crazecoder.openfile.FileProvider
-
 import com.hippo.unifile.UniFile
 import com.ifreedomer.flix.android_filepicker.AndroidFilePickerPlugin
 import io.flutter.embedding.android.FlutterActivity
@@ -138,6 +136,24 @@ class MainActivity : FlutterActivity() {
             FILE_CHANNEL
         ).setMethodCallHandler { call, result ->
             when (call.method) {
+                "shareFile" -> {
+                    val path = call.argument<String>("path")
+                    Log.i(TAG, "share file = $path")
+                    if(path.isNullOrEmpty()){
+                        Log.i(TAG,"shareFile isNullOrEmpty")
+                        return@setMethodCallHandler
+                    }
+                    val pdfUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        FileProvider.getUriForFile(this@MainActivity, "${this.packageName}.fileProvider", File(path))
+                    } else {
+                        Uri.fromFile(File(path))
+                    }
+                    val share = Intent()
+                    share.setAction(Intent.ACTION_SEND)
+                    share.setType("application/pdf")
+                    share.putExtra(Intent.EXTRA_STREAM, pdfUri)
+                    startActivity(Intent.createChooser(share, "Share file"))
+                }
                 "openFile" -> {
                     val path = call.argument<String>("path")
                     Log.i(TAG, "openFile path = $path")
