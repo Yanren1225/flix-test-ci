@@ -1,9 +1,11 @@
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/badge_service.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/wifi_or_ap_name.dart';
+import 'package:flix/network/discover/discover_manager.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
@@ -152,7 +154,9 @@ class _DeviceScreenState extends State<DeviceScreen>
                     onRefresh: () async {
                       deviceProvider.clearDevices();
                       deviceProvider.startScan();
-                      await Future.delayed(const Duration(seconds: 2));
+                      DiscoverManager.instance.addOnFinishListener((from){
+                        talker.debug("addOnFinishListener refresh from = $from");
+                      });
                       return IndicatorResult.success;
                     },
                     header: MaterialHeader(

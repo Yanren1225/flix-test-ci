@@ -2,10 +2,10 @@ import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/model/database/device/pair_devices.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/iterable_extension.dart';
+import 'package:flix/utils/net/net_utils.dart';
 
 import '../../network/protocol/device_modal.dart';
 
@@ -84,6 +84,20 @@ class DeviceManager {
     deviceListChangeListeners.add(onDeviceListChanged);
   }
 
+  bool addDevice(DeviceModal device) {
+    if (device.fingerprint == DeviceProfileRepo.instance.did) {
+      talker.debug("addDevice failed is myself");
+      return false;
+    }
+    var containDevice = findDevice(device);
+    if(containDevice != null){
+      deviceList.remove(containDevice);
+    }
+    deviceList.add(device);
+    notifyDeviceListChanged();
+    return true;
+  }
+
   void removeDeviceListChangeListener(OnDeviceListChanged onDeviceListChanged) {
     deviceListChangeListeners.remove(onDeviceListChanged);
   }
@@ -97,16 +111,23 @@ class DeviceManager {
     historyChangeListeners.remove(onDeviceListChanged);
   }
 
-  void addPairDeviceChangeListener(OnPairDeviceListChanged onPairDeviceListChanged){
+  void addPairDeviceChangeListener(
+      OnPairDeviceListChanged onPairDeviceListChanged) {
     pairDeviceChangeListeners.add(onPairDeviceListChanged);
   }
 
-  void removePairDeviceChangeListener(OnPairDeviceListChanged onPairDeviceListChanged){
+  void removePairDeviceChangeListener(
+      OnPairDeviceListChanged onPairDeviceListChanged) {
     pairDeviceChangeListeners.remove(onPairDeviceListChanged);
   }
 
   String? getNetAdressByDeviceId(String id) {
-    return deviceDiscover.getNetAdressByDeviceId(id);
+    for (var device in DeviceManager.instance.deviceList) {
+      if (device.fingerprint == id) {
+        return toNetAddress(device.ip, device.port);
+      }
+    }
+    return null;
   }
 
   DeviceInfo? getDeviceInfoById(String id) {
@@ -164,7 +185,16 @@ class DeviceManager {
   }
 
   Future<void> deletePairDevice(String deviceId) async {
-      return await appDatabase.pairDevicesDao.deletePairDevice(deviceId);
+    return await appDatabase.pairDevicesDao.deletePairDevice(deviceId);
+  }
+
+  DeviceModal? findDevice(DeviceModal deviceModal) {
+    for (var element in deviceList) {
+      if (element.fingerprint == deviceModal.fingerprint) {
+        return element;
+      }
+    }
+    return null;
   }
 }
 

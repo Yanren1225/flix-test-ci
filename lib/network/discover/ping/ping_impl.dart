@@ -1,0 +1,15 @@
+import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/ship_server/ping_v2_processor.dart';
+import 'package:flix/domain/ship_server/ship_service_proxy.dart';
+import 'package:flix/network/discover/ping/ping_api.dart';
+import 'package:flix/network/nearby_service_info.dart';
+import 'package:flix/network/protocol/device_modal.dart';
+
+class PingImpl extends PingApi {
+  @override
+  Future<DeviceModal?> ping(String ip,int port) async {
+    var deviceModal =
+        await DeviceProfileRepo.instance.getDeviceModal(port);
+    return PingV2Processor.pingV2(ip, port, deviceModal);
+  }
+}

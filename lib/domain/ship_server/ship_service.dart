@@ -14,6 +14,7 @@ import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/physical_lock.dart';
 import 'package:flix/domain/settings/settings_repo.dart';
+import 'package:flix/domain/ship_server/ping_v2_processor.dart';
 import 'package:flix/model/intent/trans_intent.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
@@ -55,6 +56,11 @@ class ShipService implements ApInterface {
 
   Future<String> _pingUrl(String ip, int port) async {
     var pongUrl = 'http://$ip:$port/ping';
+    return pongUrl;
+  }
+
+  static Future<String> ping_v2_Url(String ip, int port) async {
+    var pongUrl = 'http://$ip:$port/ping_v2';
     return pongUrl;
   }
 
@@ -401,6 +407,7 @@ class ShipService implements ApInterface {
     app.post('/intent', _receiveIntent);
     app.post('/file', _receiveFile);
     app.post('/ping', _receivePing);
+    app.post('/ping_v2', PingV2Processor.receivePingV2);
     app.post('/pong', _receivePong);
     app.post('/heartbeat', _heartbeat);
 
@@ -997,6 +1004,8 @@ class ShipService implements ApInterface {
       talker.error('delete cached file failed', e, stackTrace);
     }
   }
+
+
 
   Future<Response> _receivePing(Request request) async {
     try {
