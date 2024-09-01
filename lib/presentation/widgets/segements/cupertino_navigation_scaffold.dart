@@ -7,9 +7,11 @@ import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 class CupertinoNavigationScaffold extends StatefulWidget {
+  final bool showBack;
   final String title;
   final Widget child;
   final bool isSliverChild;
@@ -21,8 +23,9 @@ class CupertinoNavigationScaffold extends StatefulWidget {
       required this.title,
       required this.child,
       required this.isSliverChild,
-      required this.padding,
-      required this.enableRefresh});
+      this.padding = 10,
+      this.enableRefresh = false,
+      this.showBack = false});
 
   @override
   State<StatefulWidget> createState() {
@@ -32,6 +35,8 @@ class CupertinoNavigationScaffold extends StatefulWidget {
 
 class CupertinoNavigationScalffoldState
     extends State<CupertinoNavigationScaffold> {
+  bool get showBack => widget.showBack;
+
   String get title => widget.title;
 
   Widget get child => widget.child;
@@ -45,59 +50,52 @@ class CupertinoNavigationScalffoldState
   Widget build(BuildContext context) {
     final deviceProvider = MultiCastClientProvider.of(context, listen: true);
     final slivers = [
-      SliverPinnedHeader(
-          child: DecoratedBox(
-        decoration: FlixDecoration(
-            color: Theme.of(context).flixColors.background.secondary),
-        child: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: ValueListenableBuilder<bool>(
-                valueListenable: isFolded,
-                builder: (context, value, child) {
-                  return AnimatedOpacity(
-                    opacity: value ? 1 : 0,
-                    duration: const Duration(milliseconds: 200),
-                    child: child,
-                  );
-                },
-                child: Text(title,
-                    style: TextStyle(
-                            color: Theme.of(context).flixColors.text.primary,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500)
-                        .fix()),
-              ),
-            ),
-          ),
-        ),
-      )),
-
-      CustomSliverHeader(
-        lagerTitle: Padding(
-          padding: const EdgeInsets.only(top: 32, left: 20),
-          child: SuperTitle(title: title),
-        ),
-        height: 40 + MediaQuery.of(context).textScaler.scale(36),
-        // ignore: no_leading_underscores_for_local_identifiers
-        onFolded: (_isFolded) {
-          if (_isFolded != isFolded.value) {
-            isFolded.value = _isFolded;
-          }
-        },
-      ),
+      CupertinoSliverNavigationBar(
+          transitionBetweenRoutes: false,
+          automaticallyImplyLeading: false,
+          leading: showBack
+              ? Material(
+                  color: Theme.of(context).flixColors.background.secondary,
+                  child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: SizedBox(
+                          height: 56,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: SvgPicture.asset('assets/images/ic_back.svg',
+                                width: 24,
+                                height: 24,
+                                colorFilter: ColorFilter.mode(
+                                    Theme.of(context).flixColors.text.primary,
+                                    BlendMode.srcIn)),
+                          ))),
+                )
+              : null,
+          largeTitle: SuperTitle(title: title),
+          middle: Text(title,
+              style: TextStyle(
+                      color: Theme.of(context).flixColors.text.primary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500)
+                  .fix()),
+          alwaysShowMiddle: false,
+          border: null,
+          backgroundColor: Theme.of(context).flixColors.background.secondary),
       SliverPadding(
           padding: EdgeInsets.only(top: padding),
           sliver: isSliverChild
               ? child
               : SliverFillRemaining(
-                  child: child,
+                  child: Material(
+                    color: Theme.of(context).flixColors.background.secondary,
+                    child: child,
+                  ),
                 )),
       // SliverFillRemaining()
     ];
     return CupertinoPageScaffold(
-        // backgroundColor: Colors.transparent,
         backgroundColor: Theme.of(context).flixColors.background.secondary,
         child: widget.enableRefresh
             ? EasyRefresh(
