@@ -184,7 +184,7 @@ Future<DeviceInfoResult> _initDeviceManager() async {
   shipService.startShipServer().then((isSuccess) async {
     if (isSuccess) {
       final port = await shipService.getPort();
-      DeviceDiscover.instance.start(shipService, port);
+      // DeviceDiscover.instance.start(shipService, port);
       DiscoverManager.instance.startDiscover(port);
     }
   });

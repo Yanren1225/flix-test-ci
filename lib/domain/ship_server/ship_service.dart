@@ -8,7 +8,6 @@ import 'package:dio/dio.dart' as dio;
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/clipboard/flix_clipboard_manager.dart';
 import 'package:flix/domain/constants.dart';
-import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -19,9 +18,9 @@ import 'package:flix/domain/ship_server/ship_url_helper.dart';
 import 'package:flix/model/intent/trans_intent.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
+import 'package:flix/network/discover/network_connect_manager.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
-import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/utils/compat/compat_util.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
@@ -43,9 +42,8 @@ import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import 'processor/break_point_processor.dart';
 import 'processor/pair_device_processor.dart';
-import 'processor/ping_pong_processor.dart';
 
-class ShipService implements ApInterface {
+class ShipService{
   final String sendTag = "SendFile";
   final String did;
   final _bubblePool = BubblePool.instance;
@@ -55,28 +53,10 @@ class ShipService implements ApInterface {
   int port = defaultPort;
   var breakPointProcessor = BreakPointProcessor();
   var pairDeviceProcessor = PairDeviceProcessor();
-  var pingPongProcessor = PingPongProcessor();
   ShipService({required this.did}) {
     talker.debug("ShipService", "did = $did");
   }
 
-  Future<String> _getSendBubbleUrl(
-          PrimitiveBubble<dynamic> primitiveBubble) async {
-    var bubbleUrl = 'http://${getAddressByDeviceId(primitiveBubble.to)}/bubble';
-    talker.debug("url==>","_getSendBubbleUrl = $bubbleUrl");
-   return bubbleUrl;
-  }
-
-
-  Future<String> _getSendFileUrl(PrimitiveFileBubble fileBubble) async{
-    var url = 'http://${getAddressByDeviceId(fileBubble.to)}/file';
-    talker.debug("url==>","_getSendFileUrl = $url");
-    return url;
-  }
-
-  String _getBaseUrl(String deviceId) {
-    return 'http://${getAddressByDeviceId(deviceId)}';
-  }
 
   Future<bool> startShipService() async {
     try {
@@ -127,12 +107,7 @@ class ShipService implements ApInterface {
   }
   
   Future<void> ping(String ip, int port, DeviceModal from) async {
-    pingPongProcessor.ping(ip, port, from);
-  }
-
-  @override
-  Future<void> pong(DeviceModal from, DeviceModal to) async {
-    pingPongProcessor.pong(from, to);
+    NetworkConnectManager.instance.connect("ping", ip);
   }
 
   Future<void> send(PrimitiveBubble primitiveBubble) async {
@@ -297,9 +272,7 @@ class ShipService implements ApInterface {
     app.post('/bubble', _receiveBubble);
     app.post('/intent', _receiveIntent);
     app.post('/file', _receiveFile);
-    app.post('/ping', pingPongProcessor.receivePing);
     app.post('/ping_v2', PingV2Processor.receivePingV2);
-    app.post('/pong', pingPongProcessor.receivePong);
     app.post('/heartbeat', _heartbeat);
 
     // 尝试三次启动
@@ -336,7 +309,7 @@ class ShipService implements ApInterface {
   Future<void> _sendBasicBubble(PrimitiveBubble primitiveBubble) async {
     try {
       await _checkCancel(primitiveBubble.id);
-      var uri = Uri.parse(await _getSendBubbleUrl(primitiveBubble));
+      var uri = Uri.parse(await ShipUrlHelper.getSendBubbleUrl(primitiveBubble));
 
       final body = jsonEncode(
           primitiveBubble.toJson(pathSaveType: FilePathSaveType.relative));
@@ -511,7 +484,7 @@ class ShipService implements ApInterface {
           }).progress(fileBubble, receiveBytes);
         }
 
-        final response = await dio.Dio(dio.BaseOptions(baseUrl: _getBaseUrl(fileBubble.to),contentType: "application/octet-stream"))
+        final response = await dio.Dio(dio.BaseOptions(baseUrl: ShipUrlHelper.getBaseUrl(fileBubble.to),contentType: "application/octet-stream"))
             .post(
           '/file',
           queryParameters: parameters,
@@ -951,10 +924,6 @@ class ShipService implements ApInterface {
     PhysicalLock.releasePhysicalLock();
   }
 
-  @override
-  void listenPingPong(PingPongListener listener) {
-    pingPongProcessor.listenPingPong(listener);
-  }
 }
 
 Future<PrimitiveBubble> updateBubbleShareState(

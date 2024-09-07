@@ -6,6 +6,7 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/settings_repo.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
+import 'package:flix/domain/ship_server/ship_url_helper.dart';
 import 'package:flix/model/intent/trans_intent.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/utils/file/file_utils.dart';
@@ -21,7 +22,7 @@ class BreakPointProcessor {
       await updateBubbleShareState(
           BubblePool.instance, bubble.id, FileState.inTransit,
           waitingForAccept: true);
-      var uri = Uri.parse(await shipService.intentUrl(bubble.to));
+      var uri = Uri.parse(await ShipUrlHelper.intentUrl(bubble.to));
 
       var response = await http.post(
         uri,
@@ -50,7 +51,7 @@ class BreakPointProcessor {
       await updateBubbleShareState(
           BubblePool.instance, bubbleId, FileState.inTransit,
           waitingForAccept: false);
-      var uri = Uri.parse(await shipService.intentUrl(from));
+      var uri = Uri.parse(await ShipUrlHelper.intentUrl(from));
       var bubble = (await BubblePool.instance.findLastById(bubbleId));
       var receiveBytesMap = HashMap<String, Object>();
       if (bubble is PrimitiveFileBubble) {

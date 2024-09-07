@@ -5,6 +5,7 @@ import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
+import 'package:flix/domain/ship_server/ship_url_helper.dart';
 import 'package:flix/model/intent/trans_intent.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,7 +15,7 @@ class PairDeviceProcessor {
       talker.debug("pairDevice askPairDevice net",
           "deviceId = $deviceId askPairDevice = $code");
       // 更新接收方状态为接收中
-      var uri = Uri.parse(await shipService.intentUrl(deviceId));
+      var uri = Uri.parse(await ShipUrlHelper.intentUrl(deviceId));
       var response = await http.post(
         uri,
         body: TransIntent(
@@ -46,7 +47,7 @@ class PairDeviceProcessor {
       talker.debug("pairDevice deletePairDevice net",
           "deleteDeviceId = $deleteDeviceId");
       // 更新接收方状态为接收中
-      var uri = Uri.parse(await shipService.intentUrl(deleteDeviceId));
+      var uri = Uri.parse(await ShipUrlHelper.intentUrl(deleteDeviceId));
       var response = await http.post(
         uri,
         body: TransIntent(
@@ -74,7 +75,7 @@ class PairDeviceProcessor {
     try {
       talker.debug("pairDevice",
           "_replyPairDevice from = $from verifyDevice = $verifyDevice verifyCode = $verifyCode");
-      var uri = Uri.parse(await shipService.intentUrl(from));
+      var uri = Uri.parse(await ShipUrlHelper.intentUrl(from));
       var response = await http.post(
         uri,
         body: TransIntent(
@@ -103,7 +104,7 @@ class PairDeviceProcessor {
     try {
       talker.debug("pairDevice",
           "_replyPairDevice from = $toDeviceId verifyDevice = $deleteDeviceId");
-      var uri = Uri.parse(await shipService.intentUrl(toDeviceId));
+      var uri = Uri.parse(await ShipUrlHelper.intentUrl(toDeviceId));
       var response = await http.post(
         uri,
         body: TransIntent(
@@ -129,7 +130,7 @@ class PairDeviceProcessor {
   Future<void> sendClipboard(String to, String lastText) async {
     try {
       talker.debug("pairDevice", "sendClipboard to = $to");
-      var uri = Uri.parse(await shipService.intentUrl(to));
+      var uri = Uri.parse(await ShipUrlHelper.intentUrl(to));
       var response = await http.post(
         uri,
         body: TransIntent(

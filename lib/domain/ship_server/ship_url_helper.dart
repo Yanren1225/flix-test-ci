@@ -1,5 +1,6 @@
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/model/ship/primitive_bubble.dart';
 
 class ShipUrlHelper {
   static Future<String> pingUrl(String ip, int port) async {
@@ -24,7 +25,25 @@ class ShipUrlHelper {
     return intentUrl;
   }
 
+  static Future<String> getSendBubbleUrl(
+      PrimitiveBubble<dynamic> primitiveBubble) async {
+    var bubbleUrl = 'http://${getAddressByDeviceId(primitiveBubble.to)}/bubble';
+    talker.debug("url==>","_getSendBubbleUrl = $bubbleUrl");
+    return bubbleUrl;
+  }
+
+
+  Future<String> getSendFileUrl(PrimitiveFileBubble fileBubble) async{
+    var url = 'http://${getAddressByDeviceId(fileBubble.to)}/file';
+    talker.debug("url==>","_getSendFileUrl = $url");
+    return url;
+  }
+
   static String getAddressByDeviceId(String deviceId) {
     return '${DeviceManager.instance.getNetAdressByDeviceId(deviceId)}';
+  }
+
+  static String getBaseUrl(String deviceId) {
+    return 'http://${getAddressByDeviceId(deviceId)}';
   }
 }

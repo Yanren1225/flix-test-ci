@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flix/domain/bubble_pool.dart';
-import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -15,7 +14,7 @@ import 'package:flix/utils/bubble_convert.dart';
 
 import '../../utils/compat/compat_util.dart';
 
-class ShipServiceProxy extends ApInterface {
+class ShipServiceProxy{
   final syncTasks = <String, Completer>{};
   final _serverReadyTask = Completer<bool>();
   final ShipService _shipService =
@@ -36,17 +35,6 @@ class ShipServiceProxy extends ApInterface {
     var isComplete = await _shipService.startShipService();
     _serverReadyTask.complete(isComplete);
     return isComplete;
-  }
-
-  @override
-  void listenPingPong(PingPongListener listener) {
-    _shipService.listenPingPong(listener);
-  }
-
-  @override
-  Future<void> pong(DeviceModal from, DeviceModal to) async {
-    await _awaitServerReady();
-    _shipService.pong(from, to);
   }
 
   Future<void> send(UIBubble uiBubble) async {
@@ -143,16 +131,6 @@ class ShipServiceProxy extends ApInterface {
       }
     }
   }
-
-  @override
-  Future<void> ping(String ip, int port, DeviceModal from) async {
-    await _shipService.ping(ip, port, from);
-  }
-
-  Future<String> intentUrl(String deviceId) async {
-    return shipService.intentUrl(deviceId);
-  }
-
 
 
   String getDid() {
