@@ -149,6 +149,15 @@ class ShipServiceProxy extends ApInterface {
     await _shipService.ping(ip, port, from);
   }
 
+  Future<String> intentUrl(String deviceId) async {
+    return shipService.intentUrl(deviceId);
+  }
+
+
+
+  String getDid() {
+    return shipService.getDid();
+  }
 }
 
 final shipService = ShipServiceProxy.instance;
