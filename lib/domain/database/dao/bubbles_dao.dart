@@ -186,6 +186,17 @@ class BubblesDao extends DatabaseAccessor<AppDatabase> with _$BubblesDaoMixin {
     });
   }
 
+  Stream<Map<String, int>> watchBubblesNumber() {
+    return (select(bubbleEntities)).watch().map((bubbles) {
+      final Map<String, int> bubbleCountMap = {};
+      for (var bubble in bubbles) {
+        bubbleCountMap[bubble.fromDevice] = (bubbleCountMap[bubble.fromDevice] ?? 0) + 1;
+        bubbleCountMap[bubble.toDevice] = (bubbleCountMap[bubble.toDevice] ?? 0) + 1;
+      }
+      return bubbleCountMap;
+    });
+  }
+
   Future<PrimitiveBubble?> getPrimitiveBubbleById(String id) async {
     final bubbleEntity = await (select(bubbleEntities)
           ..where((tbl) => tbl.id.equals(id)))

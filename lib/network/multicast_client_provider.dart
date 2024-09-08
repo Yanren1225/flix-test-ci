@@ -74,8 +74,7 @@ class MultiCastClientProvider extends ChangeNotifier {
         } else {
           return WifiOrApName(isAp: true, name: event);
         }
-    })
-
+      })
     ]);
   }
 
@@ -124,7 +123,7 @@ class MultiCastClientProvider extends ChangeNotifier {
     });
     connectivitySubscription =
         Connectivity().onConnectivityChanged.listen((result) {
-        _onConnectivityChanged(result);
+      _onConnectivityChanged(result);
     });
     DeviceProfileRepo.instance.deviceNameBroadcast.stream.listen((event) async {
       if (deviceName != event) {
@@ -142,7 +141,8 @@ class MultiCastClientProvider extends ChangeNotifier {
       _setConnectivityResult(ConnectivityResult.wifi);
       return;
     }
-    if (result.contains(ConnectivityResult.wifi) || result.contains(ConnectivityResult.p2pWifi)) {
+    if (result.contains(ConnectivityResult.wifi) ||
+        result.contains(ConnectivityResult.p2pWifi)) {
       resetWifiName();
     }
     if (result.contains(ConnectivityResult.none)) {

@@ -144,6 +144,7 @@ dependencies:
   figma_squircle: ^0.5.3
   uri_content: ^2.2.0
   simple_loading_dialog: ^1.0.0
+  rxdart: ^0.28.0
 #  simple_native_image_compress: ^1.1.0
 # thumbnailer: ^2.2.0
 

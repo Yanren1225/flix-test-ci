@@ -6,6 +6,7 @@ import 'package:flix/model/device_info.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/iterable_extension.dart';
 import 'package:flix/utils/net/net_utils.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../network/protocol/device_modal.dart';
 
@@ -94,6 +95,7 @@ class DeviceManager {
       deviceList.remove(containDevice);
     }
     deviceList.add(device);
+    appDatabase.devicesDao.insertDevice(device);
     notifyDeviceListChanged();
     return true;
   }
@@ -141,22 +143,34 @@ class DeviceManager {
   }
 
   void _watchHistory() {
-    appDatabase.devicesDao.watchDevices().listen((watchHistory) async {
+    CombineLatestStream.combine2(appDatabase.devicesDao.watchDevices(), appDatabase.bubblesDao.watchBubblesNumber(), (devices, bubbleCountMap) {
+      devices.removeWhere((device) {
+        final count = bubbleCountMap[device.fingerprint] ?? 0;
+        return count == 0;
+      });
+      return devices;
+    }).listen((value) {
       history.clear();
       talker.debug("_watchHistory start");
-      // 在前端去重，当在线设备变化时，可以再次去重
-      // event.removeWhere((element) => deviceList.contains(element));
-      for (int i = watchHistory.length - 1; i >= 0; i--) {
-        var element = watchHistory[i];
-        var bubbleCount = await appDatabase.bubblesDao
-            .queryDeviceBubbleCount(element.fingerprint);
-        if (bubbleCount == 0) {
-          watchHistory.remove(element);
-        }
-      }
-      history.addAll(watchHistory);
+      history.addAll(value);
       notifyHistoryChanged();
     });
+    // appDatabase.devicesDao.watchDevices().listen((watchHistory) async {
+    //   history.clear();
+    //   talker.debug("_watchHistory start");
+    //   // 在前端去重，当在线设备变化时，可以再次去重
+    //   // event.removeWhere((element) => deviceList.contains(element));
+    //   for (int i = watchHistory.length - 1; i >= 0; i--) {
+    //     var element = watchHistory[i];
+    //     var bubbleCount = await appDatabase.bubblesDao
+    //         .queryDeviceBubbleCount(element.fingerprint);
+    //     if (bubbleCount == 0) {
+    //       watchHistory.remove(element);
+    //     }
+    //   }
+    //   history.addAll(watchHistory);
+    //   notifyHistoryChanged();
+    // });
   }
 
   Future<void> _watchPairDevices() async {
