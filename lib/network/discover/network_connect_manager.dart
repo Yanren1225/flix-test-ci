@@ -34,16 +34,18 @@ class NetworkConnectManager {
     return selfIP;
   }
 
-  Future<void> connect(String from, String ip) async {
+  Future<bool> connect(String from, String ip) async {
     if ((await getSelfIP()).contains(ip)) {
       talker.debug('connect failed:$ip is myself,return from = $from');
-      return;
+      return false;
     }
     var deviceModal = await pingApi.ping(ip, await shipService.getPort());
     talker.debug('connect from = $from ip = $ip deviceModal = $deviceModal');
     if (deviceModal != null) {
       bool isAddSuccess = DeviceManager.instance.addDevice(deviceModal);
       talker.debug("network_connect $isAddSuccess  device = $deviceModal");
+      return true;
     }
+    return false;
   }
 }

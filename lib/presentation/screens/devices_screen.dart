@@ -154,9 +154,11 @@ class _DeviceScreenState extends State<DeviceScreen>
                     onRefresh: () async {
                       deviceProvider.clearDevices();
                       deviceProvider.startScan();
-                      DiscoverManager.instance.addOnFinishListener((from){
-                        talker.debug("addOnFinishListener refresh from = $from");
-                      });
+                      // onFinishListener(from){
+                      //   talker.debug("addOnFinishListener refresh from = $from");
+                      //   // DiscoverManager.instance.removeOnFinishListener(onFinishListener);
+                      // }
+                      // DiscoverManager.instance.addOnFinishListener(onFinishListener);
                       return IndicatorResult.success;
                     },
                     header: MaterialHeader(

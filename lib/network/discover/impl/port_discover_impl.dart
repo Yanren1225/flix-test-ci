@@ -7,7 +7,7 @@ import 'package:drift/drift.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/domain/ship_server/ping_v2_processor.dart';
+import 'package:flix/domain/ship_server/processor/ping_v2_processor.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/network/discover/discover_api.dart';
 import 'package:flix/network/discover/discover_param.dart';

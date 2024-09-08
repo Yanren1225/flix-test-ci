@@ -6,6 +6,7 @@ import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
+import 'package:flix/domain/ship_server/ship_url_helper.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/utils/net/net_utils.dart';
@@ -21,7 +22,7 @@ class PingV2Processor {
   static Future<DeviceModal?> pingV2(
       String ip, int port, DeviceModal from) async {
     try {
-      var uri = Uri.parse(await ShipService.ping_v2_Url(ip, port));
+      var uri = Uri.parse(await ShipUrlHelper.pingV2Url(ip, port));
       var response = await http.post(
         uri,
         body: Ping(from).toJson(),

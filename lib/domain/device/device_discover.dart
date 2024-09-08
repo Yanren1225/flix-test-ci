@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flix/domain/database/database.dart';
-import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/settings_repo.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
+import 'package:flix/network/discover/network_connect_manager.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
@@ -14,7 +14,7 @@ import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/net/net_utils.dart';
 
 
-class DeviceDiscover implements PingPongListener {
+class DeviceDiscover {
   DeviceDiscover._privateConstructor();
 
   static final DeviceDiscover _instance = DeviceDiscover._privateConstructor();
@@ -25,64 +25,19 @@ class DeviceDiscover implements PingPongListener {
 
   final deviceProfileRepo = DeviceProfileRepo.instance;
   final settingsRepo = SettingsRepo.instance;
-  ApInterface? apInterface;
-
   final _backupDeviceList = <DeviceModal>{};
   final deviceList = <DeviceModal>{};
   final _deviceId2Device = <String, DeviceModal>{};
   final deviceListChangeListeners = <OnDeviceListChanged>{};
 
-  late MultiCastImpl multiCastApi = MultiCastImpl(
-      multicastGroup: defaultMulticastGroup,
-      multicastPort: defaultMulticastPort,
-      deviceProfileRepo: deviceProfileRepo);
-
-  Future<void> start(ApInterface apInterface, int port) async {
-    this.apInterface = apInterface;
-    this.apInterface?.listenPingPong(this);
-    // startScan(port);
-  }
-
-  Future<void> startScan(port) async {
-    // unawaited(httpDiscover.startScan((a, b) {}));
-    await multiCastApi.startScan((deviceModal, needPong) {
-      talker.debug('discover device: $deviceModal');
-      if (needPong) {
-        multiCastApi.pong(port, deviceModal);
-        deviceProfileRepo
-            .getDeviceModal(port)
-            .then((value) => apInterface?.pong(value, deviceModal));
-      }
-      _onDeviceDiscover(deviceModal);
-    });
-    unawaited(multiCastApi.ping(port));
-    await pingBackupDevices();
-  }
-
-
   Future<void> pingBackupDevices() async {
-    final from = await deviceProfileRepo.getDeviceModal(await shipService.getPort());
     for (var device in _backupDeviceList) {
       if (device.ip.isNotEmpty) {
-        apInterface?.ping(device.ip, device.port ?? 8891, from);
+        NetworkConnectManager.instance.connect("ping", device.ip);
       }
     }
   }
 
-  Future<void> stop() async {
-    multiCastApi.stop();
-    // always stop bonjour service
-  }
-
-  Future<void> pingIp(int srcPort, String ip, int port) async {
-    final from = await deviceProfileRepo
-        .getDeviceModal(srcPort);
-    await apInterface?.ping(ip, port, from);
-  }
-
-  Future<void> ping(int port) async {
-    multiCastApi.ping(port);
-  }
 
   void _onDeviceDiscover(DeviceModal device) {
     final preDevice = _findDevice(device);
@@ -215,17 +170,6 @@ class DeviceDiscover implements PingPongListener {
       flixToast.alert('设备已离线');
     }
     return null;
-  }
-
-  @override
-  void onPing(Ping ping) async {
-      _onDeviceDiscover(ping.deviceModal);
-      apInterface?.pong(await deviceProfileRepo.getDeviceModal(await shipService.getPort()), ping.deviceModal);
-  }
-
-  @override
-  void onPong(Pong pong) {
-    _onDeviceDiscover(pong.from);
   }
 }
 

@@ -100,6 +100,17 @@ class DeviceManager {
     return true;
   }
 
+  bool deleteDevice(DeviceModal device) {
+    var containDevice = findDevice(device);
+    if (containDevice != null) {
+      deviceList.remove(containDevice);
+    } else {
+      return false;
+    }
+    notifyDeviceListChanged();
+    return true;
+  }
+
   void removeDeviceListChangeListener(OnDeviceListChanged onDeviceListChanged) {
     deviceListChangeListeners.remove(onDeviceListChanged);
   }
