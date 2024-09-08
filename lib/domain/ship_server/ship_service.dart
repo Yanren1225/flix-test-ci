@@ -25,7 +25,6 @@ import 'package:flix/utils/compat/compat_util.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/file/file_utils.dart';
-import 'package:flix/utils/permission/flix_permission_utils.dart';
 import 'package:flix/utils/stream_cancelable.dart';
 import 'package:flix/utils/stream_progress.dart';
 import 'package:flutter/services.dart';
@@ -35,7 +34,6 @@ import 'package:mutex/mutex.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
-import 'package:slang/builder/utils/path_utils.dart';
 import 'package:uri_content/uri_content.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
@@ -136,7 +134,6 @@ class ShipService{
       talker.error('outer send failed: ', e, stackTrace);
     }
   }
-
 
   Future<void> confirmReceiveBubble(String from, String bubbleId) async {
     try {
@@ -540,18 +537,6 @@ class ShipService{
       assert(fileName != null, '$shareId filename can\'t be null');
       bubble = (await _bubblePool.findLastById(bubble.id)) as PrimitiveFileBubble?;
       await _checkCancel(bubble!.id);
-
-      // // 断点续传优化
-      // if (bubble.content.receiveBytes >= bubble.content.meta.size) {
-      //   talker.debug(
-      //       sendTag, "_receiveFile($fileName) receiveBytes(${bubble.content.receiveBytes}) >= size=(${bubble.content.meta.size}) received");
-      //   final updatedBubble = bubble.copy(
-      //       content: bubble.content
-      //           .copy(state: FileState.receiveCompleted, progress: 1.0));
-      //   await _bubblePool.add(updatedBubble);
-      //   return Response.ok('$shareId $fileName received');
-      // }
-
       try {
         final String desDir = SettingsRepo.instance.savedDir;
         await resolvePathOnMacOS(desDir, (desDir) async {
@@ -856,26 +841,8 @@ class ShipService{
     return targetFile;
   }
 
-  Future<void> _deleteCachedFile(
-      PrimitiveFileBubble fileBubble, String path) async {
-    try {
-      if (await isInCacheOrTmpDir(path)) {
-        talker.info('delete cached file: $path');
-        await File(path).delete();
-        talker.info('delete cached file successfully: $path');
-      }
-    } catch (e, stackTrace) {
-      talker.error('delete cached file failed', e, stackTrace);
-    }
-  }
-
-
   Future<Response> _heartbeat(Request request) async {
     return Response.ok('I\'m living');
-  }
-
-  void _notifyNewBubble(PrimitiveBubble bubble) {
-    BubblePool.instance.notify(bubble);
   }
 
   Future<void> _addLongTask() async {

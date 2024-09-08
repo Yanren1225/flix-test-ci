@@ -21,6 +21,7 @@ import 'package:flix/domain/notification/flix_notification.dart';
 import 'package:flix/domain/notification/notification_service.dart';
 import 'package:flix/domain/paircode/pair_router_handler.dart';
 import 'package:flix/domain/settings/settings_repo.dart';
+import 'package:flix/domain/ship_server/heart_manager.dart';
 import 'package:flix/domain/ship_server/ship_service_lifecycle_watcher.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/domain/uri_router.dart';
@@ -184,8 +185,8 @@ Future<DeviceInfoResult> _initDeviceManager() async {
   shipService.startShipServer().then((isSuccess) async {
     if (isSuccess) {
       final port = await shipService.getPort();
-      // DeviceDiscover.instance.start(shipService, port);
       DiscoverManager.instance.startDiscover(port);
+      HeartManager.instance.startHeartTimer();
     }
   });
   return deviceInfo;

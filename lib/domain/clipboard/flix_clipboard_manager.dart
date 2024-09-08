@@ -57,9 +57,9 @@ class FlixClipboardManager  with ClipboardListener implements LifecycleListener 
       talker.debug(tag,"newClipboardData no new text");
       return;
     }
-    talker.debug(tag,
-        "onClipboardChanged  text = ${newClipboardData.text.toString()}");
-    print(newClipboardData.text ?? '');
+    if(DeviceManager.instance.pairDevices.isEmpty){
+      return;
+    }
     shipService.dispatcherClipboard(newClipboardData.text.toString());
   }
 
