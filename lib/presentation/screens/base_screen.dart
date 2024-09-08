@@ -12,6 +12,7 @@ import 'package:flix/presentation/widgets/permission/permission_bottom_sheet.dar
 import 'package:flutter/cupertino.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 var isCheckingPermission = false;
 
@@ -55,7 +56,8 @@ abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
   }
 }
 
-Future<bool> checkStoragePermission(BuildContext? context, {bool manageExternalStorage = false}) async {
+Future<bool> checkStoragePermission(BuildContext? context,
+    {bool manageExternalStorage = false}) async {
   if (Platform.isAndroid) {
     DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     final androidInfo = await deviceInfoPlugin.androidInfo;
@@ -78,47 +80,17 @@ Future<bool> checkStoragePermission(BuildContext? context, {bool manageExternalS
 }
 
 Future<bool> checkStoragePermissionOnOldPlatform(BuildContext? context) async {
-  return await checkPermission(context, [Permission.storage], '存储权限', '接收文件需要设备的存储权限');
+  return await checkPermission(
+      context, [Permission.storage], '存储权限', '接收文件需要设备的存储权限');
 }
 
-Future<bool> checkPhotosPermission(BuildContext context) async {
-  if (Platform.isAndroid) {
-    DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-    final androidInfo = await deviceInfoPlugin.androidInfo;
-    if (androidInfo.version.sdkInt >= 33) {
-      return await checkPermission(context, [Permission.photos, Permission.accessMediaLocation], '访问照片权限', '选择照片需要获取设备的访问照片权限');
-    } else if (androidInfo.version.sdkInt >= 29) {
-      return await checkPermission(context, [Permission.storage, Permission.accessMediaLocation], '访问照片权限', '选择照片需要获取设备的访问照片权限');
-    } else {
-      return await checkStoragePermissionOnOldPlatform(context);
-    }
-  } else {
-    return true;
-  }
-}
-
-Future<bool> checkVideosPermission(BuildContext context) async {
-  if (Platform.isAndroid) {
-    DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-    final androidInfo = await deviceInfoPlugin.androidInfo;
-    if (androidInfo.version.sdkInt >= 33) {
-      return await checkPermission(context, [Permission.videos, Permission.accessMediaLocation], '访问视频权限', '选择视频需要获取设备的访问视频权限');
-    } else if (androidInfo.version.sdkInt >= 29) {
-      return await checkPermission(context, [Permission.storage, Permission.accessMediaLocation], '访问视频权限', '选择视频需要获取设备的访问视频权限');
-    } else {
-      return await checkStoragePermissionOnOldPlatform(context);
-    }
-  } else {
-    return true;
-  }
-}
-
-Future<bool> checkPermission(BuildContext? context, List<Permission> permissions, String title, String subTitle) async {
+Future<bool> checkPermission(BuildContext? context,
+    List<Permission> permissions, String title, String subTitle) async {
   return await _checkPermission(context, permissions, title, subTitle);
 }
 
-Future<bool> _checkPermission(
-    BuildContext? context, List<Permission> permissions, String title, String subTitle) async {
+Future<bool> _checkPermission(BuildContext? context,
+    List<Permission> permissions, String title, String subTitle) async {
   if (Platform.isAndroid) {
     try {
       bool isGranted = await isAllGranted(permissions);
@@ -143,9 +115,12 @@ Future<bool> _checkPermission(
           await showCupertinoModalPopup(
               context: context,
               builder: (context) {
-                return PermissionBottomSheet(title: title, subTitle: subTitle, onConfirm: () async {
-                    await _openAppSettings();
-                });
+                return PermissionBottomSheet(
+                    title: title,
+                    subTitle: subTitle,
+                    onConfirm: () async {
+                      await _openAppSettings();
+                    });
               });
         }
 
@@ -164,8 +139,7 @@ Future<bool> requestAllPermissions(List<Permission> permissions) async {
   for (var permission in permissions) {
     var permissionStatus = await permission.request();
     if (!permissionStatus.isGranted) return false;
-    talker.debug(
-        'permission permissionStatus $permissionStatus');
+    talker.debug('permission permissionStatus $permissionStatus');
   }
   return true;
 }
@@ -175,7 +149,7 @@ Future<bool> isAnyPermanentlyDenied(List<Permission> permissions) async {
 
   for (var permission in permissions) {
     isPermanentlyDenied =
-    isPermanentlyDenied | await permission.isPermanentlyDenied;
+        isPermanentlyDenied | await permission.isPermanentlyDenied;
     talker.debug(
         'permission: $permission isPermanentlyDenied $isPermanentlyDenied');
     if (isPermanentlyDenied) {
@@ -184,7 +158,6 @@ Future<bool> isAnyPermanentlyDenied(List<Permission> permissions) async {
   }
   return isPermanentlyDenied;
 }
-
 
 Future<bool> isAllGranted(List<Permission> permissions) async {
   bool isGranted = true;
@@ -200,6 +173,14 @@ Future<bool> isAllGranted(List<Permission> permissions) async {
 }
 
 Future<void> _openAppSettings() async {
+  if (Platform.isAndroid) {
+    await _openAndroidAppSettings();
+  } else if (Platform.isIOS) {
+    await _openIosAppSettings();
+  }
+}
+
+Future<void> _openAndroidAppSettings() async {
   try {
     final info = await PackageInfo.fromPlatform();
     AndroidIntent intent = AndroidIntent(
@@ -211,5 +192,17 @@ Future<void> _openAppSettings() async {
   } catch (e, stackTrace) {
     talker.error('failed to launch settings', e, stackTrace);
   }
+}
 
+Future<void> _openIosAppSettings() async {
+  try {
+    const url = 'app-settings:';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      print('无法打开应用设置页面');
+    }
+  } catch (e, stackTrace) {
+    talker.error('failed to launch settings', e, stackTrace);
+  }
 }

@@ -40,7 +40,7 @@ class DeviceDiscover implements PingPongListener {
   Future<void> start(ApInterface apInterface, int port) async {
     this.apInterface = apInterface;
     this.apInterface?.listenPingPong(this);
-    startScan(port);
+    // startScan(port);
   }
 
   Future<void> startScan(port) async {

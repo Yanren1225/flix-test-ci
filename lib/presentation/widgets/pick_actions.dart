@@ -11,6 +11,7 @@ import 'package:flix/presentation/widgets/actions/progress_action.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/android/android_pick_files.dart';
 import 'package:flix/utils/file/file_helper.dart';
+import 'package:flix/utils/permission/flix_permission_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -105,7 +106,7 @@ class PickActionAreaState extends State<PickActionsArea> {
     required BuildContext context,
   }) async {
     if (context.mounted) {
-      if (await checkPhotosPermission(context)) {
+      if (await FlixPermissionUtils.checkPhotosPermission(context)) {
         try {
           if (Platform.isAndroid || Platform.isIOS) {
             final List<AssetEntity>? result = await AssetPicker.pickAssets(
@@ -146,7 +147,7 @@ class PickActionAreaState extends State<PickActionsArea> {
     required BuildContext context,
   }) async {
     if (context.mounted) {
-      if (await checkVideosPermission(context)) {
+      if (await FlixPermissionUtils.checkVideosPermission(context)) {
         // showMaskLoading(context);
         try {
           if (Platform.isAndroid || Platform.isIOS) {
