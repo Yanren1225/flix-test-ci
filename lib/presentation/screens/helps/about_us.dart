@@ -113,8 +113,8 @@ class AboutUSScreenState extends State<AboutUSScreen> {
       padding: const EdgeInsets.only(left: 10, top: 10, right: 80, bottom: 10),
 
       child: Text(
-          'Flix 制作小组\n------\n✅设计：\nlemo\n\n✅开发：\nMovenLecker\nEava_wu\n炎忍\nMashiro.\n皓洋\n张建\n广靓\nChengi\nxkeyC\n小灰灰\n何言\ngggxbbb'
-              '\n一季或微凉\nkailun\n暮间雾\nyuzh',
+          'Flix 制作小组\n------\n✅设计：\nlemo\nkailun\n\n✅开发：\nMovenLecker\nEava_wu\n炎忍\nMashiro.\n皓洋\n张建\n广靓\nChengi\nxkeyC\n小灰灰\n何言\ngggxbbb'
+              '\n一季或微凉\n暮间雾\nyuzh',
           style: TextStyle(
                   color: Theme.of(context).flixColors.text.primary,
                   fontSize: 16,
