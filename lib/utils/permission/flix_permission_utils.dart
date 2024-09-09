@@ -144,7 +144,7 @@ class FlixPermissionUtils {
       }
     } else if (Platform.isIOS) {
       return await checkNecessaryPermissions(
-          context, [Permission.videos], '访问视频权限', '选择视频需要获取设备的访问视频权限');
+          context, [Permission.photos], '访问视频权限', '选择视频需要获取设备的访问视频权限');
     } else {
       return true;
     }
