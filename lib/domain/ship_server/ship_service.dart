@@ -515,7 +515,7 @@ class ShipService{
   Future<void> _deleteCachedFile(
       PrimitiveFileBubble fileBubble, String path) async {
     try {
-      if (await isInCacheOrTmpDir(path)) {
+      if (fileBubble.type == BubbleType.File || fileBubble.type == BubbleType.Directory && await isInCacheOrTmpDir(path)) {
         talker.info('delete cached file: $path');
         await File(path).delete();
         talker.info('delete cached file successfully: $path');
