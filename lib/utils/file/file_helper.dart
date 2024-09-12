@@ -215,7 +215,7 @@ Future deleteCache() async {
 Future<bool> isInCacheOrTmpDir(String path) async {
   if (Platform.isIOS) {
     String tmpPath = await getTmpPath();
-    if (path.toLowerCase().startsWith(tmpPath.toLowerCase())) {
+    if (path.toLowerCase().contains(tmpPath.toLowerCase())) {
       return true;
     }
   }

@@ -493,7 +493,7 @@ class ShipService{
           updateBubbleShareState(
               _bubblePool, fileBubble.id, FileState.sendCompleted);
           if (path.isNotEmpty) {
-            // _deleteCachedFile(fileBubble, path);
+            _deleteCachedFile(fileBubble, path);
           }
         } else {
           talker.error(sendTag,
@@ -510,6 +510,19 @@ class ShipService{
       updateBubbleShareState(_bubblePool, fileBubble.id, FileState.sendFailed);
     }
     _removeLongTask();
+  }
+
+  Future<void> _deleteCachedFile(
+      PrimitiveFileBubble fileBubble, String path) async {
+    try {
+      if (await isInCacheOrTmpDir(path)) {
+        talker.info('delete cached file: $path');
+        await File(path).delete();
+        talker.info('delete cached file successfully: $path');
+      }
+    } catch (e, stackTrace) {
+      talker.error('delete cached file failed', e, stackTrace);
+    }
   }
 
   Future<Response> _receiveFile(Request request) async {
