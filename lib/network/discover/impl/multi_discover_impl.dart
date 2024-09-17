@@ -4,13 +4,14 @@ import 'package:flix/network/discover/discover_api.dart';
 import 'package:flix/network/discover/discover_param.dart';
 import 'package:flix/network/discover/helper/multi_discover_helper.dart';
 import 'package:flix/network/nearby_service_info.dart';
+import 'package:flix/network/protocol/device_modal.dart';
 
 class MultiDiscoverImpl extends DiscoverApi {
   static const String tag = "MultiDiscoverImpl";
 
   @override
   String getFrom() {
-    return "multi";
+    return DeviceFrom.multiBroadcast;
   }
 
   @override

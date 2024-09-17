@@ -1,6 +1,7 @@
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/badge_service.dart';
 import 'package:flix/model/device_info.dart';
@@ -152,7 +153,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                     controller: _refreshController,
                     callRefreshOverOffset: 1,
                     onRefresh: () async {
-                      deviceProvider.clearDevices();
+                      DeviceManager.instance.clearDevicesExcludeManual();
                       deviceProvider.startScan();
                       // onFinishListener(from){
                       //   talker.debug("addOnFinishListener refresh from = $from");

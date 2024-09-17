@@ -14,18 +14,17 @@ class DeviceModal with DeviceModalMappable {
   final int? version;
   String ip = "";
   String host = "";
+  String from = "";
 
-  DeviceModal({
-    required this.alias,
-    required this.deviceModel,
-    required this.deviceType,
-    required this.fingerprint,
-    required this.port,
-    required this.version,
-    this.ip = '',
-    this.host = ''
-  });
-
+  DeviceModal(
+      {required this.alias,
+      required this.deviceModel,
+      required this.deviceType,
+      required this.fingerprint,
+      required this.port,
+      required this.version,
+      this.ip = '',
+      this.host = ''});
 
   static const fromJson = DeviceModalMapper.fromJson;
 
@@ -45,4 +44,11 @@ enum DeviceType {
   const DeviceType(this.icon);
 
   final IconData icon;
+}
+
+class DeviceFrom {
+  static const String port = "port";
+  static const String multiBroadcast = "broadcast";
+  static const String manual = "manual";
+  static const String bonjour = "bonjour";
 }

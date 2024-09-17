@@ -46,6 +46,16 @@ class DeviceManager {
     });
   }
 
+  void clearDevicesExcludeManual() {
+    var manualDevices = deviceList.where((device) {
+      return device.from == DeviceFrom.manual;
+    }).toList();
+    deviceDiscover.clearDevices();
+    deviceList.clear();
+    deviceList.addAll(manualDevices);
+    notifyDeviceListChanged();
+  }
+
   void clearDevices() {
     deviceDiscover.clearDevices();
     deviceList.clear();

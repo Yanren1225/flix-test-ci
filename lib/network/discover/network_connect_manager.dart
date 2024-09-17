@@ -40,6 +40,7 @@ class NetworkConnectManager {
       return false;
     }
     var deviceModal = await pingApi.ping(ip, await shipService.getPort());
+    deviceModal?.from = from;
     talker.debug('connect from = $from ip = $ip deviceModal = $deviceModal');
     if (deviceModal != null) {
       bool isAddSuccess = DeviceManager.instance.addDevice(deviceModal);

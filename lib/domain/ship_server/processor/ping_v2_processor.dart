@@ -19,15 +19,15 @@ import 'package:http/http.dart' as http;
 class PingV2Processor {
   static const String tag = "PingV2Processor";
 
-  static Future<DeviceModal?> pingV2(
-      String ip, int port, DeviceModal from) async {
+  static Future<DeviceModal?> pingV2Time(
+      String ip, int port, DeviceModal from, int time) async {
     try {
       var uri = Uri.parse(await ShipUrlHelper.pingV2Url(ip, port));
       var response = await http.post(
         uri,
         body: Ping(from).toJson(),
         headers: {"Content-type": "application/json; charset=UTF-8"},
-      ).timeout(const Duration(milliseconds: 200));
+      ).timeout(Duration(milliseconds: time));
       if (response.statusCode == 200) {
         talker.debug('ping success: response: ${response.body}');
         DeviceModal deviceModal =
@@ -45,6 +45,10 @@ class PingV2Processor {
       talker.error('ping failed: ', e, stackTrace);
     }
     return null;
+  }
+
+  static Future<DeviceModal?> pingV2(String ip, int port, DeviceModal from) {
+    return pingV2Time(ip, port, from, 200);
   }
 
   static Future<shelf.Response> receivePingV2(shelf.Request request) async {

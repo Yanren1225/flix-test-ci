@@ -27,7 +27,7 @@ class PortDiscoverImpl extends DiscoverApi {
 
   @override
   String getFrom() {
-    return "port";
+    return DeviceFrom.port;
   }
 
   @override

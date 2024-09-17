@@ -3,6 +3,7 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/network/discover/discover_api.dart';
 import 'package:flix/network/discover/discover_param.dart';
 import 'package:flix/network/discover/helper/bonjour_helper.dart';
+import 'package:flix/network/protocol/device_modal.dart';
 
 class BonjourDiscoverImpl extends DiscoverApi {
   static const tag = "BonjourDiscoverImpl";
@@ -17,7 +18,7 @@ class BonjourDiscoverImpl extends DiscoverApi {
 
   @override
   String getFrom() {
-    return "bonjour";
+    return DeviceFrom.bonjour;
   }
 
   @override

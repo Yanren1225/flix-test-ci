@@ -3,6 +3,7 @@ import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/router_handler.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/network/discover/network_connect_manager.dart';
+import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/net/net_utils.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -36,7 +37,7 @@ class PairRouterHandler implements RouterHandler {
 
   static Future<bool> addDevice(PairInfo pairInfo) async {
     for (final ip in pairInfo.ips) {
-      if (await NetworkConnectManager.instance.connect("scan", ip)) {
+      if (await NetworkConnectManager.instance.connect(DeviceFrom.manual, ip)) {
         return true;
       }
     }
