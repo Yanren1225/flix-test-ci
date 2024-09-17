@@ -17,7 +17,7 @@ class HeartManager {
     return _instance;
   }
 
-  static const heartTime = 30;
+  static const heartTime = 20;
   var deviceTimeMap = <String, HeartData>{};
   var isStop = false;
 
@@ -41,8 +41,8 @@ class HeartManager {
       }
       var heartData = deviceTimeMap[device.fingerprint]!;
       //一次心跳成功
-      if (await PingV2Processor.pingV2(heartData.deviceModal.ip,
-              heartData.deviceModal.port!, heartData.deviceModal) !=
+      if (await PingV2Processor.pingV2Time(heartData.deviceModal.ip,
+              heartData.deviceModal.port!, heartData.deviceModal,1000) !=
           null) {
         talker.debug(tag,
             '${heartData.deviceModal.deviceModel}   ${heartData.deviceModal.fingerprint} heartBeat success');
@@ -81,7 +81,7 @@ class HeartManager {
 }
 
 class HeartData {
-  static const maxLoseCount = 4;
+  static const maxLoseCount = 3;
   DeviceModal deviceModal;
   int time;
   int loseCount;
