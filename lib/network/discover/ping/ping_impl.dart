@@ -7,9 +7,10 @@ import 'package:flix/network/protocol/device_modal.dart';
 
 class PingImpl extends PingApi {
   @override
-  Future<DeviceModal?> ping(String ip,int port) async {
+  Future<DeviceModal?> ping(String ip,int port,String from) async {
     var deviceModal =
         await DeviceProfileRepo.instance.getDeviceModal(port);
+    deviceModal.from = from;
     return PingV2Processor.pingV2(ip, port, deviceModal);
   }
 }

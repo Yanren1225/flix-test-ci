@@ -24,7 +24,8 @@ class DeviceModal with DeviceModalMappable {
       required this.port,
       required this.version,
       this.ip = '',
-      this.host = ''});
+      this.host = '',
+      this.from = ''});
 
   static const fromJson = DeviceModalMapper.fromJson;
 

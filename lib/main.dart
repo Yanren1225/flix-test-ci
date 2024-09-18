@@ -186,7 +186,7 @@ Future<DeviceInfoResult> _initDeviceManager() async {
     if (isSuccess) {
       final port = await shipService.getPort();
       DiscoverManager.instance.startDiscover(port);
-      HeartManager.instance.startHeartTimer();
+      // HeartManager.instance.startHeartTimer();
     }
   });
   return deviceInfo;
