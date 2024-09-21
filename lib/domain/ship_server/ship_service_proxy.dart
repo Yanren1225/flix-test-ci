@@ -134,7 +134,7 @@ class ShipServiceProxy{
 
 
   String getDid() {
-    return shipService.getDid();
+    return _shipService.did;
   }
 }
 
