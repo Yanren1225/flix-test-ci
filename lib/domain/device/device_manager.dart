@@ -104,7 +104,7 @@ class DeviceManager {
     if(containDevice != null){
       deviceList.remove(containDevice);
     }
-    deviceList.add(device);
+    deviceList.add(DeviceModal.getUpdateDeviceModal(device));
     appDatabase.devicesDao.insertDevice(device);
     notifyDeviceListChanged();
     return true;

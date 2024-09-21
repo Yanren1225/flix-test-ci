@@ -32,6 +32,74 @@ class DeviceModal with DeviceModalMappable {
   bool heartBeat() {
     return true;
   }
+
+
+
+  static DeviceModal getUpdateDeviceModal(DeviceModal device)  {
+    final preDevice = DeviceManager.instance.findDevice(device);
+    if (preDevice == null) {
+      return device;
+    } else {
+      final int? port;
+      String ip = "";
+      String host = "";
+      String from = "";
+      bool isChanged = false;
+      if (device.ip.isNotEmpty &&
+          device.ip != preDevice.ip) {
+        ip = device.ip;
+        isChanged = true;
+      } else {
+        ip = preDevice.ip;
+      }
+
+      if (device.host.isNotEmpty &&
+          device.host != preDevice.host) {
+        host = device.host;
+        isChanged = true;
+      } else {
+        host = preDevice.host;
+      }
+
+      if (device.from.isNotEmpty &&
+          device.from != preDevice.from) {
+        from = device.from;
+        isChanged = true;
+      } else {
+        from = preDevice.from;
+      }
+
+      if (device.port != null && device.port != preDevice.port) {
+        port = device.port;
+        isChanged = true;
+      } else {
+        port = preDevice.port;
+      }
+
+      if (device.alias != preDevice.alias ||
+          device.deviceModel != preDevice.deviceModel ||
+          device.deviceType != preDevice.deviceType) {
+        isChanged = true;
+      }
+
+      if (isChanged) {
+        final newDevice = DeviceModal(
+            alias: device.alias,
+            deviceModel: device.deviceModel,
+            deviceType: device.deviceType,
+            fingerprint: device.fingerprint,
+            version: device.version,
+            port: port,
+            ip: ip,
+            host: host,
+            from: from);
+        return newDevice;
+      }else{
+        return preDevice;
+      }
+    }
+  }
+
 }
 
 @MappableEnum(defaultValue: DeviceType.desktop)

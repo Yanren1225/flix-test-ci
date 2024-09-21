@@ -39,62 +39,6 @@ class DeviceDiscover {
   }
 
 
-  void _onDeviceDiscover(DeviceModal device) {
-    final preDevice = _findDevice(device);
-    if (preDevice == null) {
-      _addDevice(device);
-      notifyDeviceListChanged();
-    } else {
-      final int? port;
-      String ip = "";
-      String host = "";
-
-      bool isChanged = false;
-      if (device.ip.isNotEmpty &&
-          device.ip != preDevice.ip) {
-        ip = device.ip;
-        isChanged = true;
-      } else {
-        ip = preDevice.ip;
-      }
-
-      if (device.host.isNotEmpty &&
-          device.host != preDevice.host) {
-        host = device.host;
-        isChanged = true;
-      } else {
-        host = preDevice.host;
-      }
-
-      if (device.port != null && device.port != preDevice.port) {
-        port = device.port;
-        isChanged = true;
-      } else {
-        port = preDevice.port;
-      }
-
-      if (device.alias != preDevice.alias ||
-          device.deviceModel != preDevice.deviceModel ||
-          device.deviceType != preDevice.deviceType) {
-        isChanged = true;
-      }
-
-      if (isChanged) {
-        final newDevice = DeviceModal(
-            alias: device.alias,
-            deviceModel: device.deviceModel,
-            deviceType: device.deviceType,
-            fingerprint: device.fingerprint,
-            version: device.version,
-            port: port,
-            ip: ip,
-            host: host);
-        deviceList.remove(preDevice);
-        _addDevice(newDevice);
-        notifyDeviceListChanged();
-      }
-    }
-  }
 
   void clearDevices() {
     _backupDeviceList.clear();
