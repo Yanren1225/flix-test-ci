@@ -1,4 +1,5 @@
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/widgets/segements/custom_sliver_header.dart';
@@ -101,7 +102,7 @@ class CupertinoNavigationScalffoldState
             ? EasyRefresh(
                 callRefreshOverOffset: 1,
                 onRefresh: () async {
-                  deviceProvider.clearDevices();
+                  DeviceManager.instance.clearDevicesExcludeManual();
                   deviceProvider.startScan();
                   await Future.delayed(const Duration(seconds: 2));
                   return IndicatorResult.success;
