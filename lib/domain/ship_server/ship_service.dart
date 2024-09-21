@@ -103,7 +103,7 @@ class ShipService{
     }
     return false;
   }
-  
+
   Future<void> ping(String ip, int port, DeviceModal from) async {
     NetworkConnectManager.instance.connect("ping", ip);
   }
@@ -515,7 +515,7 @@ class ShipService{
   Future<void> _deleteCachedFile(
       PrimitiveFileBubble fileBubble, String path) async {
     try {
-      if (fileBubble.type == BubbleType.File || fileBubble.type == BubbleType.Directory && await isInCacheOrTmpDir(path)) {
+      if (await isInCacheOrTmpDir(path) && (fileBubble.type == BubbleType.File || fileBubble.type == BubbleType.Directory)) {
         talker.info('delete cached file: $path');
         await File(path).delete();
         talker.info('delete cached file successfully: $path');
