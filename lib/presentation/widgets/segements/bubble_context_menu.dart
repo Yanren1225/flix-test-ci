@@ -158,6 +158,15 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
             onTap: onTap(type),
           ));
           break;
+        case BubbleContextMenuItemType.SaveAs:
+          if (isDesktop()) {
+            items.add(BubbleContextMenuItem(
+              title: isDesktop() ? '另存为' : '',
+              icon: 'assets/images/file_save_as.svg',
+              onTap: onTap(type),
+            ));
+          }
+          break;
         case BubbleContextMenuItemType.MultiSelect:
           items.add(BubbleContextMenuItem(
             title: '多选',
@@ -278,6 +287,8 @@ class BubbleContextMenuItem extends StatelessWidget {
           children: [
             SvgPicture.asset(
               icon,
+              width: 24,
+              height: 24,
               colorFilter: ColorFilter.mode(
                   color ?? Theme.of(context).flixColors.text.primary,
                   BlendMode.srcIn),
@@ -346,6 +357,7 @@ enum BubbleContextMenuItemType {
   Forward,
   Location,
   MultiSelect,
+  SaveAs,
   Delete,
   FreeCopy,
 }
