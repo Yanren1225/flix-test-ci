@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
-import 'package:dio/dio.dart' as dio;
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/clipboard/flix_clipboard_manager.dart';
 import 'package:flix/domain/constants.dart';
@@ -25,6 +23,7 @@ import 'package:flix/utils/compat/compat_util.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/file/file_utils.dart';
+import 'package:flix/utils/file_send_queue.dart';
 import 'package:flix/utils/stream_cancelable.dart';
 import 'package:flix/utils/stream_progress.dart';
 import 'package:flutter/services.dart';
@@ -34,27 +33,34 @@ import 'package:mutex/mutex.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
-import 'package:uri_content/uri_content.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import 'processor/break_point_processor.dart';
 import 'processor/pair_device_processor.dart';
 
-class ShipService{
+class ShipService {
   final String sendTag = "SendFile";
+
   final String did;
+
   final _bubblePool = BubblePool.instance;
   final lock = Mutex();
   var _longTaskCount = 0;
+
   HttpServer? _server;
   int port = defaultPort;
+
   var breakPointProcessor = BreakPointProcessor();
   var pairDeviceProcessor = PairDeviceProcessor();
+
+  late final fileSendQueue = FileSendQueue(
+    checkCancelCallback: _checkCancel,
+  );
+
   ShipService({required this.did}) {
     talker.debug("ShipService", "did = $did");
   }
-
 
   Future<bool> startShipService() async {
     try {
@@ -111,7 +117,7 @@ class ShipService{
   Future<void> send(PrimitiveBubble primitiveBubble) async {
     try {
       // await checkCancel(uiBubble.shareable.id);
-      talker.debug(sendTag,"send primitiveBubble = $primitiveBubble");
+      talker.debug(sendTag, "send primitiveBubble = $primitiveBubble");
       switch (primitiveBubble.type) {
         case BubbleType.Text:
           await _bubblePool.add(primitiveBubble);
@@ -124,7 +130,8 @@ class ShipService{
           await _sendFileBubble(primitiveBubble as PrimitiveFileBubble);
           break;
         case BubbleType.Directory:
-          await _sendDirectoryBubble(primitiveBubble as PrimitiveDirectoryBubble);
+          await _sendDirectoryBubble(
+              primitiveBubble as PrimitiveDirectoryBubble);
         default:
           throw UnimplementedError();
       }
@@ -176,8 +183,8 @@ class ShipService{
         _bubblePool, bubble.id, FileState.waitToAccepted,
         create: bubble);
     //已经发送过，c/s都有此记录
-    talker.debug("resend",
-        "getBreakPoint receiveBytes = ${bubble.content.progress}");
+    talker.debug(
+        "resend", "getBreakPoint receiveBytes = ${bubble.content.progress}");
     if (bubble is PrimitiveFileBubble) {
       if (CompatUtil.supportBreakPoint(bubble.to) &&
           bubble.content.progress > 0) {
@@ -187,7 +194,8 @@ class ShipService{
       }
       var state = FileState.waitToAccepted;
       if (bubble.groupId?.isNotEmpty == true) {
-        await updateBubbleShareState(_bubblePool, bubble.id, FileState.inTransit,
+        await updateBubbleShareState(
+            _bubblePool, bubble.id, FileState.inTransit,
             waitingForAccept: true);
         state = FileState.inTransit;
       }
@@ -202,18 +210,20 @@ class ShipService{
       }
       var state = FileState.waitToAccepted;
       if (bubble.groupId?.isNotEmpty == true) {
-        await updateBubbleShareState(_bubblePool, bubble.id, FileState.inTransit,
+        await updateBubbleShareState(
+            _bubblePool, bubble.id, FileState.inTransit,
             waitingForAccept: true);
         state = FileState.inTransit;
       }
       await _sendBasicBubble(bubble.copy(
-          content: bubble.content.copy(state: state),groupId: bubble.groupId));
+          content: bubble.content.copy(state: state), groupId: bubble.groupId));
     }
   }
 
   Future<void> reReceive(PrimitiveBubble bubble) async {
     try {
-      await updateBubbleShareState(_bubblePool, bubble.id, FileState.waitToAccepted);
+      await updateBubbleShareState(
+          _bubblePool, bubble.id, FileState.waitToAccepted);
       var uri = Uri.parse(await ShipUrlHelper.intentUrl(bubble.to));
 
       var response = await http.post(
@@ -240,7 +250,8 @@ class ShipService{
   Future<void> _sendCancelMessage(String bubbleId, String to) async {
     try {
       talker.debug("cancelSend 5");
-      talker.debug('_sendCancelMessage=> to = $to intent = ${ShipUrlHelper.intentUrl(to)}');
+      talker.debug(
+          '_sendCancelMessage=> to = $to intent = ${ShipUrlHelper.intentUrl(to)}');
       var uri = Uri.parse(await ShipUrlHelper.intentUrl(to));
 
       var response = await http.post(
@@ -277,7 +288,8 @@ class ShipService{
         await _startShipServerInner(app, defaultPort, 'first', () async {
       return await _startShipServerInner(app, defaultPort + 1, 'second',
           () async {
-        return await _startShipServerInner(app, defaultPort + 2, 'third', () async {
+        return await _startShipServerInner(app, defaultPort + 2, 'third',
+            () async {
           return null;
         });
       });
@@ -298,7 +310,8 @@ class ShipService{
       port = serverPort;
       return server;
     } catch (e, stack) {
-      talker.error('$tag start server at http://0.0.0.0:$serverPort failed ', e, stack);
+      talker.error(
+          '$tag start server at http://0.0.0.0:$serverPort failed ', e, stack);
       return await onFailed();
     }
   }
@@ -306,7 +319,8 @@ class ShipService{
   Future<void> _sendBasicBubble(PrimitiveBubble primitiveBubble) async {
     try {
       await _checkCancel(primitiveBubble.id);
-      var uri = Uri.parse(await ShipUrlHelper.getSendBubbleUrl(primitiveBubble));
+      var uri =
+          Uri.parse(await ShipUrlHelper.getSendBubbleUrl(primitiveBubble));
 
       final body = jsonEncode(
           primitiveBubble.toJson(pathSaveType: FilePathSaveType.relative));
@@ -333,13 +347,15 @@ class ShipService{
   Future<void> _sendFileBubble(PrimitiveFileBubble fileBubble,
       {FileState? fileState = FileState.waitToAccepted}) async {
     try {
-      var fileBubble0 = fileBubble.copy(content: fileBubble.content.copy(state: fileState));
+      var fileBubble0 =
+          fileBubble.copy(content: fileBubble.content.copy(state: fileState));
       await _bubblePool.add(fileBubble0);
       await _checkCancel(fileBubble.id);
       // send with no path
       await _sendBasicBubble(fileBubble0.copy(
-          content: fileBubble0.content
-              .copy(meta: fileBubble0.content.meta.copy(path: fileBubble0.content.meta.path))));
+          content: fileBubble0.content.copy(
+              meta: fileBubble0.content.meta
+                  .copy(path: fileBubble0.content.meta.path))));
     } on CancelException catch (e, stackTrace) {
       talker.warning('取消发送文件: ', e, stackTrace);
     } catch (e, stackTrace) {
@@ -348,20 +364,24 @@ class ShipService{
     }
   }
 
-  Future<void> _sendDirectoryBubble(PrimitiveDirectoryBubble directoryBubble) async {
+  Future<void> _sendDirectoryBubble(
+      PrimitiveDirectoryBubble directoryBubble) async {
     try {
       var directoryBubble0 = directoryBubble.copy(
-          content: directoryBubble.content.copy(state: FileState.waitToAccepted));
+          content:
+              directoryBubble.content.copy(state: FileState.waitToAccepted));
       await _bubblePool.add(directoryBubble0);
       await _checkCancel(directoryBubble.id);
       await _sendBasicBubble(directoryBubble0.copy(
           content: directoryBubble0.content.copy(
-              meta: directoryBubble0.content.meta.copy(path: directoryBubble0.content.meta.path))));
+              meta: directoryBubble0.content.meta
+                  .copy(path: directoryBubble0.content.meta.path))));
     } on CancelException catch (e, stackTrace) {
       talker.warning('取消发送文件夹: ', e, stackTrace);
     } catch (e, stackTrace) {
       talker.error('发送异常: ', e, stackTrace);
-      updateBubbleShareState(_bubblePool, directoryBubble.id, FileState.sendFailed);
+      updateBubbleShareState(
+          _bubblePool, directoryBubble.id, FileState.sendFailed);
     }
   }
 
@@ -391,7 +411,8 @@ class ShipService{
       talker.debug("_receiveBubble===>", data);
       // _notifyNewBubble(bubble);
       if (await SettingsRepo.instance.getAutoReceiveAsync() &&
-          (bubble is PrimitiveFileBubble || bubble.type == BubbleType.Directory)) {
+          (bubble is PrimitiveFileBubble ||
+              bubble.type == BubbleType.Directory)) {
         await _bubblePool.add(bubble);
         await confirmReceiveBubble(bubble.from, bubble.id);
       } else if (bubble is PrimitiveFileBubble) {
@@ -417,7 +438,8 @@ class ShipService{
             await confirmReceiveBubble(bubble.from, bubble.id);
           } else {
             await _bubblePool.add(bubble.copy(
-                content: bubble.content.copy(state: FileState.waitToAccepted),groupId: bubble.groupId));
+                content: bubble.content.copy(state: FileState.waitToAccepted),
+                groupId: bubble.groupId));
           }
         } else {
           await _bubblePool.add(bubble);
@@ -438,75 +460,21 @@ class ShipService{
       return;
     }
     _addLongTask();
+    final task = FileSendTask(fileBubble: fileBubble);
+    fileSendQueue.addTask(task);
     try {
-      talker.debug(sendTag,"start=>$fileBubble");
-      await _checkCancel(fileBubble.id);
-      final shardFile = fileBubble.content.meta;
-
-      await shardFile.resolveFileUri((uri) async {
-        var fileSize = shardFile.size;
-
-        final parameters = {
-          'share_id': fileBubble.id,
-          'file_name': shardFile.name,
-        };
-        var receiveBytes = 0;
-        var supportBreakPoint = CompatUtil.supportBreakPoint(fileBubble.to);
-        if (supportBreakPoint) {
-          final String mode;
-          receiveBytes = fileBubble.content.receiveBytes;
-          if (receiveBytes > 0) {
-            mode = FileMode.append.toString();
-          } else {
-            mode = FileMode.write.toString();
-          }
-          parameters['mode'] = mode;
-        }
-
-        String path = "";
-        dynamic data;
-
-        if (uri.isScheme("content") && Platform.isAndroid) {
-          final uriContent = UriContent();
-          data = uriContent.getContentStream(uri).chain((stream) async {
-            await _checkCancel(fileBubble.id);
-          }).progress(fileBubble, receiveBytes);
-
-
-        } else {
-          path = uri.toFilePath(windows: Platform.isWindows);
-
-          data = File(path).openRead(receiveBytes, fileSize).chain((stream) async {
-            await _checkCancel(fileBubble.id);
-          }).progress(fileBubble, receiveBytes);
-        }
-
-        final response = await dio.Dio(dio.BaseOptions(baseUrl: ShipUrlHelper.getBaseUrl(fileBubble.to),contentType: "application/octet-stream"))
-            .post(
-          '/file',
-          queryParameters: parameters,
-          data: data,
-        );
-
-        if (response.statusCode == 200) {
-          talker.debug(sendTag, '发送成功 ${response.data.toString()}');
-          updateBubbleShareState(
-              _bubblePool, fileBubble.id, FileState.sendCompleted);
-          if (path.isNotEmpty) {
-            _deleteCachedFile(fileBubble, path);
-          }
-        } else {
-          talker.error(sendTag,
-              '发送失败: status code: ${response.statusCode}, ${response.data.toString()}');
-          updateBubbleShareState(
-              _bubblePool, fileBubble.id, FileState.sendFailed);
-        }
-
-      });
-    } on CancelException catch (e, stackTrace) {
-      talker.warning('发送取消: ', e, stackTrace);
+      final state = await task.wait;
+      final path = state.path;
+      updateBubbleShareState(
+        _bubblePool,
+        fileBubble.id,
+        state.state,
+      );
+      if (path != null && path.isNotEmpty) {
+        _deleteCachedFile(fileBubble, path);
+      }
     } catch (e, stackTrace) {
-      talker.error('发送异常: ', e, stackTrace);
+      talker.error('发送文件异常', e, stackTrace);
       updateBubbleShareState(_bubblePool, fileBubble.id, FileState.sendFailed);
     }
     _removeLongTask();
@@ -515,7 +483,9 @@ class ShipService{
   Future<void> _deleteCachedFile(
       PrimitiveFileBubble fileBubble, String path) async {
     try {
-      if (await isInCacheOrTmpDir(path) && (fileBubble.type == BubbleType.File || fileBubble.type == BubbleType.Directory)) {
+      if (await isInCacheOrTmpDir(path) &&
+          (fileBubble.type == BubbleType.File ||
+              fileBubble.type == BubbleType.Directory)) {
         talker.info('delete cached file: $path');
         await File(path).delete();
         talker.info('delete cached file successfully: $path');
@@ -539,7 +509,8 @@ class ShipService{
       }
 
       if (bubble0 is! PrimitiveFileBubble) {
-        throw StateError('${bubble0.id} Primitive Bubble should be PrimitiveFileBubble');
+        throw StateError(
+            '${bubble0.id} Primitive Bubble should be PrimitiveFileBubble');
       }
       if (bubble0.content.waitingForAccept) {
         throw StateError('${bubble0.id} $bubble0 Bubble should be accept');
@@ -548,7 +519,8 @@ class ShipService{
       await _checkCancel(bubble.id);
       final fileName = request.requestedUri.queryParameters['file_name'];
       assert(fileName != null, '$shareId filename can\'t be null');
-      bubble = (await _bubblePool.findLastById(bubble.id)) as PrimitiveFileBubble?;
+      bubble =
+          (await _bubblePool.findLastById(bubble.id)) as PrimitiveFileBubble?;
       await _checkCancel(bubble!.id);
       try {
         final String desDir = SettingsRepo.instance.savedDir;
@@ -556,7 +528,9 @@ class ShipService{
           assert(fileName != null, "$shareId filename can't be null");
           // safeJoinPaths 相对路径拼接，文件夹发送处理
           await _saveFileAndAddBubble(
-              safeJoinPaths(desDir, bubble?.content.meta.path ?? ''), request, bubble!);
+              safeJoinPaths(desDir, bubble?.content.meta.path ?? ''),
+              request,
+              bubble!);
         });
       } on Error catch (e, s) {
         talker.error('receive file error: ', e, s);
@@ -596,7 +570,8 @@ class ShipService{
       final body = await request.readAsString();
       final intent = TransIntent.fromJson(body);
       final bubble = await _bubblePool.findLastById(intent.bubbleId);
-      talker.debug("_receiveIntent","action = ${intent.action}, bubble = $bubble");
+      talker.debug(
+          "_receiveIntent", "action = ${intent.action}, bubble = $bubble");
       switch (intent.action) {
         case TransAction.confirmReceive:
           if (bubble == null ||
@@ -606,17 +581,16 @@ class ShipService{
           }
           if (bubble is PrimitiveFileBubble) {
             final updatedBubble = await updateBubbleShareState(
-                    _bubblePool, intent.bubbleId, FileState.inTransit,
+                _bubblePool, intent.bubbleId, FileState.inTransit,
                 create: bubble) as PrimitiveFileBubble;
             _sendFileReal(updatedBubble);
           } else if (bubble is PrimitiveDirectoryBubble) {
             final updatedBubble = await updateBubbleShareState(
-                    _bubblePool, intent.bubbleId, FileState.inTransit,
+                _bubblePool, intent.bubbleId, FileState.inTransit,
                 create: bubble) as PrimitiveDirectoryBubble;
-            talker.debug(sendTag,"confirmReceive");
+            talker.debug(sendTag, "confirmReceive");
             for (var element in updatedBubble.content.fileBubbles) {
-              talker.debug(sendTag,
-                  "confirmed start send = $element");
+              talker.debug(sendTag, "confirmed start send = $element");
               await _sendFileReal(element);
             }
           }
@@ -673,22 +647,28 @@ class ShipService{
           var askCode = intent.extra?[Constants.askCode].toString();
           var askDevice = intent.extra?[Constants.askDevice].toString();
           talker.debug('pairDevice',
-              'askPairDevice verifyDevice = $verifyDevice verifyCode = $verifyCode askCode = $askCode  askDevice = $askDevice' );
-          if(verifyDevice == null || verifyDevice != did){
-            return Response.forbidden('device not match return  verifyDevice = $verifyDevice did = $did');
+              'askPairDevice verifyDevice = $verifyDevice verifyCode = $verifyCode askCode = $askCode  askDevice = $askDevice');
+          if (verifyDevice == null || verifyDevice != did) {
+            return Response.forbidden(
+                'device not match return  verifyDevice = $verifyDevice did = $did');
           }
-          var curDevicePairCode = await DeviceProfileRepo.instance.getPairCode();
-          if(verifyCode == null || curDevicePairCode != verifyCode){
-            talker.debug('pairDevice','code = $verifyCode verifyCode = $curDevicePairCode');
-            return Response.forbidden('verifyCode not match return  verifyCode = $verifyCode code = $curDevicePairCode');
+          var curDevicePairCode =
+              await DeviceProfileRepo.instance.getPairCode();
+          if (verifyCode == null || curDevicePairCode != verifyCode) {
+            talker.debug('pairDevice',
+                'code = $verifyCode verifyCode = $curDevicePairCode');
+            return Response.forbidden(
+                'verifyCode not match return  verifyCode = $verifyCode code = $curDevicePairCode');
           }
-          if(askCode == null || askDevice == null){
-            return Response.forbidden('code value is not match  askCode = $askCode  askDevice = $askDevice');
+          if (askCode == null || askDevice == null) {
+            return Response.forbidden(
+                'code value is not match  askCode = $askCode  askDevice = $askDevice');
           }
           //接收方匹配成功，保存询问的设备
           await DeviceManager.instance.addPairDevice(askDevice, askCode);
           //确认成功，并返回请求的验证信息
-          await pairDeviceProcessor.replyPairDevice(intent.deviceId,verifyDevice,verifyCode);
+          await pairDeviceProcessor.replyPairDevice(
+              intent.deviceId, verifyDevice, verifyCode);
           break;
         case TransAction.confirmPairDevice:
           var verifyCode = intent.extra?[Constants.verifyCode].toString();
@@ -697,12 +677,15 @@ class ShipService{
               'confirmPairDevice verifyDevice = ${verifyDevice}  verifyCode = $verifyCode');
           //发起方确认匹配成功
           if (verifyCode != null && verifyDevice != null) {
-             await DeviceManager.instance.addPairDevice(verifyDevice, verifyCode);
+            await DeviceManager.instance
+                .addPairDevice(verifyDevice, verifyCode);
           }
           break;
         case TransAction.deletePairDevice:
-          var deleteDeviceId = intent.extra?[Constants.deleteDeviceId].toString();
-          talker.debug("deletePairDevice","deletePairDevice deleteDeviceId = $deleteDeviceId");
+          var deleteDeviceId =
+              intent.extra?[Constants.deleteDeviceId].toString();
+          talker.debug("deletePairDevice",
+              "deletePairDevice deleteDeviceId = $deleteDeviceId");
           if (deleteDeviceId == null) {
             return Response.forbidden(
                 'askDevice is invalid  askDevice = $deleteDeviceId ');
@@ -710,12 +693,14 @@ class ShipService{
           //接收端删除发送者的 id
           await pairDeviceProcessor.deletePairDevice(intent.deviceId);
           //告诉发送端自己的 id
-          await pairDeviceProcessor.replyDeletePairDevice(intent.deviceId,deleteDeviceId);
+          await pairDeviceProcessor.replyDeletePairDevice(
+              intent.deviceId, deleteDeviceId);
           break;
         case TransAction.confirmDeletePairDevice:
-          talker.debug("deletePairDevice","confirmDeletePairDevice");
-          var deleteDeviceId = intent.extra?[Constants.deleteDeviceId].toString();
-          if(deleteDeviceId == null){
+          talker.debug("deletePairDevice", "confirmDeletePairDevice");
+          var deleteDeviceId =
+              intent.extra?[Constants.deleteDeviceId].toString();
+          if (deleteDeviceId == null) {
             return Response.forbidden(
                 'device not match return  verifyDevice = $deleteDeviceId did = $did');
           }
@@ -743,8 +728,9 @@ class ShipService{
     }
   }
 
-  void _confirmBreakPointFileReal(PrimitiveFileBubble updatedBubble, Object? receiveBytes) {
-     updatedBubble.content.waitingForAccept = false;
+  void _confirmBreakPointFileReal(
+      PrimitiveFileBubble updatedBubble, Object? receiveBytes) {
+    updatedBubble.content.waitingForAccept = false;
     updatedBubble.content.receiveBytes = receiveBytes as int;
     _sendFileReal(updatedBubble);
   }
@@ -766,7 +752,7 @@ class ShipService{
     }
 
     //路径为空时，证明不是文件夹传输，无相对路径，直接填充文件路径
-    if(path == null || path == ""){
+    if (path == null || path == "") {
       path = outFile.path;
     }
 
@@ -789,16 +775,17 @@ class ShipService{
           final AssetEntity? entity;
           if (isImage) {
             entity = await PhotoManager.plugin.saveImageWithPath(outFile.path,
-                title: outFile.path.split("/").last, relativePath: "Pictures/flix");
+                title: outFile.path.split("/").last,
+                relativePath: "Pictures/flix");
           } else {
-            entity = await PhotoManager.plugin
-                .saveVideo(outFile, title: outFile.path.split("/").last, relativePath: "Movies/flix");
+            entity = await PhotoManager.plugin.saveVideo(outFile,
+                title: outFile.path.split("/").last,
+                relativePath: "Movies/flix");
           }
           if (entity == null) {
             talker.error("save to gallery failed");
             return null;
           } else {
-
             final file = await entity.file;
             if (file != null && await file.exists()) {
               // 保证写入相册成功后才删除
@@ -806,9 +793,7 @@ class ShipService{
             }
             return file?.path;
           }
-
         }
-
       } else if (Platform.isIOS) {
         final result = await ImageGallerySaver.saveFile(outFile.path,
             isReturnPathOfIOS: true);
@@ -832,9 +817,11 @@ class ShipService{
     if (receiveBytes > 0 || receiveBytes != bubble.content.meta.size) {
       fileMode = FileMode.append;
     }
-    talker.debug("sendFile",'_saveFile is append = ${fileMode == FileMode.append} receiveBytes = $receiveBytes');
+    talker.debug("sendFile",
+        '_saveFile is append = ${fileMode == FileMode.append} receiveBytes = $receiveBytes');
     //需要传入文件夹，因为文件夹传输需要用到
-    final outFile = await FileUtils.getOrCreateTempWithFolder(desDir,bubble.content.meta.name);
+    final outFile = await FileUtils.getOrCreateTempWithFolder(
+        desDir, bubble.content.meta.name);
     final out = outFile.openWrite(mode: fileMode);
     talker.debug('writing file to ${outFile.path}');
     await request
@@ -846,11 +833,13 @@ class ShipService{
         .pipe(out);
     out.flush();
     out.close();
-    var targetFile = await FileUtils.getTargetFile(desDir, bubble.content.meta.name);
+    var targetFile =
+        await FileUtils.getTargetFile(desDir, bubble.content.meta.name);
     String targetPath = targetFile.path;
-    talker.debug("_saveFile","before rename ${outFile.path} => ${targetFile.path}");
+    talker.debug(
+        "_saveFile", "before rename ${outFile.path} => ${targetFile.path}");
     targetFile = await outFile.rename(targetPath);
-    talker.debug("_saveFile","rename ${outFile.path} => ${targetFile.path}");
+    talker.debug("_saveFile", "rename ${outFile.path} => ${targetFile.path}");
     return targetFile;
   }
 
@@ -903,7 +892,6 @@ class ShipService{
   Future<void> markTaskStopped() async {
     PhysicalLock.releasePhysicalLock();
   }
-
 }
 
 Future<PrimitiveBubble> updateBubbleShareState(
@@ -924,8 +912,7 @@ Future<PrimitiveBubble> updateBubbleShareState(
   } else if (bubble is PrimitiveDirectoryBubble) {
     final PrimitiveDirectoryBubble copyBubble;
     if (waitingForAccept == null) {
-      copyBubble =
-          bubble.copy(content: bubble.content.copy(state: state));
+      copyBubble = bubble.copy(content: bubble.content.copy(state: state));
     } else {
       copyBubble = bubble.copy(
           content: bubble.content
