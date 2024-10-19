@@ -438,7 +438,7 @@ SPEC CHECKSUMS:
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
   downloadsfolder: 84af83492bd9ab8c94109ba56fd202d7469d3632
-  file_picker: 15fd9539e4eb735dc54bae8c0534a7a9511a03de
+  file_picker: 09aa5ec1ab24135ccd7a1621c46c84134bfd6655
   file_selector_ios: f0670c1064a8c8450e38145d8043160105d0b97c
   Firebase: cec914dab6fd7b1bd8ab56ea07ce4e03dd251c2d
   firebase_analytics: 04491d1ee74c8e7c2330c96afc54188a969b06ee

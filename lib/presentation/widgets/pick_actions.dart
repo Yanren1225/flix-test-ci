@@ -8,6 +8,7 @@ import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/presentation/screens/android_apps_screen.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/actions/progress_action.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/android/android_pick_files.dart';
 import 'package:flix/utils/file/file_helper.dart';
@@ -352,7 +353,13 @@ class PickActionAreaState extends State<PickActionsArea> {
         }
       }
     } catch (e, stackTrace) {
+      if (e is FileSystemException) {
+        flixToast.alert("请选择文件夹～");
+      }
       talker.error('pick directory failed', e, stackTrace);
+      setState(() {
+        _isDirectoryLoading = false;
+      });
     }
   }
 }
