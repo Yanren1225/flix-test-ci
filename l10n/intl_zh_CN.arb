@@ -3,5 +3,7 @@
   "app_name": "Flix",
   "@app_name": {
     "description": "软件名称"
-  }
+  },
+  "welcome_message": "这里是 Flix，一个快速简洁的多端互传软件，希望你能喜欢 😆",
+  "@welcome_message": {}
 }
