@@ -2332,23 +2332,116 @@ typedef $$BubbleEntitiesTableUpdateCompanionBuilder = BubbleEntitiesCompanion
   Value<int> rowid,
 });
 
+class $$BubbleEntitiesTableFilterComposer
+    extends Composer<_$AppDatabase, $BubbleEntitiesTable> {
+  $$BubbleEntitiesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get fromDevice => $composableBuilder(
+      column: $table.fromDevice, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get toDevice => $composableBuilder(
+      column: $table.toDevice, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get time => $composableBuilder(
+      column: $table.time, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get groupId => $composableBuilder(
+      column: $table.groupId, builder: (column) => ColumnFilters(column));
+}
+
+class $$BubbleEntitiesTableOrderingComposer
+    extends Composer<_$AppDatabase, $BubbleEntitiesTable> {
+  $$BubbleEntitiesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get fromDevice => $composableBuilder(
+      column: $table.fromDevice, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get toDevice => $composableBuilder(
+      column: $table.toDevice, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get time => $composableBuilder(
+      column: $table.time, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get groupId => $composableBuilder(
+      column: $table.groupId, builder: (column) => ColumnOrderings(column));
+}
+
+class $$BubbleEntitiesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $BubbleEntitiesTable> {
+  $$BubbleEntitiesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get fromDevice => $composableBuilder(
+      column: $table.fromDevice, builder: (column) => column);
+
+  GeneratedColumn<String> get toDevice =>
+      $composableBuilder(column: $table.toDevice, builder: (column) => column);
+
+  GeneratedColumn<int> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<int> get time =>
+      $composableBuilder(column: $table.time, builder: (column) => column);
+
+  GeneratedColumn<String> get groupId =>
+      $composableBuilder(column: $table.groupId, builder: (column) => column);
+}
+
 class $$BubbleEntitiesTableTableManager extends RootTableManager<
     _$AppDatabase,
     $BubbleEntitiesTable,
     BubbleEntity,
     $$BubbleEntitiesTableFilterComposer,
     $$BubbleEntitiesTableOrderingComposer,
+    $$BubbleEntitiesTableAnnotationComposer,
     $$BubbleEntitiesTableCreateCompanionBuilder,
-    $$BubbleEntitiesTableUpdateCompanionBuilder> {
+    $$BubbleEntitiesTableUpdateCompanionBuilder,
+    (
+      BubbleEntity,
+      BaseReferences<_$AppDatabase, $BubbleEntitiesTable, BubbleEntity>
+    ),
+    BubbleEntity,
+    PrefetchHooks Function()> {
   $$BubbleEntitiesTableTableManager(
       _$AppDatabase db, $BubbleEntitiesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$BubbleEntitiesTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$BubbleEntitiesTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$BubbleEntitiesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$BubbleEntitiesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$BubbleEntitiesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> fromDevice = const Value.absent(),
@@ -2385,77 +2478,28 @@ class $$BubbleEntitiesTableTableManager extends RootTableManager<
             groupId: groupId,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$BubbleEntitiesTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $BubbleEntitiesTable> {
-  $$BubbleEntitiesTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get fromDevice => $state.composableBuilder(
-      column: $state.table.fromDevice,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get toDevice => $state.composableBuilder(
-      column: $state.table.toDevice,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get time => $state.composableBuilder(
-      column: $state.table.time,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get groupId => $state.composableBuilder(
-      column: $state.table.groupId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$BubbleEntitiesTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $BubbleEntitiesTable> {
-  $$BubbleEntitiesTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get fromDevice => $state.composableBuilder(
-      column: $state.table.fromDevice,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get toDevice => $state.composableBuilder(
-      column: $state.table.toDevice,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get time => $state.composableBuilder(
-      column: $state.table.time,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get groupId => $state.composableBuilder(
-      column: $state.table.groupId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
+typedef $$BubbleEntitiesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $BubbleEntitiesTable,
+    BubbleEntity,
+    $$BubbleEntitiesTableFilterComposer,
+    $$BubbleEntitiesTableOrderingComposer,
+    $$BubbleEntitiesTableAnnotationComposer,
+    $$BubbleEntitiesTableCreateCompanionBuilder,
+    $$BubbleEntitiesTableUpdateCompanionBuilder,
+    (
+      BubbleEntity,
+      BaseReferences<_$AppDatabase, $BubbleEntitiesTable, BubbleEntity>
+    ),
+    BubbleEntity,
+    PrefetchHooks Function()>;
 typedef $$TextContentsTableCreateCompanionBuilder = TextContentsCompanion
     Function({
   required String id,
@@ -2469,22 +2513,79 @@ typedef $$TextContentsTableUpdateCompanionBuilder = TextContentsCompanion
   Value<int> rowid,
 });
 
+class $$TextContentsTableFilterComposer
+    extends Composer<_$AppDatabase, $TextContentsTable> {
+  $$TextContentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnFilters(column));
+}
+
+class $$TextContentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $TextContentsTable> {
+  $$TextContentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get content => $composableBuilder(
+      column: $table.content, builder: (column) => ColumnOrderings(column));
+}
+
+class $$TextContentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TextContentsTable> {
+  $$TextContentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get content =>
+      $composableBuilder(column: $table.content, builder: (column) => column);
+}
+
 class $$TextContentsTableTableManager extends RootTableManager<
     _$AppDatabase,
     $TextContentsTable,
     TextContent,
     $$TextContentsTableFilterComposer,
     $$TextContentsTableOrderingComposer,
+    $$TextContentsTableAnnotationComposer,
     $$TextContentsTableCreateCompanionBuilder,
-    $$TextContentsTableUpdateCompanionBuilder> {
+    $$TextContentsTableUpdateCompanionBuilder,
+    (
+      TextContent,
+      BaseReferences<_$AppDatabase, $TextContentsTable, TextContent>
+    ),
+    TextContent,
+    PrefetchHooks Function()> {
   $$TextContentsTableTableManager(_$AppDatabase db, $TextContentsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$TextContentsTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$TextContentsTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$TextContentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TextContentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TextContentsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> content = const Value.absent(),
@@ -2505,37 +2606,28 @@ class $$TextContentsTableTableManager extends RootTableManager<
             content: content,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$TextContentsTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $TextContentsTable> {
-  $$TextContentsTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$TextContentsTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $TextContentsTable> {
-  $$TextContentsTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get content => $state.composableBuilder(
-      column: $state.table.content,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
+typedef $$TextContentsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $TextContentsTable,
+    TextContent,
+    $$TextContentsTableFilterComposer,
+    $$TextContentsTableOrderingComposer,
+    $$TextContentsTableAnnotationComposer,
+    $$TextContentsTableCreateCompanionBuilder,
+    $$TextContentsTableUpdateCompanionBuilder,
+    (
+      TextContent,
+      BaseReferences<_$AppDatabase, $TextContentsTable, TextContent>
+    ),
+    TextContent,
+    PrefetchHooks Function()>;
 typedef $$FileContentsTableCreateCompanionBuilder = FileContentsCompanion
     Function({
   required String id,
@@ -2573,22 +2665,191 @@ typedef $$FileContentsTableUpdateCompanionBuilder = FileContentsCompanion
   Value<int> rowid,
 });
 
+class $$FileContentsTableFilterComposer
+    extends Composer<_$AppDatabase, $FileContentsTable> {
+  $$FileContentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get groupId => $composableBuilder(
+      column: $table.groupId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get resourceId => $composableBuilder(
+      column: $table.resourceId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get mimeType => $composableBuilder(
+      column: $table.mimeType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get nameWithSuffix => $composableBuilder(
+      column: $table.nameWithSuffix,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get size => $composableBuilder(
+      column: $table.size, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get path => $composableBuilder(
+      column: $table.path, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get state => $composableBuilder(
+      column: $table.state, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get progress => $composableBuilder(
+      column: $table.progress, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get speed => $composableBuilder(
+      column: $table.speed, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get width => $composableBuilder(
+      column: $table.width, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get height => $composableBuilder(
+      column: $table.height, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get waitingForAccept => $composableBuilder(
+      column: $table.waitingForAccept,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $$FileContentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $FileContentsTable> {
+  $$FileContentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get groupId => $composableBuilder(
+      column: $table.groupId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get resourceId => $composableBuilder(
+      column: $table.resourceId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get mimeType => $composableBuilder(
+      column: $table.mimeType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get nameWithSuffix => $composableBuilder(
+      column: $table.nameWithSuffix,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get size => $composableBuilder(
+      column: $table.size, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get path => $composableBuilder(
+      column: $table.path, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get state => $composableBuilder(
+      column: $table.state, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get progress => $composableBuilder(
+      column: $table.progress, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get speed => $composableBuilder(
+      column: $table.speed, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get width => $composableBuilder(
+      column: $table.width, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get height => $composableBuilder(
+      column: $table.height, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get waitingForAccept => $composableBuilder(
+      column: $table.waitingForAccept,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$FileContentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FileContentsTable> {
+  $$FileContentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get groupId =>
+      $composableBuilder(column: $table.groupId, builder: (column) => column);
+
+  GeneratedColumn<String> get resourceId => $composableBuilder(
+      column: $table.resourceId, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get mimeType =>
+      $composableBuilder(column: $table.mimeType, builder: (column) => column);
+
+  GeneratedColumn<String> get nameWithSuffix => $composableBuilder(
+      column: $table.nameWithSuffix, builder: (column) => column);
+
+  GeneratedColumn<int> get size =>
+      $composableBuilder(column: $table.size, builder: (column) => column);
+
+  GeneratedColumn<String> get path =>
+      $composableBuilder(column: $table.path, builder: (column) => column);
+
+  GeneratedColumn<int> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+
+  GeneratedColumn<double> get progress =>
+      $composableBuilder(column: $table.progress, builder: (column) => column);
+
+  GeneratedColumn<int> get speed =>
+      $composableBuilder(column: $table.speed, builder: (column) => column);
+
+  GeneratedColumn<int> get width =>
+      $composableBuilder(column: $table.width, builder: (column) => column);
+
+  GeneratedColumn<int> get height =>
+      $composableBuilder(column: $table.height, builder: (column) => column);
+
+  GeneratedColumn<bool> get waitingForAccept => $composableBuilder(
+      column: $table.waitingForAccept, builder: (column) => column);
+}
+
 class $$FileContentsTableTableManager extends RootTableManager<
     _$AppDatabase,
     $FileContentsTable,
     FileContent,
     $$FileContentsTableFilterComposer,
     $$FileContentsTableOrderingComposer,
+    $$FileContentsTableAnnotationComposer,
     $$FileContentsTableCreateCompanionBuilder,
-    $$FileContentsTableUpdateCompanionBuilder> {
+    $$FileContentsTableUpdateCompanionBuilder,
+    (
+      FileContent,
+      BaseReferences<_$AppDatabase, $FileContentsTable, FileContent>
+    ),
+    FileContent,
+    PrefetchHooks Function()> {
   $$FileContentsTableTableManager(_$AppDatabase db, $FileContentsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$FileContentsTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$FileContentsTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$FileContentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FileContentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FileContentsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> groupId = const Value.absent(),
@@ -2657,157 +2918,28 @@ class $$FileContentsTableTableManager extends RootTableManager<
             waitingForAccept: waitingForAccept,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$FileContentsTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $FileContentsTable> {
-  $$FileContentsTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get groupId => $state.composableBuilder(
-      column: $state.table.groupId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get resourceId => $state.composableBuilder(
-      column: $state.table.resourceId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get mimeType => $state.composableBuilder(
-      column: $state.table.mimeType,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get nameWithSuffix => $state.composableBuilder(
-      column: $state.table.nameWithSuffix,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get size => $state.composableBuilder(
-      column: $state.table.size,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get path => $state.composableBuilder(
-      column: $state.table.path,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get state => $state.composableBuilder(
-      column: $state.table.state,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<double> get progress => $state.composableBuilder(
-      column: $state.table.progress,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get speed => $state.composableBuilder(
-      column: $state.table.speed,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get width => $state.composableBuilder(
-      column: $state.table.width,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get height => $state.composableBuilder(
-      column: $state.table.height,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get waitingForAccept => $state.composableBuilder(
-      column: $state.table.waitingForAccept,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$FileContentsTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $FileContentsTable> {
-  $$FileContentsTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get groupId => $state.composableBuilder(
-      column: $state.table.groupId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get resourceId => $state.composableBuilder(
-      column: $state.table.resourceId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get mimeType => $state.composableBuilder(
-      column: $state.table.mimeType,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get nameWithSuffix => $state.composableBuilder(
-      column: $state.table.nameWithSuffix,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get size => $state.composableBuilder(
-      column: $state.table.size,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get path => $state.composableBuilder(
-      column: $state.table.path,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get state => $state.composableBuilder(
-      column: $state.table.state,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<double> get progress => $state.composableBuilder(
-      column: $state.table.progress,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get speed => $state.composableBuilder(
-      column: $state.table.speed,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get width => $state.composableBuilder(
-      column: $state.table.width,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get height => $state.composableBuilder(
-      column: $state.table.height,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get waitingForAccept => $state.composableBuilder(
-      column: $state.table.waitingForAccept,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
+typedef $$FileContentsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $FileContentsTable,
+    FileContent,
+    $$FileContentsTableFilterComposer,
+    $$FileContentsTableOrderingComposer,
+    $$FileContentsTableAnnotationComposer,
+    $$FileContentsTableCreateCompanionBuilder,
+    $$FileContentsTableUpdateCompanionBuilder,
+    (
+      FileContent,
+      BaseReferences<_$AppDatabase, $FileContentsTable, FileContent>
+    ),
+    FileContent,
+    PrefetchHooks Function()>;
 typedef $$PersistenceDevicesTableCreateCompanionBuilder
     = PersistenceDevicesCompanion Function({
   required String alias,
@@ -2835,23 +2967,146 @@ typedef $$PersistenceDevicesTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+class $$PersistenceDevicesTableFilterComposer
+    extends Composer<_$AppDatabase, $PersistenceDevicesTable> {
+  $$PersistenceDevicesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get alias => $composableBuilder(
+      column: $table.alias, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get deviceModel => $composableBuilder(
+      column: $table.deviceModel, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get deviceType => $composableBuilder(
+      column: $table.deviceType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get fingerprint => $composableBuilder(
+      column: $table.fingerprint, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get port => $composableBuilder(
+      column: $table.port, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get version => $composableBuilder(
+      column: $table.version, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get ip => $composableBuilder(
+      column: $table.ip, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get host => $composableBuilder(
+      column: $table.host, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get insertOrUpdateTime => $composableBuilder(
+      column: $table.insertOrUpdateTime,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $$PersistenceDevicesTableOrderingComposer
+    extends Composer<_$AppDatabase, $PersistenceDevicesTable> {
+  $$PersistenceDevicesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get alias => $composableBuilder(
+      column: $table.alias, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get deviceModel => $composableBuilder(
+      column: $table.deviceModel, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get deviceType => $composableBuilder(
+      column: $table.deviceType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get fingerprint => $composableBuilder(
+      column: $table.fingerprint, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get port => $composableBuilder(
+      column: $table.port, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get version => $composableBuilder(
+      column: $table.version, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get ip => $composableBuilder(
+      column: $table.ip, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get host => $composableBuilder(
+      column: $table.host, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get insertOrUpdateTime => $composableBuilder(
+      column: $table.insertOrUpdateTime,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$PersistenceDevicesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PersistenceDevicesTable> {
+  $$PersistenceDevicesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get alias =>
+      $composableBuilder(column: $table.alias, builder: (column) => column);
+
+  GeneratedColumn<String> get deviceModel => $composableBuilder(
+      column: $table.deviceModel, builder: (column) => column);
+
+  GeneratedColumn<int> get deviceType => $composableBuilder(
+      column: $table.deviceType, builder: (column) => column);
+
+  GeneratedColumn<String> get fingerprint => $composableBuilder(
+      column: $table.fingerprint, builder: (column) => column);
+
+  GeneratedColumn<int> get port =>
+      $composableBuilder(column: $table.port, builder: (column) => column);
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<String> get ip =>
+      $composableBuilder(column: $table.ip, builder: (column) => column);
+
+  GeneratedColumn<String> get host =>
+      $composableBuilder(column: $table.host, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get insertOrUpdateTime => $composableBuilder(
+      column: $table.insertOrUpdateTime, builder: (column) => column);
+}
+
 class $$PersistenceDevicesTableTableManager extends RootTableManager<
     _$AppDatabase,
     $PersistenceDevicesTable,
     PersistenceDevice,
     $$PersistenceDevicesTableFilterComposer,
     $$PersistenceDevicesTableOrderingComposer,
+    $$PersistenceDevicesTableAnnotationComposer,
     $$PersistenceDevicesTableCreateCompanionBuilder,
-    $$PersistenceDevicesTableUpdateCompanionBuilder> {
+    $$PersistenceDevicesTableUpdateCompanionBuilder,
+    (
+      PersistenceDevice,
+      BaseReferences<_$AppDatabase, $PersistenceDevicesTable, PersistenceDevice>
+    ),
+    PersistenceDevice,
+    PrefetchHooks Function()> {
   $$PersistenceDevicesTableTableManager(
       _$AppDatabase db, $PersistenceDevicesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$PersistenceDevicesTableFilterComposer(ComposerState(db, table)),
-          orderingComposer: $$PersistenceDevicesTableOrderingComposer(
-              ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$PersistenceDevicesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PersistenceDevicesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PersistenceDevicesTableAnnotationComposer(
+                  $db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> alias = const Value.absent(),
             Value<String?> deviceModel = const Value.absent(),
@@ -2900,107 +3155,28 @@ class $$PersistenceDevicesTableTableManager extends RootTableManager<
             insertOrUpdateTime: insertOrUpdateTime,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$PersistenceDevicesTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $PersistenceDevicesTable> {
-  $$PersistenceDevicesTableFilterComposer(super.$state);
-  ColumnFilters<String> get alias => $state.composableBuilder(
-      column: $state.table.alias,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get deviceModel => $state.composableBuilder(
-      column: $state.table.deviceModel,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get deviceType => $state.composableBuilder(
-      column: $state.table.deviceType,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get fingerprint => $state.composableBuilder(
-      column: $state.table.fingerprint,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get port => $state.composableBuilder(
-      column: $state.table.port,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get version => $state.composableBuilder(
-      column: $state.table.version,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get ip => $state.composableBuilder(
-      column: $state.table.ip,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get host => $state.composableBuilder(
-      column: $state.table.host,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get insertOrUpdateTime => $state.composableBuilder(
-      column: $state.table.insertOrUpdateTime,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$PersistenceDevicesTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $PersistenceDevicesTable> {
-  $$PersistenceDevicesTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get alias => $state.composableBuilder(
-      column: $state.table.alias,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get deviceModel => $state.composableBuilder(
-      column: $state.table.deviceModel,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get deviceType => $state.composableBuilder(
-      column: $state.table.deviceType,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get fingerprint => $state.composableBuilder(
-      column: $state.table.fingerprint,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get port => $state.composableBuilder(
-      column: $state.table.port,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get version => $state.composableBuilder(
-      column: $state.table.version,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get ip => $state.composableBuilder(
-      column: $state.table.ip,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get host => $state.composableBuilder(
-      column: $state.table.host,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get insertOrUpdateTime => $state.composableBuilder(
-      column: $state.table.insertOrUpdateTime,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
+typedef $$PersistenceDevicesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $PersistenceDevicesTable,
+    PersistenceDevice,
+    $$PersistenceDevicesTableFilterComposer,
+    $$PersistenceDevicesTableOrderingComposer,
+    $$PersistenceDevicesTableAnnotationComposer,
+    $$PersistenceDevicesTableCreateCompanionBuilder,
+    $$PersistenceDevicesTableUpdateCompanionBuilder,
+    (
+      PersistenceDevice,
+      BaseReferences<_$AppDatabase, $PersistenceDevicesTable, PersistenceDevice>
+    ),
+    PersistenceDevice,
+    PrefetchHooks Function()>;
 typedef $$PairDevicesTableCreateCompanionBuilder = PairDevicesCompanion
     Function({
   required String fingerprint,
@@ -3016,22 +3192,87 @@ typedef $$PairDevicesTableUpdateCompanionBuilder = PairDevicesCompanion
   Value<int> rowid,
 });
 
+class $$PairDevicesTableFilterComposer
+    extends Composer<_$AppDatabase, $PairDevicesTable> {
+  $$PairDevicesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get fingerprint => $composableBuilder(
+      column: $table.fingerprint, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get code => $composableBuilder(
+      column: $table.code, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get insertOrUpdateTime => $composableBuilder(
+      column: $table.insertOrUpdateTime,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $$PairDevicesTableOrderingComposer
+    extends Composer<_$AppDatabase, $PairDevicesTable> {
+  $$PairDevicesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get fingerprint => $composableBuilder(
+      column: $table.fingerprint, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get code => $composableBuilder(
+      column: $table.code, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get insertOrUpdateTime => $composableBuilder(
+      column: $table.insertOrUpdateTime,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$PairDevicesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PairDevicesTable> {
+  $$PairDevicesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get fingerprint => $composableBuilder(
+      column: $table.fingerprint, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get insertOrUpdateTime => $composableBuilder(
+      column: $table.insertOrUpdateTime, builder: (column) => column);
+}
+
 class $$PairDevicesTableTableManager extends RootTableManager<
     _$AppDatabase,
     $PairDevicesTable,
     PairDevice,
     $$PairDevicesTableFilterComposer,
     $$PairDevicesTableOrderingComposer,
+    $$PairDevicesTableAnnotationComposer,
     $$PairDevicesTableCreateCompanionBuilder,
-    $$PairDevicesTableUpdateCompanionBuilder> {
+    $$PairDevicesTableUpdateCompanionBuilder,
+    (PairDevice, BaseReferences<_$AppDatabase, $PairDevicesTable, PairDevice>),
+    PairDevice,
+    PrefetchHooks Function()> {
   $$PairDevicesTableTableManager(_$AppDatabase db, $PairDevicesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$PairDevicesTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$PairDevicesTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$PairDevicesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PairDevicesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PairDevicesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> fingerprint = const Value.absent(),
             Value<String> code = const Value.absent(),
@@ -3056,47 +3297,25 @@ class $$PairDevicesTableTableManager extends RootTableManager<
             insertOrUpdateTime: insertOrUpdateTime,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$PairDevicesTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $PairDevicesTable> {
-  $$PairDevicesTableFilterComposer(super.$state);
-  ColumnFilters<String> get fingerprint => $state.composableBuilder(
-      column: $state.table.fingerprint,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get code => $state.composableBuilder(
-      column: $state.table.code,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get insertOrUpdateTime => $state.composableBuilder(
-      column: $state.table.insertOrUpdateTime,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$PairDevicesTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $PairDevicesTable> {
-  $$PairDevicesTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get fingerprint => $state.composableBuilder(
-      column: $state.table.fingerprint,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get code => $state.composableBuilder(
-      column: $state.table.code,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get insertOrUpdateTime => $state.composableBuilder(
-      column: $state.table.insertOrUpdateTime,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
+typedef $$PairDevicesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $PairDevicesTable,
+    PairDevice,
+    $$PairDevicesTableFilterComposer,
+    $$PairDevicesTableOrderingComposer,
+    $$PairDevicesTableAnnotationComposer,
+    $$PairDevicesTableCreateCompanionBuilder,
+    $$PairDevicesTableUpdateCompanionBuilder,
+    (PairDevice, BaseReferences<_$AppDatabase, $PairDevicesTable, PairDevice>),
+    PairDevice,
+    PrefetchHooks Function()>;
 typedef $$DirectoryContentsTableCreateCompanionBuilder
     = DirectoryContentsCompanion Function({
   required String id,
@@ -3118,23 +3337,119 @@ typedef $$DirectoryContentsTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+class $$DirectoryContentsTableFilterComposer
+    extends Composer<_$AppDatabase, $DirectoryContentsTable> {
+  $$DirectoryContentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get size => $composableBuilder(
+      column: $table.size, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get state => $composableBuilder(
+      column: $table.state, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get path => $composableBuilder(
+      column: $table.path, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get waitingForAccept => $composableBuilder(
+      column: $table.waitingForAccept,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $$DirectoryContentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $DirectoryContentsTable> {
+  $$DirectoryContentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get size => $composableBuilder(
+      column: $table.size, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get state => $composableBuilder(
+      column: $table.state, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get path => $composableBuilder(
+      column: $table.path, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get waitingForAccept => $composableBuilder(
+      column: $table.waitingForAccept,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$DirectoryContentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DirectoryContentsTable> {
+  $$DirectoryContentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get size =>
+      $composableBuilder(column: $table.size, builder: (column) => column);
+
+  GeneratedColumn<int> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+
+  GeneratedColumn<String> get path =>
+      $composableBuilder(column: $table.path, builder: (column) => column);
+
+  GeneratedColumn<bool> get waitingForAccept => $composableBuilder(
+      column: $table.waitingForAccept, builder: (column) => column);
+}
+
 class $$DirectoryContentsTableTableManager extends RootTableManager<
     _$AppDatabase,
     $DirectoryContentsTable,
     DirectoryContent,
     $$DirectoryContentsTableFilterComposer,
     $$DirectoryContentsTableOrderingComposer,
+    $$DirectoryContentsTableAnnotationComposer,
     $$DirectoryContentsTableCreateCompanionBuilder,
-    $$DirectoryContentsTableUpdateCompanionBuilder> {
+    $$DirectoryContentsTableUpdateCompanionBuilder,
+    (
+      DirectoryContent,
+      BaseReferences<_$AppDatabase, $DirectoryContentsTable, DirectoryContent>
+    ),
+    DirectoryContent,
+    PrefetchHooks Function()> {
   $$DirectoryContentsTableTableManager(
       _$AppDatabase db, $DirectoryContentsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$DirectoryContentsTableFilterComposer(ComposerState(db, table)),
-          orderingComposer: $$DirectoryContentsTableOrderingComposer(
-              ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$DirectoryContentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DirectoryContentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DirectoryContentsTableAnnotationComposer(
+                  $db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> name = const Value.absent(),
@@ -3171,76 +3486,28 @@ class $$DirectoryContentsTableTableManager extends RootTableManager<
             waitingForAccept: waitingForAccept,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
         ));
 }
 
-class $$DirectoryContentsTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $DirectoryContentsTable> {
-  $$DirectoryContentsTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get size => $state.composableBuilder(
-      column: $state.table.size,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get state => $state.composableBuilder(
-      column: $state.table.state,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get path => $state.composableBuilder(
-      column: $state.table.path,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get waitingForAccept => $state.composableBuilder(
-      column: $state.table.waitingForAccept,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$DirectoryContentsTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $DirectoryContentsTable> {
-  $$DirectoryContentsTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get size => $state.composableBuilder(
-      column: $state.table.size,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get state => $state.composableBuilder(
-      column: $state.table.state,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get path => $state.composableBuilder(
-      column: $state.table.path,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get waitingForAccept => $state.composableBuilder(
-      column: $state.table.waitingForAccept,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
+typedef $$DirectoryContentsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $DirectoryContentsTable,
+    DirectoryContent,
+    $$DirectoryContentsTableFilterComposer,
+    $$DirectoryContentsTableOrderingComposer,
+    $$DirectoryContentsTableAnnotationComposer,
+    $$DirectoryContentsTableCreateCompanionBuilder,
+    $$DirectoryContentsTableUpdateCompanionBuilder,
+    (
+      DirectoryContent,
+      BaseReferences<_$AppDatabase, $DirectoryContentsTable, DirectoryContent>
+    ),
+    DirectoryContent,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;

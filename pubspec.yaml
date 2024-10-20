@@ -221,6 +221,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
   drift_dev: ^2.15.0
+  intl_utils: ^2.8.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -258,4 +259,12 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+  generate: true
+
+flutter_intl:
+  enabled: true
+  main_locale: zh_CN
+  output_dir: lib/l10n
+  arb_dir: l10n
 

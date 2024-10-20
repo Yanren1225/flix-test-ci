@@ -41,10 +41,10 @@ class TransActionMapper extends EnumMapper<TransAction> {
         return TransAction.confirmDeletePairDevice;
       case 'clipboard':
         return TransAction.clipboard;
-      case 'cancel':
-        return TransAction.cancel;
       case 'reReceive':
         return TransAction.reReceive;
+      case 'cancel':
+        return TransAction.cancel;
       default:
         throw MapperException.unknownEnumValue(value);
     }
@@ -69,10 +69,10 @@ class TransActionMapper extends EnumMapper<TransAction> {
         return 'confirmDeletePairDevice';
       case TransAction.clipboard:
         return 'clipboard';
-      case TransAction.cancel:
-        return 'cancel';
       case TransAction.reReceive:
         return 'reReceive';
+      case TransAction.cancel:
+        return 'cancel';
     }
   }
 }

@@ -23,6 +23,7 @@ import 'package:flix/domain/ship_server/ship_service_lifecycle_watcher.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/domain/window/flix_window_manager.dart';
+import 'package:flix/l10n/l10n.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/concert/concert_screen.dart';
@@ -94,6 +95,7 @@ Future<void> main(List<String> arguments) async {
     runApp(const WithForegroundTask(child: MyApp()));
   } catch (e, s) {
     talker.error('launch error', e, s);
+
 
     runApp(MaterialApp(
         home: Center(
@@ -330,10 +332,11 @@ class MyAppState extends State<MyApp> {
                       : darkMode.data ?? false;
 
                   return MaterialApp(
-                    title: 'Flix',
+                    onGenerateTitle: (context) => S.of(context).app_name,
                     navigatorObservers: [modalsRouteObserver],
                     navigatorKey: navigatorKey,
                     localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+                      S.delegate,
                       GlobalMaterialLocalizations.delegate,
                       GlobalWidgetsLocalizations.delegate,
                       GlobalCupertinoLocalizations.delegate,
