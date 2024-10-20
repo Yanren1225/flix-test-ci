@@ -154,7 +154,21 @@ class AboutUSScreenState extends State<AboutUSScreen> {
                 talker.error('join qq error', error, stackTrace);
               });
             }),
+
+            const TextSpan(text: '\n用户QQ群3:\n'),
+            ClickableSpan('779244909', () {
+              final Uri url = Uri.parse(
+                  'https://qm.qq.com/cgi-bin/qm/qr?k=rnAZO7i9qmK4iBJLUT7SMYq4mP-03yaQ&jump_from=webapi&qr=1');
+              launchUrl(url).then((value) {
+                if (!value) {
+                  talker.error('join qq error');
+                }
+              }).onError((error, stackTrace) {
+                talker.error('join qq error', error, stackTrace);
+              });
+            }),
           ],
+
           style: TextStyle(
                   color: Theme.of(context).flixColors.text.primary,
                   fontSize: 16,
