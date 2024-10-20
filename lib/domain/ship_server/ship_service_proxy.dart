@@ -1,9 +1,6 @@
 import 'dart:async';
 
 import 'package:flix/domain/bubble_pool.dart';
-import 'package:flix/domain/constants.dart';
-import 'package:flix/domain/database/database.dart';
-import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -12,16 +9,13 @@ import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
-import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/network/protocol/device_modal.dart';
-import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/utils/bubble_convert.dart';
 
 import '../../utils/compat/compat_util.dart';
 
-class ShipServiceProxy extends ApInterface {
+class ShipServiceProxy{
   final syncTasks = <String, Completer>{};
-  PongListener? _pongListener;
   final _serverReadyTask = Completer<bool>();
   final ShipService _shipService =
       ShipService(did: DeviceProfileRepo.instance.did);
@@ -41,17 +35,6 @@ class ShipServiceProxy extends ApInterface {
     var isComplete = await _shipService.startShipService();
     _serverReadyTask.complete(isComplete);
     return isComplete;
-  }
-
-  @override
-  void listenPong(PongListener listener) {
-    _shipService.listenPong(listener);
-  }
-
-  @override
-  Future<void> pong(DeviceModal from, DeviceModal to) async {
-    await _awaitServerReady();
-    _shipService.pong(from, to);
   }
 
   Future<void> send(UIBubble uiBubble) async {
@@ -109,12 +92,9 @@ class ShipServiceProxy extends ApInterface {
   }
 
   Future<void> cancelSend(UIBubble uiBubble) async {
+    talker.debug("cancelSend 3");
     await _awaitServerReady();
-    _shipService.cancelSend(fromUIBubble(uiBubble));
-  }
-
-  void receivePong(Pong pong) {
-    _pongListener?.call(pong);
+    await _shipService.cancelSend(fromUIBubble(uiBubble));
   }
 
   Future<bool> _awaitServerReady() async {
@@ -150,6 +130,11 @@ class ShipServiceProxy extends ApInterface {
         _shipService.sendClipboard(element.fingerprint,lastText);
       }
     }
+  }
+
+
+  String getDid() {
+    return _shipService.did;
   }
 }
 

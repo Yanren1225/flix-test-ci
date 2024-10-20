@@ -2,10 +2,11 @@ import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
-import 'package:flix/model/database/device/pair_devices.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/iterable_extension.dart';
+import 'package:flix/utils/net/net_utils.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../network/protocol/device_modal.dart';
 
@@ -43,6 +44,16 @@ class DeviceManager {
       deviceList.addAll(devices);
       notifyDeviceListChanged();
     });
+  }
+
+  void clearDevicesExcludeManual() {
+    var manualDevices = deviceList.where((device) {
+      return device.from == DeviceFrom.manual;
+    }).toList();
+    deviceDiscover.clearDevices();
+    deviceList.clear();
+    deviceList.addAll(manualDevices);
+    notifyDeviceListChanged();
   }
 
   void clearDevices() {
@@ -84,6 +95,32 @@ class DeviceManager {
     deviceListChangeListeners.add(onDeviceListChanged);
   }
 
+  bool addDevice(DeviceModal device) {
+    if (device.fingerprint == DeviceProfileRepo.instance.did) {
+      talker.debug("addDevice failed is myself");
+      return false;
+    }
+    var containDevice = findDevice(device);
+    if(containDevice != null){
+      deviceList.remove(containDevice);
+    }
+    deviceList.add(DeviceModal.getUpdateDeviceModal(device));
+    appDatabase.devicesDao.insertDevice(device);
+    notifyDeviceListChanged();
+    return true;
+  }
+
+  bool deleteDevice(DeviceModal device) {
+    var containDevice = findDevice(device);
+    if (containDevice != null) {
+      deviceList.remove(containDevice);
+    } else {
+      return false;
+    }
+    notifyDeviceListChanged();
+    return true;
+  }
+
   void removeDeviceListChangeListener(OnDeviceListChanged onDeviceListChanged) {
     deviceListChangeListeners.remove(onDeviceListChanged);
   }
@@ -97,16 +134,23 @@ class DeviceManager {
     historyChangeListeners.remove(onDeviceListChanged);
   }
 
-  void addPairDeviceChangeListener(OnPairDeviceListChanged onPairDeviceListChanged){
+  void addPairDeviceChangeListener(
+      OnPairDeviceListChanged onPairDeviceListChanged) {
     pairDeviceChangeListeners.add(onPairDeviceListChanged);
   }
 
-  void removePairDeviceChangeListener(OnPairDeviceListChanged onPairDeviceListChanged){
+  void removePairDeviceChangeListener(
+      OnPairDeviceListChanged onPairDeviceListChanged) {
     pairDeviceChangeListeners.remove(onPairDeviceListChanged);
   }
 
   String? getNetAdressByDeviceId(String id) {
-    return deviceDiscover.getNetAdressByDeviceId(id);
+    for (var device in DeviceManager.instance.deviceList) {
+      if (device.fingerprint == id) {
+        return toNetAddress(device.ip, device.port);
+      }
+    }
+    return null;
   }
 
   DeviceInfo? getDeviceInfoById(String id) {
@@ -120,22 +164,34 @@ class DeviceManager {
   }
 
   void _watchHistory() {
-    appDatabase.devicesDao.watchDevices().listen((history) async {
+    CombineLatestStream.combine2(appDatabase.devicesDao.watchDevices(), appDatabase.bubblesDao.watchBubblesNumber(), (devices, bubbleCountMap) {
+      devices.removeWhere((device) {
+        final count = bubbleCountMap[device.fingerprint] ?? 0;
+        return count == 0;
+      });
+      return devices;
+    }).listen((value) {
       history.clear();
       talker.debug("_watchHistory start");
-      // 在前端去重，当在线设备变化时，可以再次去重
-      // event.removeWhere((element) => deviceList.contains(element));
-      for (int i = history.length - 1; i >= 0; i--) {
-        var element = history[i];
-        var bubbleCount = await appDatabase.bubblesDao
-            .queryDeviceBubbleCount(element.fingerprint);
-        if (bubbleCount == 0) {
-          history.remove(element);
-        }
-      }
-      history.addAll(history);
+      history.addAll(value);
       notifyHistoryChanged();
     });
+    // appDatabase.devicesDao.watchDevices().listen((watchHistory) async {
+    //   history.clear();
+    //   talker.debug("_watchHistory start");
+    //   // 在前端去重，当在线设备变化时，可以再次去重
+    //   // event.removeWhere((element) => deviceList.contains(element));
+    //   for (int i = watchHistory.length - 1; i >= 0; i--) {
+    //     var element = watchHistory[i];
+    //     var bubbleCount = await appDatabase.bubblesDao
+    //         .queryDeviceBubbleCount(element.fingerprint);
+    //     if (bubbleCount == 0) {
+    //       watchHistory.remove(element);
+    //     }
+    //   }
+    //   history.addAll(watchHistory);
+    //   notifyHistoryChanged();
+    // });
   }
 
   Future<void> _watchPairDevices() async {
@@ -164,7 +220,16 @@ class DeviceManager {
   }
 
   Future<void> deletePairDevice(String deviceId) async {
-      return await appDatabase.pairDevicesDao.deletePairDevice(deviceId);
+    return await appDatabase.pairDevicesDao.deletePairDevice(deviceId);
+  }
+
+  DeviceModal? findDevice(DeviceModal deviceModal) {
+    for (var element in deviceList) {
+      if (element.fingerprint == deviceModal.fingerprint) {
+        return element;
+      }
+    }
+    return null;
   }
 }
 

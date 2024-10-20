@@ -5,7 +5,7 @@ import flutter_local_notifications
 
 
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
     var group: NWConnectionGroup? = nil
 

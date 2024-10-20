@@ -1,0 +1,92 @@
+name: Build apk and bundle
+on:
+  workflow_dispatch:
+    inputs:
+      up_load:
+        description: 'Upload artifacts'
+        type: boolean
+        required: true
+        default: true
+      split_per_abi_apk:
+        description: 'Build apks split per abi'
+        type: boolean
+        required: true
+        default: false
+      single_apk:
+        description: 'Build single huge apk'
+        type: boolean
+        required: true
+        default: true
+      app_bundle:
+        description: 'Build app bundle'
+        type: boolean
+        required: true
+        default: false
+  workflow_call:
+    inputs:
+      up_load:
+        description: 'Upload artifacts'
+        type: boolean
+        required: true
+        default: true
+      split_per_abi_apk:
+        description: 'Build apks split per abi'
+        type: boolean
+        required: true
+        default: true
+      single_apk:
+        description: 'Build single huge apk'
+        type: boolean
+        required: true
+        default: true
+      app_bundle:
+        description: 'Build app bundle'
+        type: boolean
+        required: true
+        default: true
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu' # You can use 'zulu' or 'adopt' based on your preference
+          java-version: '17'
+      - name: Verify Java version
+        run: java -version
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.19.2
+      - run: flutter pub get
+      - name: Cache Android SDK
+        uses: actions/cache@v2
+        with:
+          path: /usr/local/lib/android/
+          key: ${{ runner.os }}-android-sdk-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-android-sdk-
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - name: Build apks split per abi
+        if: ${{ inputs.split_per_abi_apk }}
+        run: flutter build apk --target-platform android-arm,android-arm64,android-x64 --split-per-abi --release
+      - name: Build single huge apk
+        if: ${{ inputs.single_apk }}
+        run: flutter build apk --target-platform android-arm,android-arm64,android-x64 --release
+      - name: Upload artifact
+        if: ${{ inputs.up_load && (inputs.split_per_abi_apk||inputs.single_apk) }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/
+      - run: flutter build appbundle
+      - name: Upload artifact
+        if: ${{ inputs.up_load && inputs.app_bundle }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-appbundle
+          path: build/app/outputs/bundle/release/

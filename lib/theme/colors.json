@@ -20,6 +20,16 @@
         "thumb": "#FFFFFFFF",
         "track": "#FF007AFF"
       }
+    },
+    "gradient": {
+      "first": "#FFE8F3FF",
+      "second": "#FFFFFFFF",
+      "third": "#FFFFFFFF"
+    },
+    "gradientRed": {
+      "first": "#FFFFF3F2",
+      "second": "#FFFFFFFF",
+      "third": "#FFFFFFFF"
     }
   },
   "dark": {
@@ -31,7 +41,7 @@
     },
     "background": {
       "primary": "#FF1C1C1E",
-      "secondary": "#FF2C2C2",
+      "secondary": "#FF2C2C2E",
       "tertiary": "#FF3A3A3C"
     },
     "switchable": {
@@ -43,6 +53,16 @@
         "thumb": "#FFFFFFFF",
         "track": "#FF007AFF"
       }
+    },
+    "gradient": {
+      "first": "#FF1C1C1E",
+      "second": "#FF1C1C1E",
+      "third": "#FF1C1C1E"
+    },
+    "gradientRed": {
+      "first": "#FF1C1C1E",
+      "second": "#FF1C1C1E",
+      "third": "#FF1C1C1E"
     }
   }
 }

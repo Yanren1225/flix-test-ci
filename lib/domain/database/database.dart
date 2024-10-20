@@ -34,9 +34,9 @@ part 'database.g.dart'; // the generated code will be there
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? e]) : super(e ?? _openConnection());
-
+  static const tag = "AppDatabase";
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   static LazyDatabase _openConnection() {
     // the LazyDatabase util lets us find the right location for the file async.
@@ -87,6 +87,10 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 7) {
           await migration6_7(m);
+        }
+        if(from < 9){
+          //有的平台会出问题
+          await migration8_9(m);
         }
       },
     );
@@ -150,6 +154,11 @@ class AppDatabase extends _$AppDatabase {
       }
     }
     return false;
+  }
+
+  migration8_9(Migrator m) async {
+    await m.createTable(directoryContents);
+    await m.createTable(pairDevices);
   }
 }
 

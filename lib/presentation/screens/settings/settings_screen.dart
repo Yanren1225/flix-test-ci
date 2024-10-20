@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flix/presentation/widgets/settings/option_item.dart';
 import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/presentation/screens/settings/cross_device_clipboard_screen.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/text/text_extension.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -17,21 +16,29 @@ import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffol
 import 'package:flix/presentation/widgets/settings/clickable_item.dart';
 import 'package:flix/presentation/widgets/settings/settings_item_wrapper.dart';
 import 'package:flix/presentation/widgets/settings/switchable_item.dart';
-import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/utils/drawin_file_security_extension.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/platform_utils.dart';
-import 'package:flix/utils/text/text_extension.dart';
+import 'package:flix/utils/exit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
-class SettingsScreen extends StatefulWidget {
-  VoidCallback crossDeviceCallback;
+import '../../dialog/confirm_exit_app_bottomsheet.dart';
+import '../../widgets/settings/click_action_item.dart';
 
-  SettingsScreen({required this.crossDeviceCallback});
+class SettingsScreen extends StatefulWidget {
+  final VoidCallback crossDeviceCallback;
+  final VoidCallback showConnectionInfoCallback;
+  final VoidCallback goManualAddCallback;
+
+  const SettingsScreen(
+      {super.key,
+      required this.crossDeviceCallback,
+      required this.showConnectionInfoCallback,
+      required this.goManualAddCallback});
 
   @override
   State<StatefulWidget> createState() {
@@ -72,6 +79,7 @@ class SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool showAutoSaveMedia = Platform.isAndroid;
     final bool showCustomSaveDir = !Platform.isIOS;
     final bool showAppLaunchConfig = isDesktop();
 
@@ -164,35 +172,89 @@ class SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
+            Visibility(
+                visible: false,
+                child: Column(children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20, top: 20, right: 20),
+                    child: Text(
+                      '辅助功能',
+                      style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.normal,
+                              color:
+                                  Theme.of(context).flixColors.text.secondary)
+                          .fix(),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
+                    child: StreamBuilder<bool>(
+                      initialData: SettingsRepo.instance.autoReceive,
+                      stream: SettingsRepo.instance.autoReceiveStream.stream,
+                      builder:
+                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                        return ClickableItem(
+                          label: '添加此设备',
+                          des: "查看此设备连接信息以在其他设备上手动添加",
+                          topRadius: true,
+                          bottomRadius: false,
+                          onClick: () {
+                            widget.showConnectionInfoCallback();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    child: StreamBuilder<bool>(
+                      initialData: SettingsRepo.instance.autoReceive,
+                      stream: SettingsRepo.instance.autoReceiveStream.stream,
+                      builder:
+                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                        return ClickableItem(
+                          label: '手动添加设备',
+                          des: "输入其他设备连接信息以手动添加设备",
+                          topRadius: false,
+                          bottomRadius: true,
+                          onClick: () {
+                            widget.goManualAddCallback();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ])),
+
             Padding(
               padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
               child: Text(
                 '进阶功能',
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.normal,
-                    color: Color.fromRGBO(60, 60, 67, 0.6)).fix(),
+                style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal,
+                        color: Theme.of(context).flixColors.text.secondary)
+                    .fix(),
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
-              child: SettingsItemWrapper(
-                topRadius: true,
-                bottomRadius: true,
-                child: StreamBuilder<bool>(
-                  initialData: SettingsRepo.instance.autoReceive,
-                  stream: SettingsRepo.instance.autoReceiveStream.stream,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                    return ClickableItem(
-                      label: '跨设备复制粘贴',
-                      des: '复制文字、图片后，可共享数据',
-                      onClick: () {
-                        widget.crossDeviceCallback();
-                      },
-                    );
-                  },
-                ),
+              child: StreamBuilder<bool>(
+                initialData: SettingsRepo.instance.autoReceive,
+                stream: SettingsRepo.instance.autoReceiveStream.stream,
+                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  return ClickableItem(
+                    label: '跨设备复制粘贴',
+                    des: "关联设备后，复制的文字可共享",
+                    topRadius: true,
+                    bottomRadius: true,
+                    onClick: () {
+                      widget.crossDeviceCallback();
+                    },
+                  );
+                },
               ),
             ),
             // 高度1pt的分割线
@@ -200,7 +262,7 @@ class SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
               child: Text(
                 '接收设置',
-                style:  TextStyle(
+                style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.normal,
                         color: Theme.of(context).flixColors.text.secondary)
@@ -246,7 +308,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                         label: '文件接收目录',
                         des: snapshot.data,
                         topRadius: false,
-                        bottomRadius: true,
+                        bottomRadius: !showAutoSaveMedia,
                         onClick: () async {
                           if (!(await checkStoragePermission(context,
                               manageExternalStorage: true))) {
@@ -279,6 +341,46 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
+
+            Visibility(
+              visible: showAutoSaveMedia,
+              child: Container(
+                margin: const EdgeInsets.only(left: 14),
+                height: 0.5,
+                color: const Color.fromRGBO(0, 0, 0, 0.08),
+              ),
+            ),
+
+            Visibility(
+              visible: showAutoSaveMedia,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16),
+                child: SettingsItemWrapper(
+                  topRadius: false,
+                  bottomRadius: true,
+                  child: StreamBuilder<bool>(
+                    initialData: SettingsRepo.instance.autoSaveToGallery,
+                    stream:
+                        SettingsRepo.instance.autoSaveToGalleryStream.stream,
+                    builder: (context, snapshot) {
+                      return SwitchableItem(
+                        label: '自动将图片视频保存到相册',
+                        des: '不保存到接收目录',
+                        checked: snapshot.data ?? false,
+                        onChanged: (value) {
+                          setState(() {
+                            if (value != null) {
+                              SettingsRepo.instance.setAutoSaveToGallery(value);
+                            }
+                          });
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -319,64 +421,43 @@ class SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16),
-                  child: SettingsItemWrapper(
-                      topRadius: false,
-                      bottomRadius: false,
-                      child: StreamBuilder<bool>(
-                        initialData: SettingsRepo.instance.darkFollowSystem,
-                        stream:
-                            SettingsRepo.instance.darkFollowSystemStream.stream,
-                        builder: (context, snapshot) {
-                          return SwitchableItem(
-                            label: "深色模式跟随系统",
-                            checked: snapshot.data ?? false,
-                            onChanged: (value) {
-                              setState(() {
-                                if (value != null) {
-                                  SettingsRepo.instance
-                                      .setDarkFollowSystem(value);
-                                }
+                StreamBuilder<String>(
+                    stream: SettingsRepo.instance.darkModeTagStream.stream,
+                    initialData: SettingsRepo.instance.darkModeTag,
+                    builder: (context, snapshot) {
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 16),
+                        child: Builder(builder: (context) {
+                          final options = [
+                            const OptionData(
+                                label: '跟随系统', tag: 'follow_system'),
+                            const OptionData(label: '始终开启', tag: 'always_on'),
+                            const OptionData(label: '始终关闭', tag: 'always_off')
+                          ];
+
+                          return OptionItem(
+                              topRadius: false,
+                              bottomRadius: false,
+                              label: '深色模式',
+                              tag: 'dark_mode',
+                              options: options,
+                              value: options.firstWhereOrNull(
+                                      (e) => e.tag == snapshot.data) ??
+                                  options[0],
+                              onChanged: (value) {
+                                SettingsRepo.instance.setDarkModeTag(value.tag);
                               });
-                            },
-                          );
-                        },
-                      )),
-                ),
-                StreamBuilder<bool>(
-                    stream: SettingsRepo.instance.darkFollowSystemStream.stream,
-                    initialData: SettingsRepo.instance.darkFollowSystem,
-                    builder: (context, darkFollowSystem) {
-                      return darkFollowSystem.data == true
-                          ? const SizedBox()
-                          : Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 16, right: 16),
-                              child: SettingsItemWrapper(
-                                  topRadius: false,
-                                  bottomRadius: false,
-                                  child: StreamBuilder<bool>(
-                                    initialData: SettingsRepo.instance.darkMode,
-                                    stream: SettingsRepo
-                                        .instance.darkModeStream.stream,
-                                    builder: (context, snapshot) {
-                                      return SwitchableItem(
-                                        label: "深色模式",
-                                        checked: snapshot.data ?? false,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            if (value != null) {
-                                              SettingsRepo.instance
-                                                  .setDarkMode(value);
-                                            }
-                                          });
-                                        },
-                                      );
-                                    },
-                                  )),
-                            );
+                        }),
+                      );
                     }),
+                Padding(
+                  padding: const EdgeInsets.only(left: 30, right: 16),
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 14),
+                    height: 0.5,
+                    color: const Color.fromRGBO(0, 0, 0, 0.08),
+                  ),
+                ),
                 Padding(
                   padding:
                       const EdgeInsets.only(left: 16, right: 16, bottom: 16),
@@ -422,6 +503,32 @@ class SettingsScreenState extends State<SettingsScreen> {
                                 builder: (context) =>
                                     TalkerScreen(talker: talker),
                               ));
+                        }),
+                  ),
+                ],
+              ),
+            ),
+
+            Visibility(
+              visible: showExit(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16, top: 4, right: 16, bottom: 16),
+                    child: ClickActionItem(
+                        label: '退出软件',
+                        dangerous: true,
+                        onClick: () {
+                          doExit();
+                          /*
+                          showCupertinoDialog(
+                              context: context,
+                              builder: (context) =>
+                                  const ConfirmExitAppBottomSheet());
+
+                           */
                         }),
                   ),
                 ],

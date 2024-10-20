@@ -8,8 +8,12 @@ import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffol
 import 'package:flix/presentation/widgets/settings/clickable_item.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
+
+import '../../widgets/helps/flix_share_bottom_sheet.dart';
 
 class HelpScreen extends StatefulWidget {
   VoidCallback goVersionScreen;
@@ -78,7 +82,9 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                           child: ClickableItem(
                             label: '检查更新',
                             tail: tail,
-                            tailColor: FlixColor.blue,
+                            tailColor: snapshot.data?.isNotEmpty == true
+                                ? FlixColor.blue
+                                : Theme.of(context).flixColors.text.secondary,
                             onClick: () {
                               VersionChecker.checkNewVersion(context,
                                   ignorePromptCount: true);
@@ -92,19 +98,35 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                   Visibility(
                     visible: !Platform.isIOS,
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16, top: 8, right: 16, bottom: 16),
+                      padding:
+                          const EdgeInsets.only(left: 16, top: 8, right: 16),
                       child: ValueListenableBuilder<String>(
                         valueListenable: version,
                         builder: (BuildContext context, String value,
                             Widget? child) {
                           return ClickableItem(
-                              label: '❤️捐赠支持我们',
+                              label: '❤️ 捐赠支持我们',
+                              bottomRadius: false,
                               onClick: widget.goDonateCallback);
                         },
                       ),
                     ),
                   ),
+                  Padding(
+                      padding: EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          bottom: 16,
+                          top: Platform.isIOS ? 8 : 0),
+                      child: ClickableItem(
+                          label: '👍 推荐给朋友',
+                          topRadius: Platform.isIOS,
+                          onClick: () {
+                            showCupertinoModalPopup(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    FlixShareBottomSheet(context));
+                          })),
                   Padding(
                     padding: const EdgeInsets.only(
                         left: 20, top: 20, right: 20, bottom: 4),

@@ -1,6 +1,7 @@
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
+import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/download_nonweb_logs.dart';
@@ -111,8 +112,10 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   Widget participate() {
     return Padding(
       padding: const EdgeInsets.only(left: 10, top: 10, right: 80, bottom: 10),
+
       child: Text(
-          'Flix 制作小组\n------\n✅设计：\nlemo\n\n✅开发：\nMovenLecker\nEava_wu\n炎忍\nMashiro.\n皓洋\n张建\n广靓\nChengi',
+          'Flix 制作小组\n------\n✅设计：\nlemo\nkailun\n\n✅开发：\nMovenLecker\nEava_wu\n炎忍\nMashiro.\nGnayoah\n张建\n广靓\nChengi\nxkeyC\n小灰灰\n何言\ngggxbbb'
+              '\n一季或微凉\n暮间雾\nyuzh',
           style: TextStyle(
                   color: Theme.of(context).flixColors.text.primary,
                   fontSize: 16,
@@ -126,10 +129,36 @@ class AboutUSScreenState extends State<AboutUSScreen> {
       padding: const EdgeInsets.all(10.0),
       child: Text.rich(TextSpan(
           children: [
-            const TextSpan(text: '如果你有任何想法，欢迎你'),
-            ClickableSpan('点我进入官方QQ群 🌸', () {
+            const TextSpan(text: '欢迎加入QQ群和我们联系~\n'),
+            const TextSpan(text: '用户QQ群1:\n'),
+            ClickableSpan('539943326\n', () {
               final Uri url = Uri.parse(
-                  'http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=sLHZTbK8nxPPoKl2BWApIKoO9TBBGua8&authKey=XBVLWiLqFFt5UD72Gc8tOhyj2Y02J%2FF%2Bw4ijEv%2FsWrYVPy8Y%2B5lbbxvLyx6EQwMP&noverify=0&group_code=539943326');
+                  'https://qm.qq.com/q/9RTeAZaHRK');
+              launchUrl(url).then((value) {
+                if (!value) {
+                  talker.error('join qq error');
+                }
+              }).onError((error, stackTrace) {
+                talker.error('join qq error', error, stackTrace);
+              });
+            }),
+            const TextSpan(text: '\n用户QQ群2:\n'),
+            ClickableSpan('992894289', () {
+              final Uri url = Uri.parse(
+                  'https://qm.qq.com/q/aiGWJo7CYo');
+              launchUrl(url).then((value) {
+                if (!value) {
+                  talker.error('join qq error');
+                }
+              }).onError((error, stackTrace) {
+                talker.error('join qq error', error, stackTrace);
+              });
+            }),
+
+            const TextSpan(text: '\n用户QQ群3:\n'),
+            ClickableSpan('779244909', () {
+              final Uri url = Uri.parse(
+                  'https://qm.qq.com/cgi-bin/qm/qr?k=rnAZO7i9qmK4iBJLUT7SMYq4mP-03yaQ&jump_from=webapi&qr=1');
               launchUrl(url).then((value) {
                 if (!value) {
                   talker.error('join qq error');
@@ -139,6 +168,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
               });
             }),
           ],
+
           style: TextStyle(
                   color: Theme.of(context).flixColors.text.primary,
                   fontSize: 16,

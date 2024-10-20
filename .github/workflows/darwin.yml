@@ -1,0 +1,108 @@
+name: Build MacOS
+on:
+  workflow_dispatch:
+    inputs:
+      up_load:
+        description: 'Upload artifacts'
+        type: boolean
+        required: true
+        default: true
+  workflow_call:
+    inputs:
+      up_load:
+        description: 'Upload artifacts'
+        type: boolean
+        required: true
+        default: true
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    env:
+      MACOS_APP_RELEASE_PATH: build/macos/Build/Products/Release
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install flutter dependencies
+        run: flutter pub get
+        env:
+          PUB_HOSTED_URL: "https://pub.flutter-io.cn"
+          FLUTTER_STORAGE_BASE_URL: "https://storage.flutter-io.cn"
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - name: Build macOS app
+        run: flutter build macos --release
+      - name: Codesign executable
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+        run: |
+          echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
+          echo "Create Keychain"
+          security create-keychain -p axp0832 build.keychain
+          echo "Assign to Login Keychain"
+          security default-keychain -s build.keychain
+          echo "Unlock the Login Keychain"
+          security unlock-keychain -p axp0832 build.keychain
+          echo "Import certificate"
+          security import certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
+          echo "Set Key Partition"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k axp0832 build.keychain
+          echo "Find Identity"
+          security find-identity
+          echo "Sign the app"
+          /usr/bin/codesign --force --deep -s 9Z28ZTZ87J ./$MACOS_APP_RELEASE_PATH/flix.app
+      - name: Create a dmg
+        run: |
+          echo "Install create-dmg"
+          brew install create-dmg
+          cd $MACOS_APP_RELEASE_PATH
+          create-dmg \
+            --volname "flix" \
+            --window-pos 200 120 \
+            --window-size 800 529 \
+            --icon-size 130 \
+            --text-size 14 \
+            --icon "flix.app" 260 250 \
+            --hide-extension "flix.app" \
+            --app-drop-link 540 250 \
+            --hdiutil-quiet \
+            "flix.dmg" \
+            "flix.app"
+      - name: Create Version Number
+        id: versions
+        run: |
+          git fetch
+          VERSION_WITHOUT_SUFFIX="$(grep 'version:' pubspec.yaml | awk '{ print $2 }' | cut -d'+' -f 1)"
+          function parse_git_hash() {
+            git rev-list --count origin/main
+          }
+          MAIN_COUNT=$(parse_git_hash)
+          APP_VERSION="$VERSION_WITHOUT_SUFFIX+$MAIN_COUNT"
+          echo "::set-output name=version::$(echo $APP_VERSION)"
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.versions.outputs.version }}
+          release_name: Release ${{ steps.versions.outputs.version }}
+          body: |
+            Release Notes
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/macos/Build/Products/Release/flix.dmg
+          asset_name: flix.dmg
+          asset_content_type: application/octet-stream
+

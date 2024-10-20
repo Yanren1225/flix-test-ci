@@ -10,6 +10,7 @@ import 'package:flix/domain/hotspot/hotspot_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/model/wifi_or_ap_name.dart';
+import 'package:flix/network/discover/discover_manager.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/utils/iterable_extension.dart';
 import 'package:flutter/material.dart';
@@ -73,8 +74,7 @@ class MultiCastClientProvider extends ChangeNotifier {
         } else {
           return WifiOrApName(isAp: true, name: event);
         }
-    })
-
+      })
     ]);
   }
 
@@ -123,12 +123,13 @@ class MultiCastClientProvider extends ChangeNotifier {
     });
     connectivitySubscription =
         Connectivity().onConnectivityChanged.listen((result) {
-        _onConnectivityChanged(result);
+      _onConnectivityChanged(result);
     });
     DeviceProfileRepo.instance.deviceNameBroadcast.stream.listen((event) async {
       if (deviceName != event) {
         deviceName = event;
-        DeviceDiscover.instance.ping(await shipService.getPort());
+        // PingV2Processor.pingV2(ip, port, from);
+        // DeviceDiscover.instance.ping(await shipService.getPort());
       }
     });
   }
@@ -140,7 +141,8 @@ class MultiCastClientProvider extends ChangeNotifier {
       _setConnectivityResult(ConnectivityResult.wifi);
       return;
     }
-    if (result.contains(ConnectivityResult.wifi) || result.contains(ConnectivityResult.p2pWifi)) {
+    if (result.contains(ConnectivityResult.wifi) ||
+        result.contains(ConnectivityResult.p2pWifi)) {
       resetWifiName();
     }
     if (result.contains(ConnectivityResult.none)) {
@@ -188,7 +190,7 @@ class MultiCastClientProvider extends ChangeNotifier {
   }
 
   Future<void> startScan() async {
-    DeviceDiscover.instance.startScan(await shipService.getPort());
+    DiscoverManager.instance.startDiscover(await shipService.getPort());
   }
 
   void clearDevices() {

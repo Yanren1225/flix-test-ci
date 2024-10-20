@@ -1,0 +1,63 @@
+name: Build iOS
+on:
+  workflow_dispatch:
+    inputs:
+      up_tf:
+        description: 'Upload to TestFlight'
+        type: boolean
+        required: true
+        default: true
+  workflow_call:
+    inputs:
+      up_tf:
+        description: 'Upload to TestFlight'
+        type: boolean
+        required: true
+        default: true
+
+jobs:
+  ios:
+    runs-on: macos-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.19.2
+      - name: Install flutter dependencies
+        run: flutter pub get
+        env:
+          PUB_HOSTED_URL: "https://pub.flutter-io.cn"
+          FLUTTER_STORAGE_BASE_URL: "https://storage.flutter-io.cn"
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - name: Install ios Dependencies
+        run: |
+          cd ios
+          pod install --repo-update
+          cd ..
+        shell: bash
+      - name: build ipa
+        uses: heiha100/action-flutter-build-ios@main
+        with:
+          # always use --export-options-plist=ios/GithubActionsExportOptions.plist
+          build-cmd: flutter build ipa --release --export-options-plist=ios/GithubActionsExportOptions.plist
+          certificate-base64: ${{ secrets.IOS_DISTRIBUTE_CERTIFICATION }}
+          certificate-password: ${{ secrets.IOS_DISTRIBUTE_PASSWORD }}
+          provisioning-profile-base64: ${{ secrets.IOS_DISTRIBUTE_PROVISION_PROFILE }}
+          extension-provisioning-profile-base64: ${{ secrets.IOS_DISTRIBUTE_SHARE_EXTENSION_PROVISION_PROFILE }}
+          keychain-password: ${{ secrets.IOS_DISTRIBUTE_PASSWORD }}
+#      - name: Upload artifact
+#        if: ${{ inputs.up_load }}
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: ios-ipa
+#          path: build/ios/ipa/
+      - name: 'Upload app to TestFlight'
+        if: ${{ inputs.up_tf }}
+        uses: apple-actions/upload-testflight-build@v1
+        with:
+          app-path: 'build/ios/ipa/flix.ipa'
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}

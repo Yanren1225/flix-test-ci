@@ -19,8 +19,14 @@ void main() {
   buffer.writeln('  }');
   buffer.writeln('}');
   buffer.writeln();
+
+  buffer.writeln('CustomColors getLightColors()=> CustomColors.fromJson(_lightColors);');
+  buffer.writeln('CustomColors getDarkColors()=> CustomColors.fromJson(_darkColors);');
+
+  buffer.writeln('');
   buffer.writeln('const _lightColors = ${json.encode(colors['light'])};');
   buffer.writeln('const _darkColors = ${json.encode(colors['dark'])};');
+
 
   final outputFile = File('lib/theme/theme_extensions.dart');
   outputFile.writeAsStringSync(buffer.toString());

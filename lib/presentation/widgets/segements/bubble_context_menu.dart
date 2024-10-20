@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flix/theme/theme_extensions.dart';
@@ -10,7 +11,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modals/modals.dart';
-
+import 'package:uuid/v8.dart';
+int contextMenuGroupId = 999;
 void showBubbleContextMenu(
     BuildContext context,
     String tag,
@@ -71,10 +73,11 @@ void showBubbleContextMenu(
           clickPosition.dy);
     }
   }
-
+  var bubbleMenu =
+      BubbleContextMenu(itemTypes: itemTypes, itemActions: itemActions);
   showModal(ModalEntry.anchored(
     context,
-    tag: 'menu',
+    tag: bubbleMenu.id,
     anchorTag: tag,
     modalAlignment: modalAlignment,
     anchorAlignment: Alignment.topLeft,
@@ -82,7 +85,7 @@ void showBubbleContextMenu(
     // barrierColor: const Color.fromRGBO(0, 0, 0, 0.45),
     removeOnPop: true,
     barrierDismissible: false,
-    child: BubbleContextMenu(itemTypes: itemTypes, itemActions: itemActions),
+    child: bubbleMenu,
   ));
 }
 
@@ -103,8 +106,9 @@ int _getMenuHeight(List<BubbleContextMenuItemType> itemTypes) {
 class BubbleContextMenu extends StatefulWidget {
   final List<BubbleContextMenuItemType> itemTypes;
   final Map<BubbleContextMenuItemType, VoidCallback> itemActions;
+  final String id = const UuidV8().generate().toString();
 
-  const BubbleContextMenu(
+  BubbleContextMenu(
       {super.key, required this.itemTypes, required this.itemActions});
 
   @override
@@ -149,10 +153,19 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
           break;
         case BubbleContextMenuItemType.Location:
           items.add(BubbleContextMenuItem(
-            title: '文件位置',
+            title: Platform.isAndroid ? '文件打开' : '文件位置',
             icon: 'assets/images/ic_location.svg',
             onTap: onTap(type),
           ));
+          break;
+        case BubbleContextMenuItemType.SaveAs:
+          if (isDesktop()) {
+            items.add(BubbleContextMenuItem(
+              title: isDesktop() ? '另存为' : '',
+              icon: 'assets/images/file_save_as.svg',
+              onTap: onTap(type),
+            ));
+          }
           break;
         case BubbleContextMenuItemType.MultiSelect:
           items.add(BubbleContextMenuItem(
@@ -179,59 +192,63 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
       }
     }
     return AnimatedBuilder(
-      animation: _animation,
-      builder: (BuildContext context, Widget? child) {
-        return Transform.scale(
-          scale: _animation.value,
-          child: FadeTransition(
-            opacity: _animation,
-            child: child,
-          ),
-        );
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0),
-        child: DecoratedBox(
-          decoration: FlixDecoration(boxShadow: const [
-            BoxShadow(
-              color: Color.fromRGBO(0, 0, 0, 0.1),
-              offset: Offset(2, 10),
-              blurRadius: 20,
+        animation: _animation,
+        builder: (BuildContext context, Widget? child) {
+          return Transform.scale(
+            scale: _animation.value,
+            child: FadeTransition(
+              opacity: _animation,
+              child: child,
             ),
-          ]),
-          child: FlixClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .flixColors
-                      .background
-                      .primary
-                      .withOpacity(0.9),
+          );
+        },
+        child: TapRegion(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: DecoratedBox(
+              decoration: FlixDecoration(boxShadow: const [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, 0.1),
+                  offset: Offset(2, 10),
+                  blurRadius: 20,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 10, top: 6, right: 10, bottom: 6),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [...items],
+              ]),
+              child: FlixClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .flixColors
+                          .background
+                          .primary
+                          .withOpacity(0.9),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 10, top: 6, right: 10, bottom: 6),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [...items],
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
-    );
+          onTapOutside: (event) {
+            removeModal(widget.id);
+          },
+        ));
   }
 
   VoidCallback onTap(BubbleContextMenuItemType type) {
     return () {
-      removeAllModals();
+      removeModal(widget.id);
       Future.delayed(Duration.zero, () => widget.itemActions[type]?.call());
     };
   }
@@ -270,6 +287,8 @@ class BubbleContextMenuItem extends StatelessWidget {
           children: [
             SvgPicture.asset(
               icon,
+              width: 24,
+              height: 24,
               colorFilter: ColorFilter.mode(
                   color ?? Theme.of(context).flixColors.text.primary,
                   BlendMode.srcIn),
@@ -293,7 +312,7 @@ class BubbleContextMenuItem extends StatelessWidget {
 class BubbleContextMenuWithMask extends BubbleContextMenu {
   final TextSelectionToolbarAnchors anchors;
 
-  const BubbleContextMenuWithMask(
+  BubbleContextMenuWithMask(
       {super.key,
       required this.anchors,
       required super.itemTypes,
@@ -338,6 +357,7 @@ enum BubbleContextMenuItemType {
   Forward,
   Location,
   MultiSelect,
+  SaveAs,
   Delete,
   FreeCopy,
 }

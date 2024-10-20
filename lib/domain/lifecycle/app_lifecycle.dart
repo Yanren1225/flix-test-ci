@@ -14,13 +14,6 @@ class AppLifecycle {
 
   final List<LifecycleListener> _lifecycleListeners = [];
 
-  void init() {
-    SystemChannels.lifecycle.setMessageHandler((msg) {
-      _dispatchLifecycleEvent(msg);
-      return Future(() => msg);
-    });
-  }
-
   void addListener(LifecycleListener listener) {
     _lifecycleListeners.add(listener);
   }
@@ -29,36 +22,14 @@ class AppLifecycle {
     _lifecycleListeners.remove(listener);
   }
 
-  void _dispatchLifecycleEvent(String? msg) {
-    talker.verbose('AppLifecycle $msg');
-    if (msg == 'AppLifecycleState.resumed') {
-      for (var listener in _lifecycleListeners) {
-        listener.onLifecycleChanged(AppLifecycleState.resumed);
-      }
-    } else if (msg == 'AppLifecycleState.inactive') {
-      for (var listener in _lifecycleListeners) {
-        listener.onLifecycleChanged(AppLifecycleState.inactive);
-      }
-    } else if (msg == 'AppLifecycleState.hide') {
-      for (var listener in _lifecycleListeners) {
-        listener.onLifecycleChanged(AppLifecycleState.hidden);
-      }
-    } else if (msg == 'AppLifecycleState.paused') {
-      for (var listener in _lifecycleListeners) {
-        listener.onLifecycleChanged(AppLifecycleState.paused);
-      }
-    } else if (msg == 'AppLifecycleState.detached') {
-      for (var listener in _lifecycleListeners) {
-        listener.onLifecycleChanged(AppLifecycleState.detached);
-      }
-    }
+  void dispatchLifecycleEvent(AppLifecycleState lifecycleState) {
+    talker.verbose('AppLifecycle $lifecycleState');
+    _dispatch(lifecycleState);
+  }
 
-    void onAppResume() {
-      print('App resume');
-    }
-
-    void onAppInactive() {
-      print('App inactive');
+  void _dispatch(AppLifecycleState state) {
+    for (var listener in _lifecycleListeners) {
+      listener.onLifecycleChanged(state);
     }
   }
 

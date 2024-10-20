@@ -10,10 +10,10 @@ class SettingsRepo {
   SettingsRepo._privateConstructor() {
     SharedPreferences.getInstance().then((sp) {
       _setAutoReceive(sp.getBool(autoReceiveKey) ?? false);
+      _setAutoSaveGallery(sp.getBool(autoSaveGalleryKey)??true);
       _setEnableMdns(sp.getBool(enableMdnsKey) ?? true);
       _setMinimizedMode(sp.getBool(isMinimizedKey) ?? true);
-      _setDarkFollowSystem(sp.getBool(darkFollowSystemKey) ?? false);
-      _setDarkMode(sp.getBool(darkModeKey) ?? false);
+      _setDarkModeTag(sp.getString(darkModeTagKey) ?? "follow_system");
       final dir = sp.getString(savedDirKey);
       if (dir == null || dir.isEmpty) {
         getDefaultDestinationDirectory().then((desDir) {
@@ -31,11 +31,11 @@ class SettingsRepo {
   static SettingsRepo get instance => _instance;
 
   static const autoReceiveKey = "autoReceive";
+  static const autoSaveGalleryKey = "autoSaveGallery";
   static const isMinimizedKey = "isMinimized";
   static const savedDirKey = "savedDir";
   static const enableMdnsKey = "enableMdns";
-  static const darkFollowSystemKey = "darkFollowSystem";
-  static const darkModeKey = "darkMode";
+  static const darkModeTagKey = "darkModeTag";
 
   bool _isMinimized = true;
   StreamController<bool> isMinimizedStream = StreamController.broadcast();
@@ -49,17 +49,29 @@ class SettingsRepo {
   String get savedDir => _savedDir;
   StreamController<String> savedDirStream = StreamController.broadcast();
 
+  bool _autoSaveToGallery = true;
+  bool get autoSaveToGallery => _autoSaveToGallery;
+  StreamController<bool> autoSaveToGalleryStream = StreamController.broadcast();
+
   bool _enableMdns = true;
   bool get enableMdns => _enableMdns;
   StreamController<bool> enableMdnsStream = StreamController.broadcast();
 
-  bool _darkFollowSystem = false;
-  bool get darkFollowSystem => _darkFollowSystem;
-  StreamController<bool> darkFollowSystemStream = StreamController.broadcast();
+  String _darkModeTag = "";
+  String get darkModeTag => _darkModeTag;
+  StreamController<String> darkModeTagStream = StreamController.broadcast();
 
-  bool _darkMode = false;
-  bool get darkMode => _darkMode;
-  StreamController<bool> darkModeStream = StreamController.broadcast();
+  Future<void> setAutoSaveToGallery(bool autoSaveToGallery) async {
+    _autoSaveToGallery = autoSaveToGallery;
+    autoSaveToGalleryStream.add(autoSaveToGallery);
+    var sharePreference = await SharedPreferences.getInstance();
+    await sharePreference.setBool(autoSaveGalleryKey, autoSaveToGallery);
+  }
+
+  void _setAutoSaveGallery(bool autoSaveToGallery){
+    _autoSaveToGallery = autoSaveToGallery;
+    autoSaveToGalleryStream.add(autoSaveToGallery);
+  }
 
   Future<void> setAutoReceive(bool autoReceive) async {
     _setAutoReceive(autoReceive);
@@ -123,35 +135,19 @@ class SettingsRepo {
     return sharePreference.getBool(isMinimizedKey) ?? _isMinimized;
   }
 
-  Future<void> setDarkFollowSystem(bool darkFollowSystem) async {
-    _setDarkFollowSystem(darkFollowSystem);
+  Future setDarkModeTag(String darkModeTag) async {
+    _setDarkModeTag(darkModeTag);
     var sharePreference = await SharedPreferences.getInstance();
-    await sharePreference.setBool(darkFollowSystemKey, _darkFollowSystem);
+    await sharePreference.setString(darkModeTagKey, _darkModeTag);
   }
 
-  void _setDarkFollowSystem(bool darkFollowSystem) {
-    _darkFollowSystem = darkFollowSystem;
-    darkFollowSystemStream.add(_darkFollowSystem);
+  void _setDarkModeTag(String darkModeTag) {
+    _darkModeTag = darkModeTag;
+    darkModeTagStream.add(_darkModeTag);
   }
 
-  Future<bool> isDarkFollowSystem() async {
+  Future<String> getDarkModeTag() async {
     var sharePreference = await SharedPreferences.getInstance();
-    return sharePreference.getBool(darkFollowSystemKey) ?? _darkFollowSystem;
-  }
-
-  Future<void> setDarkMode(bool darkMode) async {
-    _setDarkMode(darkMode);
-    var sharePreference = await SharedPreferences.getInstance();
-    await sharePreference.setBool(darkModeKey, _darkMode);
-  }
-
-  void _setDarkMode(bool darkMode) {
-    _darkMode = darkMode;
-    darkModeStream.add(_darkMode);
-  }
-
-  Future<bool> isDarkMode() async {
-    var sharePreference = await SharedPreferences.getInstance();
-    return sharePreference.getBool(darkModeKey) ?? _darkMode;
+    return sharePreference.getString(darkModeTagKey) ?? _darkModeTag;
   }
 }

@@ -8,6 +8,7 @@ import 'package:flix/utils/permission/flix_permission_tape.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FlixPermissionUtils {
   static Future<bool> checkAccessWifiNamePermission(
@@ -16,21 +17,21 @@ class FlixPermissionUtils {
       final permissions = [Permission.locationWhenInUse];
       bool isGranted = await isAllGranted(permissions);
       if (isGranted) return true;
-      if (await FlixPermissionTape.isApplied(ApplyPermissionReason.wifiName)) return false;
+      if (await FlixPermissionTape.isApplied(ApplyPermissionReason.wifiName))
+        return false;
       await _showPermissionPromptPopup(
           context, '位置权限', '获取当前WiFi名称信息，需要获取设备的精确位置权限', () async {
-            if (await isAnyPermanentlyDenied(permissions)) {
-              await _openAppSettings();
-            } else {
-              await requestAllPermissions(permissions);
-            }
+        if (await isAnyPermanentlyDenied(permissions)) {
+          await _openAppSettings();
+        } else {
+          await requestAllPermissions(permissions);
+        }
       });
       FlixPermissionTape.applied(ApplyPermissionReason.wifiName);
       return await isAllGranted(permissions);
     } else {
       return true;
     }
-
   }
 
   static Future<bool> checkHotspotPermission(BuildContext? context) async {
@@ -114,6 +115,9 @@ class FlixPermissionUtils {
       } else {
         return await checkStoragePermissionOnOldPlatform(context);
       }
+    } else if (Platform.isIOS) {
+      return await checkNecessaryPermissions(
+          context, [Permission.photos], '访问照片权限', '选择照片需要获取设备的访问照片权限');
     } else {
       return true;
     }
@@ -138,6 +142,9 @@ class FlixPermissionUtils {
       } else {
         return await checkStoragePermissionOnOldPlatform(context);
       }
+    } else if (Platform.isIOS) {
+      return await checkNecessaryPermissions(
+          context, [Permission.photos], '访问视频权限', '选择视频需要获取设备的访问视频权限');
     } else {
       return true;
     }
@@ -154,21 +161,22 @@ class FlixPermissionUtils {
         context, permissions, title, subTitle);
   }
 
-  static Future<bool> _checkNecessaryPermissions(BuildContext? context, List<Permission> permissions, String title, String subTitle) async {
+  static Future<bool> _checkNecessaryPermissions(BuildContext? context,
+      List<Permission> permissions, String title, String subTitle) async {
     if (Platform.isAndroid || Platform.isIOS || Platform.isWindows) {
       try {
-        bool isGranted = await isAllGranted(permissions);
+        // bool isGranted = await isAllGranted(permissions);
 
-        if (isGranted) {
-          return true;
-        }
-
-        bool isPermanentlyDenied = await isAnyPermanentlyDenied(permissions);
-
-        // 无权限，但未禁止申请，直接申请
-        if (!isGranted && !isPermanentlyDenied) {
-          isGranted = await requestAllPermissions(permissions);
-        }
+        // if (isGranted) {
+        //   return true;
+        // }
+        //
+        // bool isPermanentlyDenied = await isAnyPermanentlyDenied(permissions);
+        //
+        // // 无权限，但未禁止申请，直接申请
+        // if (!isGranted && !isPermanentlyDenied) {
+        bool isGranted = await requestAllPermissions(permissions);
+        // }
 
         // isGranted = await isAllGranted(permissions);
         // talker.debug('storage permission to $isGranted');
@@ -199,9 +207,7 @@ class FlixPermissionUtils {
         context: context,
         builder: (context) {
           return PermissionBottomSheet(
-              title: title,
-              subTitle: subTitle,
-              onConfirm: onConfirm);
+              title: title, subTitle: subTitle, onConfirm: onConfirm);
         });
   }
 
@@ -247,17 +253,34 @@ class FlixPermissionUtils {
   }
 
   static Future<void> _openAppSettings() async {
+    if (Platform.isAndroid) {
+      await _openAndroidAppSettings();
+    } else if (Platform.isIOS) {
+      await _openIosAppSettings();
+    }
+  }
+
+  static Future<void> _openAndroidAppSettings() async {
     try {
-      if (Platform.isAndroid) {
-        final info = await PackageInfo.fromPlatform();
-        AndroidIntent intent = AndroidIntent(
-          action: "android.settings.APPLICATION_DETAILS_SETTINGS",
-          package: info.packageName,
-          data: "package:${info.packageName}",
-        );
-        await intent.launch();
+      final info = await PackageInfo.fromPlatform();
+      AndroidIntent intent = AndroidIntent(
+        action: "android.settings.APPLICATION_DETAILS_SETTINGS",
+        package: info.packageName,
+        data: "package:${info.packageName}",
+      );
+      await intent.launch();
+    } catch (e, stackTrace) {
+      talker.error('failed to launch settings', e, stackTrace);
+    }
+  }
+
+  static Future<void> _openIosAppSettings() async {
+    try {
+      const url = 'app-settings:';
+      if (await canLaunch(url)) {
+        await launch(url);
       } else {
-        await openAppSettings();
+        print('无法打开应用设置页面');
       }
     } catch (e, stackTrace) {
       talker.error('failed to launch settings', e, stackTrace);

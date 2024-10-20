@@ -2,9 +2,31 @@ import 'dart:io';
 
 import 'package:android_intent/android_intent.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app_installer/flutter_app_installer.dart';
 
+import 'android_file_info.dart';
+
 class AndroidUtils {
+
+  static const FILE_CHANNEL = MethodChannel('com.ifreedomer.flix/file');
+
+  static Future<FileInfo?> queryFileInfo(String uri) async {
+    try {
+      final Map infoMap = await FILE_CHANNEL.invokeMethod(
+          "queryFileInfo", {"uri": uri});
+      return FileInfo(
+          name: infoMap['name'] ?? "",
+          path: infoMap['path'] ?? "",
+          size: int.parse(infoMap['size']),
+          uri: infoMap['uri']??""
+      );
+    } catch (e, s) {
+      talker.error("query file info failed", e, s);
+      return null;
+    }
+  }
+
   static openSettings() async {
     if (Platform.isAndroid) {
       AndroidIntent intent = const AndroidIntent(
@@ -50,5 +72,19 @@ class AndroidUtils {
       talker.error("launch gallery failed", e, s);
     }
 
+  }
+
+  static Future<bool> openFile(String path) async {
+    if (Platform.isAndroid) {
+      return await FILE_CHANNEL.invokeMethod("openFile", {"path": path});
+    }
+    return false;
+  }
+
+  static Future<bool> shareFile(String path) async{
+    if (Platform.isAndroid) {
+      return await FILE_CHANNEL.invokeMethod("shareFile", {"path": path});
+    }
+    return false;
   }
 }

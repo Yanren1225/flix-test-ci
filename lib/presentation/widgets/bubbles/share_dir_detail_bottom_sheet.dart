@@ -8,6 +8,7 @@ import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/bubble_convert.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/file/size_utils.dart';
@@ -46,38 +47,29 @@ class BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
 
   String get dirName => widget.dirName;
   List<PrimitiveBubble>? _bubbles;
-  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-
     _loadData(false);
-    _startTimer();
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
   }
 
   Future<void> _loadData(bool refresh) async {
     try {
       final bubbles =
-          await appDatabase.bubblesDao.getDirectoryFileByGroupid(dirBubbleId);
+          await appDatabase.bubblesDao.getPrimitiveBubbleById(dirBubbleId);
       var state = _bottomSheetState;
-      if (bubbles == null) {
+      if (bubbles == null || bubbles.type != BubbleType.Directory) {
         if(refresh) return;
         state = _BottomSheetState.error;
-      } else if (bubbles.isEmpty) {
+      } else if ((bubbles as PrimitiveDirectoryBubble).content.fileBubbles.isEmpty) {
         if(refresh) return;
         state = _BottomSheetState.empty;
       } else {
         state = _BottomSheetState.list;
       }
       setState(() {
-        _bubbles = bubbles;
+        _bubbles = (bubbles as PrimitiveDirectoryBubble).content.fileBubbles;
         _bottomSheetState = state;
       });
     } catch (e) {
@@ -86,12 +78,12 @@ class BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
         _bottomSheetState = _BottomSheetState.error;
       });
     }
+    _startDelayLoop();
   }
 
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      _loadData(true);
-    });
+  Future<void> _startDelayLoop() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    _loadData(true);
   }
 
   @override
@@ -186,7 +178,8 @@ class _SendFileItemState extends State<_SendFileItem>
   Widget build(BuildContext context) {
     final SharedFile sharedFile = widget.entity.shareable as SharedFile;
 
-    const Color contentColor = Colors.black;
+    Color backgroundColor = Theme.of(context).flixColors.background.primary;
+    Color contentColor = Theme.of(context).flixColors.text.primary;;
 
     Widget stateIcon = const SizedBox(width: 20, height: 20);
     final size = sharedFile.content.size.formateBinarySize();
@@ -328,10 +321,10 @@ class _SendFileItemState extends State<_SendFileItem>
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
-                              color: Colors.black,
+                              color: contentColor,
                               decoration: TextDecoration.none)
                           .fix(),
                     ),
@@ -365,7 +358,11 @@ class _SendFileItemState extends State<_SendFileItem>
                                   style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w400,
-                                          color: stateDesColor ?? Colors.grey)
+                                          color: stateDesColor ??
+                                              Theme.of(context)
+                                                  .flixColors
+                                                  .text
+                                                  .tertiary)
                                       .fix(),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,

@@ -1,0 +1,61 @@
+name: Build Windows Installer
+on:
+  workflow_dispatch:
+    inputs:
+      up_load:
+        description: 'Upload artifacts'
+        type: boolean
+        required: true
+        default: true
+      installer:
+        description: 'Build Installer'
+        type: boolean
+        required: true
+        default: true
+      portable:
+        description: 'Build Portable Package'
+        type: boolean
+        required: true
+        default: true
+  workflow_call:
+    inputs:
+      up_load:
+        description: 'Upload artifacts'
+        type: boolean
+        required: true
+        default: true
+      installer:
+        description: 'Build Installer'
+        type: boolean
+        required: true
+        default: true
+      portable:
+        description: 'Build Portable Package'
+        type: boolean
+        required: true
+        default: true
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.19.2
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - run: dart run make windows
+      - name: Upload Installer
+        if: ${{ inputs.up_load && inputs.installer }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: ./scripts/Installer/publish
+      - name: Upload Portable Package
+        if: ${{ inputs.up_load && inputs.portable }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-portable
+          path: ./scripts/Installer/portable

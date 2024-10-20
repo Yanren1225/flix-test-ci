@@ -123,7 +123,7 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
               selectionChangedCause = cause;
             },
             contextMenuBuilder: (
-              BuildContext context,
+              BuildContext _,
               EditableTextState editableTextState,
             ) {
               if (selectionChangedCause == SelectionChangedCause.longPress) {
@@ -131,10 +131,13 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
                   editableTextState.selectAll(SelectionChangedCause.toolbar);
                 });
               }
-
-              return _buildContextMenu(concertProvider, context,
-                  editableTextState.contextMenuAnchors);
+              return TapRegion(
+                  groupId: contextMenuGroupId,
+                  consumeOutsideTaps: true,
+                  child: _buildContextMenu(concertProvider, context,
+                      editableTextState.contextMenuAnchors));
             },
+            options: const LinkifyOptions(humanize: false,excludeLastPeriod: false),
             linkStyle: textStyle,
             style: textStyle,
             cursorColor: Colors.black,
@@ -220,6 +223,7 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
             _copyContentToClipboard(sharedText.content.substring(start, end));
           }
         }
+        ContextMenuController.removeAny();
       },
       BubbleContextMenuItemType.MultiSelect: () {
         concertProvider.enterEditing();

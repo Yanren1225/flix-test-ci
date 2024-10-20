@@ -8,8 +8,11 @@ import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/presentation/screens/android_apps_screen.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
 import 'package:flix/presentation/widgets/actions/progress_action.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/utils/android/android_pick_files.dart';
 import 'package:flix/utils/file/file_helper.dart';
+import 'package:flix/utils/permission/flix_permission_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -82,11 +85,19 @@ class PickActionAreaState extends State<PickActionsArea> {
             icon: 'assets/images/ic_file.svg',
             onTap: _onFileButtonPressed,
           ),
+          Visibility(
+            visible: false,
+            child: ProgressAction(
+              showProgress: _isFileLoading,
+              icon: 'assets/images/ic_file.svg',
+              onTap: _onFileButtonPressedOld,
+            ),
+          ),
           ProgressAction(
             showProgress: _isDirectoryLoading,
             icon: 'assets/images/ic_dir_pick.svg',
             onTap: _onDirectoryButtonPressed,
-          ),
+          )
         ],
       ),
     );
@@ -96,24 +107,8 @@ class PickActionAreaState extends State<PickActionsArea> {
     required BuildContext context,
   }) async {
     if (context.mounted) {
-      if (await checkPhotosPermission(context)) {
+      if (await FlixPermissionUtils.checkPhotosPermission(context)) {
         try {
-          if (Platform.isAndroid || Platform.isIOS) {
-            final List<AssetEntity>? result = await AssetPicker.pickAssets(
-              context,
-              pickerConfig: const AssetPickerConfig(
-                  requestType: RequestType.image, maxAssets: MAX_ASSETS),
-            );
-            _isImageLoading = true;
-            for (final f in (result ?? <AssetEntity>[])) {
-              onPicked([
-                PickableFile(
-                    type: PickedFileType.Image, content: await f.toFileMeta())
-              ]);
-            }
-
-            _isImageLoading = false;
-          } else {
             final List<XFile> pickedFileList = await _picker.pickMultiImage(
                 requestFullMetadata: true, limit: MAX_ASSETS);
             onPicked([
@@ -122,7 +117,6 @@ class PickActionAreaState extends State<PickActionsArea> {
                     type: PickedFileType.Image,
                     content: await f.toFileMeta(isImg: true))
             ]);
-          }
         } catch (e, stack) {
           talker.error("pick images failed: $e, $stack", e, stack);
           setState(() {
@@ -137,26 +131,9 @@ class PickActionAreaState extends State<PickActionsArea> {
     required BuildContext context,
   }) async {
     if (context.mounted) {
-      if (await checkVideosPermission(context)) {
+      if (await FlixPermissionUtils.checkVideosPermission(context)) {
         // showMaskLoading(context);
         try {
-          if (Platform.isAndroid || Platform.isIOS) {
-            final List<AssetEntity>? result = await AssetPicker.pickAssets(
-              context,
-              pickerConfig: AssetPickerConfig(
-                  requestType: RequestType.video,
-                  maxAssets: MAX_ASSETS,
-                  filterOptions: FilterOptionGroup(containsLivePhotos: false)),
-            );
-            _isVideoLoading = true;
-            for (final f in (result ?? <AssetEntity>[])) {
-              onPicked([
-                PickableFile(
-                    type: PickedFileType.Video, content: await f.toFileMeta())
-              ]);
-            }
-            _isVideoLoading = false;
-          } else {
             final XFile? pickedFile =
                 await _picker.pickVideo(source: ImageSource.gallery);
             talker.debug('video selected: ${pickedFile?.path}');
@@ -169,7 +146,6 @@ class PickActionAreaState extends State<PickActionsArea> {
             } else {
               talker.error("pick video failed, return null");
             }
-          }
         } catch (e) {
           talker.error("pick video failed: ", e);
           setState(() {
@@ -194,12 +170,11 @@ class PickActionAreaState extends State<PickActionsArea> {
     }
   }
 
-  Future<void> _onFileButtonPressed() async {
+  Future<void> _onFileButtonPressedOld() async {
     try {
       if (mounted) {
         if (await checkStoragePermission(context,
             manageExternalStorage: false)) {
-          // if (Platform.isAndroid) {
           final result = await FilePicker.platform.pickFiles(
               allowMultiple: true,
               onFileLoading: (FilePickerStatus pickerStatus) {
@@ -222,8 +197,77 @@ class PickActionAreaState extends State<PickActionsArea> {
             onPicked([
               for (final file in result.files)
                 PickableFile(
-                    type: PickedFileType.File, content: await file.toFileMeta())
+                    type: PickedFileType.File,
+                    content: await file.toFileMeta())
             ]);
+          }
+        }
+      }
+    } catch (e, stackTrace) {
+      talker.error('pick file failed', e, stackTrace);
+    }
+  }
+
+  Future<void> _onFileButtonPressed() async {
+    try {
+      if (mounted) {
+        if (await checkStoragePermission(context,
+            manageExternalStorage: false)) {
+          if (Platform.isAndroid) {
+            final result = await AndroidPickFiles.pickFiles(
+              allowMultipleSelection: true,
+                onFileLoading: (FilePickerStatus pickerStatus) {
+                  if (mounted) {
+                    switch (pickerStatus) {
+                      case FilePickerStatus.picking:
+                        setState(() {
+                          _isFileLoading = true;
+                        });
+                        break;
+                      case FilePickerStatus.done:
+                        setState(() {
+                          _isFileLoading = false;
+                        });
+                        break;
+                    }
+                  }
+                }
+            );
+            if (result != null) {
+              onPicked([
+                for (final file in result.infoList)
+                  PickableFile(
+                      type: PickedFileType.File, content: await file.toFileMeta())
+              ]);
+            }
+            result;
+          } else {
+            final result = await FilePicker.platform.pickFiles(
+                allowMultiple: true,
+                onFileLoading: (FilePickerStatus pickerStatus) {
+                  if (mounted) {
+                    switch (pickerStatus) {
+                      case FilePickerStatus.picking:
+                        setState(() {
+                          _isFileLoading = true;
+                        });
+                        break;
+                      case FilePickerStatus.done:
+                        setState(() {
+                          _isFileLoading = false;
+                        });
+                        break;
+                    }
+                  }
+                });
+            if (result != null) {
+              onPicked([
+                for (final file in result.files)
+                  PickableFile(
+                      type: PickedFileType.File,
+                      content: await file.toFileMeta())
+              ]);
+            }
           }
         }
       }
@@ -241,12 +285,8 @@ class PickActionAreaState extends State<PickActionsArea> {
           setState(() {
             _isDirectoryLoading = true;
           });
-          String? result = await FilePicker.platform.getDirectoryPath(lockParentWindow:true);
-
-
-          setState(() {
-            _isDirectoryLoading = false;
-          });
+          String? result = await FilePicker.platform
+              .getDirectoryPath(lockParentWindow: true);
 
           if (result != null) {
             var directory = Directory(result);
@@ -265,16 +305,26 @@ class PickActionAreaState extends State<PickActionsArea> {
               }
             }
             directoryMeta.size = totalSize;
-            onPicked([
-              PickableDirectory(
-                  content: picks,
-                  meta: directoryMeta)
-            ]);
+            setState(() {
+              _isDirectoryLoading = false;
+            });
+
+            onPicked([PickableDirectory(content: picks, meta: directoryMeta)]);
+          } else {
+            setState(() {
+              _isDirectoryLoading = false;
+            });
           }
         }
       }
     } catch (e, stackTrace) {
+      if (e is FileSystemException) {
+        flixToast.alert("请选择文件夹～");
+      }
       talker.error('pick directory failed', e, stackTrace);
+      setState(() {
+        _isDirectoryLoading = false;
+      });
     }
   }
 }

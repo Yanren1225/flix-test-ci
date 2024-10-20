@@ -1,16 +1,18 @@
 import 'dart:async';
 
 import 'package:flix/domain/database/database.dart';
-import 'package:flix/domain/device/ap_interface.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/settings/settings_repo.dart';
-import 'package:flix/network/bonjour_impl.dart';
+import 'package:flix/domain/ship_server/ship_service_proxy.dart';
+import 'package:flix/network/discover/network_connect_manager.dart';
 import 'package:flix/network/multicast_impl.dart';
 import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
+import 'package:flix/network/protocol/ping_pong.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/net/net_utils.dart';
+
 
 class DeviceDiscover {
   DeviceDiscover._privateConstructor();
@@ -23,132 +25,24 @@ class DeviceDiscover {
 
   final deviceProfileRepo = DeviceProfileRepo.instance;
   final settingsRepo = SettingsRepo.instance;
-  ApInterface? apInterface;
-
+  final _backupDeviceList = <DeviceModal>{};
   final deviceList = <DeviceModal>{};
   final _deviceId2Device = <String, DeviceModal>{};
   final deviceListChangeListeners = <OnDeviceListChanged>{};
 
-  late MultiCastImpl multiCastApi = MultiCastImpl(
-      multicastGroup: defaultMulticastGroup,
-      multicastPort: defaultMulticastPort,
-      deviceProfileRepo: deviceProfileRepo);
-  late BonjourImpl bonjourApi =
-      BonjourImpl(deviceProfileRepo: deviceProfileRepo);
-
-  Future<void> start(ApInterface apInterface, int port) async {
-    this.apInterface = apInterface;
-    this.apInterface?.listenPong((pong) {
-      _onDeviceDiscover(pong.from);
-    });
-    SettingsRepo.instance.enableMdnsStream.stream.listen((enableMdns) async {
-      if (enableMdns) {
-        await startBonjourScanService(port);
-      } else {
-        await bonjourApi.forceStop();
-        clearDevices();
-        await startScan(port);
-      }
-    });
-    startScan(port);
-  }
-
-  Future<void> startScan(port) async {
-    await multiCastApi.startScan((deviceModal, needPong) {
-      talker.debug('discover device: $deviceModal');
-      if (needPong) {
-        multiCastApi.pong(port, deviceModal);
-        deviceProfileRepo
-            .getDeviceModal(port)
-            .then((value) => apInterface?.pong(value, deviceModal));
-      }
-      _onDeviceDiscover(deviceModal);
-    });
-    unawaited(multiCastApi.ping(port));
-
-    if (await settingsRepo.getEnableMdnsAsync()) {
-      await startBonjourScanService(port);
-    }
-  }
-
-  Future<void> startBonjourScanService(int port) async {
-    await bonjourApi.startScan((DeviceModal deviceModal, bool needPong) {
-      _onDeviceDiscover(deviceModal);
-    });
-    unawaited(bonjourApi.ping(port));
-  }
-
-  Future<void> stop() async {
-    multiCastApi.stop();
-    // always stop bonjour service
-    bonjourApi.stop();
-  }
-
-  Future<void> ping(int port) async {
-    multiCastApi.ping(port);
-    if (await SettingsRepo.instance.getEnableMdnsAsync()) {
-      bonjourApi.ping(port);
-    }
-  }
-
-  void _onDeviceDiscover(DeviceModal device) {
-    final preDevice = _findDevice(device);
-    if (preDevice == null) {
-      _addDevice(device);
-      notifyDeviceListChanged();
-    } else {
-      final int? port;
-      String ip = "";
-      String host = "";
-
-      bool isChanged = false;
-      if (device.ip.isNotEmpty &&
-          device.ip != preDevice.ip) {
-        ip = device.ip;
-        isChanged = true;
-      } else {
-        ip = preDevice.ip;
-      }
-
-      if (device.host.isNotEmpty &&
-          device.host != preDevice.host) {
-        host = device.host;
-        isChanged = true;
-      } else {
-        host = preDevice.host;
-      }
-
-      if (device.port != null && device.port != preDevice.port) {
-        port = device.port;
-        isChanged = true;
-      } else {
-        port = preDevice.port;
-      }
-
-      if (device.alias != preDevice.alias ||
-          device.deviceModel != preDevice.deviceModel ||
-          device.deviceType != preDevice.deviceType) {
-        isChanged = true;
-      }
-
-      if (isChanged) {
-        final newDevice = DeviceModal(
-            alias: device.alias,
-            deviceModel: device.deviceModel,
-            deviceType: device.deviceType,
-            fingerprint: device.fingerprint,
-            version: device.version,
-            port: port,
-            ip: ip,
-            host: host);
-        deviceList.remove(preDevice);
-        _addDevice(newDevice);
-        notifyDeviceListChanged();
+  Future<void> pingBackupDevices() async {
+    for (var device in _backupDeviceList) {
+      if (device.ip.isNotEmpty) {
+        NetworkConnectManager.instance.connect("ping", device.ip);
       }
     }
   }
+
+
 
   void clearDevices() {
+    _backupDeviceList.clear();
+    _backupDeviceList.addAll(deviceList);
     deviceList.clear();
     _deviceId2Device.clear();
     notifyDeviceListChanged();

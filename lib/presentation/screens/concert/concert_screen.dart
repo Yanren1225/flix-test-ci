@@ -1,12 +1,14 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_bottom_sheet_util.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
+import 'package:flix/utils/file/file_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flix/domain/concert/concert_provider.dart';
@@ -39,6 +41,7 @@ import 'package:pasteboard/pasteboard.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../widgets/segements/bubble_context_menu.dart';
 import 'droper.dart';
 
 class ConcertScreen extends StatefulWidget {
@@ -126,10 +129,6 @@ class _ConcertScreenState extends State<ConcertScreen>
                 // Navigator.pop(context);
               },
               child: GestureDetector(
-                onTapDown: (_) {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  removeAllModals();
-                },
                 child: NavigationAppbarScaffold(
                     showBackButton: showBackButton,
                     title: value,
@@ -315,17 +314,20 @@ class InputAreaState extends State<InputArea> {
   }
 
   void submitText(String content) {
-    widget.onSubmit(SharedText(id: const Uuid().v4(), content: content), BubbleType.Text);
+    widget.onSubmit(
+        SharedText(id: const Uuid().v4(), content: content), BubbleType.Text);
   }
 
   void submitImage(FileMeta meta) {
-    widget.onSubmit(SharedFile(
+    widget.onSubmit(
+        SharedFile(
             id: const Uuid().v4(), state: FileState.picked, content: meta),
         BubbleType.Image);
   }
 
   void submitVideo(FileMeta meta) {
-    widget.onSubmit(SharedFile(
+    widget.onSubmit(
+        SharedFile(
             id: const Uuid().v4(), state: FileState.picked, content: meta),
         BubbleType.Video);
   }
@@ -379,7 +381,7 @@ class InputAreaState extends State<InputArea> {
           break;
         case PickedFileType.Directory:
           final directory = (element as PickableDirectory);
-          if(directory.content.isEmpty){
+          if (directory.content.isEmpty) {
             FlixToast.withContext(context).info("文件夹为空，发送取消咯");
             return;
           }
@@ -458,89 +460,82 @@ class InputAreaState extends State<InputArea> {
                                   },
                                 )
                               },
-                              child: TextField(
-                                contextMenuBuilder: (BuildContext context,
-                                    EditableTextState editableTextState) {
-                                  return AdaptiveTextSelectionToolbar.editable(
-                                    anchors:
-                                        editableTextState.contextMenuAnchors,
-                                    clipboardStatus: ClipboardStatus.pasteable,
-                                    // to apply the normal behavior when click on copy (copy in clipboard close toolbar)
-                                    // use an empty function `() {}` to hide this option from the toolbar
-                                    onCopy: () =>
-                                        editableTextState.copySelection(
-                                            SelectionChangedCause.toolbar),
-                                    // to apply the normal behavior when click on cut
-                                    onCut: () => editableTextState.cutSelection(
-                                        SelectionChangedCause.toolbar),
-                                    onPaste: () {
-                                      // editableTextState.pasteText(SelectionChangedCause.toolbar);
-                                      _paste(concertProvider.deviceInfo);
-                                      editableTextState.hideToolbar();
+                              child: TapRegion(
+                                  groupId: contextMenuGroupId,
+                                  consumeOutsideTaps: false,
+                                  onTapOutside: (event) {
+                                    talker.debug("event = " +
+                                        event.toString() +
+                                        " down " +
+                                        event.down.toString());
+                                    FocusScopeNode currentFocus =
+                                        FocusScope.of(context);
+                                    if (!currentFocus.hasPrimaryFocus) {
+                                      currentFocus.unfocus();
+                                    }
+                                  },
+                                  child: TextField(
+                                    contextMenuBuilder: (BuildContext context,
+                                        EditableTextState editableTextState) {
+                                      return TapRegion(
+                                        groupId: contextMenuGroupId,
+                                        consumeOutsideTaps: true,
+                                        child:
+                                            buildAdaptiveTextSelectionToolbar(
+                                                editableTextState,
+                                                concertProvider),
+                                      );
                                     },
-                                    // to apply the normal behavior when click on select all
-                                    onSelectAll: () =>
-                                        editableTextState.selectAll(
-                                            SelectionChangedCause.toolbar),
-                                    onLookUp: () =>
-                                        editableTextState.lookUpSelection(
-                                            SelectionChangedCause.toolbar),
-                                    onSearchWeb: () =>
-                                        editableTextState.searchWebForSelection(
-                                            SelectionChangedCause.toolbar),
-                                    onShare: () =>
-                                        editableTextState.shareSelection(
-                                            SelectionChangedCause.toolbar),
-                                    onLiveTextInput: () {},
-                                  );
-                                },
-                                controller: textEditController,
-                                style: TextStyle(
-                                        color: Theme.of(context)
+                                    controller: textEditController,
+                                    style: TextStyle(
+                                            color: Theme.of(context)
+                                                .flixColors
+                                                .text
+                                                .primary,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal)
+                                        .fix(),
+                                    keyboardType: TextInputType.multiline,
+                                    minLines: null,
+                                    maxLines: null,
+                                    decoration: InputDecoration(
+                                        isDense: true,
+                                        // hintText: 'Input something.',
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide.none,
+                                          gapPadding: 0,
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        filled: true,
+                                        fillColor: Theme.of(context)
                                             .flixColors
-                                            .text
+                                            .background
                                             .primary,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.normal)
-                                    .fix(),
-                                keyboardType: TextInputType.multiline,
-                                minLines: null,
-                                maxLines: null,
-                                decoration: InputDecoration(
-                                    isDense: true,
-                                    // hintText: 'Input something.',
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                      gapPadding: 0,
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    filled: true,
-                                    fillColor: Theme.of(context)
+                                        hoverColor: Theme.of(context)
+                                            .flixColors
+                                            .background
+                                            .primary,
+                                        contentPadding: EdgeInsets.only(
+                                            left: 12,
+                                            right: 12,
+                                            top: 8,
+                                            bottom: Platform.isMacOS ||
+                                                    Platform.isWindows ||
+                                                    Platform.isLinux
+                                                ? 16
+                                                : 8)),
+                                    cursorColor: Theme.of(context)
                                         .flixColors
-                                        .background
-                                        .secondary,
-                                    hoverColor: Theme.of(context)
-                                        .flixColors
-                                        .background
+                                        .text
                                         .primary,
-                                    contentPadding: EdgeInsets.only(
-                                        left: 12,
-                                        right: 12,
-                                        top: 8,
-                                        bottom: Platform.isMacOS ||
-                                                Platform.isWindows ||
-                                                Platform.isLinux
-                                            ? 16
-                                            : 8)),
-                                cursorColor:
-                                    Theme.of(context).flixColors.text.primary,
-                                onChanged: (value) {
-                                  input(value);
-                                },
-                                onSubmitted: (value) {
-                                  trySubmitText();
-                                },
-                              ),
+                                    onChanged: (value) {
+                                      input(value);
+                                    },
+                                    onSubmitted: (value) {
+                                      trySubmitText();
+                                    },
+                                  )),
                             ),
                           ),
                         )),
@@ -585,6 +580,36 @@ class InputAreaState extends State<InputArea> {
     );
   }
 
+  AdaptiveTextSelectionToolbar buildAdaptiveTextSelectionToolbar(
+      EditableTextState editableTextState, ConcertProvider concertProvider) {
+    return AdaptiveTextSelectionToolbar.editable(
+      anchors: editableTextState.contextMenuAnchors,
+      clipboardStatus: ClipboardStatus.pasteable,
+      // to apply the normal behavior when click on copy (copy in clipboard close toolbar)
+      // use an empty function `() {}` to hide this option from the toolbar
+      onCopy: () =>
+          editableTextState.copySelection(SelectionChangedCause.toolbar),
+      // to apply the normal behavior when click on cut
+      onCut: () =>
+          editableTextState.cutSelection(SelectionChangedCause.toolbar),
+      onPaste: () {
+        // editableTextState.pasteText(SelectionChangedCause.toolbar);
+        _paste(concertProvider.deviceInfo);
+        editableTextState.hideToolbar();
+      },
+      // to apply the normal behavior when click on select all
+      onSelectAll: () =>
+          editableTextState.selectAll(SelectionChangedCause.toolbar),
+      onLookUp: () =>
+          editableTextState.lookUpSelection(SelectionChangedCause.toolbar),
+      onSearchWeb: () => editableTextState
+          .searchWebForSelection(SelectionChangedCause.toolbar),
+      onShare: () =>
+          editableTextState.shareSelection(SelectionChangedCause.toolbar),
+      onLiveTextInput: () {},
+    );
+  }
+
   void trySubmitText() {
     if (textEditController.text.trim().isNotEmpty) {
       submitText(textEditController.text);
@@ -611,8 +636,8 @@ class InputAreaState extends State<InputArea> {
       final imageBytes = await Pasteboard.image;
       if (imageBytes != null) {
         final cachePath = await getCachePath();
-        final imageFile =
-            await createFile(cachePath, '${const Uuid().v4()}.jpg');
+        final imageFile = await FileUtils.getTargetFile(
+            cachePath, '${const Uuid().v4()}.jpg');
         await imageFile.writeAsBytes(imageBytes);
         showCupertinoModalPopup(
             context: context,

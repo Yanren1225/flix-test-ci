@@ -7,19 +7,17 @@ maintainer:
 priority: optional
 section: x11
 installed_size: 24400
-dependcies:
+dependencies:
   - libnotify-bin
   - libappindicator3-1
+  - libgtk-3-0
 essential: false
 icon: linux/resources/flix.png
-postuninstall_scripts:
-  - echo "Sorry to see you go."
 keywords:
   - flix
-  - file show
 
 generic_name: flix
 categories:
-  - Utility
+  - Tool
 
 startup_notify: true

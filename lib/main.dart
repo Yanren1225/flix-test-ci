@@ -6,11 +6,12 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flix/domain/analytics/flix_analytics.dart';
 import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/bubble_pool.dart';
-import 'package:flix/domain/clipboard/clipboard_manager.dart';
+import 'package:flix/domain/clipboard/flix_clipboard_manager.dart';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/hotspot/ap_router_handler.dart';
 import 'package:flix/domain/hotspot/hotspot_manager.dart';
 import 'package:flix/domain/lifecycle/app_lifecycle.dart';
 import 'package:flix/domain/lifecycle/platform_state.dart';
@@ -18,19 +19,25 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/log/persistence/log_persistence_proxy.dart';
 import 'package:flix/domain/notification/flix_notification.dart';
 import 'package:flix/domain/notification/notification_service.dart';
+import 'package:flix/domain/paircode/pair_router_handler.dart';
 import 'package:flix/domain/settings/settings_repo.dart';
+import 'package:flix/domain/ship_server/heart_manager.dart';
 import 'package:flix/domain/ship_server/ship_service_lifecycle_watcher.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
+import 'package:flix/domain/uri_router.dart';
 import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/domain/window/flix_window_manager.dart';
 import 'package:flix/l10n/l10n.dart';
 import 'package:flix/model/device_info.dart';
+import 'package:flix/network/discover/discover_manager.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
 import 'package:flix/presentation/screens/helps/donate_us.dart';
 import 'package:flix/presentation/screens/helps/help_screen.dart';
+import 'package:flix/presentation/screens/paircode/add_device_screen.dart';
+import 'package:flix/presentation/screens/paircode/pair_code_screen.dart';
 import 'package:flix/presentation/screens/pick_device_screen.dart';
 import 'package:flix/presentation/screens/settings/cross_device_clipboard_screen.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
@@ -38,6 +45,7 @@ import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/setting/setting_provider.dart';
 import 'package:flix/theme/theme.dart';
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/theme/theme_util.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/device_info_helper.dart';
 import 'package:flix/utils/iterable_extension.dart';
@@ -92,6 +100,7 @@ Future<void> main(List<String> arguments) async {
     _logAppContext(deviceInfo);
     _initAppLifecycle();
     _initSystemChrome();
+    _initUriNavigator();
     runApp(const WithForegroundTask(child: MyApp()));
   } catch (e, s) {
     talker.error('launch error', e, s);
@@ -107,9 +116,16 @@ Future<void> main(List<String> arguments) async {
   }
 }
 
+void _initUriNavigator() {
+  final apRouterHandler = ApRouterHandler();
+  final pairRouterHandler = PairRouterHandler();
+  uriRouter.registerHandler(apRouterHandler.host, apRouterHandler);
+  uriRouter.registerHandler(pairRouterHandler.host, pairRouterHandler);
+}
+
 void initClipboard() {
   DeviceManager.instance.addPairDeviceChangeListener((pairDevices) {
-    if(pairDevices.isNotEmpty){
+    if (pairDevices.isNotEmpty) {
       if (FlixClipboardManager.instance.isAlive) {
         return;
       }
@@ -123,6 +139,7 @@ void initClipboard() {
 void _initForegroundTask() {
   if (Platform.isAndroid || Platform.isIOS) {
     flixForegroundService.init();
+    flixForegroundService.start();
   }
 }
 
@@ -133,7 +150,6 @@ Future<void> _initHighRefreshRate() async {
 }
 
 void _initAppLifecycle() {
-  appLifecycle.init();
   appLifecycle.addListener(logPersistence);
   if (Platform.isAndroid || Platform.isIOS) {
     appLifecycle.addListener(flixForegroundService);
@@ -142,6 +158,7 @@ void _initAppLifecycle() {
   appLifecycle.addListener(shipServiceLifecycleWatcher);
   platformStateDispatcher.addListener(shipServiceLifecycleWatcher);
   appLifecycle.addListener(hotspotManager);
+  appLifecycle.addListener(FlixClipboardManager.instance);
 }
 
 void _initDatabase() {
@@ -169,7 +186,9 @@ Future<DeviceInfoResult> _initDeviceManager() async {
   DeviceManager.instance.init();
   shipService.startShipServer().then((isSuccess) async {
     if (isSuccess) {
-      await DeviceDiscover.instance.start(shipService, await shipService.getPort());
+      final port = await shipService.getPort();
+      DiscoverManager.instance.startDiscover(port);
+      // HeartManager.instance.startHeartTimer();
     }
   });
   return deviceInfo;
@@ -194,15 +213,15 @@ Future<void> initFireBase() async {
 
     FlutterError.onError = (FlutterErrorDetails details) async {
       if (kReleaseMode) {
-        FirebaseCrashlytics.instance.recordFlutterFatalError;
+        await FirebaseCrashlytics.instance.recordFlutterError(details);
       } else {
         talker.critical(details);
       }
     };
     PlatformDispatcher.instance.onError = (error, stack) {
       if (kReleaseMode) {
-        FirebaseCrashlytics.instance
-            .recordError(error, stack, fatal: true, information: ['platform errors']);
+        FirebaseCrashlytics.instance.recordError(error, stack,
+            fatal: true, information: ['platform errors']);
       } else {
         talker.critical('platform errors', error, stack);
       }
@@ -252,7 +271,7 @@ Future<void> initSystemManager() async {
 /// 支持一个鼠标键显示菜单、另一个鼠标键显示窗口
 class ShowUpTrayListener with TrayListener {
   @override
-  void onTrayIconMouseUp() {
+  void onTrayIconMouseDown() {
     if (Platform.isWindows) {
       windowManager.show();
     } else {
@@ -261,7 +280,7 @@ class ShowUpTrayListener with TrayListener {
   }
 
   @override
-  void onTrayIconRightMouseUp() {
+  void onTrayIconRightMouseDown() {
     if (Platform.isWindows) {
       trayManager.popUpContextMenu();
     } else {
@@ -308,50 +327,66 @@ class MyApp extends StatefulWidget {
   State<StatefulWidget> createState() => MyAppState();
 }
 
-class MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   // This widget is the root of your application.
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    appLifecycle.dispatchLifecycleEvent(state);
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => SettingProvider()),
-        ChangeNotifierProvider<MultiCastClientProvider>(create: (_) => MultiCastClientProvider()),
-        ChangeNotifierProvider(create: (context) => AndropContext())
-      ],
-      child: StreamBuilder<bool>(
-          initialData: SettingsRepo.instance.darkFollowSystem,
-          stream: SettingsRepo.instance.darkFollowSystemStream.stream,
-          builder: (context, followSystem) {
-            return StreamBuilder<bool>(
-                initialData: SettingsRepo.instance.darkMode,
-                stream: SettingsRepo.instance.darkModeStream.stream,
-                builder: (context, darkMode) {
-                  bool userDarkMode = followSystem.data ?? false
-                      ? MediaQuery.of(context).platformBrightness == Brightness.dark
-                      : darkMode.data ?? false;
+        providers: [
+          ChangeNotifierProvider(create: (_) => SettingProvider()),
+          ChangeNotifierProvider<MultiCastClientProvider>(
+              create: (_) => MultiCastClientProvider()),
+          ChangeNotifierProvider(create: (context) => AndropContext())
+        ],
+        child: StreamBuilder<String>(
+            initialData: SettingsRepo.instance.darkModeTag,
+            stream: SettingsRepo.instance.darkModeTagStream.stream,
+            builder: (context, darkModeTag) {
+              bool userDarkMode = darkModeTag.data == "follow_system"
+                  ? MediaQuery.of(context).platformBrightness == Brightness.dark
+                  : darkModeTag.data == "always_on";
 
-                  return MaterialApp(
-                    onGenerateTitle: (context) => S.of(context).app_name,
-                    navigatorObservers: [modalsRouteObserver],
-                    navigatorKey: navigatorKey,
-                    localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
-                      S.delegate,
-                      GlobalMaterialLocalizations.delegate,
-                      GlobalWidgetsLocalizations.delegate,
-                      GlobalCupertinoLocalizations.delegate,
-                    ],
-                    supportedLocales: const [
-                      Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN'),
-                    ],
-                    theme: userDarkMode ? flixDark() : flixLight(),
-                    // initialRoute: 'home',
-                    builder: FToastBuilder(),
-                    home: const MyHomePage(title: 'Flutter Demo Home Page'),
-                  );
-                });
-          }),
-    );
+              return MaterialApp(
+                onGenerateTitle: (context) => S.of(context).app_name,
+                navigatorObservers: [modalsRouteObserver],
+                navigatorKey: navigatorKey,
+                localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [
+                  Locale.fromSubtags(
+                      languageCode: 'zh',
+                      scriptCode: 'Hans',
+                      countryCode: 'CN'),
+                ],
+                theme: (userDarkMode ? flixDark(context) : flixLight(context)),
+
+                // initialRoute: 'home',
+                builder: FToastBuilder(),
+                home: const MyHomePage(title: 'Flutter Demo Home Page'),
+              );
+            }));
   }
 }
 
@@ -386,7 +421,13 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset('assets/images/img_placeholder.svg'),
+          Image.asset(
+            isDarkMode(context)
+                ? 'assets/images/image_placeholder_dark.png'
+                : 'assets/images/image_placeholder_light.png',
+            fit: BoxFit.contain,
+            width: 200,
+          ),
           const SizedBox(
             height: 16,
           ),
@@ -445,7 +486,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
     Navigator.pushAndRemoveUntil(
             context,
             CupertinoPageRoute<DeviceInfo?>(
-                builder: (context) => PickDeviceScreen(sharedMedia: sharedMedia)),
+                builder: (context) =>
+                    PickDeviceScreen(sharedMedia: sharedMedia)),
             ModalRoute.withName('/'))
         .then((deviceInfo) {
       if (deviceInfo == null) {
@@ -482,7 +524,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
   }
 
   void _initNotificationListener() {
-    flixNotification.receptionNotificationStream.stream.listen((receptionNotification) async {
+    flixNotification.receptionNotificationStream.stream
+        .listen((receptionNotification) async {
       if (Platform.isWindows) {
         // trick: 直接使用show, 大概率无法把窗口展示在最上方
         await windowManager.setAlwaysOnTop(true);
@@ -563,7 +606,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
       backgroundColor: Theme.of(context).flixColors.background.secondary,
       body: NarrowBody(),
       bottomNavigationBar: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: 70 + MediaQuery.of(context).padding.bottom),
+        constraints: BoxConstraints(
+            minHeight: 70 + MediaQuery.of(context).padding.bottom),
         child: BottomNavigationBar(
           items: [
             BottomNavigationBarItem(
@@ -571,8 +615,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                   width: 26,
                   height: 26,
                   'assets/images/ic_share.svg',
-                  colorFilter:
-                      ColorFilter.mode(getColor(context, 0, selectedIndex), BlendMode.srcIn),
+                  colorFilter: ColorFilter.mode(
+                      getColor(context, 0, selectedIndex), BlendMode.srcIn),
                 ),
                 label: '互传'),
             BottomNavigationBarItem(
@@ -580,8 +624,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                   width: 26,
                   height: 26,
                   'assets/images/ic_config.svg',
-                  colorFilter:
-                      ColorFilter.mode(getColor(context, 1, selectedIndex), BlendMode.srcIn),
+                  colorFilter: ColorFilter.mode(
+                      getColor(context, 1, selectedIndex), BlendMode.srcIn),
                 ),
                 label: '配置'),
             BottomNavigationBarItem(
@@ -589,18 +633,20 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                   width: 26,
                   height: 26,
                   'assets/images/ic_help.svg',
-                  colorFilter:
-                      ColorFilter.mode(getColor(context, 2, selectedIndex), BlendMode.srcIn),
+                  colorFilter: ColorFilter.mode(
+                      getColor(context, 2, selectedIndex), BlendMode.srcIn),
                 ),
                 label: '帮助'),
           ],
           currentIndex: selectedIndex,
           selectedItemColor: Theme.of(context).flixColors.text.primary,
-          unselectedItemColor: Theme.of(context).flixColors.text.secondary,
+          unselectedItemColor: Theme.of(context).flixColors.text.tertiary,
           selectedFontSize: 12,
           unselectedFontSize: 12,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
+          selectedLabelStyle:
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
+          unselectedLabelStyle:
+              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
           backgroundColor: Theme.of(context).flixColors.background.primary,
           elevation: 0,
           onTap: (value) => setSelectedIndex(value),
@@ -621,15 +667,33 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                         showBackButton: true,
                         playable: true,
                       ))),
+          onViewConnectInfo: () => Navigator.push(context,
+              CupertinoPageRoute(builder: (context) => const PairCodeScreen())),
+          onGoManualAdd: () => Navigator.push(
+              context,
+              CupertinoPageRoute(
+                  builder: (context) => const AddDeviceScreen())),
         );
       case 1:
         return SettingsScreen(
-            crossDeviceCallback:(){
-              Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                      builder: (context) => CrossDeviceClipboardScreen()));
-            }
+          crossDeviceCallback: () {
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => CrossDeviceClipboardScreen()));
+          },
+          showConnectionInfoCallback: () {
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => const PairCodeScreen()));
+          },
+          goManualAddCallback: () {
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => const AddDeviceScreen()));
+          },
         );
       case 2:
         return HelpScreen(
@@ -670,8 +734,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                     'assets/images/ic_share.svg',
                     width: 26,
                     height: 26,
-                    colorFilter:
-                        ColorFilter.mode(getColor(context, 0, selectedIndex), BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(
+                        getColor(context, 0, selectedIndex), BlendMode.srcIn),
                   ),
                   label: const Text('互传')),
               NavigationRailDestination(
@@ -679,8 +743,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                     'assets/images/ic_config.svg',
                     width: 26,
                     height: 26,
-                    colorFilter:
-                        ColorFilter.mode(getColor(context, 1, selectedIndex), BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(
+                        getColor(context, 1, selectedIndex), BlendMode.srcIn),
                   ),
                   label: const Text('配置')),
               NavigationRailDestination(
@@ -688,8 +752,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                     'assets/images/ic_help.svg',
                     width: 26,
                     height: 26,
-                    colorFilter:
-                        ColorFilter.mode(getColor(context, 2, selectedIndex), BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(
+                        getColor(context, 2, selectedIndex), BlendMode.srcIn),
                   ),
                   label: const Text('帮助'))
             ],
@@ -701,10 +765,10 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
             extended: false,
             elevation: null,
             selectedIndex: selectedIndex,
-            selectedIconTheme:
-                IconThemeData(size: 26, color: Theme.of(context).flixColors.text.primary),
-            unselectedIconTheme:
-                IconThemeData(size: 26, color: Theme.of(context).flixColors.text.tertiary),
+            selectedIconTheme: IconThemeData(
+                size: 26, color: Theme.of(context).flixColors.text.primary),
+            unselectedIconTheme: IconThemeData(
+                size: 26, color: Theme.of(context).flixColors.text.tertiary),
             selectedLabelTextStyle: TextStyle(
               color: Theme.of(context).flixColors.text.primary,
               fontSize: 12,
@@ -741,15 +805,31 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               );
             });
           },
+          onViewConnectInfo: () {
+            setState(() {
+              thirdWidget = const PairCodeScreen();
+            });
+          },
+          onGoManualAdd: () {
+            setState(() {
+              thirdWidget = const AddDeviceScreen();
+            });
+          },
         );
       case 1:
-        return SettingsScreen(
-            crossDeviceCallback:(){
-              setState(() {
-                thirdWidget = CrossDeviceClipboardScreen();
-              });
-            }
-        );
+        return SettingsScreen(crossDeviceCallback: () {
+          setState(() {
+            thirdWidget = CrossDeviceClipboardScreen();
+          });
+        }, showConnectionInfoCallback: () {
+          setState(() {
+            thirdWidget = const PairCodeScreen();
+          });
+        }, goManualAddCallback: () {
+          setState(() {
+            thirdWidget = const AddDeviceScreen();
+          });
+        });
       case 2:
         return HelpScreen(
           goVersionScreen: () {
