@@ -370,16 +370,12 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 navigatorObservers: [modalsRouteObserver],
                 navigatorKey: navigatorKey,
                 localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+                  S.delegate,
                   GlobalMaterialLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
                 ],
-                supportedLocales: const [
-                  Locale.fromSubtags(
-                      languageCode: 'zh',
-                      scriptCode: 'Hans',
-                      countryCode: 'CN'),
-                ],
+                supportedLocales: S.delegate.supportedLocales,
                 theme: (userDarkMode ? flixDark(context) : flixLight(context)),
 
                 // initialRoute: 'home',

@@ -73,6 +73,11 @@
     <key>io.flutter.embedded_views_preview</key>
     <true/>
 
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>zh_CN</string>
+    </array>
+
 
 	<!-- Add for share_handler start -->
     <!-- The 'NSUserActivityTypes' key is only needed if you plan to use the recordSentMessage API allowing for conversations to show up as direct share suggestions -->

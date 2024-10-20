@@ -22,15 +22,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "app_name": MessageLookupByLibrary.simpleMessage("纯纯 Mygo"),
-        "history": MessageLookupByLibrary.simpleMessage("历史"),
-        "home": MessageLookupByLibrary.simpleMessage("主页"),
-        "last_update_time": MessageLookupByLibrary.simpleMessage("最后更新时间"),
-        "library": MessageLookupByLibrary.simpleMessage("书架"),
-        "loading": MessageLookupByLibrary.simpleMessage("加载中..."),
-        "more": MessageLookupByLibrary.simpleMessage("更多"),
-        "pull_to_refresh": MessageLookupByLibrary.simpleMessage("下拉刷新"),
-        "release_ready": MessageLookupByLibrary.simpleMessage("释放刷新"),
-        "success": MessageLookupByLibrary.simpleMessage("成功")
+        "app_name": MessageLookupByLibrary.simpleMessage("Flix"),
+        "welcome_message": MessageLookupByLibrary.simpleMessage(
+            "这里是 Flix，一个快速简洁的多端互传软件，希望你能喜欢 😆")
       };
 }
