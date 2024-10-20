@@ -1,0 +1,7 @@
+{
+  "@@locale": "zh_CN",
+  "app_name": "Flix",
+  "@app_name": {
+    "description": "软件名称"
+  }
+}

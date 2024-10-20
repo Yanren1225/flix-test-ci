@@ -27,6 +27,7 @@ import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/domain/uri_router.dart';
 import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/domain/window/flix_window_manager.dart';
+import 'package:flix/l10n/l10n.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/discover/discover_manager.dart';
 import 'package:flix/network/multicast_client_provider.dart';
@@ -103,6 +104,7 @@ Future<void> main(List<String> arguments) async {
     runApp(const WithForegroundTask(child: MyApp()));
   } catch (e, s) {
     talker.error('launch error', e, s);
+
 
     runApp(MaterialApp(
         home: Center(
@@ -364,7 +366,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   : darkModeTag.data == "always_on";
 
               return MaterialApp(
-                title: 'Flix',
+                onGenerateTitle: (context) => S.of(context).app_name,
                 navigatorObservers: [modalsRouteObserver],
                 navigatorKey: navigatorKey,
                 localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
