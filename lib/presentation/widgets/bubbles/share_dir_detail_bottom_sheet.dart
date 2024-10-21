@@ -18,6 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gradient_txt/gradient_text.dart';
 
+import '../../../l10n/l10n.dart';
+
 showDirectoryDetailBottomSheet(
     BuildContext context, String dirBubbleId, String dirName) async {
   await showCupertinoModalPopup(
@@ -89,7 +91,7 @@ class BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return FlixBottomSheet(
-        title: '文件夹内容',
+        title: S.of(context).bubbles_dir,
         subTitle: dirName,
         child: Padding(
           padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
@@ -123,16 +125,16 @@ class BottomSheetContentState extends State<DirectoryDetailBottomSheet> {
             margin: const EdgeInsets.only(bottom: 15),
             width: double.infinity,
             height: 80,
-            child: const Center(
-              child: Text('加载错误了哦，一会再试试吧~'),
+            child: Center(
+              child: Text(S.of(context).bubbles_dir_load_error),
             ));
       case _BottomSheetState.empty:
         return Container(
             margin: const EdgeInsets.only(bottom: 15),
             width: double.infinity,
             height: 80,
-            child: const Center(
-              child: Text('无数据'),
+            child: Center(
+              child: Text(S.of(context).bubbles_dir_no_data),
             ));
       default:
         return Container();
@@ -193,7 +195,7 @@ class _SendFileItemState extends State<_SendFileItem>
         case FileState.picked:
           break;
         case FileState.waitToAccepted:
-          stateDes = '等待对方确认';
+          stateDes = S.of(context).bubbles_wait_for_confirm;
           stateDesColor = const Color.fromRGBO(60, 60, 67, 0.6);
           break;
         case FileState.inTransit:
@@ -211,7 +213,7 @@ class _SendFileItemState extends State<_SendFileItem>
         case FileState.sendCompleted:
         case FileState.receiveCompleted:
         case FileState.completed:
-          stateDes = '已发送';
+          stateDes = S.of(context).bubbles_send_done;
           stateDesColor = const Color.fromRGBO(26, 189, 91, 1);
           stateIcon = SvgPicture.asset(
             'assets/images/ic_done.svg',
@@ -220,7 +222,7 @@ class _SendFileItemState extends State<_SendFileItem>
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
-          stateDes = '发送异常';
+          stateDes = S.of(context).bubbles_send_failed;
           stateDesColor = const Color.fromRGBO(255, 59, 48, 1);
           clickable = true;
           stateIcon = SvgPicture.asset(
@@ -228,7 +230,7 @@ class _SendFileItemState extends State<_SendFileItem>
           );
           break;
         case FileState.cancelled:
-          stateDes = '已取消';
+          stateDes = S.of(context).bubbles_send_cancel;
           stateDesColor = const Color.fromRGBO(255, 59, 48, 1);
           break;
         case FileState.unknown:
@@ -237,7 +239,7 @@ class _SendFileItemState extends State<_SendFileItem>
     } else {
       switch (sharedFile.state) {
         case FileState.waitToAccepted:
-          stateDes = '待接收';
+          stateDes = S.of(context).bubbles_wait_for_receive;
           stateDesColor = const Color.fromRGBO(60, 60, 67, 0.6);
           break;
         case FileState.inTransit:
@@ -255,7 +257,7 @@ class _SendFileItemState extends State<_SendFileItem>
           break;
         case FileState.receiveCompleted:
         case FileState.completed:
-          stateDes = '已下载';
+          stateDes = S.of(context).bubbles_downloaded;
           stateDesColor = const Color.fromRGBO(26, 189, 91, 1);
           stateIcon = SvgPicture.asset(
             'assets/images/ic_done.svg',
@@ -264,7 +266,7 @@ class _SendFileItemState extends State<_SendFileItem>
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
-          stateDes = '接收失败';
+          stateDes = S.of(context).bubbles_receive_failed;
           clickable = true;
           stateDesColor = const Color.fromRGBO(255, 59, 48, 1);
           stateIcon = SvgPicture.asset(
@@ -272,7 +274,7 @@ class _SendFileItemState extends State<_SendFileItem>
           );
           break;
         case FileState.cancelled:
-          stateDes = '已取消';
+          stateDes = S.of(context).bubbles_receive_cancel;
           stateDesColor = const Color.fromRGBO(255, 59, 48, 1);
           break;
         case FileState.unknown:
@@ -290,10 +292,10 @@ class _SendFileItemState extends State<_SendFileItem>
             }
             if (isSender) {
               shipService.resend(widget.entity);
-              flixToast.info("重新发送文件");
+              flixToast.info(S.of(context).bubbles_toast_resend);
             } else {
               shipService.reReceive(widget.entity);
-              flixToast.info("重新接收文件");
+              flixToast.info(S.of(context).bubbles_toast_re_receive);
             }
           },
           child: Row(

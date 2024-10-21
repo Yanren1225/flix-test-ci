@@ -9,6 +9,8 @@ import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../l10n/l10n.dart';
+
 class CancelSendButtonState extends State<CancelSendButton> {
   late String anchorTag;
 
@@ -61,7 +63,7 @@ class CancelSendButtonState extends State<CancelSendButton> {
                         padding: const EdgeInsets.only(
                             left: 20, top: 14, right: 40, bottom: 14),
                         child: Text(
-                          '取消发送',
+                          S.of(context).button_cancel_send,
                           style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,

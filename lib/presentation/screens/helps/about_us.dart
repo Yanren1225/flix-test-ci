@@ -12,6 +12,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:talker/talker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../l10n/l10n.dart';
+
 class AboutUSScreen extends StatefulWidget {
   final bool showBack;
 
@@ -40,7 +42,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
     return NavigationScaffold(
         showBackButton: widget.showBack,
         toolbarCoverBody: true,
-        title: '关于我们',
+        title: S.of(context).help_about,
         builder: (padding) {
           final widgets = <Widget>[
             niceToMeetU(),
@@ -53,17 +55,22 @@ class AboutUSScreenState extends State<AboutUSScreen> {
           ];
           return ListView.builder(
               physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics(decelerationRate: ScrollDecelerationRate.fast)),
+                  parent: BouncingScrollPhysics(
+                      decelerationRate: ScrollDecelerationRate.fast)),
               padding: padding.copyWith(
-                  bottom: padding.bottom + MediaQuery.of(context).padding.bottom + 20),
+                  bottom: padding.bottom +
+                      MediaQuery.of(context).padding.bottom +
+                      20),
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.only(left: 16.0, right: 80.0, top: 12, bottom: 12),
+                  padding: const EdgeInsets.only(
+                      left: 16.0, right: 80.0, top: 12, bottom: 12),
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: DecoratedBox(
                         decoration: BoxDecoration(
-                            color: Theme.of(context).flixColors.background.primary,
+                            color:
+                                Theme.of(context).flixColors.background.primary,
                             borderRadius: BorderRadius.circular(10)),
                         child: widgets[index]),
                   ),
@@ -76,7 +83,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   Widget niceToMeetU() {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: Text('👋 你好，很高兴认识你！',
+      child: Text(S.of(context).help_hello,
           style: TextStyle(
                   color: Theme.of(context).flixColors.text.primary,
                   fontSize: 16,
@@ -100,7 +107,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   Widget brief() {
     return Padding(
       padding: const EdgeInsets.all(10.0),
-      child: Text('这里是 Flix，一个快速简洁的多端互传软件，希望你能喜欢 😆',
+      child: Text(S.of(context).help_description,
           style: TextStyle(
                   color: Theme.of(context).flixColors.text.primary,
                   fontSize: 16,
@@ -112,10 +119,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   Widget participate() {
     return Padding(
       padding: const EdgeInsets.only(left: 10, top: 10, right: 80, bottom: 10),
-
-      child: Text(
-          'Flix 制作小组\n------\n✅设计：\nlemo\nkailun\n\n✅开发：\nMovenLecker\nEava_wu\n炎忍\nMashiro.\nGnayoah\n张建\n广靓\nChengi\nxkeyC\n小灰灰\n何言\ngggxbbb'
-              '\n一季或微凉\n暮间雾\nyuzh',
+      child: Text(S.of(context).help_dev_team,
           style: TextStyle(
                   color: Theme.of(context).flixColors.text.primary,
                   fontSize: 16,
@@ -129,11 +133,10 @@ class AboutUSScreenState extends State<AboutUSScreen> {
       padding: const EdgeInsets.all(10.0),
       child: Text.rich(TextSpan(
           children: [
-            const TextSpan(text: '欢迎加入QQ群和我们联系~\n'),
-            const TextSpan(text: '用户QQ群1:\n'),
+            TextSpan(text: S.of(context).help_join_qq),
+            TextSpan(text: S.of(context).help_qq_1),
             ClickableSpan('539943326\n', () {
-              final Uri url = Uri.parse(
-                  'https://qm.qq.com/q/9RTeAZaHRK');
+              final Uri url = Uri.parse('https://qm.qq.com/q/9RTeAZaHRK');
               launchUrl(url).then((value) {
                 if (!value) {
                   talker.error('join qq error');
@@ -142,10 +145,9 @@ class AboutUSScreenState extends State<AboutUSScreen> {
                 talker.error('join qq error', error, stackTrace);
               });
             }),
-            const TextSpan(text: '\n用户QQ群2:\n'),
+            TextSpan(text: S.of(context).help_qq_2),
             ClickableSpan('992894289', () {
-              final Uri url = Uri.parse(
-                  'https://qm.qq.com/q/aiGWJo7CYo');
+              final Uri url = Uri.parse('https://qm.qq.com/q/aiGWJo7CYo');
               launchUrl(url).then((value) {
                 if (!value) {
                   talker.error('join qq error');
@@ -154,8 +156,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
                 talker.error('join qq error', error, stackTrace);
               });
             }),
-
-            const TextSpan(text: '\n用户QQ群3:\n'),
+            TextSpan(text: S.of(context).help_qq_3),
             ClickableSpan('779244909', () {
               final Uri url = Uri.parse(
                   'https://qm.qq.com/cgi-bin/qm/qr?k=rnAZO7i9qmK4iBJLUT7SMYq4mP-03yaQ&jump_from=webapi&qr=1');
@@ -168,7 +169,6 @@ class AboutUSScreenState extends State<AboutUSScreen> {
               });
             }),
           ],
-
           style: TextStyle(
                   color: Theme.of(context).flixColors.text.primary,
                   fontSize: 16,
@@ -182,9 +182,9 @@ class AboutUSScreenState extends State<AboutUSScreen> {
       padding: const EdgeInsets.all(10.0),
       child: Text.rich(TextSpan(
           children: [
-            const TextSpan(text: '最后，你也可以'),
-            ClickableSpan('点我进入捐赠渠道', () {}),
-            const TextSpan(text: '，非常感谢你来支持我们的持续开发 🙏'),
+            TextSpan(text: S.of(context).help_finally),
+            ClickableSpan(S.of(context).help_thanks, () {}),
+            TextSpan(text: S.of(context).help_thanks),
           ],
           style: TextStyle(
                   color: Theme.of(context).flixColors.text.primary,
@@ -214,7 +214,8 @@ class AboutUSScreenState extends State<AboutUSScreen> {
           padding: const EdgeInsets.all(10.0),
           child: ValueListenableBuilder(
             valueListenable: _version,
-            builder: (_, version, child) => Text('当前软件版本：v$version',
+            builder: (_, version, child) => Text(
+                S.of(context).help_version(version),
                 style: TextStyle(
                         color: Theme.of(context).flixColors.text.primary,
                         fontSize: 16,

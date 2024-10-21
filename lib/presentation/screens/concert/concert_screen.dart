@@ -41,6 +41,7 @@ import 'package:pasteboard/pasteboard.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../l10n/l10n.dart';
 import '../../widgets/segements/bubble_context_menu.dart';
 import 'droper.dart';
 
@@ -398,7 +399,8 @@ class InputAreaState extends State<InputArea> {
         case PickedFileType.Directory:
           final directory = (element as PickableDirectory);
           if (directory.content.isEmpty) {
-            FlixToast.withContext(context).info("文件夹为空，发送取消咯");
+            FlixToast.withContext(context)
+                .info(S.of(context).toast_msg_empty_folder);
             return;
           }
           submitDirectory(directory.meta, directory.content);

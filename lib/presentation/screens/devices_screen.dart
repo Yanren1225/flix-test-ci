@@ -28,6 +28,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 import 'package:modals/modals.dart';
 
+import '../../l10n/l10n.dart';
+
 final _menuKey = GlobalKey(debugLabel: "pair_device_menu");
 
 class DeviceScreen extends StatefulWidget {
@@ -209,7 +211,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                   final isAp = snapshot.requireData.isAp;
                   String name = snapshot.requireData.name;
                   if (name.isEmpty) {
-                    name = "已连接";
+                    name = S.of(context).device_ap_connected;
                   }
                   return IconLabelButton(
                     icon: isAp
@@ -223,7 +225,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                           context,
                           deviceProvider.apName,
                           deviceProvider.wifiName.isEmpty
-                              ? "WiFi已连接"
+                              ? S.of(context).device_wifi_connected
                               : deviceProvider.wifiName);
                     },
                   );
@@ -231,7 +233,7 @@ class _DeviceScreenState extends State<DeviceScreen>
           } else if (connectivityResult == ConnectivityResult.none) {
             return IconLabelButton(
               icon: 'assets/images/ic_no_wifi.svg',
-              label: "网络未连接",
+              label: S.of(context).device_no_network,
               iconColor: FlixColor.red,
               labelColor: FlixColor.red,
               isLeft: false,
@@ -242,7 +244,7 @@ class _DeviceScreenState extends State<DeviceScreen>
           } else {
             return IconLabelButton(
                 icon: 'assets/images/ic_no_wifi.svg',
-                label: "WiFi未连接",
+                label: S.of(context).device_wifi_not_connected,
                 iconColor: FlixColor.red,
                 labelColor: FlixColor.red,
                 isLeft: false,
@@ -342,7 +344,7 @@ class HistoryItem extends StatelessWidget {
           SwipeAction(
               backgroundRadius: 15, 
               color: const Color.fromARGB(255, 255, 255, 255),  
-              title: '删除',
+              title: S.of(context).device_delete,
               style: const TextStyle(
                   color: Color.fromRGBO(255, 59, 48, 1), 
                   fontSize: 14

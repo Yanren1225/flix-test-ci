@@ -5,6 +5,8 @@ import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../l10n/l10n.dart';
+
 class ShareTimeBubble extends StatefulWidget {
   final UIBubble entity;
 
@@ -52,7 +54,9 @@ class ShareTimeBubbleState extends State<ShareTimeBubble> {
               yesterdayStart.millisecondsSinceEpoch &&
           dateTime.millisecondsSinceEpoch < todayStart.millisecondsSinceEpoch) {
         // 昨天的时间，显示"昨天 HH:mm:ss"
-        return '昨天 ${formatter.format(dateTime).substring(11)}';
+        return S
+            .of(context)
+            .bubbles_yesterday(formatter.format(dateTime).substring(11));
       } else if (dateTime.millisecondsSinceEpoch >=
               twoDaysAgoStart.millisecondsSinceEpoch &&
           dateTime.millisecondsSinceEpoch <

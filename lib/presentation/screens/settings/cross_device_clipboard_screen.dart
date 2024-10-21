@@ -22,6 +22,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../../l10n/l10n.dart';
+
 class CrossDeviceClipboardScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -120,12 +122,12 @@ class CrossDeviceClipboardScreenState
             ),
             const SizedBox(height: 30),
             Text(
-              "跨设备复制粘贴",
+              S.of(context).setting_cross_device_clipboard,
               style: const TextStyle(fontSize: 30).fix(),
             ),
             const SizedBox(height: 2),
             Text(
-              "关联设备后，复制的文字可共享",
+              S.of(context).setting_cross_device_clipboard_tip,
               style: TextStyle(
                       fontSize: 16,
                       color: Theme.of(context).flixColors.text.secondary)
@@ -133,7 +135,7 @@ class CrossDeviceClipboardScreenState
             ),
             const SizedBox(height: 30),
             creteButton(
-                context, "assets/images/ic_cross_device_share.svg", "查看本机关联码"),
+                context, "assets/images/ic_cross_device_share.svg", S.of(context).setting_cross_device_clipboard_paircode),
             Visibility(
                 visible: pairDevices.isNotEmpty,
                 child: const SizedBox(height: 20)),
@@ -142,7 +144,7 @@ class CrossDeviceClipboardScreenState
                 child: SizedBox(
                   width: double.infinity,
                   child: Text(
-                    "已关联的设备",
+                    S.of(context).setting_cross_device_clipboard_paired_devices,
                     style: TextStyle(
                         color: Theme.of(context).flixColors.text.secondary),
                   ),
@@ -173,7 +175,7 @@ class CrossDeviceClipboardScreenState
                 child: SizedBox(
                   width: double.infinity,
                   child: Text(
-                    "当前网络下的其他可用设备：",
+                    S.of(context).setting_cross_device_clipboard_other_devices,
                     style: TextStyle(
                         color: Theme.of(context).flixColors.text.secondary),
                   ),
@@ -188,14 +190,14 @@ class CrossDeviceClipboardScreenState
                     talker.debug(
                         'pairDevice', 'click start = ${notPairDevice[index]}');
                     if (!CompatUtil.supportPairDevice(notPairDevice[index])) {
-                      FlixToast.withContext(context).info("目标设备版本过低，不支持配对");
+                      FlixToast.withContext(context).info(S.of(context).setting_cross_device_clipboard_too_low_to_pair);
                       return;
                     }
                     showCupertinoModalPopup(
                         context: context,
                         builder: (context) => CrossDeviceShowCodeBottomSheet(
-                              title: '输入关联码',
-                              subtitle: '输入对方设备上的4位数字，即可开启跨设备复制粘贴。5分钟内有效。',
+                              title: S.of(context).setting_cross_device_clipboard_popup_input_paircode,
+                              subtitle: S.of(context).setting_cross_device_clipboard_popup_input_paircode_subtitle,
                               onConfirm: (code) {
                                 if (code.isNotEmpty && code.length == 4) {
                                   shipService.askPairDevice(
@@ -222,8 +224,8 @@ class CrossDeviceClipboardScreenState
           showCupertinoModalPopup(
               context: context,
               builder: (context) => CrossDeviceShowCodeBottomSheet(
-                    title: '本机关联码',
-                    subtitle: '对方输入你的关联码，即可开启跨设备复制粘贴。5分钟内有效。',
+                    title: S.of(context).setting_cross_device_clipboard_popup_self_paircode,
+                    subtitle: S.of(context).setting_cross_device_clipboard_popup_self_paircode_subtitle,
                     isEdit: false,
                     code: pairCode,
                   ));

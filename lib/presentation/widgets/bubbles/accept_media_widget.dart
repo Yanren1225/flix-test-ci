@@ -3,6 +3,8 @@ import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../l10n/l10n.dart';
+
 class AcceptMediaWidget extends StatelessWidget {
   const AcceptMediaWidget({super.key});
 
@@ -18,7 +20,7 @@ class AcceptMediaWidget extends StatelessWidget {
           const SizedBox(
             height: 6,
           ),
-          Text('点击接收',
+          Text(S.of(context).bubbles_accept,
               style: TextStyle(
                       color: Theme.of(context).flixColors.text.primary,
                       fontSize: 14,

@@ -21,6 +21,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gradient_txt/gradient_text.dart';
 import 'package:provider/provider.dart';
 
+import '../../../l10n/l10n.dart';
+
 class ShareFileBubble extends BaseFileBubble {
   const ShareFileBubble({super.key, required super.entity});
 
@@ -75,7 +77,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
             const Color.fromRGBO(0, 122, 255, 1),
             const Color.fromRGBO(81, 181, 252, 1)
           ];
-          stateDes = '等待对方确认';
+          stateDes = S.of(context).bubbles_wait_for_confirm;
           stateDesColor = Theme.of(context).flixColors.text.tertiary;
           clickable = true;
           stateIcon =
@@ -105,13 +107,13 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
             const Color.fromRGBO(0, 122, 255, 1),
             const Color.fromRGBO(81, 181, 252, 1)
           ];
-          stateDes = '已发送';
+          stateDes = S.of(context).bubbles_send_done;
           stateDesColor = const Color.fromRGBO(26, 189, 91, 1);
           break;
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
-          stateDes = '发送异常';
+          stateDes = S.of(context).bubbles_send_failed;
           stateDesColor = const Color.fromRGBO(255, 59, 48, 1);
           showProgressBar = true;
           progressBarColors = [
@@ -122,7 +124,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
           stateIcon = ResendButton(key: _resendButtonKey, entity: entity);
           break;
         case FileState.cancelled:
-          stateDes = '已取消';
+          stateDes = S.of(context).bubbles_send_cancel;
           stateDesColor = const Color.fromRGBO(255, 59, 48, 1);
           showProgressBar = true;
           progressBarColors = [
@@ -144,7 +146,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
             const Color.fromRGBO(0, 122, 255, 1),
             const Color.fromRGBO(81, 181, 252, 1)
           ];
-          stateDes = '点击确认接收';
+          stateDes = S.of(context).bubbles_click_to_accept;
           stateDesColor = const Color.fromRGBO(60, 60, 67, 0.6);
           clickable = false;
           stateIcon =
@@ -172,13 +174,13 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
             const Color.fromRGBO(0, 122, 255, 1),
             const Color.fromRGBO(81, 181, 252, 1)
           ];
-          stateDes = '已下载';
+          stateDes = S.of(context).bubbles_downloaded;
           stateDesColor = const Color.fromRGBO(26, 189, 91, 1);
           break;
         case FileState.sendFailed:
         case FileState.receiveFailed:
         case FileState.failed:
-          stateDes = '接收失败';
+          stateDes = S.of(context).bubbles_receive_failed;
           stateDesColor = const Color.fromRGBO(255, 59, 48, 1);
           showProgressBar = true;
           progressBarColors = [
@@ -191,7 +193,7 @@ class ShareFileBubbleState extends BaseFileBubbleState<ShareFileBubble> {
           );
           break;
         case FileState.cancelled:
-          stateDes = '已取消';
+          stateDes = S.of(context).bubbles_receive_cancel;
           stateDesColor = const Color.fromRGBO(255, 59, 48, 1);
           showProgressBar = true;
           progressBarColors = [

@@ -14,6 +14,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../l10n/l10n.dart';
+
 var isCheckingPermission = false;
 
 abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
@@ -80,6 +82,14 @@ Future<bool> checkStoragePermission(BuildContext? context,
 }
 
 Future<bool> checkStoragePermissionOnOldPlatform(BuildContext? context) async {
+  if (context == null) {
+    return await checkPermission(
+        context,
+        [Permission.storage],
+        S.of(context!).base_storage_permission,
+        S.of(context).base_storage_permission_des);
+  }
+  //TODO: 更好的国际化
   return await checkPermission(
       context, [Permission.storage], '存储权限', '接收文件需要设备的存储权限');
 }

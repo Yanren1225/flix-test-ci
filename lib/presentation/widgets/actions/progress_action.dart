@@ -3,6 +3,8 @@ import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../../l10n/l10n.dart';
+
 class ProgressAction extends StatefulWidget {
   final bool showProgress;
   final String icon;
@@ -51,7 +53,7 @@ class _ProgressActionState extends State<ProgressAction> {
           padding: const EdgeInsets.all(0),
           iconSize: 22,
           onPressed: () {
-            flixToast.alert('正在准备发送，请稍候');
+            flixToast.alert(S.of(context).widget_toast_prepare_sending);
           },
           icon: const SizedBox(
               width: 16.5,

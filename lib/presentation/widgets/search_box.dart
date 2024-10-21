@@ -3,6 +3,8 @@ import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../l10n/l10n.dart';
+
 class SearchBox extends StatefulWidget {
   OnSearch onSearch;
 
@@ -36,7 +38,7 @@ class SearchBoxState extends State<SearchBox> {
             cursorColor: Theme.of(context).flixColors.text.primary,
             decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: '搜索',
+                hintText: S.of(context).search,
                 hintStyle: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,

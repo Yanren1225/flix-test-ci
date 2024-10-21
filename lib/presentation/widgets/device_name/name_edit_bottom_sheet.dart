@@ -5,6 +5,8 @@ import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../../l10n/l10n.dart';
+
 class NameEditBottomSheet extends StatefulWidget {
   const NameEditBottomSheet({super.key});
 
@@ -28,8 +30,8 @@ class NameEditBottomSheetState extends State<NameEditBottomSheet> {
   Widget build(BuildContext context) {
     return
       FlixBottomSheet(
-        title: '输入本机名称',
-        buttonText: '完成',
+        title: S.of(context).device_name_input,
+        buttonText: S.of(context).device_name_input_action,
         onClickFuture: () async {
           _rename(name);
         },

@@ -13,6 +13,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../../../l10n/l10n.dart';
 import '../../../network/multicast_client_provider.dart';
 import '../../../utils/platform_utils.dart';
 
@@ -48,7 +49,7 @@ class PairCodeState extends State<PairCodeScreen> {
                         Navigator.pop(context);
                       })
                   : null,
-              title: const Text('添加设备'),
+              title: Text(S.of(context).paircode_add_device),
               toolbarTextStyle: context.header(),
               // titleTextStyle: context.h1(),
             ),
@@ -168,9 +169,9 @@ class PairCodeContentComponentState extends State with WidgetsBindingObserver {
                           "error://no_pair_code",
                       padding: const EdgeInsets.all(25.0))),
               const SizedBox(height: 10),
-              const Text(
-                'Flix 扫一扫，添加本设备',
-                style: TextStyle(fontSize: 16),
+              Text(
+                S.of(context).paircode_scan_to_add,
+                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 20),
               ConstrainedBox(
@@ -182,7 +183,7 @@ class PairCodeContentComponentState extends State with WidgetsBindingObserver {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('本机 IP'),
+                          Text(S.of(context).paircode_local_IP),
                           const SizedBox(height: 10),
                           Text(
                             pairCodeProvider.netInterfaces
@@ -203,7 +204,7 @@ class PairCodeContentComponentState extends State with WidgetsBindingObserver {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          const Text('本机网络端口'),
+                          Text(S.of(context).paircode_local_port),
                           const SizedBox(height: 10),
                           Text(
                             pairCodeProvider.port.toString(),
@@ -225,7 +226,7 @@ class PairCodeContentComponentState extends State with WidgetsBindingObserver {
                       Navigator.of(context).push(CupertinoPageRoute(
                           builder: (context) => const AddDeviceScreen()));
                     },
-                    child: const Text('手动输入添加'),
+                    child: Text(S.of(context).paircode_add_manually),
                   )),
             ],
           ),

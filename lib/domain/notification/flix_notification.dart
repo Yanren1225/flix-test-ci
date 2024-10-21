@@ -112,7 +112,7 @@ class FlixNotification {
         AndroidNotificationChannel(
       'message',
       'message',
-      description: '消息通知',
+      description: '消息通知', //TODO: 国际化
     );
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
@@ -128,7 +128,7 @@ class FlixNotification {
     } else {
       AndroidNotificationDetails androidNotificationDetails =
           AndroidNotificationDetails('message', 'message',
-              channelDescription: '消息通知',
+              channelDescription: '消息通知', //TODO: 国际化
               importance: Importance.max,
               priority: Priority.high,
               ticker: 'ticker',
@@ -175,7 +175,7 @@ class FlixNotification {
     if (Platform.isWindows) {
       // create new NotificationMessage instance with id, title, body, and images
       _showWindowsNotification("接收到一个新的文件", '来自$deviceName', notification);
-    } else {
+    } else { //TODO: 国际化
       AndroidNotificationDetails androidNotificationDetails =
           AndroidNotificationDetails('reception', 'reception',
               channelDescription: '通知新的文件',
@@ -189,7 +189,7 @@ class FlixNotification {
       await flutterLocalNotificationsPlugin.show(
           id++, '接收到一个新的文件', '来自$deviceName', notificationDetails,
           payload: notification.toJson());
-    }
+    } //TODO: 国际化
   }
 
   Future<void> showDirectoryNotification(
@@ -197,7 +197,7 @@ class FlixNotification {
     if (Platform.isWindows) {
       // create new NotificationMessage instance with id, title, body, and images
       _showWindowsNotification("接收到一个新的文件夹", '来自$deviceName', notification);
-    } else {
+    } else { //TODO: 国际化
       AndroidNotificationDetails androidNotificationDetails =
           AndroidNotificationDetails('reception', 'reception',
               channelDescription: '通知新的文件夹',

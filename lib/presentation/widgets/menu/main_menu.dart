@@ -11,6 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modals/modals.dart';
 
+import '../../../l10n/l10n.dart';
 import '../../../utils/platform_utils.dart';
 import '../../screens/paircode/add_device_screen.dart';
 
@@ -66,7 +67,7 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
               Visibility(
                 visible: isMobile(),
                 child: MenuItem(
-                  lable: '扫一扫',
+                  lable: S.of(context).menu_scan,
                   icon: 'assets/images/ic_scan.svg',
                   onTap: () {
                     removeAllModals();
@@ -91,7 +92,7 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
               Visibility(
                 visible: Platform.isAndroid,
                 child: MenuItem(
-                  lable: '我的热点码',
+                  lable: S.of(context).menu_hotspot,
                   icon: 'assets/images/ic_qrcode.svg',
                   onTap: () {
                     removeAllModals();
@@ -101,7 +102,9 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
                 ),
               ),
               MenuItem(
-                lable: isMobile() ? '手动添加设备' : "添加此设备",
+                lable: isMobile()
+                    ? S.of(context).menu_add_manually
+                    : S.of(context).menu_add_this_device,
                 icon: isMobile()
                     ? 'assets/images/ic_manul_add.svg'
                     : 'assets/images/ic_qrcode.svg',
@@ -119,7 +122,7 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
               Visibility(
                   visible: isDesktop(),
                   child: MenuItem(
-                    lable: '手动输入添加',
+                    lable: S.of(context).menu_add_manually_input,
                     icon: 'assets/images/ic_manul_add.svg',
                     onTap: () {
                       /*

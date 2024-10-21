@@ -18,6 +18,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as path_utils;
 
+import '../../../l10n/l10n.dart';
+
 // TODO： 兼容ContentProvider
 class FilesConfirmBottomSheet extends StatefulWidget {
   static const tag = "FilesConfirmBottomSheet";
@@ -42,9 +44,9 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return FlixBottomSheet(
-        title: '发送文件',
-        subTitle: '到${deviceInfo.name}',
-        buttonText: '发送',
+        title: S.of(context).dialog_confirm_send_title,
+        subTitle: S.of(context).dialog_confirm_send_subtitle(deviceInfo.name),
+        buttonText: S.of(context).dialog_confirm_send_button,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: ListView.builder(
@@ -87,7 +89,8 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
           bubbleFileType = BubbleType.File;
           break;
       }
-      talker.debug(FilesConfirmBottomSheet.tag,"_sendFiles type = $bubbleFileType");
+      talker.debug(
+          FilesConfirmBottomSheet.tag, "_sendFiles type = $bubbleFileType");
       if (bubbleFileType == BubbleType.Directory) {
         final directoryId = const Uuid().v4();
         final directoryMeta = DirectoryMeta(
@@ -99,15 +102,15 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
         await for (final entity in Directory(file.path).list(recursive: true)) {
           if (entity is File) {
             FileMeta fileMeta = await entity.toFileMeta(parent: directoryMeta);
-            fileList.add(SharedFile(id: fileMeta.name, content: fileMeta, groupId: directoryId));
+            fileList.add(SharedFile(
+                id: fileMeta.name, content: fileMeta, groupId: directoryId));
           }
         }
 
-        talker.debug(FilesConfirmBottomSheet.tag,"_sendFiles directoryMeta = $directoryMeta");
+        talker.debug(FilesConfirmBottomSheet.tag,
+            "_sendFiles directoryMeta = $directoryMeta");
         shipService.send(UIBubble(
-            time: DateTime
-                .now()
-                .millisecondsSinceEpoch,
+            time: DateTime.now().millisecondsSinceEpoch,
             from: DeviceProfileRepo.instance.did,
             to: deviceInfo.id,
             type: bubbleFileType,
@@ -154,10 +157,10 @@ class ReadSendFileItemState extends State<ReadSendFileItem> {
     super.initState();
     File _file = File(widget.file.path);
     File(widget.file.path).isFile().then((value) async {
-      if(value){
+      if (value) {
         fileSize = await _file.length();
         isDir = false;
-      }else{
+      } else {
         fileSize = await Directory(widget.file.path).getSize();
         isDir = true;
       }

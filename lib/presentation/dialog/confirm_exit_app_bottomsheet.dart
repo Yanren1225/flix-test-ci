@@ -6,6 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../../l10n/l10n.dart';
+
 class ConfirmExitAppBottomSheet extends StatelessWidget {
   const ConfirmExitAppBottomSheet({super.key});
 
@@ -18,9 +20,9 @@ class ConfirmExitAppBottomSheet extends StatelessWidget {
         Theme.of(context).flixColors.gradientRed.third
       ],
       buttonColor: const Color.fromRGBO(255, 59, 48, 1),
-      title: '退出软件',
-      subTitle: '退出后，将无法被附近设备发现。',
-      buttonText: '退出',
+      title: S.of(context).dialog_exit_title,
+      subTitle: S.of(context).dialog_exit_subtitle,
+      buttonText: S.of(context).dialog_exit_button,
       onClickFuture: () async {
         doExit();
     },

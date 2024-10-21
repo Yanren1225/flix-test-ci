@@ -8,6 +8,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../l10n/l10n.dart';
+
 showNetInfoBottomSheet(
     BuildContext context, String apName, String wifiName) async {
   await showCupertinoModalPopup(
@@ -31,7 +33,7 @@ class NetInfoBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlixBottomSheet(
-      title: "网络连接信息",
+      title: S.of(context).net_info,
       child: Padding(
           padding: const EdgeInsets.only(top: 24, bottom: 28),
           child: NetInfoList(
@@ -62,11 +64,12 @@ class _NetInfoListState extends State<NetInfoList> {
       list.add(NetInfoListTile(
         icon: 'assets/images/ic_ap.svg',
         label: widget.apName,
-        action: "关闭",
+        action: S.of(context).net_ap_close,
         onTap: () async {
           if (await hotspotManager.disableHotspot()) {
             hotspotManager.getHotspotInfo();
-            FlixToast.withContext(context).info("热点已关闭");
+            FlixToast.withContext(context)
+                .info(S.of(context).net_toast_ap_close);
             Navigator.of(context).pop();
           }
         },
@@ -143,8 +146,7 @@ class NetInfoListTile extends StatelessWidget {
                           borderRadius:
                               const BorderRadius.all(Radius.circular(13))),
                       child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Center(
                             child: Text(
                               action ?? "",

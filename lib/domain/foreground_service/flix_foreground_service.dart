@@ -43,6 +43,7 @@ class FirstTaskHandler extends TaskHandler {
   void onDestroy(DateTime timestamp, SendPort? sendPort) async {}
 }
 
+//TODO: 国际化
 class FlixForegroundService extends LifecycleListener {
   ReceivePort? _receivePort;
 

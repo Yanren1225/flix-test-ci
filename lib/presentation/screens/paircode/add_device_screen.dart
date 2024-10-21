@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:simple_loading_dialog/simple_loading_dialog.dart';
 
+import '../../../l10n/l10n.dart';
+
 class AddDeviceScreen extends StatefulWidget {
   const AddDeviceScreen({super.key});
 
@@ -41,7 +43,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
   Widget build(BuildContext context) {
     //TODO: 统一header
     return NavigationScaffold(
-      title: "手动输入添加",
+      title: S.of(context).paircode_add_manually,
       showBackButton: Navigator.canPop(context),
       builder: (EdgeInsets padding) {
         return Container(
@@ -74,7 +76,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("IP",
+          Text(S.of(context).paircode_add_IP,
               style:
                   TextStyle(fontSize: 14, color: Theme.of(context).hintColor)),
           const SizedBox(height: 4),
@@ -85,7 +87,7 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
             },
           ),
           const SizedBox(height: 20.0),
-          Text("网络端口",
+          Text(S.of(context).paircode_add_port,
               style:
                   TextStyle(fontSize: 14, color: Theme.of(context).hintColor)),
           const SizedBox(height: 4),
@@ -103,19 +105,20 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
 
   Widget buildDesignBlueRoundButton(BuildContext context) {
     return DesignBlueRoundButton(
-        text: '添加设备',
+        text: S.of(context).paircode_dialog_add_device,
         onPressed: () async {
           if (!checkInput()) {
-            FlixToast.instance.info('IP或者端口不正确');
+            FlixToast.instance
+                .info(S.of(context).paircode_toast_config_incorrect);
             return;
           }
           Future<void> addDevice() async {
             final result = await PairRouterHandler.addDevice(PairInfo(
                 [_ipController.text], int.parse(_portController.text)));
             if (result) {
-              flixToast.info("添加成功");
+              flixToast.info(S.current.paircode_add_success);
             } else {
-              flixToast.info("添加失败");
+              flixToast.info(S.current.paircode_add_failed);
             }
           }
 

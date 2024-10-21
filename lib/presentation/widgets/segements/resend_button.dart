@@ -9,6 +9,8 @@ import 'package:modals/modals.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../l10n/l10n.dart';
+
 class ResendButton extends StatefulWidget {
   final UIBubble entity;
 
@@ -74,7 +76,7 @@ class _ResendButtonState extends State<ResendButton> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 20, top: 14, right: 40, bottom: 14),
                         child: Text(
-                          '重新发送',
+                          S.of(context).button_resend,
                           style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,

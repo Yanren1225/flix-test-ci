@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
 
+import '../../../l10n/l10n.dart';
 import '../../widgets/helps/flix_share_bottom_sheet.dart';
 
 class HelpScreen extends StatefulWidget {
@@ -42,7 +43,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoNavigationScaffold(
-      title: '软件帮助',
+      title: S.of(context).help_title,
       isSliverChild: true,
       padding: 10,
       enableRefresh: false,
@@ -59,7 +60,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                       builder:
                           (BuildContext context, String value, Widget? child) {
                         return ClickableItem(
-                            label: '关于我们',
+                            label: S.of(context).help_about,
                             tail: 'v$value',
                             onClick: widget.goVersionScreen,
                             bottomRadius: Platform.isIOS);
@@ -72,15 +73,17 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                     builder: (BuildContext context,
                         AsyncSnapshot<String?> snapshot) {
                       final tail = snapshot.data?.isNotEmpty == true
-                          ? '新版本 v${snapshot.requireData}'
-                          : '已是最新版本';
+                          ? S
+                              .of(context)
+                              .help_new_version(snapshot.requireData ?? '')
+                          : S.of(context).help_latest_version;
                       return Visibility(
                         visible: !Platform.isIOS,
                         child: Padding(
                           padding: const EdgeInsets.only(
                               left: 16, top: 0, right: 16, bottom: 16),
                           child: ClickableItem(
-                            label: '检查更新',
+                            label: S.of(context).help_check_update,
                             tail: tail,
                             tailColor: snapshot.data?.isNotEmpty == true
                                 ? FlixColor.blue
@@ -105,7 +108,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                         builder: (BuildContext context, String value,
                             Widget? child) {
                           return ClickableItem(
-                              label: '❤️ 捐赠支持我们',
+                              label: S.of(context).help_donate,
                               bottomRadius: false,
                               onClick: widget.goDonateCallback);
                         },
@@ -119,7 +122,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                           bottom: 16,
                           top: Platform.isIOS ? 8 : 0),
                       child: ClickableItem(
-                          label: '👍 推荐给朋友',
+                          label: S.of(context).help_recommend,
                           topRadius: Platform.isIOS,
                           onClick: () {
                             showCupertinoModalPopup(
@@ -131,7 +134,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                     padding: const EdgeInsets.only(
                         left: 20, top: 20, right: 20, bottom: 4),
                     child: Text(
-                      '关于连接',
+                      S.of(context).help_title,
                       style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.normal,
@@ -140,41 +143,33 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                           .fix(),
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 10),
                     child: QA(
-                        question: '列表里找不到设备？',
-                        answer:
-                            '请确认发送端和接收端设备处于同一个网络状态下。如：同一个WIFI，或者使用本机热点给其他设备连接使用。'),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
-                    child: QA(question: '传输文件会消耗流量吗？', answer: '不会。'),
+                        question: S.of(context).help_q_1,
+                        answer: S.of(context).help_a_1),
                   ),
                   Padding(
                     padding:
                         const EdgeInsets.only(left: 16, right: 16, bottom: 10),
                     child: QA(
-                        question: 'Windows端无法接收/发送文件？',
-                        answer: trimMultilineString('''
-                    请先按照以下步骤，尝试将flix添加到Windows网络防火墙白名单中：
-                    1. 搜索「允许应用通过Windows防火墙」
-                    2. 点击「更改设置」
-                    3. 点击「允许其他应用」
-                    4. 添加flix.exe路径（C:\\Users\\[用户名]\\AppData\\Roaming\\Flix\\Flix\\flix.exe或C:\\Program Files\\Flix\\flix.exe）
-                    5. 点击「添加」返回到上一页面
-                    6. 查看列表中的flix项，勾选「专用」和「公用」
-                    7. 保存
-                    尝试上述步骤仍旧无法接收，请联系我们。
-                    ''')),
+                        question: S.of(context).help_q_2,
+                        answer: S.of(context).help_a_2),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 10),
                     child: QA(
-                        question: 'PC使用网线时无法接收/发送文件？',
-                        answer:
-                            '请保证PC和其他设备在一个子网下，即它们的直接上层设备是同一个路由器。若PC通过连接的光猫，其他设备通过Wifi连接的路由器是无法正常接收文件的。'),
+                        question: S.of(context).help_q_3,
+                        answer: S.of(context).help_a_3),
                   ),
+                  Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16, right: 16, bottom: 10),
+                      child: QA(
+                          question: S.of(context).help_q_4,
+                          answer: S.of(context).help_a_4)),
                 ],
               )),
     );

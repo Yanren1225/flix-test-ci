@@ -3,6 +3,8 @@ import 'package:flix/presentation/widgets/input/verification_code.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
+import '../../../l10n/l10n.dart';
+
 typedef ValueCallback = void Function(String text);
 
 class CrossDeviceShowCodeBottomSheet extends StatelessWidget {
@@ -23,7 +25,7 @@ class CrossDeviceShowCodeBottomSheet extends StatelessWidget {
       buttonColor: const Color(0xFF007AFF),
       title: title,
       subTitle: subtitle,
-      buttonText: '完成',
+      buttonText: S.of(context).widget_verification_action,
       onClick: () {
         if (curCode.isNotEmpty == true && curCode.length == 4) {
           onConfirm?.call(curCode);

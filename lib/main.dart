@@ -233,6 +233,7 @@ Future<void> initFireBase() async {
 }
 
 // linux需要前置安装其他库： https://pub.dev/packages/tray_manager
+//TODO: 国际化
 Future<void> initSystemManager() async {
   if (!(Platform.isMacOS || Platform.isWindows || Platform.isLinux)) {
     return;
@@ -401,7 +402,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                             }
                           },
                           child: Container(
-                            height: 30.0, 
+                            height: 30.0,
                             color: const Color.fromARGB(0, 33, 149, 243),
                             child: AppBar(
                               title: const Text(''),
@@ -410,7 +411,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                                   color: Colors.transparent,
                                   child: InkWell(
                                     customBorder: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(0), 
+                                      borderRadius: BorderRadius.circular(0),
                                     ),
                                     onTap: () {
                                       windowManager.minimize();
@@ -419,7 +420,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                                       padding: EdgeInsets.all(8.0),
                                       child: Icon(
                                         Icons.horizontal_rule,
-                                        size: 14.0, 
+                                        size: 14.0,
                                       ),
                                     ),
                                   ),
@@ -428,7 +429,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                                   color: Colors.transparent,
                                   child: InkWell(
                                     customBorder: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(0), 
+                                      borderRadius: BorderRadius.circular(0),
                                     ),
                                     onTap: () async {
                                       bool isMaximized = await windowManager.isMaximized();
@@ -451,9 +452,9 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                                   color: Colors.transparent,
                                   child: InkWell(
                                     customBorder: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(0), 
+                                      borderRadius: BorderRadius.circular(0),
                                     ),
-                                    hoverColor: const Color.fromARGB(255, 208, 24, 11).withOpacity(0.8), 
+                                    hoverColor: const Color.fromARGB(255, 208, 24, 11).withOpacity(0.8),
                                     onTap: () {
                                       exit(0);
                                     },
@@ -522,7 +523,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
             height: 16,
           ),
           Text(
-            '请选择设备',
+            S.of(context).homepage_select_device,
             style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
@@ -708,7 +709,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                   colorFilter: ColorFilter.mode(
                       getColor(context, 0, selectedIndex), BlendMode.srcIn),
                 ),
-                label: '互传'),
+                label: S.of(context).navigation_send),
             BottomNavigationBarItem(
                 icon: SvgPicture.asset(
                   width: 26,
@@ -717,7 +718,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                   colorFilter: ColorFilter.mode(
                       getColor(context, 1, selectedIndex), BlendMode.srcIn),
                 ),
-                label: '配置'),
+                label: S.of(context).navigation_config),
             BottomNavigationBarItem(
                 icon: SvgPicture.asset(
                   width: 26,
@@ -726,7 +727,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                   colorFilter: ColorFilter.mode(
                       getColor(context, 2, selectedIndex), BlendMode.srcIn),
                 ),
-                label: '帮助'),
+                label: S.of(context).navigation_help),
           ],
           currentIndex: selectedIndex,
           selectedItemColor: Theme.of(context).flixColors.text.primary,
@@ -815,9 +816,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
       body: Row(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 5), 
+            padding: const EdgeInsets.only(left: 5),
             child: SizedBox(
-              width: 60, 
+              width: 60,
               child: NavigationRail(
                 onDestinationSelected: (int index) {
                   setSelectedIndex(index);

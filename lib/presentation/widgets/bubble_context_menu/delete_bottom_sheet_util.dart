@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
+import '../../../l10n/l10n.dart';
 import 'delete_bottom_sheet.dart';
 
 class BottomSheetUtil {
@@ -11,8 +12,8 @@ class BottomSheetUtil {
                 onConfirm: () {
                   onConfirm();
                 },
-                title: "删除消息记录",
-                buttonText: '删除',
-                subTitle: "如果文件正在传输，删除消息会中断传输"));
+                title: S.of(context).widget_delete_msg_history,
+                buttonText: S.of(context).widget_delete_msg_history_action,
+                subTitle: S.of(context).widget_delete_msg_history_subtitle));
   }
 }

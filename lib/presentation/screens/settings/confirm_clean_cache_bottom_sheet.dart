@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../../l10n/l10n.dart';
+
 class ConfirmCleanCacheBottomSheet extends StatelessWidget {
   final VoidFutureCallback onConfirm;
 
@@ -19,9 +21,9 @@ class ConfirmCleanCacheBottomSheet extends StatelessWidget {
         Theme.of(context).flixColors.gradientRed.third
       ],
       buttonColor: const Color.fromRGBO(255, 59, 48, 1),
-      title: '清除缓存',
-      subTitle: '由于系统限制，发送的文件会被缓存，清除缓存可能中断正在发送的文件，并导致部分已发送文件无法预览，清除缓存不影响接收的文件',
-      buttonText: '清除',
+      title: S.of(context).setting_confirm_clean_cache,
+      subTitle: S.of(context).setting_confirm_clean_cache_subtitle,
+      buttonText: S.of(context).setting_confirm_clean_cache_action,
       onClickFuture: onConfirm,
       child: Padding(
           padding: const EdgeInsets.only(top: 16, bottom: 24),

@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modals/modals.dart';
 import 'package:uuid/v8.dart';
+
+import '../../../l10n/l10n.dart';
 int contextMenuGroupId = 999;
 void showBubbleContextMenu(
     BuildContext context,
@@ -139,21 +141,21 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
       switch (type) {
         case BubbleContextMenuItemType.Copy:
           items.add(BubbleContextMenuItem(
-            title: '复制',
+            title: S.of(context).bubbles_menu_copy,
             icon: 'assets/images/ic_copy.svg',
             onTap: onTap(type),
           ));
           break;
         case BubbleContextMenuItemType.Forward:
           items.add(BubbleContextMenuItem(
-            title: '转发',
+            title: S.of(context).bubbles_menu_forward,
             icon: 'assets/images/ic_forward.svg',
             onTap: onTap(type),
           ));
           break;
         case BubbleContextMenuItemType.Location:
           items.add(BubbleContextMenuItem(
-            title: Platform.isAndroid ? '文件打开' : '文件位置',
+            title: Platform.isAndroid ? S.of(context).bubbles_menu_open : S.of(context).bubbles_menu_location,
             icon: 'assets/images/ic_location.svg',
             onTap: onTap(type),
           ));
@@ -161,7 +163,7 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
         case BubbleContextMenuItemType.SaveAs:
           if (isDesktop()) {
             items.add(BubbleContextMenuItem(
-              title: isDesktop() ? '另存为' : '',
+              title: isDesktop() ? S.of(context).bubbles_menu_save_as : '',
               icon: 'assets/images/file_save_as.svg',
               onTap: onTap(type),
             ));
@@ -169,14 +171,14 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
           break;
         case BubbleContextMenuItemType.MultiSelect:
           items.add(BubbleContextMenuItem(
-            title: '多选',
+            title: S.of(context).bubbles_menu_multiple,
             icon: 'assets/images/ic_multi_select.svg',
             onTap: onTap(type),
           ));
           break;
         case BubbleContextMenuItemType.Delete:
           items.add(BubbleContextMenuItem(
-            title: '删除',
+            title: S.of(context).bubbles_menu_delete,
             icon: 'assets/images/ic_delete.svg',
             color: const Color.fromRGBO(255, 59, 48, 1),
             onTap: onTap(type),
@@ -184,7 +186,7 @@ class BubbleContextMenuState extends State<BubbleContextMenu>
           break;
         case BubbleContextMenuItemType.FreeCopy:
           items.add(BubbleContextMenuItem(
-            title: '自由复制',
+            title: S.of(context).bubbles_menu_free_copy,
             icon: 'assets/images/ic_free_copy.svg',
             onTap: onTap(type),
           ));

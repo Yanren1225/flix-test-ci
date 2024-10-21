@@ -20,6 +20,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path_utils;
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
+import '../../l10n/l10n.dart';
 
 // 同时发送的数量100左右，但是没有错误信息，失败表现为接收到的文件大小未0
 const MAX_ASSETS = 60;
@@ -109,14 +110,14 @@ class PickActionAreaState extends State<PickActionsArea> {
     if (context.mounted) {
       if (await FlixPermissionUtils.checkPhotosPermission(context)) {
         try {
-            final List<XFile> pickedFileList = await _picker.pickMultiImage(
-                requestFullMetadata: true, limit: MAX_ASSETS);
-            onPicked([
-              for (final f in pickedFileList)
-                PickableFile(
-                    type: PickedFileType.Image,
-                    content: await f.toFileMeta(isImg: true))
-            ]);
+          final List<XFile> pickedFileList = await _picker.pickMultiImage(
+              requestFullMetadata: true, limit: MAX_ASSETS);
+          onPicked([
+            for (final f in pickedFileList)
+              PickableFile(
+                  type: PickedFileType.Image,
+                  content: await f.toFileMeta(isImg: true))
+          ]);
         } catch (e, stack) {
           talker.error("pick images failed: $e, $stack", e, stack);
           setState(() {
@@ -134,18 +135,18 @@ class PickActionAreaState extends State<PickActionsArea> {
       if (await FlixPermissionUtils.checkVideosPermission(context)) {
         // showMaskLoading(context);
         try {
-            final XFile? pickedFile =
-                await _picker.pickVideo(source: ImageSource.gallery);
-            talker.debug('video selected: ${pickedFile?.path}');
-            if (pickedFile != null) {
-              onPicked([
-                PickableFile(
-                    type: PickedFileType.Video,
-                    content: await pickedFile.toFileMeta(isVideo: true))
-              ]);
-            } else {
-              talker.error("pick video failed, return null");
-            }
+          final XFile? pickedFile =
+              await _picker.pickVideo(source: ImageSource.gallery);
+          talker.debug('video selected: ${pickedFile?.path}');
+          if (pickedFile != null) {
+            onPicked([
+              PickableFile(
+                  type: PickedFileType.Video,
+                  content: await pickedFile.toFileMeta(isVideo: true))
+            ]);
+          } else {
+            talker.error("pick video failed, return null");
+          }
         } catch (e) {
           talker.error("pick video failed: ", e);
           setState(() {
@@ -197,8 +198,7 @@ class PickActionAreaState extends State<PickActionsArea> {
             onPicked([
               for (final file in result.files)
                 PickableFile(
-                    type: PickedFileType.File,
-                    content: await file.toFileMeta())
+                    type: PickedFileType.File, content: await file.toFileMeta())
             ]);
           }
         }
@@ -215,7 +215,7 @@ class PickActionAreaState extends State<PickActionsArea> {
             manageExternalStorage: false)) {
           if (Platform.isAndroid) {
             final result = await AndroidPickFiles.pickFiles(
-              allowMultipleSelection: true,
+                allowMultipleSelection: true,
                 onFileLoading: (FilePickerStatus pickerStatus) {
                   if (mounted) {
                     switch (pickerStatus) {
@@ -231,13 +231,13 @@ class PickActionAreaState extends State<PickActionsArea> {
                         break;
                     }
                   }
-                }
-            );
+                });
             if (result != null) {
               onPicked([
                 for (final file in result.infoList)
                   PickableFile(
-                      type: PickedFileType.File, content: await file.toFileMeta())
+                      type: PickedFileType.File,
+                      content: await file.toFileMeta())
               ]);
             }
             result;
@@ -294,7 +294,8 @@ class PickActionAreaState extends State<PickActionsArea> {
                 name: path_utils.basenameWithoutExtension(directory.path),
                 size: directory.statSync().size,
                 path: directory.path);
-            List<FileSystemEntity> entities =  await directory.list(recursive: true).toList();
+            List<FileSystemEntity> entities =
+                await directory.list(recursive: true).toList();
             List<FileMeta> picks = [];
             int totalSize = 0;
             for (FileSystemEntity entity in entities) {
@@ -321,17 +322,18 @@ class PickActionAreaState extends State<PickActionsArea> {
       if (e is FileSystemException && Platform.isIOS) {
         switch (e.osError?.errorCode) {
           case 1: // 无权限
-            flixToast.alert("无权限发送此文件夹");
+            flixToast.alert(S.current.file_pick_error_1);
             break;
           case 20:
-            flixToast.alert("点击「打开」选择文件夹");
+            flixToast.alert(S.current.file_pick_error_20);
             break;
           default:
-            flixToast.alert("无法选择文件夹: ${e.osError?.errorCode}");
+            flixToast.alert(S.current
+                .file_pick_error(e.osError?.errorCode.toString() ?? "-1"));
             break;
         }
       } else {
-        flixToast.alert("无法选择文件夹");
+        flixToast.alert(S.current.file_pick_error_0);
       }
       talker.error('pick directory failed', e, stackTrace);
       setState(() {

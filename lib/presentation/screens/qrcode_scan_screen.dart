@@ -12,6 +12,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
+import '../../l10n/l10n.dart';
+
 class QrcodeScanScreen extends StatefulWidget {
   bool showBack;
 
@@ -46,7 +48,7 @@ class _QrcodeScanScreenState extends State<QrcodeScanScreen> {
     FlixPermissionUtils.checkCameraPermission(context).then((value) {
       if (!value) {
         talker.error("没有相机权限");
-        flixToast.alert("没有相机权限");
+        flixToast.alert(S.of(context).qr_no_camera_permission);
         Navigator.pop(context);
       }
     });
@@ -79,8 +81,8 @@ class _QrcodeScanScreenState extends State<QrcodeScanScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("扫一扫", style: context.h1()),
-              Text("打开 Flix 二维码，快速建立热点连接。", style: context.titleSecondary()),
+              Text(S.of(context).qr_scan, style: context.h1()),
+              Text(S.of(context).qr_scan_tip, style: context.titleSecondary()),
               const SizedBox(height: 40),
               FlixClipRRect(
                 borderRadius: BorderRadius.circular(30),

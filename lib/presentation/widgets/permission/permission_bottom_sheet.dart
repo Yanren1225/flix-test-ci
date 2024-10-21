@@ -2,6 +2,8 @@ import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../l10n/l10n.dart';
+
 class PermissionBottomSheet extends StatelessWidget {
 
   final String title;
@@ -17,7 +19,7 @@ class PermissionBottomSheet extends StatelessWidget {
     return FlixBottomSheet(
       title: title,
       subTitle: subTitle,
-      buttonText: '确认',
+      buttonText: S.of(context).permission_confirm,
       onClickFuture: onConfirm,
       child: Padding(
           padding: const EdgeInsets.only(top: 16, bottom: 24),

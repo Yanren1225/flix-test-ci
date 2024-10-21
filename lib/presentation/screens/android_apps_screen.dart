@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pinyin/pinyin.dart';
 
+import '../../l10n/l10n.dart';
 import '../widgets/blur_appbar.dart';
 
 class AppsScreen extends StatefulWidget {
@@ -43,7 +44,7 @@ class AppsScreenState extends State<AppsScreen> {
         ),
       ),
       centerTitle: true,
-      title: const Text('选择本机应用'),
+      title: Text(S.of(context).android_apps_title),
       titleTextStyle: TextStyle(
               color: Theme.of(context).flixColors.text.primary,
               fontSize: 18,
@@ -125,7 +126,7 @@ class AppsScreenState extends State<AppsScreen> {
         Navigator.pop(context, selectedApps.value.toList());
       },
       child: Text(
-        '发送 ($count)',
+        S.of(context).android_app_send(count),
         style: const TextStyle().fix(),
       ),
     );

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../l10n/l10n.dart';
+
 class DeleteMessageBottomSheet extends StatelessWidget {
   final VoidFutureCallback onConfirm;
 
@@ -20,9 +22,9 @@ class DeleteMessageBottomSheet extends StatelessWidget {
         Theme.of(context).flixColors.gradientRed.third
       ],
       buttonColor: const Color.fromRGBO(255, 59, 48, 1),
-      title: '删除消息记录',
-      subTitle: '如果文件正在传输，删除消息会中断传输',
-      buttonText: '删除',
+      title: S.of(context).widget_delete_msg_history,
+      buttonText: S.of(context).widget_delete_msg_history_action,
+      subTitle: S.of(context).widget_delete_msg_history_subtitle,
       onClick: onConfirm,
       child: Padding(
           padding: const EdgeInsets.only(top: 16, bottom: 24),

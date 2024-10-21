@@ -10,6 +10,8 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
 import 'package:simple_loading_dialog/simple_loading_dialog.dart';
 
+import '../../l10n/l10n.dart';
+
 class PairRouterHandler implements RouterHandler {
   static final deviceDiscover = DeviceDiscover.instance;
 
@@ -28,9 +30,9 @@ class PairRouterHandler implements RouterHandler {
       Navigator.of(context).pop();
     }
     if (result) {
-      flixToast.info("添加成功");
+      flixToast.info(S.current.paircode_add_success);
     } else {
-      flixToast.info("添加失败");
+      flixToast.info(S.current.paircode_add_failed);
     }
     return result;
   }

@@ -5,6 +5,8 @@ import 'package:flix/presentation/widgets/segements/bubble_context_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../../l10n/l10n.dart';
+
 class MultiSelectActions extends StatelessWidget {
   const MultiSelectActions({
     Key? key,
@@ -49,7 +51,7 @@ class MultiSelectActions extends StatelessWidget {
               heightFactor: 1,
               child: BubbleContextMenuItem(
                 icon: 'assets/images/ic_delete.svg',
-                title: '删除',
+                title: S.of(context).widget_multiple_delete,
                 color: const Color.fromRGBO(255, 59, 48, 1),
                 onTap: onDelete,
               ),

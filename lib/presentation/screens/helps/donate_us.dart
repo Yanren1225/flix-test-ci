@@ -9,6 +9,8 @@ import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../l10n/l10n.dart';
+
 class DonateUSScreen extends StatefulWidget {
   var versionTapCount = 0;
   int lastTapTime = 0;
@@ -21,8 +23,8 @@ class DonateUSScreen extends StatefulWidget {
 }
 
 class DonateUSScreenState extends State<DonateUSScreen> {
-  final String wxButton = "微信";
-  final String alipayButton = "支付宝";
+  String wxButton = "微信";
+  String alipayButton = "支付宝";
   String buttonName = "微信";
 
   void _selectButton(String buttonName) {
@@ -34,9 +36,12 @@ class DonateUSScreenState extends State<DonateUSScreen> {
 
   @override
   Widget build(BuildContext context) {
+    wxButton = S.of(context).help_donate_wechat;
+    alipayButton = S.of(context).help_donate_alipay;
+
     var width = MediaQuery.of(context).size.width;
     return NavigationScaffold(
-      title: "捐赠",
+      title: S.of(context).help_donate_title,
       showBackButton: widget.showBack,
       builder: (EdgeInsets padding) {
         return Container(
@@ -151,7 +156,7 @@ class DonateUSScreenState extends State<DonateUSScreen> {
             height: 56,
             child: Center(
                 child: Text(
-              '保存并跳转到$buttonName扫一扫',
+              S.of(context).help_donate_go(buttonName),
               style: const TextStyle(fontSize: 18, color: Colors.white),
             ))));
   }

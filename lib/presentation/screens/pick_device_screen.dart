@@ -25,6 +25,8 @@ import 'package:provider/provider.dart';
 import 'package:share_handler/share_handler.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../l10n/l10n.dart';
+
 class PickDeviceScreen extends StatefulWidget {
   final SharedMedia sharedMedia;
 
@@ -46,7 +48,7 @@ class PickDeviceScreenState extends State<PickDeviceScreen> {
       extendBodyBehindAppBar: false,
       appBar: AppBar(
         backgroundColor: Theme.of(context).flixColors.background.secondary,
-        title: Text('选择一个设备',
+        title: Text(S.of(context).pick_one,
             style: TextStyle(
                     color: Theme.of(context).flixColors.text.primary,
                     fontSize: 14,

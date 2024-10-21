@@ -2,6 +2,8 @@
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 
+import '../../../l10n/l10n.dart';
+
 class WaitToAcceptMediaWidget extends StatelessWidget {
   const WaitToAcceptMediaWidget({
     super.key,
@@ -25,7 +27,7 @@ class WaitToAcceptMediaWidget extends StatelessWidget {
           height: 8,
         ),
         Text(
-          '等待对方确认',
+          S.of(context).bubbles_wait_for_confirm,
           style: const TextStyle(
               color: Colors.white,
               fontSize: 14,

@@ -3,6 +3,8 @@ import 'package:flix/utils/void_future_callback.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../l10n/l10n.dart';
+
 class DeleteMessageBottomSheet extends StatelessWidget {
   final VoidFutureCallback onConfirm;
 
@@ -13,9 +15,9 @@ class DeleteMessageBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlixBottomSheet(
       buttonColor: const Color.fromRGBO(255, 59, 48, 1),
-      title: '推荐给朋友',
-      subTitle: '扫码即可下载',
-      buttonText: '完成',
+      title: S.of(context).widget_recommend,
+      subTitle: S.of(context).widget_recommend_subtitle,
+      buttonText: S.of(context).widget_recommend_action,
       onClick: onConfirm,
       child: Padding(
           padding: const EdgeInsets.only(top: 16, bottom: 24),

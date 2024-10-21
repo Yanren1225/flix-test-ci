@@ -23,6 +23,8 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../l10n/l10n.dart';
+
 class ShareTextBubble extends StatefulWidget {
   final UIBubble entity;
 
@@ -249,6 +251,6 @@ class ShareTextBubbleState extends State<ShareTextBubble> {
 
   void _copyContentToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text));
-    flixToast.info("已复制到剪切板");
+    flixToast.info(S.of(context).bubbles_copied);
   }
 }

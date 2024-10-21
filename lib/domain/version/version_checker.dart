@@ -111,7 +111,7 @@ class VersionChecker {
         url = 'https://fl1x.mashiro.asia/download/mac';
       } else {
         url = 'https://flix.center';
-      }
+      } //TODO: 国际化 (111真的吗)
       if (await launchUrlString(url, mode: LaunchMode.externalApplication)) {
         onDone();
       } else {

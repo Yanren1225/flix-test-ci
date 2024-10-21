@@ -31,6 +31,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'package:path/path.dart' as p;
+
+import '../../../l10n/l10n.dart';
 class BubbleInteraction extends StatefulWidget {
   final UIBubble bubble;
   final String path;
@@ -203,7 +205,7 @@ class BubbleInteractionState extends State<BubbleInteraction>
           }
           File(widget.path).copy(path).then((resultFile){
             talker.debug("copy result = ${resultFile.path}");
-            FlixToast.instance.info("保存成功");
+            FlixToast.instance.info(S.current.bubbles_toast_save_success);
           });
         });
         // FilePicker.platform.getDirectoryPath().then((path){

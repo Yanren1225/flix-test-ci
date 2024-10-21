@@ -14,6 +14,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:wifi_iot/wifi_iot.dart';
 
+import '../../../l10n/l10n.dart';
+
 class HotspotScreen extends StatefulWidget {
   bool showBack = true;
 
@@ -134,10 +136,10 @@ class HotspotScreenState extends State<HotspotScreen>
         final Widget content;
         switch (_apState) {
           case ApState.checking:
-            content = _buildLoadingContent("正在初始化热点");
+            content = _buildLoadingContent(S.of(context).hotspot_initializing);
             break;
           case ApState.enabling:
-            content = _buildLoadingContent("正在开启热点");
+            content = _buildLoadingContent(S.of(context).hotspot_enabling);
             break;
           case ApState.disabled:
             content = _buildDisabledContent();
@@ -178,13 +180,14 @@ class HotspotScreenState extends State<HotspotScreen>
               alignment: Alignment.topLeft,
               child: Padding(
                 padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
-                child: Text("我的二维码", style: this.context.h1()),
+                child: Text(S.of(context).hotspot_my_qrcode,
+                    style: this.context.h1()),
               )),
           Align(
               alignment: Alignment.topLeft,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text("打开 Flix 扫一扫，快速建立热点连接。",
+                child: Text(S.of(context).hotspot_qrcode_tip,
                     style: this.context.titleSecondary()),
               )),
           const SizedBox(
@@ -202,8 +205,7 @@ class HotspotScreenState extends State<HotspotScreen>
                       dataModuleShape: QrDataModuleShape.square,
                       color: Theme.of(this.context).flixColors.text.primary),
                   data: _encodeApInfo(),
-                  padding: const EdgeInsets.all(25.0))
-          ),
+                  padding: const EdgeInsets.all(25.0))),
           const SizedBox(
             height: 10,
           ),
@@ -215,12 +217,13 @@ class HotspotScreenState extends State<HotspotScreen>
   Widget _buildEnableFailedContent() {
     return buildHotspotContent(
         context: this.context,
-        label: "开启热点失败",
+        label: S.of(context).hotspot_enable_failed,
         color: FlixColor.red,
-        action: "重新尝试",
+        action: S.of(context).hotspot_enable_failed_action,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Text("请关闭系统热点\n重新打开WiFi后重试。", style: this.context.body()),
+          child: Text(S.of(context).hotspot_enable_failed_tip,
+              style: this.context.body()),
         ),
         onTap: () {
           _retry();
@@ -230,9 +233,9 @@ class HotspotScreenState extends State<HotspotScreen>
   Widget _buildNoPermissionContent() {
     return buildHotspotContent(
         context: this.context,
-        label: "缺少必要权限",
+        label: S.of(context).hotspot_missing_permission,
         color: FlixColor.red,
-        action: "授予必要权限",
+        action: S.of(context).hotspot_missing_permission_action,
         onTap: () {
           _initAp(false);
         });
@@ -241,9 +244,9 @@ class HotspotScreenState extends State<HotspotScreen>
   Widget _buildGetApInfoFailedContent() {
     return buildHotspotContent(
         context: this.context,
-        label: "未能获取热点信息",
+        label: S.of(context).hotspot_get_ap_info_failed,
         color: FlixColor.red,
-        action: "重试",
+        action: S.of(context).hotspot_get_ap_info_failed_action,
         onTap: () {
           _initAp(false);
         });
@@ -252,28 +255,30 @@ class HotspotScreenState extends State<HotspotScreen>
   Widget _buildDisabledContent() {
     return buildHotspotContent(
         context: this.context,
-        label: "热点已关闭",
+        label: S.of(context).hotspot_disabled,
         color: FlixColor.red,
-        action: "重新开启",
+        action: S.of(context).hotspot_disabled_action,
         onTap: () {
           _initAp(false);
         });
   }
 
   String _encodeApInfo() {
-    final uri = Uri(
-        scheme: "https",
-        host: "flix.center",
-        pathSegments: ['qrcode','ap',_sPreviousAPSSID, _sPreviousPreSharedKey]);
+    final uri = Uri(scheme: "https", host: "flix.center", pathSegments: [
+      'qrcode',
+      'ap',
+      _sPreviousAPSSID,
+      _sPreviousPreSharedKey
+    ]);
     return uri.toString();
   }
 
   Widget _buildWifiDisabledContent() {
     return buildHotspotContent(
         context: this.context,
-        label: "WiFi未开启",
+        label: S.of(context).hotspot_wifi_disabled,
         color: FlixColor.red,
-        action: "开启",
+        action: S.of(context).hotspot_wifi_disabled_action,
         onTap: () async {
           await WiFiForIoTPlugin.setEnabled(true, shouldOpenSettings: true);
           await Future.delayed(const Duration(seconds: 1));
@@ -381,7 +386,7 @@ Widget buildApInfoWidget(BuildContext context, String ssid, String ssidKey) {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("热点名称：", style: context.body()),
+              Text(S.of(context).hotspot_info_ssid, style: context.body()),
               Text(ssid, style: context.body())
             ]),
         const SizedBox(
@@ -390,13 +395,14 @@ Widget buildApInfoWidget(BuildContext context, String ssid, String ssidKey) {
         InkWell(
           onTap: () {
             Clipboard.setData(ClipboardData(text: ssidKey));
-            FlixToast.withContext(context).info("已复制到剪切板");
+            FlixToast.withContext(context).info(S.of(context).toast_copied);
           },
           child: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("热点密码：", style: context.body()),
+                Text(S.of(context).hotspot_info_password,
+                    style: context.body()),
                 Text(ssidKey, style: context.bodyVariant()),
                 const SizedBox(
                   width: 8,

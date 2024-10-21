@@ -26,6 +26,7 @@ import 'package:flutter/widgets.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
+import '../../../l10n/l10n.dart';
 import '../../dialog/confirm_exit_app_bottomsheet.dart';
 import '../../widgets/settings/click_action_item.dart';
 
@@ -84,7 +85,7 @@ class SettingsScreenState extends State<SettingsScreen> {
     final bool showAppLaunchConfig = isDesktop();
 
     return CupertinoNavigationScaffold(
-      title: '软件设置',
+      title: S.of(context).setting_title,
       isSliverChild: true,
       padding: 16,
       enableRefresh: false,
@@ -99,7 +100,7 @@ class SettingsScreenState extends State<SettingsScreen> {
               child: ClickableItem(
                   topRadius: true,
                   bottomRadius: !showAppLaunchConfig,
-                  label: '本机名称',
+                  label: S.of(context).setting_device_name,
                   des: deviceName,
                   onClick: () {
                     final theme = Theme.of(context);
@@ -150,7 +151,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   topRadius: false,
                   bottomRadius: true,
                   child: SwitchableItem(
-                    label: '开机时自动启动',
+                    label: S.of(context).setting_auto_start,
                     // des: '软件会在后台静默启动，不会弹窗打扰',
                     checked: isStartUpEnabled,
                     onChanged: (value) async {
@@ -179,7 +180,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                     padding:
                         const EdgeInsets.only(left: 20, top: 20, right: 20),
                     child: Text(
-                      '辅助功能',
+                      S.of(context).setting_accessibility,
                       style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.normal,
@@ -196,8 +197,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                       builder:
                           (BuildContext context, AsyncSnapshot<bool> snapshot) {
                         return ClickableItem(
-                          label: '添加此设备',
-                          des: "查看此设备连接信息以在其他设备上手动添加",
+                          label: S.of(context).setting_accessibility_add_self,
+                          des: S.of(context).setting_accessibility_add_self_des,
                           topRadius: true,
                           bottomRadius: false,
                           onClick: () {
@@ -215,8 +216,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                       builder:
                           (BuildContext context, AsyncSnapshot<bool> snapshot) {
                         return ClickableItem(
-                          label: '手动添加设备',
-                          des: "输入其他设备连接信息以手动添加设备",
+                          label: S.of(context).setting_accessibility_add_devices,
+                          des: S.of(context).setting_accessibility_add_devices_des,
                           topRadius: false,
                           bottomRadius: true,
                           onClick: () {
@@ -231,7 +232,7 @@ class SettingsScreenState extends State<SettingsScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
               child: Text(
-                '进阶功能',
+                S.of(context).setting_advances,
                 style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.normal,
@@ -246,8 +247,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                 stream: SettingsRepo.instance.autoReceiveStream.stream,
                 builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                   return ClickableItem(
-                    label: '跨设备复制粘贴',
-                    des: "关联设备后，复制的文字可共享",
+                    label: S.of(context).setting_cross_device_clipboard,
+                    des: S.of(context).setting_cross_device_clipboard_des,
                     topRadius: true,
                     bottomRadius: true,
                     onClick: () {
@@ -261,7 +262,7 @@ class SettingsScreenState extends State<SettingsScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
               child: Text(
-                '接收设置',
+                S.of(context).setting_receive,
                 style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.normal,
@@ -280,8 +281,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                   builder:
                       (BuildContext context, AsyncSnapshot<bool> snapshot) {
                     return SwitchableItem(
-                      label: '自动接收',
-                      des: '收到的文件将自动保存',
+                      label: S.of(context).setting_receive_auto,
+                      des: S.of(context).setting_receive_auto_des,
                       checked: snapshot.data ?? false,
                       onChanged: (value) {
                         setState(() {
@@ -305,7 +306,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   stream: SettingsRepo.instance.savedDirStream.stream,
                   builder: (context, snapshot) {
                     return ClickableItem(
-                        label: '文件接收目录',
+                        label: S.of(context).setting_receive_folder,
                         des: snapshot.data,
                         topRadius: false,
                         bottomRadius: !showAutoSaveMedia,
@@ -364,8 +365,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                         SettingsRepo.instance.autoSaveToGalleryStream.stream,
                     builder: (context, snapshot) {
                       return SwitchableItem(
-                        label: '自动将图片视频保存到相册',
-                        des: '不保存到接收目录',
+                        label: S.of(context).setting_receive_to_album,
+                        des: S.of(context).setting_receive_to_album_des,
                         checked: snapshot.data ?? false,
                         onChanged: (value) {
                           setState(() {
@@ -387,7 +388,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 Padding(
                   padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
                   child: Text(
-                    '更多',
+                    S.of(context).setting_more,
                     style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.normal,
@@ -406,8 +407,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                       builder:
                           (BuildContext context, AsyncSnapshot<bool> snapshot) {
                         return SwitchableItem(
-                          label: '启用新的设备发现方式',
-                          des: '开启后可解决开热点后无法发现设备的问题。若遇到兼容问题，请尝试关闭此开关，并反馈给我们❤️',
+                          label: S.of(context).setting_more_new_discover,
+                          des: S.of(context).setting_more_new_discover_des,
                           checked: snapshot.data ?? false,
                           onChanged: (value) {
                             setState(() {
@@ -429,16 +430,22 @@ class SettingsScreenState extends State<SettingsScreen> {
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: Builder(builder: (context) {
                           final options = [
-                            const OptionData(
-                                label: '跟随系统', tag: 'follow_system'),
-                            const OptionData(label: '始终开启', tag: 'always_on'),
-                            const OptionData(label: '始终关闭', tag: 'always_off')
+                            OptionData(
+                                label:
+                                    S.of(context).setting_more_dark_mode_sync,
+                                tag: 'follow_system'),
+                            OptionData(
+                                label: S.of(context).setting_more_dark_mode_on,
+                                tag: 'always_on'),
+                            OptionData(
+                                label: S.of(context).setting_more_dark_mode_off,
+                                tag: 'always_off')
                           ];
 
                           return OptionItem(
                               topRadius: false,
                               bottomRadius: false,
-                              label: '深色模式',
+                              label: S.of(context).setting_more_dark_mode,
                               tag: 'dark_mode',
                               options: options,
                               value: options.firstWhereOrNull(
@@ -462,7 +469,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   padding:
                       const EdgeInsets.only(left: 16, right: 16, bottom: 16),
                   child: ClickableItem(
-                    label: '清除缓存',
+                    label: S.of(context).setting_more_clean_cache,
                     topRadius: false,
                     bottomRadius: true,
                     onClick: () {
@@ -518,7 +525,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                     padding: const EdgeInsets.only(
                         left: 16, top: 4, right: 16, bottom: 16),
                     child: ClickActionItem(
-                        label: '退出软件',
+                        label: S.of(context).setting_exit,
                         dangerous: true,
                         onClick: () {
                           doExit();

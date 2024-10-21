@@ -7,14 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../../../l10n/l10n.dart';
+
 class FlixShareBottomSheet extends StatelessWidget {
   const FlixShareBottomSheet(BuildContext context, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return FlixBottomSheet(
-      title: '推荐给朋友',
-      buttonText: '完成',
+      title: S.of(context).share_flix,
+      buttonText: S.of(context).share_flix_action,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Row(
@@ -41,7 +43,7 @@ class FlixShareBottomSheet extends StatelessWidget {
                   Padding(
                       padding: const EdgeInsets.only(top: 16),
                       child: GestureDetector(
-                          child: Text("官网（点击复制）:  flix.center",
+                          child: Text(S.of(context).share_flix_website,
                               style: const TextStyle(
                                       color: FlixColor.blue,
                                       fontSize: 16,
@@ -50,7 +52,7 @@ class FlixShareBottomSheet extends StatelessWidget {
                           onTap: () {
                             Clipboard.setData(const ClipboardData(
                                 text: "https://flix.center"));
-                            flixToast.info("已复制到剪贴板");
+                            flixToast.info(S.of(context).share_flix_copied);
                           })),
                 ],
               ),
