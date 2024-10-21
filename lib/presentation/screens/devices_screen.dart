@@ -48,7 +48,7 @@ class _DeviceScreenState extends State<DeviceScreen>
   List<DeviceInfo> history = List.empty(growable: true);
   List<DeviceInfo> devices = List.empty(growable: true);
   final _refreshController = EasyRefreshController();
-
+ 
   @override
   Widget build(BuildContext context) {
     final deviceProvider = MultiCastClientProvider.of(context, listen: true);
@@ -306,9 +306,15 @@ class _DeviceScreenState extends State<DeviceScreen>
   }
 }
 
+
+
+
+
+
 class HistoryItem extends StatelessWidget {
   final int index;
   final DeviceInfo historyItemInfo;
+  
   final VoidCallback onTap;
   final void Function(DeviceInfo deviceInfo) onDelete;
   final SwipeActionController _swipeActionController = SwipeActionController();
@@ -325,76 +331,97 @@ class HistoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SwipeActionCell(
-      key: ValueKey(historyItemInfo.id),
-      index: index,
-      controller: _swipeActionController,
-      backgroundColor: Theme.of(context).flixColors.background.secondary,
-      trailingActions: <SwipeAction>[
-        SwipeAction(
-            backgroundRadius: 6,
-            color: const Color.fromRGBO(255, 59, 48, 1),
-            title: '删除',
-            style: const TextStyle(color: Colors.white, fontSize: 14).fix(),
-            onTap: (CompletionHandler handler) async {
-              onDelete(historyItemInfo);
-              await handler(true);
-            }),
-      ],
-      child: InkWell(
-        onTap: onTap,
-        onSecondaryTap: () {
-          _swipeActionController.openCellAt(index: index, trailing: true);
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: DecoratedBox(
-            decoration: FlixDecoration(
-              color: selected
-                  ? Theme.of(context).flixColors.background.primary
-                  : null,
-              borderRadius: selected ? BorderRadius.circular(10) : null,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    'assets/images/history.svg',
-                    width: 20,
-                    height: 20,
-                    colorFilter: ColorFilter.mode(
-                        Theme.of(context).flixColors.text.secondary,
-                        BlendMode.srcIn),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10), 
+      child: SwipeActionCell(
+        key: ValueKey(historyItemInfo.id),
+        index: index,
+        controller: _swipeActionController,
+        backgroundColor: Theme.of(context).flixColors.background.secondary,
+        trailingActions: <SwipeAction>[
+          SwipeAction(
+              backgroundRadius: 15, 
+              color: const Color.fromARGB(255, 255, 255, 255),  
+              title: '删除',
+              style: const TextStyle(
+                  color: Color.fromRGBO(255, 59, 48, 1), 
+                  fontSize: 14
+              ).fix(),
+              onTap: (CompletionHandler handler) async {
+                onDelete(historyItemInfo);
+                await handler(true);
+              }),
+        ],
+        child: InkWell(
+          onTap: onTap,
+          onSecondaryTap: () {
+            _swipeActionController.openCellAt(index: index, trailing: true);
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16), 
+            child: SizedBox(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? (selected
+                          ? const Color.fromRGBO(28, 28, 30, 1)
+                          : Theme.of(context).flixColors.background.primary)
+                      : (selected
+                          ? const Color.fromRGBO(232, 243, 255, 1)
+                          : Theme.of(context).flixColors.background.primary),
+                  borderRadius: BorderRadius.circular(15),  
+                  border: Border.all(
+                    color: selected
+                        ? const Color.fromRGBO(0, 122, 255, 1)
+                        : Theme.of(context).flixColors.background.primary,
+                    width: 1.4,
                   ),
-                  const SizedBox(
-                    width: 6,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      offset: const Offset(0, 4),
+                      blurRadius: 6,
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(13),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image(
+                        image: AssetImage(
+                            'assets/images/noconnect_${historyItemInfo.icon}'),
+                        width: 34,
+                        height: 34,
+                        fit: BoxFit.fill,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          historyItemInfo.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                                  fontSize: 14,
+                                  color: Theme.of(context).flixColors.text.primary,
+                                  fontWeight: FontWeight.w500)
+                              .fix(),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      SvgPicture.asset(
+                        'assets/images/arrow_right.svg',
+                        width: 24,
+                        height: 24,
+                        colorFilter: ColorFilter.mode(
+                            Theme.of(context).flixColors.text.secondary,
+                            BlendMode.srcIn),
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: Text(historyItemInfo.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                                fontSize: 14,
-                                color:
-                                    Theme.of(context).flixColors.text.primary,
-                                fontWeight: FontWeight.w500)
-                            .fix()),
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  SvgPicture.asset(
-                    'assets/images/arrow_right.svg',
-                    width: 20,
-                    height: 20,
-                    colorFilter: ColorFilter.mode(
-                        Theme.of(context).flixColors.text.secondary,
-                        BlendMode.srcIn),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
