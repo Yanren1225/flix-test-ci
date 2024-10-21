@@ -516,7 +516,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 ? 'assets/images/image_placeholder_dark.png'
                 : 'assets/images/image_placeholder_light.png',
             fit: BoxFit.contain,
-            width: 200,
+            width: 170,
           ),
           const SizedBox(
             height: 16,
@@ -524,9 +524,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           Text(
             '请选择设备',
             style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 14,
                     fontWeight: FontWeight.normal,
-                    color: Theme.of(context).flixColors.text.primary)
+                    color: Theme.of(context).flixColors.text.secondary)
                 .fix(),
           )
         ],
