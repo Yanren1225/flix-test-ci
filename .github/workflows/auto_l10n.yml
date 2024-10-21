@@ -22,11 +22,7 @@ jobs:
           with:
             flutter-version: 3.24.0
         - run: flutter pub get
-        - run: |
-            dart run intl_translation:extract_to_arb --output-dir=lib/l10n lib/main.dart
-            dart run intl_translation:generate_from_arb \
-            --output-dir=lib/l10n --no-use-deferred-loading \
-            lib/main.dart lib/l10n/intl_*.arb
+        - run: dart run intl_utils:generate
         - name: Check for changes
           run: |
             git diff --exit-code || git commit -am "Auto Update l10n files"
