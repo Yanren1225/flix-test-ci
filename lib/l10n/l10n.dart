@@ -860,10 +860,10 @@ class S {
     );
   }
 
-  /// `正在添加设备...`
+  /// `正在添加设备…`
   String get paircode_dialog_adding_device {
     return Intl.message(
-      '正在添加设备...',
+      '正在添加设备…',
       name: 'paircode_dialog_adding_device',
       desc: '',
       args: [],
@@ -2007,6 +2007,7 @@ class AppLocalizationDelegate extends LocalizationsDelegate<S> {
   List<Locale> get supportedLocales {
     return const <Locale>[
       Locale.fromSubtags(languageCode: 'zh', countryCode: 'CN'),
+      Locale.fromSubtags(languageCode: 'en'),
     ];
   }
 

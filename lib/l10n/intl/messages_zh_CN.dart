@@ -202,7 +202,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "paircode_dialog_add_device_action":
             MessageLookupByLibrary.simpleMessage("重试"),
         "paircode_dialog_adding_device":
-            MessageLookupByLibrary.simpleMessage("正在添加设备..."),
+            MessageLookupByLibrary.simpleMessage("正在添加设备…"),
         "paircode_local_IP": MessageLookupByLibrary.simpleMessage("本机 IP"),
         "paircode_local_port": MessageLookupByLibrary.simpleMessage("本机网络端口"),
         "paircode_scan_to_add":
