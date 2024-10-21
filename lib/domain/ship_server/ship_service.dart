@@ -15,6 +15,7 @@ import 'package:flix/domain/physical_lock.dart';
 import 'package:flix/domain/settings/settings_repo.dart';
 import 'package:flix/domain/ship_server/processor/ping_v2_processor.dart';
 import 'package:flix/domain/ship_server/ship_url_helper.dart';
+import 'package:flix/domain/ship_server/simple_resource_entity.dart';
 import 'package:flix/model/intent/trans_intent.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
@@ -756,13 +757,11 @@ class ShipService{
     String? path = bubble.content.meta.path;
     String? resourceId;
     if (bubble.type == BubbleType.Image || bubble.type == BubbleType.Video) {
-      resourceId = await _saveMediaToAlbumOnMobile(
+      final entity = await _saveMediaToAlbumOnMobile(
           outFile, bubble.type == BubbleType.Image,
           tag: bubble.id);
-      // 如果是 android 返回 path，这里有点脏后续看怎么优化吧
-      if (Platform.isAndroid) {
-        path = resourceId;
-      }
+      resourceId = entity?.id;
+      path = entity?.path ?? path;
     }
 
     //路径为空时，证明不是文件夹传输，无相对路径，直接填充文件路径
@@ -781,7 +780,7 @@ class ShipService{
     await _bubblePool.add(updatedBubble);
   }
 
-  Future<String?> _saveMediaToAlbumOnMobile(File outFile, bool isImage,
+  Future<SimpleResourceEntity?> _saveMediaToAlbumOnMobile(File outFile, bool isImage,
       {String? tag}) async {
     try {
       if (Platform.isAndroid) {
@@ -804,7 +803,7 @@ class ShipService{
               // 保证写入相册成功后才删除
               outFile.delete(recursive: true);
             }
-            return file?.path;
+            return SimpleResourceEntity(entity.id, file?.path);
           }
 
         }
@@ -814,7 +813,7 @@ class ShipService{
             isReturnPathOfIOS: true);
         talker.debug("$tag ios save file result: $result");
         if (result["isSuccess"]) {
-          return result["resourceId"] as String;
+          return SimpleResourceEntity(result["resourceId"] as String, null);
         } else {
           talker.error("$tag ios save file failed");
         }

@@ -318,8 +318,20 @@ class PickActionAreaState extends State<PickActionsArea> {
         }
       }
     } catch (e, stackTrace) {
-      if (e is FileSystemException) {
-        flixToast.alert("请选择文件夹～");
+      if (e is FileSystemException && Platform.isIOS) {
+        switch (e.osError?.errorCode) {
+          case 1: // 无权限
+            flixToast.alert("无权限发送此文件夹");
+            break;
+          case 20:
+            flixToast.alert("点击「打开」选择文件夹");
+            break;
+          default:
+            flixToast.alert("无法选择文件夹: ${e.osError?.errorCode}");
+            break;
+        }
+      } else {
+        flixToast.alert("无法选择文件夹");
       }
       talker.error('pick directory failed', e, stackTrace);
       setState(() {
