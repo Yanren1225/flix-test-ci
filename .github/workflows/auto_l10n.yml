@@ -3,6 +3,7 @@ name: Gen l10n
 # on push to files in i10n folder,
 # set up flutter
 # generate i10n files
+# rollback pubspec.lock
 # check if there are changes in the lib/l10n/ files
 # and push the changes to the repo
 
@@ -23,6 +24,13 @@ jobs:
             flutter-version: 3.24.0
         - run: flutter pub get
         - run: dart run intl_utils:generate
+        - name: Rollback pubspec.lock
+          run: |
+            git checkout -- pubspec.lock
+        - name: Set up git
+          run: |
+            git config --global user.email "l10n@gxb.pub"
+            git config --global user.name "l10nBot"
         - name: Check for changes
           run: |
             git diff --exit-code || git commit -am "Auto Update l10n files"
