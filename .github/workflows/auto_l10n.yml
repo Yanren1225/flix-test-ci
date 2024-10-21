@@ -2,7 +2,7 @@ name: Gen l10n
 
 # on push to files in i10n folder,
 # set up flutter
-# run `flutter pub global run intl_utils:generate` to generate i10n files
+# generate i10n files
 # check if there are changes in the lib/l10n/ files
 # and push the changes to the repo
 
@@ -22,7 +22,11 @@ jobs:
           with:
             flutter-version: 3.24.0
         - run: flutter pub get
-        - run: flutter pub global run intl_utils:generate
+        - run: |
+            dart run intl_translation:extract_to_arb --output-dir=lib/l10n lib/main.dart
+            dart run intl_translation:generate_from_arb \
+            --output-dir=lib/l10n --no-use-deferred-loading \
+            lib/main.dart lib/l10n/intl_*.arb
         - name: Check for changes
           run: |
             git diff --exit-code || git commit -am "Auto Update l10n files"
