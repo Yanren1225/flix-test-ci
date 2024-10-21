@@ -15,6 +15,7 @@ import 'package:flix/presentation/widgets/bubbles/trans_info_widget.dart';
 import 'package:flix/presentation/widgets/bubbles/wait_to_accept_media_widget.dart';
 import 'package:flix/presentation/widgets/segements/file_bubble_interaction.dart';
 import 'package:flix/presentation/widgets/segements/preview_error_widget.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/platform_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -42,12 +43,7 @@ class ShareVideoBubbleState extends BaseFileBubbleState<ShareVideoBubble> {
     final sharedVideo = entity.shareable as SharedFile;
     talker.debug('video with path: ${sharedVideo.content.path}');
 
-    final Color backgroundColor;
-    // if (entity.isFromMe(andropContext.deviceId)) {
-    //   backgroundColor = const Color.fromRGBO(0, 122, 255, 1);
-    // } else {
-    backgroundColor = Colors.white;
-    // }
+    Color backgroundColor = Theme.of(context).flixColors.background.primary;
 
     var clickable = false;
     final MainAxisAlignment alignment;
