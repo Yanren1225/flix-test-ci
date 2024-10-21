@@ -380,7 +380,101 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
                 // initialRoute: 'home',
                 builder: FToastBuilder(),
-                home: const MyHomePage(title: 'Flutter Demo Home Page'),
+                home: Stack(
+                  children: [
+                    const MyHomePage(title: 'Flix'),
+                    if (Platform.isMacOS || Platform.isLinux || Platform.isWindows)
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onPanStart: (details) {
+                            windowManager.startDragging();
+                          },
+                          onDoubleTap: () async {
+                            bool isMaximized = await windowManager.isMaximized();
+                            if (isMaximized) {
+                              windowManager.restore();
+                            } else {
+                              windowManager.maximize();
+                            }
+                          },
+                          child: Container(
+                            height: 30.0, 
+                            color: const Color.fromARGB(0, 33, 149, 243),
+                            child: AppBar(
+                              title: const Text(''),
+                              actions: [
+                                Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    customBorder: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(0), 
+                                    ),
+                                    onTap: () {
+                                      windowManager.minimize();
+                                    },
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        Icons.horizontal_rule,
+                                        size: 14.0, 
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    customBorder: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(0), 
+                                    ),
+                                    onTap: () async {
+                                      bool isMaximized = await windowManager.isMaximized();
+                                      if (isMaximized) {
+                                        windowManager.restore();
+                                      } else {
+                                        windowManager.maximize();
+                                      }
+                                    },
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        Icons.crop_square,
+                                        size: 14.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    customBorder: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(0), 
+                                    ),
+                                    hoverColor: const Color.fromARGB(255, 208, 24, 11).withOpacity(0.8), 
+                                    onTap: () {
+                                      exit(0);
+                                    },
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        Icons.close,
+                                        size: 15.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                            ),
+                          ),
+                        ),
+                      )
+                  ],
+                ),
               );
             }));
   }
@@ -422,7 +516,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 ? 'assets/images/image_placeholder_dark.png'
                 : 'assets/images/image_placeholder_light.png',
             fit: BoxFit.contain,
-            width: 200,
+            width: 170,
           ),
           const SizedBox(
             height: 16,
@@ -430,9 +524,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           Text(
             '请选择设备',
             style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 14,
                     fontWeight: FontWeight.normal,
-                    color: Theme.of(context).flixColors.text.primary)
+                    color: Theme.of(context).flixColors.text.secondary)
                 .fix(),
           )
         ],
@@ -720,62 +814,67 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
       backgroundColor: Theme.of(context).flixColors.background.secondary,
       body: Row(
         children: [
-          NavigationRail(
-            onDestinationSelected: (int index) {
-              setSelectedIndex(index);
-            },
-            destinations: [
-              NavigationRailDestination(
-                  icon: SvgPicture.asset(
-                    'assets/images/ic_share.svg',
-                    width: 26,
-                    height: 26,
-                    colorFilter: ColorFilter.mode(
-                        getColor(context, 0, selectedIndex), BlendMode.srcIn),
-                  ),
-                  label: const Text('互传')),
-              NavigationRailDestination(
-                  icon: SvgPicture.asset(
-                    'assets/images/ic_config.svg',
-                    width: 26,
-                    height: 26,
-                    colorFilter: ColorFilter.mode(
-                        getColor(context, 1, selectedIndex), BlendMode.srcIn),
-                  ),
-                  label: const Text('配置')),
-              NavigationRailDestination(
-                  icon: SvgPicture.asset(
-                    'assets/images/ic_help.svg',
-                    width: 26,
-                    height: 26,
-                    colorFilter: ColorFilter.mode(
-                        getColor(context, 2, selectedIndex), BlendMode.srcIn),
-                  ),
-                  label: const Text('帮助'))
-            ],
-            minWidth: 60,
-            labelType: NavigationRailLabelType.all,
-            useIndicator: true,
-            indicatorColor: Theme.of(context).flixColors.background.primary,
-            groupAlignment: 0.0,
-            extended: false,
-            elevation: null,
-            selectedIndex: selectedIndex,
-            selectedIconTheme: IconThemeData(
-                size: 26, color: Theme.of(context).flixColors.text.primary),
-            unselectedIconTheme: IconThemeData(
-                size: 26, color: Theme.of(context).flixColors.text.tertiary),
-            selectedLabelTextStyle: TextStyle(
-              color: Theme.of(context).flixColors.text.primary,
-              fontSize: 12,
-              fontWeight: FontWeight.normal,
-            ).fix(),
-            unselectedLabelTextStyle: TextStyle(
-                    color: Theme.of(context).flixColors.text.tertiary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.normal)
-                .fix(),
-            backgroundColor: Theme.of(context).flixColors.background.primary,
+          Padding(
+            padding: const EdgeInsets.only(left: 5), 
+            child: SizedBox(
+              width: 60, 
+              child: NavigationRail(
+                onDestinationSelected: (int index) {
+                  setSelectedIndex(index);
+                },
+                destinations: [
+                  NavigationRailDestination(
+                      icon: SvgPicture.asset(
+                        'assets/images/ic_share.svg',
+                        width: 26,
+                        height: 26,
+                        colorFilter: ColorFilter.mode(
+                            getColor(context, 0, selectedIndex), BlendMode.srcIn),
+                      ),
+                      label: const Text('')),
+                  NavigationRailDestination(
+                      icon: SvgPicture.asset(
+                        'assets/images/ic_config.svg',
+                        width: 26,
+                        height: 26,
+                        colorFilter: ColorFilter.mode(
+                            getColor(context, 1, selectedIndex), BlendMode.srcIn),
+                      ),
+                      label: const Text('')),
+                  NavigationRailDestination(
+                      icon: SvgPicture.asset(
+                        'assets/images/ic_help.svg',
+                        width: 26,
+                        height: 26,
+                        colorFilter: ColorFilter.mode(
+                            getColor(context, 2, selectedIndex), BlendMode.srcIn),
+                      ),
+                      label: const Text(''))
+                ],
+                labelType: NavigationRailLabelType.all,
+                useIndicator: true,
+                indicatorColor: Theme.of(context).flixColors.background.secondary,
+                groupAlignment: 0.0,
+                extended: false,
+                elevation: null,
+                selectedIndex: selectedIndex,
+                selectedIconTheme: IconThemeData(
+                    size: 26, color: Theme.of(context).flixColors.text.primary),
+                unselectedIconTheme: IconThemeData(
+                    size: 26, color: Theme.of(context).flixColors.text.tertiary),
+                selectedLabelTextStyle: TextStyle(
+                  color: Theme.of(context).flixColors.text.primary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.normal,
+                ).fix(),
+                unselectedLabelTextStyle: TextStyle(
+                        color: Theme.of(context).flixColors.text.tertiary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal)
+                    .fix(),
+                backgroundColor: Theme.of(context).flixColors.background.secondary,
+              ),
+            ),
           ),
           Expanded(flex: 2, child: secondPart()),
           Expanded(

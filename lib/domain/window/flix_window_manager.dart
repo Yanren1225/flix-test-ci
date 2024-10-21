@@ -57,6 +57,7 @@ class FlixWindowManager with WindowListener {
       WindowOptions windowOptions = WindowOptions(
         size: size,
         center: true,
+        titleBarStyle: TitleBarStyle.hidden,
       );
       windowManager.waitUntilReadyToShow(windowOptions, () async {
         await windowManager.show();

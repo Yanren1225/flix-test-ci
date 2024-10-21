@@ -6,7 +6,7 @@ import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/meida/media_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
-
+ 
 class DeviceList extends StatefulWidget {
   const DeviceList(
       {super.key,
@@ -64,17 +64,10 @@ class DeviceListState extends State<DeviceList> {
       }),
       Visibility(
         visible: showHistory && history.isNotEmpty,
-        child: Padding(
+        child: const Padding(
           padding:
-              const EdgeInsets.only(left: 16, right: 16, top: 20, bottom: 6),
-          child: Text(
-            '历史记录',
-            style: TextStyle(
-                    color: Theme.of(context).flixColors.text.secondary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500)
-                .fix(),
-          ),
+              EdgeInsets.only(left: 0, right: 0, top: 0, bottom: 0),
+         
         ),
       ),
       ...List.generate(showHistory ? history.length : 0, (index) {

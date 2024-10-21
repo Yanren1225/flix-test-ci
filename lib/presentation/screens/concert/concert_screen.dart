@@ -254,6 +254,22 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
           reverse: true,
           shrinkWrap: true,
         ),
+         Align(
+          alignment: Alignment.bottomCenter,
+          child: Visibility(
+            visible: !widget.playable, 
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 30.0),
+              child: Text(
+                "此设备已离线",
+                style: TextStyle(
+                    color: Theme.of(context).flixColors.text.secondary,
+                    fontSize: 14,
+                    ),
+              ),
+            ),
+          ),
+        ),
         Align(
           alignment: Alignment.bottomLeft,
           child: Container(

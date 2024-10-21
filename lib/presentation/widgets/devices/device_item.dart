@@ -45,25 +45,40 @@ class DeviceItemState extends State<DeviceItem> {
           droping = false;
         });
       },
-      child: Material(
-        color: droping
-            ? const Color.fromRGBO(204, 204, 204, 0.098)
-            : Theme.of(context).flixColors.background.primary,
-        borderRadius:
-            selected ? null : const BorderRadius.all(Radius.circular(20)),
-        clipBehavior: Clip.antiAlias,
-        shape: selected
-            ? RoundedRectangleBorder(
-                side: const BorderSide(
-                  color: Color.fromRGBO(0, 122, 255, 1),
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(20))
-            : null,
-        child: InkWell(
+      child: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),  
+              offset: const Offset(0, 4),             
+              blurRadius: 6,                          
+            ),
+          ],
+        ),
+        child: Material(
+          color: Theme.of(context).brightness == Brightness.dark
+    ? (selected
+        ? const Color.fromRGBO(28, 28, 30, 1)  
+        : Theme.of(context).flixColors.background.primary)    
+    : (selected
+        ? const Color.fromRGBO(232, 243, 255, 1)  
+        : Theme.of(context).flixColors.background.primary),  
+          borderRadius:
+              selected ? null : const BorderRadius.all(Radius.circular(15)),
+          clipBehavior: Clip.antiAlias,
+          shape: selected
+              ? RoundedRectangleBorder(
+                  side: const BorderSide(
+                    color: Color.fromRGBO(0, 122, 255, 1),
+                    width: 1.4,
+                  ),
+                  borderRadius: BorderRadius.circular(15))
+              : null,
+              
+          child: InkWell(
             onTap: onTap,
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(13),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -90,16 +105,16 @@ class DeviceItemState extends State<DeviceItem> {
                                 child: Image(
                                   image: AssetImage(
                                       'assets/images/${deviceInfo.icon}'),
-                                  width: 36,
-                                  height: 36,
+                                  width: 34,
+                                  height: 34,
                                   fit: BoxFit.fill,
                                 ),
                               )
                             : Image(
                                 image: AssetImage(
                                     'assets/images/${deviceInfo.icon}'),
-                                width: 36,
-                                height: 36,
+                                width: 34,
+                                height: 34,
                                 fit: BoxFit.fill,
                               ),
                         const SizedBox(
@@ -135,7 +150,9 @@ class DeviceItemState extends State<DeviceItem> {
                   )
                 ],
               ),
-            )),
+            ),
+          ),
+        ),
       ),
     );
   }
