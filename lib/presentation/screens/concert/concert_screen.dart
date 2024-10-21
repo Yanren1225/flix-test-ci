@@ -126,7 +126,6 @@ class _ConcertScreenState extends State<ConcertScreen>
                     }
                   });
                 }
-                // Navigator.pop(context);
               },
               child: GestureDetector(
                 child: NavigationAppbarScaffold(
@@ -255,6 +254,23 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
           shrinkWrap: true,
         ),
         Align(
+          alignment: Alignment.bottomCenter,
+          child: Visibility(
+            visible: !widget.playable, 
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 30.0),
+              child: Text(
+                "此设备已离线",
+                style: TextStyle(
+                    color: Theme.of(context).flixColors.text.secondary,
+                    fontSize: 14,
+                    ),
+              ),
+            ),
+          ),
+        ),
+        
+        Align(
           alignment: Alignment.bottomLeft,
           child: Container(
             padding: padding,
@@ -266,7 +282,6 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
               firstChild: Visibility(
                 visible: widget.playable,
                 child: InputArea(
-                  // onSubmit: (content) => submit(content),
                   onSubmit: (shareable, type) {
                     submit(concertProvider, shareable, type);
                   },
@@ -333,7 +348,6 @@ class InputAreaState extends State<InputArea> {
   }
 
   void submitApp(FileMeta meta) {
-    // onSubmit(SharedApp(id: Uuid().v4(), content: app), BubbleType.App);
     widget.onSubmit(
         SharedFile(
             id: const Uuid().v4(), state: FileState.picked, content: meta),
@@ -500,7 +514,6 @@ class InputAreaState extends State<InputArea> {
                                     maxLines: null,
                                     decoration: InputDecoration(
                                         isDense: true,
-                                        // hintText: 'Input something.',
                                         border: OutlineInputBorder(
                                           borderSide: BorderSide.none,
                                           gapPadding: 0,
@@ -551,7 +564,6 @@ class InputAreaState extends State<InputArea> {
                           FocusScope.of(context).unfocus();
                           trySubmitText();
                         },
-                        // padding: const EdgeInsets.all(9.0),
                         iconSize: 22,
                         style: ButtonStyle(
                             backgroundColor: MaterialStateColor.resolveWith(
@@ -585,19 +597,14 @@ class InputAreaState extends State<InputArea> {
     return AdaptiveTextSelectionToolbar.editable(
       anchors: editableTextState.contextMenuAnchors,
       clipboardStatus: ClipboardStatus.pasteable,
-      // to apply the normal behavior when click on copy (copy in clipboard close toolbar)
-      // use an empty function `() {}` to hide this option from the toolbar
       onCopy: () =>
           editableTextState.copySelection(SelectionChangedCause.toolbar),
-      // to apply the normal behavior when click on cut
       onCut: () =>
           editableTextState.cutSelection(SelectionChangedCause.toolbar),
       onPaste: () {
-        // editableTextState.pasteText(SelectionChangedCause.toolbar);
         _paste(concertProvider.deviceInfo);
         editableTextState.hideToolbar();
       },
-      // to apply the normal behavior when click on select all
       onSelectAll: () =>
           editableTextState.selectAll(SelectionChangedCause.toolbar),
       onLookUp: () =>
@@ -652,7 +659,6 @@ class InputAreaState extends State<InputArea> {
     final text = await Pasteboard.text;
     if (text?.isNotEmpty == true) {
       final selection = textEditController.selection;
-      // final offset = selection.baseOffset;
       textEditController.value =
           textEditController.value.replaced(selection, text!);
       return;
