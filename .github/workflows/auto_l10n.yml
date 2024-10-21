@@ -1,15 +1,15 @@
-name: Gen i10n
+name: Gen l10n
 
 # on push to files in i10n folder,
 # set up flutter
 # run `flutter pub global run intl_utils:generate` to generate i10n files
-# check if there are changes in the lib/i10n/ files
+# check if there are changes in the lib/l10n/ files
 # and push the changes to the repo
 
 on:
   push:
     paths:
-      - 'i10n/**'
+      - 'l10n/**'
   workflow_dispatch:
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
         - run: flutter pub global run intl_utils:generate
         - name: Check for changes
           run: |
-            git diff --exit-code || git commit -am "Auto Update i10n files"
+            git diff --exit-code || git commit -am "Auto Update l10n files"
         - name: Push changes
           run: |
             git push
