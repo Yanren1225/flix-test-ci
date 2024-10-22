@@ -426,7 +426,11 @@ class HistoryItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Image(
-                        image: AssetImage(
+                        image:  Theme.of(context).brightness == Brightness.dark
+                      ? AssetImage(
+                            'assets/images/dark_noconnect_${historyItemInfo.icon}')
+                      : 
+                           AssetImage(
                             'assets/images/noconnect_${historyItemInfo.icon}'),
                         width: 34,
                         height: 34,
