@@ -456,7 +456,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                                     ),
                                     hoverColor: const Color.fromARGB(255, 208, 24, 11).withOpacity(0.8),
                                     onTap: () {
-                                      exit(0);
+                                       windowManager.hide();
                                     },
                                     child: const Padding(
                                       padding: EdgeInsets.all(8.0),
