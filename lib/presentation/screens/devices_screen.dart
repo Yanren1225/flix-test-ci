@@ -152,7 +152,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                   visible: isMobile(),
                   child: Padding(
                     padding: const EdgeInsets.only(
-                        left: 16, right: 16, top: 0, bottom: 16),
+                        left: 16, right: 16, top: 0, bottom: 5),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
