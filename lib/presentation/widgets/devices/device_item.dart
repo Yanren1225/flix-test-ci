@@ -87,30 +87,7 @@ class DeviceItemState extends State<DeviceItem> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        badge > 0
-                            ? Badge(
-                                backgroundColor: Colors.red,
-                                textColor:
-                                    Theme.of(context).flixColors.text.primary,
-                                label: badge > 9
-                                    ? const Padding(
-                                        padding:
-                                            EdgeInsets.symmetric(horizontal: 4),
-                                        child: Text('9+'))
-                                    : SizedBox(
-                                        width: 16,
-                                        height: 16,
-                                        child: Center(child: Text('$badge'))),
-                                padding: EdgeInsets.zero,
-                                child: Image(
-                                  image: AssetImage(
-                                      'assets/images/${deviceInfo.icon}'),
-                                  width: 34,
-                                  height: 34,
-                                  fit: BoxFit.fill,
-                                ),
-                              )
-                            : Image(
+                        Image(
                                 image: AssetImage(
                                     'assets/images/${deviceInfo.icon}'),
                                 width: 34,
@@ -140,6 +117,18 @@ class DeviceItemState extends State<DeviceItem> {
                   const SizedBox(
                     width: 16,
                   ),
+                   badge > 0
+                            ? Badge(
+                                backgroundColor: Colors.red,
+                                textColor:
+                                    Theme.of(context).flixColors.text.primary,
+                              )
+                            : Badge(
+                                backgroundColor: const Color.fromARGB(0, 244, 67, 54),
+                                textColor:
+                                    Theme.of(context).flixColors.text.primary,
+                              ),
+                              const SizedBox(width: 5),
                   SvgPicture.asset(
                     'assets/images/arrow_right.svg',
                     width: 24,
