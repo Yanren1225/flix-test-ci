@@ -78,40 +78,73 @@ class _DeviceScreenState extends State<DeviceScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SvgPicture.asset(context.imagePath("slogan.svg")),
-                      Container(child: Row(
+                      Row(
                         children: [
-                            Visibility(
-                              visible: true,
-                                child: InkWell(
-                                  onTap: (){
-                                    _refreshDevice();
-                                  },
-                              child: SvgPicture.asset(
-                                  context.imagePath("ic_refresh_menu.svg")),
-                            )),
+                          Visibility(
+                            visible: true,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle, 
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.04),  
+                                    offset: const Offset(0, 4),             
+                                    blurRadius: 6,       
+                                  ),
+                                ],
+                              ),
+                              child: InkWell(
+                                onTap: () {
+                                  _refreshDevice();
+                                },
+                                child: ClipOval( // Ensures the child respects the circular shape
+                                  child: SvgPicture.asset(
+                                    context.imagePath("ic_refresh_menu.svg"),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                             const SizedBox(width: 8),
                             ModalAnchor(
                               key: _menuKey,
                               tag: "open_menu",
-                              child: SizedBox(
-                                width: 36,
-                                height: 36,
-                                child: IconButton(
-                                  splashRadius: 36,
-                                  padding: EdgeInsets.zero,
-                                  icon: SvgPicture.asset(
-                                    context.imagePath("ic_open_menu.svg"),
-                                    width: 36,
-                                    height: 36,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle, 
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.04), 
+                                      offset: const Offset(0, 4),            
+                                      blurRadius: 6,                      
+                                    ),
+                                  ],
+                                ),
+                                child: SizedBox(
+                                  width: 36,
+                                  height: 36,
+                                  child: IconButton(
+                                    splashRadius: 36,
+                                    padding: EdgeInsets.zero,
+                                    icon: SvgPicture.asset(
+                                      context.imagePath("ic_open_menu.svg"),
+                                      width: 36,
+                                      height: 36,
+                                    ),
+                                    onPressed: () {
+                                      showMainMenu(
+                                        context,
+                                        'open_menu',
+                                        widget.onViewConnectInfo,
+                                        widget.onGoManualAdd,
+                                      );
+                                    },
                                   ),
-                                  onPressed: () {
-                                    showMainMenu(context, 'open_menu', widget.onViewConnectInfo, widget.onGoManualAdd);
-                                  },
                                 ),
                               ),
                             )
                         ],
-                      ),)
+                      )
                     ],
                   ),
                 ),
