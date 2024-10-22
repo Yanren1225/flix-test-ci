@@ -407,6 +407,29 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                             child: AppBar(
                               title: const Text(''),
                               actions: [
+                               //  Material(
+                               //   color: Colors.transparent,
+                               //   child: InkWell(
+                               //     customBorder: RoundedRectangleBorder(
+                               //       borderRadius: BorderRadius.circular(0),
+                               //     ),
+                               //     onTap: () async {
+                               //       bool isToped = await windowManager.isAlwaysOnTop();
+                               //       if (isToped) {
+                               //         windowManager.setAlwaysOnTop(false);
+                               //       } else {
+                               //         windowManager.setAlwaysOnTop(true);
+                                //      }
+                                //    },
+                               //     child: const Padding(
+                               //       padding: EdgeInsets.all(8.0),
+                               //       child: Icon(
+                              //          Icons.push_pin_outlined,
+                                 //       size: 14.0,
+                               //       ),
+                             //       ),
+                             //     ),
+                            //    ),
                                 Material(
                                   color: Colors.transparent,
                                   child: InkWell(
