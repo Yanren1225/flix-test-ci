@@ -363,14 +363,12 @@ class HistoryItem extends StatefulWidget {
   _HistoryItemState createState() => _HistoryItemState();
 }
 
-
 class _HistoryItemState extends State<HistoryItem> {
   double _translateX = 0; 
   final double _maxSlide = 70; 
 
   void _handlePanUpdate(DragUpdateDetails details) {
     setState(() {
-     
       _translateX += details.delta.dx;
 
       if (_translateX < -_maxSlide) {
@@ -391,6 +389,16 @@ class _HistoryItemState extends State<HistoryItem> {
     });
   }
 
+  void _handleSecondaryTapDown(TapDownDetails details) {
+    setState(() {
+      if (_translateX == 0) {
+        _translateX = -_maxSlide; 
+      } else {
+        _translateX = 0; 
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -398,9 +406,9 @@ class _HistoryItemState extends State<HistoryItem> {
       child: GestureDetector(
         onPanUpdate: _handlePanUpdate, 
         onPanEnd: _handlePanEnd, 
+        onSecondaryTapDown: _handleSecondaryTapDown, 
         child: Stack(
           children: [
-           
             Positioned.fill(
               child: Align(
                 alignment: Alignment.centerRight,
@@ -427,7 +435,6 @@ class _HistoryItemState extends State<HistoryItem> {
                             'assets/images/del_device.svg',
                             width: 20,
                             height: 20,
-                          
                           ),
                           const SizedBox(height: 2), 
                           const Text(
@@ -435,21 +442,18 @@ class _HistoryItemState extends State<HistoryItem> {
                             style: TextStyle(
                               color: Colors.red, 
                               fontSize: 12,
-                              
                             ),
                           ),
                         ],
                       ),
                     ),
-
                   ),
                 ),
               ),
             ),
-            
             AnimatedContainer(
-              duration: const Duration(milliseconds: 200), // 动画效果
-              transform: Matrix4.translationValues(_translateX, 0, 0), // 控制位移
+              duration: const Duration(milliseconds: 200), 
+              transform: Matrix4.translationValues(_translateX, 0, 0), 
               child: InkWell(
                 onTap: widget.onTap,
                 child: Padding(
@@ -502,12 +506,13 @@ class _HistoryItemState extends State<HistoryItem> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                        fontSize: 14,
-                                        color: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge!
-                                            .color,
-                                        fontWeight: FontWeight.w500),
+                                  fontSize: 14,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .color,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 16),
