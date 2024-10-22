@@ -129,8 +129,12 @@ class _ConcertScreenState extends State<ConcertScreen>
                 }
                 // Navigator.pop(context);
               },
-              child: GestureDetector(
-                child: NavigationAppbarScaffold(
+             child: Padding(
+                padding: (Platform.isMacOS || Platform.isWindows || Platform.isLinux)
+                    ? const EdgeInsets.only(top: 18.0)
+                    : EdgeInsets.zero, 
+                child: GestureDetector(
+                  child: NavigationAppbarScaffold(
                     showBackButton: showBackButton,
                     title: value,
                     isEditing: concertProvider.isEditing,
@@ -152,7 +156,8 @@ class _ConcertScreenState extends State<ConcertScreen>
                             )
                           : const SizedBox();
                     }),
-              ),
+                ),
+              )
             );
           },
         );
@@ -240,6 +245,8 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
       }
     });
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
