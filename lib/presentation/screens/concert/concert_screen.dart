@@ -129,35 +129,39 @@ class _ConcertScreenState extends State<ConcertScreen>
                 }
                 // Navigator.pop(context);
               },
-             child: Padding(
-                padding: (Platform.isMacOS || Platform.isWindows || Platform.isLinux)
-                    ? const EdgeInsets.only(top: 18.0)
-                    : EdgeInsets.zero, 
-                child: GestureDetector(
-                  child: NavigationAppbarScaffold(
-                    showBackButton: showBackButton,
-                    title: value,
-                    isEditing: concertProvider.isEditing,
-                    editTitle: '退出多选',
-                    onExitEditing: () {
-                      concertProvider.existEditing();
-                    },
-                    builder: (padding) {
-                      return _isContentReady
-                          ? FadeTransition(
-                              opacity: _animation,
-                              child: ShareConcertMainView(
-                                key: concertProvider.concertMainKey,
-                                deviceInfo: concertProvider.deviceInfo,
-                                padding: padding,
-                                anchor: anchor,
-                                playable: playable,
-                              ),
-                            )
-                          : const SizedBox();
-                    }),
-                ),
-              )
+            child: Container(
+                  color: Theme.of(context).flixColors.background.secondary,
+                  child: Padding(
+                    padding: (Platform.isMacOS || Platform.isWindows || Platform.isLinux)
+                        ? const EdgeInsets.only(top: 20)
+                        : EdgeInsets.zero,
+                    child: GestureDetector(
+                      child: NavigationAppbarScaffold(
+                        showBackButton: showBackButton,
+                        title: value,
+                        isEditing: concertProvider.isEditing,
+                        editTitle: '退出多选',
+                        onExitEditing: () {
+                          concertProvider.existEditing();
+                        },
+                        builder: (padding) {
+                          return _isContentReady
+                              ? FadeTransition(
+                                  opacity: _animation,
+                                  child: ShareConcertMainView(
+                                    key: concertProvider.concertMainKey,
+                                    deviceInfo: concertProvider.deviceInfo,
+                                    padding: padding,
+                                    anchor: anchor,
+                                    playable: playable,
+                                  ),
+                                )
+                              : const SizedBox();
+                        },
+                      ),
+                    ),
+                  ),
+                )
             );
           },
         );
