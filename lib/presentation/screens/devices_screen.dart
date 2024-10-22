@@ -343,127 +343,191 @@ class _DeviceScreenState extends State<DeviceScreen>
 
 
 
-
-
-
-class HistoryItem extends StatelessWidget {
+class HistoryItem extends StatefulWidget {
   final int index;
   final DeviceInfo historyItemInfo;
-  
   final VoidCallback onTap;
   final void Function(DeviceInfo deviceInfo) onDelete;
-  final SwipeActionController _swipeActionController = SwipeActionController();
   final bool selected;
 
-  HistoryItem(
-      {Key? key,
-      required this.index,
-      required this.historyItemInfo,
-      this.selected = false,
-      required this.onTap,
-      required this.onDelete})
-      : super(key: key);
+  const HistoryItem({
+    Key? key,
+    required this.index,
+    required this.historyItemInfo,
+    this.selected = false,
+    required this.onTap,
+    required this.onDelete,
+  }) : super(key: key);
+
+  @override
+  _HistoryItemState createState() => _HistoryItemState();
+}
+
+
+class _HistoryItemState extends State<HistoryItem> {
+  double _translateX = 0; 
+  final double _maxSlide = 70; 
+
+  void _handlePanUpdate(DragUpdateDetails details) {
+    setState(() {
+     
+      _translateX += details.delta.dx;
+
+      if (_translateX < -_maxSlide) {
+        _translateX = -_maxSlide;
+      } else if (_translateX > 0) {
+        _translateX = 0;
+      }
+    });
+  }
+
+  void _handlePanEnd(DragEndDetails details) {
+    setState(() {
+      if (_translateX < -_maxSlide / 2) {
+        _translateX = -_maxSlide; 
+      } else {
+        _translateX = 0; 
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10), 
-      child: SwipeActionCell(
-        key: ValueKey(historyItemInfo.id),
-        index: index,
-        controller: _swipeActionController,
-        backgroundColor: Theme.of(context).flixColors.background.secondary,
-        trailingActions: <SwipeAction>[
-          SwipeAction(
-              backgroundRadius: 15, 
-              color: const Color.fromARGB(255, 255, 255, 255),  
-              title: S.of(context).device_delete,
-              style: const TextStyle(
-                  color: Color.fromRGBO(255, 59, 48, 1), 
-                  fontSize: 14
-              ).fix(),
-              onTap: (CompletionHandler handler) async {
-                onDelete(historyItemInfo);
-                await handler(true);
-              }),
-        ],
-        child: InkWell(
-          onTap: onTap,
-          onSecondaryTap: () {
-            _swipeActionController.openCellAt(index: index, trailing: true);
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16), 
-            child: SizedBox(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? (selected
-                          ? const Color.fromRGBO(28, 28, 30, 1)
-                          : Theme.of(context).flixColors.background.primary)
-                      : (selected
-                          ? const Color.fromRGBO(232, 243, 255, 1)
-                          : Theme.of(context).flixColors.background.primary),
-                  borderRadius: BorderRadius.circular(15),  
-                  border: Border.all(
-                    color: selected
-                        ? const Color.fromRGBO(0, 122, 255, 1)
-                        : Theme.of(context).flixColors.background.primary,
-                    width: 1.4,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      offset: const Offset(0, 4),
-                      blurRadius: 6,
-                    ),
-                  ],
-                ),
+      padding: const EdgeInsets.only(bottom: 10),
+      child: GestureDetector(
+        onPanUpdate: _handlePanUpdate, 
+        onPanEnd: _handlePanEnd, 
+        child: Stack(
+          children: [
+           
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.centerRight,
                 child: Padding(
-                  padding: const EdgeInsets.all(13),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image(
-                        image:  Theme.of(context).brightness == Brightness.dark
-                      ? AssetImage(
-                            'assets/images/dark_noconnect_${historyItemInfo.icon}')
-                      : 
-                           AssetImage(
-                            'assets/images/noconnect_${historyItemInfo.icon}'),
-                        width: 34,
-                        height: 34,
-                        fit: BoxFit.fill,
+                  padding: const EdgeInsets.only(right: 16),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _translateX = 0; 
+                      });
+                      widget.onDelete(widget.historyItemInfo); 
+                    },
+                    child: Container(
+                      width: 60, 
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).flixColors.background.primary, 
+                        borderRadius: BorderRadius.circular(15), 
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          historyItemInfo.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                                  fontSize: 14,
-                                  color: Theme.of(context).flixColors.text.primary,
-                                  fontWeight: FontWeight.w500)
-                              .fix(),
-                        ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            'assets/images/del_device.svg',
+                            width: 20,
+                            height: 20,
+                          
+                          ),
+                          const SizedBox(height: 2), 
+                          const Text(
+                            "删除", 
+                            style: TextStyle(
+                              color: Colors.red, 
+                              fontSize: 12,
+                              
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 16),
-                      SvgPicture.asset(
-                        'assets/images/arrow_right.svg',
-                        width: 24,
-                        height: 24,
-                        colorFilter: ColorFilter.mode(
-                            Theme.of(context).flixColors.text.secondary,
-                            BlendMode.srcIn),
-                      ),
-                    ],
+                    ),
+
                   ),
                 ),
               ),
             ),
-          ),
+            
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200), // 动画效果
+              transform: Matrix4.translationValues(_translateX, 0, 0), // 控制位移
+              child: InkWell(
+                onTap: widget.onTap,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16),
+                  child: SizedBox(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? (widget.selected
+                                ? const Color.fromRGBO(28, 28, 30, 1)
+                                : Theme.of(context).colorScheme.surface)
+                            : (widget.selected
+                                ? const Color.fromRGBO(232, 243, 255, 1)
+                                : Theme.of(context).colorScheme.surface),
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(
+                          color: widget.selected
+                              ? const Color.fromRGBO(0, 122, 255, 1)
+                              : Theme.of(context).colorScheme.surface,
+                          width: 1.4,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            offset: const Offset(0, 4),
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(13),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image(
+                              image: Theme.of(context).brightness == Brightness.dark
+                                  ? AssetImage(
+                                      'assets/images/dark_noconnect_${widget.historyItemInfo.icon}')
+                                  : AssetImage(
+                                      'assets/images/noconnect_${widget.historyItemInfo.icon}'),
+                              width: 34,
+                              height: 34,
+                              fit: BoxFit.fill,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                widget.historyItemInfo.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                        fontSize: 14,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge!
+                                            .color,
+                                        fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            SvgPicture.asset(
+                              'assets/images/arrow_right.svg',
+                              width: 24,
+                              height: 24,
+                              colorFilter: ColorFilter.mode(
+                                  Theme.of(context).flixColors.text.secondary,
+                                  BlendMode.srcIn),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
