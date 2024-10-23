@@ -27,6 +27,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 import 'package:modals/modals.dart';
+import 'dart:io';
 
 import '../../l10n/l10n.dart';
 
@@ -50,6 +51,7 @@ class _DeviceScreenState extends State<DeviceScreen>
   List<DeviceInfo> history = List.empty(growable: true);
   List<DeviceInfo> devices = List.empty(growable: true);
   final _refreshController = EasyRefreshController();
+  bool isFirewallAllowed = true;
  
   @override
   Widget build(BuildContext context) {
@@ -148,6 +150,23 @@ class _DeviceScreenState extends State<DeviceScreen>
                     ],
                   ),
                 ),
+              if (!isFirewallAllowed)
+                Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16), 
+                padding: const EdgeInsets.all(10), 
+
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFF3B30), 
+                  borderRadius: BorderRadius.circular(15), 
+                ),
+                child: const Text(
+                  '检测到防火墙未放行，可能会导致无法发现设备、传输异常等问题。', 
+                  style: TextStyle(
+                    color: Colors.white, // 文本颜色
+                    fontSize: 12, // 文本字体大小
+                  ),
+                ),
+              ),
                 Visibility(
                   visible: isMobile(),
                   child: Padding(
@@ -288,6 +307,28 @@ class _DeviceScreenState extends State<DeviceScreen>
         });
   }
 
+  Future<bool> checkFirewall() async {
+    String exePath = Platform.resolvedExecutable.replaceAll('/', '\\').toLowerCase();
+      try {
+        var result = await Process.run(
+          'powershell',
+          [
+            '-Command',
+            '''
+             Get-NetFirewallRule | Where-Object { \$_.DisplayName -like "flix" -and \$_.Enabled -eq "True" -and \$_.Action -eq "Allow" } | Get-NetFirewallApplicationFilter | Where-Object { \$_.Program -eq "$exePath" };
+            '''
+          ]
+        );
+        if (result.stdout != null && result.stdout.toString().toLowerCase().contains(exePath)) {
+          return true;
+        } else {
+          return false;
+        }
+      } catch (e) {
+        return false;
+      }
+    }
+
   @override
   void initState() {
     super.initState();
@@ -309,8 +350,16 @@ class _DeviceScreenState extends State<DeviceScreen>
     });
   }
 
-  void _refreshDevice() {
-      _refreshController.callRefresh(overOffset: 6);
+  Future<void> _refreshDevice() async {
+    _refreshController.callRefresh(overOffset: 6);
+      if (Platform.isWindows) {
+        bool isAllowed = await checkFirewall();
+        if (mounted) {
+          setState(() {
+            isFirewallAllowed = isAllowed; 
+          });
+        }
+      } 
   }
 
   @override
