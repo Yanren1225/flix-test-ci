@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
@@ -88,19 +90,18 @@ class DeviceItemState extends State<DeviceItem> {
                     Image(
                       image: AssetImage(
                           'assets/images/${deviceInfo.icon}'),
-                      width: 34,
-                      height: 34,
+                      width: Platform.isAndroid || Platform.isIOS ? 41 : 34, 
+                      height: Platform.isAndroid || Platform.isIOS ? 41 : 34, 
                       fit: BoxFit.fill,
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: Platform.isAndroid || Platform.isIOS ? 12 : 10),
                     Flexible(
                       child: Text(
                         deviceInfo.name,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: Theme.of(context).flixColors.text.primary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                           fontSize: Platform.isAndroid || Platform.isIOS ? 16 : 14, 
                         ).fix(),
                       ),
                     ),

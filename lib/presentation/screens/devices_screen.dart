@@ -561,18 +561,18 @@ class _HistoryItemState extends State<HistoryItem> {
                                       'assets/images/dark_noconnect_${widget.historyItemInfo.icon}')
                                   : AssetImage(
                                       'assets/images/noconnect_${widget.historyItemInfo.icon}'),
-                              width: 34,
-                              height: 34,
+                              width: Platform.isAndroid || Platform.isIOS ? 44 : 34, 
+                              height: Platform.isAndroid || Platform.isIOS ? 44 : 34, 
                               fit: BoxFit.fill,
                             ),
-                            const SizedBox(width: 10),
+                             SizedBox(width: Platform.isAndroid || Platform.isIOS ? 12 : 10),
                             Expanded(
                               child: Text(
                                 widget.historyItemInfo.name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  fontSize: 14,
+                                 fontSize: Platform.isAndroid || Platform.isIOS ? 16 : 14, 
                                   color: Theme.of(context)
                                       .textTheme
                                       .bodyLarge!
