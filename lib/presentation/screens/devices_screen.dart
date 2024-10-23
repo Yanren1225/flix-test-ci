@@ -521,6 +521,13 @@ class _HistoryItemState extends State<HistoryItem> {
                   child: SizedBox(
                     child: DecoratedBox(
                      decoration: ShapeDecoration(
+                      shadows: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            offset: const Offset(0, 4),
+                            blurRadius: 6,
+                          ),
+                        ],
                         color: Theme.of(context).brightness == Brightness.dark
                             ? (widget.selected
                                 ? const Color.fromRGBO(28, 28, 30, 1)
@@ -533,20 +540,14 @@ class _HistoryItemState extends State<HistoryItem> {
                             cornerRadius: 15,  
                             cornerSmoothing: 0.6,  
                           ),
-                          side: BorderSide(
-                            color: widget.selected
-                                ? const Color.fromRGBO(0, 122, 255, 1)
-                                : Theme.of(context).colorScheme.surface,
-                            width: 1.4,
-                          ),
+                          side: widget.selected
+              ? const BorderSide(
+                  color: Color.fromRGBO(0, 122, 255, 1),
+                  width: 1.4,
+                )
+              : BorderSide.none,
                         ),
-                        shadows: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
-                            offset: const Offset(0, 4),
-                            blurRadius: 6,
-                          ),
-                        ],
+                        
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(13),
