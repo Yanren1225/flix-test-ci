@@ -1,6 +1,7 @@
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/badge_service.dart';
@@ -155,9 +156,14 @@ class _DeviceScreenState extends State<DeviceScreen>
                 margin: const EdgeInsets.symmetric(horizontal: 16), 
                 padding: const EdgeInsets.all(10), 
 
-                decoration: BoxDecoration(
+                decoration:  ShapeDecoration(
                   color: const Color(0xFFFF3B30), 
-                  borderRadius: BorderRadius.circular(15), 
+                  shape: SmoothRectangleBorder(
+                    borderRadius: SmoothBorderRadius(
+                      cornerRadius: 15,
+                      cornerSmoothing: 0.6,
+                    ),
+                  ),
                 ),
                 child: const Text(
                   '检测到防火墙未放行，可能会导致无法发现设备、传输异常等问题。', 
@@ -473,9 +479,14 @@ class _HistoryItemState extends State<HistoryItem> {
                     child: Container(
                       width: 60, 
                       height: 60,
-                      decoration: BoxDecoration(
+                      decoration: ShapeDecoration(
                         color: Theme.of(context).flixColors.background.primary, 
-                        borderRadius: BorderRadius.circular(15), 
+                        shape: SmoothRectangleBorder(
+                        borderRadius: SmoothBorderRadius(
+                          cornerRadius: 15,
+                          cornerSmoothing: 0.6,
+                        ),
+                      ),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -509,7 +520,7 @@ class _HistoryItemState extends State<HistoryItem> {
                   padding: const EdgeInsets.only(left: 16, right: 16),
                   child: SizedBox(
                     child: DecoratedBox(
-                      decoration: BoxDecoration(
+                     decoration: ShapeDecoration(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? (widget.selected
                                 ? const Color.fromRGBO(28, 28, 30, 1)
@@ -517,14 +528,19 @@ class _HistoryItemState extends State<HistoryItem> {
                             : (widget.selected
                                 ? const Color.fromRGBO(232, 243, 255, 1)
                                 : Theme.of(context).colorScheme.surface),
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(
-                          color: widget.selected
-                              ? const Color.fromRGBO(0, 122, 255, 1)
-                              : Theme.of(context).colorScheme.surface,
-                          width: 1.4,
+                        shape: SmoothRectangleBorder(
+                          borderRadius: SmoothBorderRadius(
+                            cornerRadius: 15,  
+                            cornerSmoothing: 0.6,  
+                          ),
+                          side: BorderSide(
+                            color: widget.selected
+                                ? const Color.fromRGBO(0, 122, 255, 1)
+                                : Theme.of(context).colorScheme.surface,
+                            width: 1.4,
+                          ),
                         ),
-                        boxShadow: [
+                        shadows: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.04),
                             offset: const Offset(0, 4),
