@@ -730,33 +730,56 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                   height: 26,
                   'assets/images/ic_share.svg',
                   colorFilter: ColorFilter.mode(
-                      getColor(context, 0, selectedIndex), BlendMode.srcIn),
+                    selectedIndex == 0 
+                          ? Theme.of(context).flixColors.text.primary 
+                          : (Theme.of(context).brightness == Brightness.dark 
+                              ? const Color.fromRGBO(235, 235, 245, 0.3) 
+                              : const Color.fromRGBO(60, 60, 67, 0.3)),
+                      BlendMode.srcIn,
+                  ),
                 ),
-                label: S.of(context).navigation_send),
+                label: '',
+            ),
             BottomNavigationBarItem(
                 icon: SvgPicture.asset(
                   width: 26,
                   height: 26,
                   'assets/images/ic_config.svg',
                   colorFilter: ColorFilter.mode(
-                      getColor(context, 1, selectedIndex), BlendMode.srcIn),
+                    selectedIndex == 1 
+                          ? Theme.of(context).flixColors.text.primary 
+                          : (Theme.of(context).brightness == Brightness.dark 
+                              ? const Color.fromRGBO(235, 235, 245, 0.3) 
+                              : const Color.fromRGBO(60, 60, 67, 0.3)),
+                      BlendMode.srcIn,
+                    ),
                 ),
-                label: S.of(context).navigation_config),
+                label: ''
+            ),
             BottomNavigationBarItem(
                 icon: SvgPicture.asset(
                   width: 26,
                   height: 26,
                   'assets/images/ic_help.svg',
                   colorFilter: ColorFilter.mode(
-                      getColor(context, 2, selectedIndex), BlendMode.srcIn),
-                ),
-                label: S.of(context).navigation_help),
+                    selectedIndex == 2 
+                          ? Theme.of(context).flixColors.text.primary 
+                          : (Theme.of(context).brightness == Brightness.dark 
+                              ? const Color.fromRGBO(235, 235, 245, 0.3) 
+                              : const Color.fromRGBO(60, 60, 67, 0.3)),
+                      BlendMode.srcIn,
+                    ),
+                            ),
+                            label: ''),
           ],
+
           currentIndex: selectedIndex,
           selectedItemColor: Theme.of(context).flixColors.text.primary,
           unselectedItemColor: Theme.of(context).flixColors.text.tertiary,
           selectedFontSize: 12,
           unselectedFontSize: 12,
+          showSelectedLabels: false, 
+          showUnselectedLabels: false, 
           selectedLabelStyle:
               const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
           unselectedLabelStyle:
