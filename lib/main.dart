@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -722,71 +723,79 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
       bottomNavigationBar: ConstrainedBox(
         constraints: BoxConstraints(
             minHeight: 70 + MediaQuery.of(context).padding.bottom),
-        child: BottomNavigationBar(
-          items: [
-            BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  width: 26,
-                  height: 26,
-                  'assets/images/ic_share.svg',
-                  colorFilter: ColorFilter.mode(
-                    selectedIndex == 0 
-                          ? Theme.of(context).flixColors.text.primary 
-                          : (Theme.of(context).brightness == Brightness.dark 
-                              ? const Color.fromRGBO(235, 235, 245, 0.3) 
-                              : const Color.fromRGBO(60, 60, 67, 0.3)),
-                      BlendMode.srcIn,
+        child: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0), 
+            child: Container(
+            color: const Color.fromRGBO(255, 255, 255, 1).withOpacity(0.9), 
+              child: BottomNavigationBar(
+                items: [
+                  BottomNavigationBarItem(
+                      icon: SvgPicture.asset(
+                        width: 26,
+                        height: 26,
+                        'assets/images/ic_share.svg',
+                        colorFilter: ColorFilter.mode(
+                          selectedIndex == 0
+                                ? Theme.of(context).flixColors.text.primary
+                                : (Theme.of(context).brightness == Brightness.dark
+                                    ? const Color.fromRGBO(235, 235, 245, 0.3)
+                                    : const Color.fromRGBO(60, 60, 67, 0.3)),
+                            BlendMode.srcIn,
+                        ),
+                      ),
+                      label: '',
                   ),
-                ),
-                label: '',
-            ),
-            BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  width: 26,
-                  height: 26,
-                  'assets/images/ic_config.svg',
-                  colorFilter: ColorFilter.mode(
-                    selectedIndex == 1 
-                          ? Theme.of(context).flixColors.text.primary 
-                          : (Theme.of(context).brightness == Brightness.dark 
-                              ? const Color.fromRGBO(235, 235, 245, 0.3) 
-                              : const Color.fromRGBO(60, 60, 67, 0.3)),
-                      BlendMode.srcIn,
-                    ),
-                ),
-                label: ''
-            ),
-            BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  width: 26,
-                  height: 26,
-                  'assets/images/ic_help.svg',
-                  colorFilter: ColorFilter.mode(
-                    selectedIndex == 2 
-                          ? Theme.of(context).flixColors.text.primary 
-                          : (Theme.of(context).brightness == Brightness.dark 
-                              ? const Color.fromRGBO(235, 235, 245, 0.3) 
-                              : const Color.fromRGBO(60, 60, 67, 0.3)),
-                      BlendMode.srcIn,
-                    ),
-                            ),
-                            label: ''),
-          ],
+                  BottomNavigationBarItem(
+                      icon: SvgPicture.asset(
+                        width: 26,
+                        height: 26,
+                        'assets/images/ic_config.svg',
+                        colorFilter: ColorFilter.mode(
+                          selectedIndex == 1
+                                ? Theme.of(context).flixColors.text.primary
+                                : (Theme.of(context).brightness == Brightness.dark
+                                    ? const Color.fromRGBO(235, 235, 245, 0.3)
+                                    : const Color.fromRGBO(60, 60, 67, 0.3)),
+                            BlendMode.srcIn,
+                          ),
+                      ),
+                      label: ''
+                  ),
+                  BottomNavigationBarItem(
+                      icon: SvgPicture.asset(
+                        width: 26,
+                        height: 26,
+                        'assets/images/ic_help.svg',
+                        colorFilter: ColorFilter.mode(
+                          selectedIndex == 2
+                                ? Theme.of(context).flixColors.text.primary
+                                : (Theme.of(context).brightness == Brightness.dark
+                                    ? const Color.fromRGBO(235, 235, 245, 0.3)
+                                    : const Color.fromRGBO(60, 60, 67, 0.3)),
+                            BlendMode.srcIn,
+                          ),
+                                  ),
+                                  label: ''),
+                ],
 
-          currentIndex: selectedIndex,
-          selectedItemColor: Theme.of(context).flixColors.text.primary,
-          unselectedItemColor: Theme.of(context).flixColors.text.tertiary,
-          selectedFontSize: 12,
-          unselectedFontSize: 12,
-          showSelectedLabels: false, 
-          showUnselectedLabels: false, 
-          selectedLabelStyle:
-              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
-          unselectedLabelStyle:
-              const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
-          backgroundColor: Theme.of(context).flixColors.background.primary,
-          elevation: 0,
-          onTap: (value) => setSelectedIndex(value),
+                currentIndex: selectedIndex,
+                selectedItemColor: Theme.of(context).flixColors.text.primary,
+                unselectedItemColor: Theme.of(context).flixColors.text.tertiary,
+                selectedFontSize: 12,
+                unselectedFontSize: 12,
+                showSelectedLabels: false, 
+                showUnselectedLabels: false, 
+                selectedLabelStyle:
+                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
+                unselectedLabelStyle:
+                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
+                backgroundColor: Colors.transparent, 
+                elevation: 0,
+                onTap: (value) => setSelectedIndex(value),
+              ),
+            ),
+          ),
         ),
       ),
     );
