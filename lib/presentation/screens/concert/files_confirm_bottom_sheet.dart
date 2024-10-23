@@ -14,6 +14,7 @@ import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/file/size_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as path_utils;
@@ -40,10 +41,28 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
   DeviceInfo get deviceInfo => widget.deviceInfo;
 
   List<XFile> get files => widget.files;
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();  
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FlixBottomSheet(
+    return RawKeyboardListener(
+      focusNode: _focusNode,  
+      autofocus: true,        
+      onKey: (RawKeyEvent event) {
+        if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.enter) {
+          _sendFiles(files);
+          Navigator.pop(context);
+        }
+      },
+
+
+      child: FlixBottomSheet(
         title: S.of(context).dialog_confirm_send_title,
         subTitle: S.of(context).dialog_confirm_send_subtitle(deviceInfo.name),
         buttonText: S.of(context).dialog_confirm_send_button,
@@ -63,8 +82,12 @@ class FilesConfirmBottomSheetState extends State<FilesConfirmBottomSheet> {
         ),
         onClickFuture: () async {
           _sendFiles(files);
-        });
+        },
+      ),
+    );
   }
+
+ 
 
   Future<void> _sendFiles(List<XFile> files) async {
     for (var file in files) {
