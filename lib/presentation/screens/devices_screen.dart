@@ -357,6 +357,10 @@ class _DeviceScreenState extends State<DeviceScreen>
   }
 
   Future<void> _refreshDevice() async {
+    // 先隐藏防火墙提示再检查防火墙
+    setState(() {
+            isFirewallAllowed = true; 
+          });
     _refreshController.callRefresh(overOffset: 6);
       if (Platform.isWindows) {
         bool isAllowed = await checkFirewall();
