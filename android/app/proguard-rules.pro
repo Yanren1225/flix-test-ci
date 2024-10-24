@@ -11,3 +11,4 @@
 -keep public class * extends java.lang.Exception
 
 -keep class androidx.media3.exoplayer.** { *; }
+-keep class com.google.zxing.**{*;}
