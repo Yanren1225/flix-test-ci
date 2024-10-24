@@ -8,6 +8,8 @@ import 'package:flix/theme/theme_extensions.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_bottom_sheet_util.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:screen_capturer/screen_capturer.dart';
 import 'package:flix/utils/file/file_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:file_selector/file_selector.dart';
@@ -40,6 +42,7 @@ import 'package:modals/modals.dart';
 import 'package:pasteboard/pasteboard.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../../../l10n/l10n.dart';
 import '../../widgets/segements/bubble_context_menu.dart';
@@ -601,13 +604,81 @@ class InputAreaState extends State<InputArea> {
                   ),
                 ],
               ),
-              PickActionsArea(onPicked: onPicked),
+              Row(
+                children: [
+                  Expanded(child: PickActionsArea(onPicked: onPicked)),
+                  if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) ...[
+                    IconButton(
+                      icon: SvgPicture.asset(
+                        'assets/images/screenshot.svg',
+                        width: 22,
+                        height: 22,
+                      ),
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+                        screenshot(concertProvider.deviceInfo, context); 
+                      },
+                      color: Theme.of(context).flixColors.text.primary,
+                    ),
+                    const SizedBox(width: 16),
+                  ],
+                ],
+              )
             ]),
           ),
         ),
       ),
     );
   }
+
+Future<void> screenshot(DeviceInfo deviceInfo, BuildContext context) async {
+  windowManager.minimize();
+  try {
+    await ScreenCapturer.instance.capture(
+      mode: CaptureMode.region, 
+      imagePath: null,
+      copyToClipboard: true,  
+    );
+
+    await Future.delayed(const Duration(milliseconds: 500));
+    windowManager.show();
+
+    final filePaths = await Pasteboard.files();
+          if (filePaths.isNotEmpty == true) {
+            final files = filePaths.map((e) => XFile(e)).toList();
+            showCupertinoModalPopup(
+                context: context,
+                builder: (_) {
+                  return FilesConfirmBottomSheet(
+                      deviceInfo: deviceInfo, files: files);
+                });
+            return;
+          }
+
+    final imageBytes = await Pasteboard.image;
+    if (imageBytes != null) {
+      final cachePath = await getCachePath();
+      final imageFile = await FileUtils.getTargetFile(
+          cachePath, '${const Uuid().v4()}.jpg');
+      await imageFile.writeAsBytes(imageBytes);
+      showCupertinoModalPopup(
+        context: context,
+        builder: (_) {
+          return FilesConfirmBottomSheet(
+            deviceInfo: deviceInfo, 
+            files: [XFile(imageFile.path)],
+          );
+        },
+      );
+    } else {
+      // 用户取消截图
+    }
+  } catch (e) {
+    //print('Error: $e');
+  }
+}
+
+
 
   AdaptiveTextSelectionToolbar buildAdaptiveTextSelectionToolbar(
       EditableTextState editableTextState, ConcertProvider concertProvider) {
