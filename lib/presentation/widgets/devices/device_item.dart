@@ -110,7 +110,13 @@ class DeviceItemState extends State<DeviceItem> {
               ),
               const SizedBox(width: 16),
               badge > 0
-                  ? Badge(
+                  ? selected
+                ? Badge(
+                      backgroundColor: const Color.fromARGB(0, 255, 255, 255),
+                      textColor:
+                          Theme.of(context).flixColors.text.primary,
+                    )
+                : Badge(
                       backgroundColor: Colors.red,
                       textColor:
                           Theme.of(context).flixColors.text.primary,
