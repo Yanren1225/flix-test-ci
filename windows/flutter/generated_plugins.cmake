@@ -15,6 +15,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   open_dir_windows
   pasteboard
   permission_handler_windows
+  screen_capturer_windows
   screen_retriever
   share_plus
   sqlite3_flutter_libs
