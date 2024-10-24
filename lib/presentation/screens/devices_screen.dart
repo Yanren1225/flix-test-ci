@@ -75,7 +75,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                       left: 20,
                       top: MediaQuery.paddingOf(context).top + 33,
                       right: 20,
-                      bottom: 23),
+                      bottom: 15),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -174,10 +174,10 @@ class _DeviceScreenState extends State<DeviceScreen>
                 ),
               ),
                 Visibility(
-                  visible: isMobile(),
+                //  visible: isMobile(),
                   child: Padding(
                     padding: const EdgeInsets.only(
-                        left: 16, right: 16, top: 0, bottom: 5),
+                        left: 16, right: 16, top: 0, bottom: 0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
@@ -228,7 +228,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                             Theme.of(context).flixColors.background.primary),
                     child: CustomScrollView(
                       slivers: [
-                        const SliverPadding(padding: EdgeInsets.only(top: 10)),
+                        const SliverPadding(padding: EdgeInsets.only(top: 5)),
                         DeviceList(
                           devices: devices,
                           onDeviceSelected: widget.onDeviceSelected,

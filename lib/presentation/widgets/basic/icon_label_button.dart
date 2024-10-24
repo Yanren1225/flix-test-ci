@@ -33,8 +33,8 @@ class IconLabelButton extends StatelessWidget {
             color: Theme.of(context)
                 .flixColors
                 .background
-                .primary
-                .withOpacity(0.5),
+                .secondary
+                ,
             borderRadius: isLeft
                 ? const BorderRadius.only(
                     topLeft: Radius.circular(21.5),
