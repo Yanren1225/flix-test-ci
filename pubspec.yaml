@@ -39,6 +39,7 @@ dependencies:
   lottie: ^3.0.0
   image_picker: ^1.0.7
   screen_capturer: ^0.2.3
+  roundcheckbox: ^2.0.5
   image_picker_android: ^0.8.9+3
   uuid: ^3.0.7
   video_player: ^2.9.2

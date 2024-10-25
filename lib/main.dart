@@ -37,6 +37,7 @@ import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
 import 'package:flix/presentation/screens/helps/donate_us.dart';
 import 'package:flix/presentation/screens/helps/help_screen.dart';
+import 'package:flix/presentation/screens/intro_screen.dart';
 import 'package:flix/presentation/screens/paircode/add_device_screen.dart';
 import 'package:flix/presentation/screens/paircode/pair_code_screen.dart';
 import 'package:flix/presentation/screens/pick_device_screen.dart';
@@ -66,6 +67,7 @@ import 'package:modals/modals.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:share_handler/share_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -82,6 +84,8 @@ GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 bool needExitApp = false;
 
 String kAppTrayModeArg = '--apptray';
+
+bool isFirstRun = true;
 
 Future<void> main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -103,6 +107,8 @@ Future<void> main(List<String> arguments) async {
     _initSystemChrome();
     _initUriNavigator();
     runApp(const WithForegroundTask(child: MyApp()));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    isFirstRun = prefs.getBool('isFirstRun') ?? true; 
   } catch (e, s) {
     talker.error('launch error', e, s);
 
@@ -336,6 +342,14 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    if (isFirstRun) {
+      Future.delayed(Duration.zero, () {
+        Navigator.push(
+          navigatorKey.currentContext!,
+          MaterialPageRoute(builder: (context) => intropage()), 
+        );
+      });
+    }  
   }
 
   @override
