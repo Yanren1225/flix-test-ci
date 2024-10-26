@@ -35,18 +35,9 @@ class IconLabelButton extends StatelessWidget {
                 .background
                 .secondary
                 ,
-            borderRadius: isLeft
-                ? const BorderRadius.only(
-                    topLeft: Radius.circular(21.5),
-                    bottomLeft: Radius.circular(21.5),
-                    topRight: Radius.circular(2),
-                    bottomRight: Radius.circular(2))
-                : const BorderRadius.only(
-                    topLeft: Radius.circular(2),
-                    bottomLeft: Radius.circular(2),
-                    topRight: Radius.circular(21.5),
-                    bottomRight: Radius.circular(21.5))),
-        child: Center(
+           ),
+        child: Align(
+          alignment: isLeft ? Alignment.centerLeft : Alignment.centerRight, 
           child: Row(mainAxisSize: MainAxisSize.min, children: [
             const SizedBox(
               width: 6,
