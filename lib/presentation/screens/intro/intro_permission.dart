@@ -1,4 +1,6 @@
 import 'package:figma_squircle/figma_squircle.dart';
+import 'package:flix/presentation/screens/intro/intro_agreement.dart';
+import 'package:flix/presentation/screens/intro/intro_privacy.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -132,9 +134,11 @@ class _IntroPermissionState extends State<IntroPermission> {
                           
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                          
-                                print('点击了用户协议');
-                              },
+                                Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => const IntroAgreementPage()),
+  );
+}
                           ),
                           const TextSpan(
                             text: ' 和 ',
@@ -147,9 +151,11 @@ class _IntroPermissionState extends State<IntroPermission> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                               
-                                print('点击了隐私政策');
-                              },
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => const IntroPrivacyPage()),
+  );
+}
                           ),
                         ],
                       ),
@@ -318,8 +324,11 @@ class _IntroPermissionState extends State<IntroPermission> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                print('点击了用户协议');
-                              },
+                                Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => const IntroAgreementPage()),
+  );
+}
                           ),
                           const TextSpan(
                             text: ' 和 ',
@@ -332,8 +341,11 @@ class _IntroPermissionState extends State<IntroPermission> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                print('点击了隐私政策');
-                              },
+                                Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => const IntroPrivacyPage()),
+  );
+}
                           ),
                         ],
                       ),
