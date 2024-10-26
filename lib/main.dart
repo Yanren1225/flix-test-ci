@@ -50,6 +50,7 @@ import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/theme/theme_util.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/device_info_helper.dart';
+import 'package:flix/utils/exit.dart';
 import 'package:flix/utils/iterable_extension.dart';
 import 'package:flix/utils/meida/media_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
@@ -266,7 +267,7 @@ Future<void> initSystemManager() async {
             windowManager.minimize();
           }
         }),
-    MenuItem(label: '退出', onClick: (menuItem) => windowManager.destroy()),
+    MenuItem(label: '退出', onClick: (menuItem) => doExit()),
   ]);
 
   // set context menu
