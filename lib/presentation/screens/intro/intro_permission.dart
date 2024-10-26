@@ -135,10 +135,10 @@ class _IntroPermissionState extends State<IntroPermission> {
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => const IntroAgreementPage()),
-  );
-}
+                                context,
+                                MaterialPageRoute(builder: (context) => const IntroAgreementPage()),
+                              );
+                            }
                           ),
                           const TextSpan(
                             text: ' 和 ',
@@ -151,11 +151,11 @@ class _IntroPermissionState extends State<IntroPermission> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => const IntroPrivacyPage()),
-  );
-}
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const IntroPrivacyPage()),
+                                );
+                              }
                           ),
                         ],
                       ),
@@ -200,15 +200,15 @@ class _IntroPermissionState extends State<IntroPermission> {
                         height: 50,
                         child: ElevatedButton(
                           onPressed: isChecked
-              ? () async {
-                 
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  await prefs.setBool('isFirstRun', false);
+                            ? () async {
+                              
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                await prefs.setBool('isFirstRun', false);
 
-                
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                }
-              : null, 
+                              
+                                Navigator.of(context).popUntil((route) => route.isFirst);
+                              }
+                            : null, 
                           style: ElevatedButton.styleFrom(
                             backgroundColor: isChecked
                                 ? const Color.fromRGBO(0, 122, 255, 1)
@@ -325,10 +325,10 @@ class _IntroPermissionState extends State<IntroPermission> {
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => const IntroAgreementPage()),
-  );
-}
+                                context,
+                                MaterialPageRoute(builder: (context) => const IntroAgreementPage()),
+                              );
+                            }
                           ),
                           const TextSpan(
                             text: ' 和 ',
@@ -342,10 +342,10 @@ class _IntroPermissionState extends State<IntroPermission> {
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => const IntroPrivacyPage()),
-  );
-}
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const IntroPrivacyPage()),
+                                );
+                              }
                           ),
                         ],
                       ),
