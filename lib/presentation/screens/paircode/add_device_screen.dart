@@ -46,29 +46,68 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
       title: S.of(context).paircode_add_manually,
       showBackButton: Navigator.canPop(context),
       builder: (EdgeInsets padding) {
-        return Container(
-          width: double.infinity,
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              buildPadding(context),
-              const SizedBox(height: 32.0),
-              Expanded(
-                  child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 130),
-                  height: 54,
-                  width: 160,
-                  child: buildDesignBlueRoundButton(context),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
                 ),
-              )),
-            ],
-          ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      buildPadding(context), // 调用buildPadding方法
+                      const SizedBox(height: 32.0),
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 130),
+                            height: 54,
+                            width: 160,
+                            child: buildDesignBlueRoundButton(context), // 调用buildDesignBlueRoundButton方法
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
     );
   }
+
+  
+  Widget buildDesignBlueRoundButton(BuildContext context) {
+    return DesignBlueRoundButton(
+        text: S.of(context).paircode_dialog_add_device,
+        onPressed: () async {
+          if (!checkInput()) {
+            FlixToast.instance
+                .info(S.of(context).paircode_toast_config_incorrect);
+            return;
+          }
+          Future<void> addDevice() async {
+            final result = await PairRouterHandler.addDevice(PairInfo(
+                [_ipController.text], int.parse(_portController.text)));
+            if (result) {
+              flixToast.info(S.current.paircode_add_success);
+            } else {
+              flixToast.info(S.current.paircode_add_failed);
+            }
+          }
+
+          await showSimpleLoadingDialog<void>(
+            context: context,
+            future: addDevice,
+          );
+        });
+  }
+
 
   Padding buildPadding(BuildContext context) {
     return Padding(
@@ -101,31 +140,5 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
         ],
       ),
     );
-  }
-
-  Widget buildDesignBlueRoundButton(BuildContext context) {
-    return DesignBlueRoundButton(
-        text: S.of(context).paircode_dialog_add_device,
-        onPressed: () async {
-          if (!checkInput()) {
-            FlixToast.instance
-                .info(S.of(context).paircode_toast_config_incorrect);
-            return;
-          }
-          Future<void> addDevice() async {
-            final result = await PairRouterHandler.addDevice(PairInfo(
-                [_ipController.text], int.parse(_portController.text)));
-            if (result) {
-              flixToast.info(S.current.paircode_add_success);
-            } else {
-              flixToast.info(S.current.paircode_add_failed);
-            }
-          }
-
-          await showSimpleLoadingDialog<void>(
-            context: context,
-            future: addDevice,
-          );
-        });
   }
 }
