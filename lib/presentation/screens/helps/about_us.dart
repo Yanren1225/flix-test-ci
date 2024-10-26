@@ -146,7 +146,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
               });
             }),
             TextSpan(text: S.of(context).help_qq_2),
-            ClickableSpan('992894289', () {
+            ClickableSpan('992894289\n', () {
               final Uri url = Uri.parse('https://qm.qq.com/q/aiGWJo7CYo');
               launchUrl(url).then((value) {
                 if (!value) {
