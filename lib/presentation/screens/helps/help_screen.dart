@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
+import 'package:flix/presentation/screens/intro/intro_agreement.dart';
+import 'package:flix/presentation/screens/intro/intro_privacy.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/widgets/helps/qa.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
@@ -116,11 +118,11 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                     ),
                   ),
                   Padding(
-                      padding: EdgeInsets.only(
+                      padding: const EdgeInsets.only(
                           left: 16,
                           right: 16,
                           bottom: 16,
-                          top: Platform.isIOS ? 8 : 0),
+                          top:  0),
                       child: ClickableItem(
                           label: S.of(context).help_recommend,
                           topRadius: Platform.isIOS,
@@ -129,6 +131,46 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                                 context: context,
                                 builder: (BuildContext context) =>
                                     FlixShareBottomSheet(context));
+                          })),
+
+
+
+                          
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 16, top: 8, right: 16),
+                      child: ValueListenableBuilder<String>(
+                        valueListenable: version,
+                        builder: (BuildContext context, String value,
+                            Widget? child) {
+                          return ClickableItem(
+                              label: '用户协议',
+                              bottomRadius: false,
+                              onClick: () {
+                            Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const IntroAgreementPage()),
+                                );
+                          });
+                        },
+                      ),
+                    ),
+
+
+                          Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          bottom: 16,
+                          top: 0),
+                      child: ClickableItem(
+                          label: '隐私政策',
+                          topRadius: Platform.isIOS,
+                          onClick: () {
+                            Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const IntroPrivacyPage()),
+                                );
                           })),
                   Padding(
                     padding: const EdgeInsets.only(
@@ -143,6 +185,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen> {
                           .fix(),
                     ),
                   ),
+                  
                   Padding(
                     padding:
                         const EdgeInsets.only(left: 16, right: 16, bottom: 10),
