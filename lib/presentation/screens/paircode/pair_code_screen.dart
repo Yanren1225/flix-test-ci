@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flix/domain/paircode/pair_code_provider.dart';
 import 'package:flix/presentation/basic/constrainted_sliver_width.dart';
 import 'package:flix/presentation/screens/paircode/add_device_screen.dart';
+import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/style/flix_text_style.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/device/device_utils.dart';
@@ -120,118 +121,140 @@ class PairCodeContentComponentState extends State with WidgetsBindingObserver {
         child: CircularProgressIndicator(),
       );
     } else {
-      return Container(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 400),
-                  child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image(
-                          image:
-                              AssetImage('assets/images/${getPlatformIcon()}'),
-                          width: 36,
-                          height: 36,
-                          fit: BoxFit.fill,
-                        ),
-                        const SizedBox(width: 10),
-                        StreamBuilder<String>(
-                            initialData: deviceProvider.deviceName,
-                            stream: deviceProvider.deviceNameStream.stream,
-                            builder: (context, snapshot) {
-                              return Text(
-                                snapshot.requireData,
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  color:
-                                      Theme.of(context).flixColors.text.primary,
-                                ),
-                              );
-                            }),
-                      ])),
-              const SizedBox(height: 20),
-              ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 200),
-                  child: QrImageView(
-                      eyeStyle: QrEyeStyle(
-                        eyeShape: QrEyeShape.square,
-                        color: Theme.of(this.context).flixColors.text.primary,
-                      ),
-                      dataModuleStyle: QrDataModuleStyle(
-                          dataModuleShape: QrDataModuleShape.square,
-                          color:
-                              Theme.of(this.context).flixColors.text.primary),
-                      data: pairCodeProvider.pairCodeUri ??
-                          "error://no_pair_code",
-                      padding: const EdgeInsets.all(25.0))),
-              const SizedBox(height: 10),
-              Text(
-                S.of(context).paircode_scan_to_add,
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 20),
-              ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 400),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(S.of(context).paircode_local_IP),
-                          const SizedBox(height: 10),
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0), 
+        child: Center( 
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 500),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor, 
+              borderRadius: BorderRadius.circular(15.0), 
+              boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  offset: const Offset(0, 4),
+                  blurRadius: 6,
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0), 
+              child: Column(
+                children: [
+                  ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image(
+                              image: AssetImage('assets/images/${getPlatformIcon()}'),
+                              width: 36,
+                              height: 36,
+                              fit: BoxFit.fill,
+                            ),
+                            const SizedBox(width: 10),
+                            StreamBuilder<String>(
+                                initialData: deviceProvider.deviceName,
+                                stream: deviceProvider.deviceNameStream.stream,
+                                builder: (context, snapshot) {
+                                  return Text(
+                                    snapshot.requireData,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Theme.of(context).flixColors.text.primary,
+                                    ),
+                                  );
+                                }),
+                          ])),
+                          //const SizedBox(height: 20),
+                          ConstrainedBox(
+                              constraints: const BoxConstraints(maxHeight: 180),
+                              child: QrImageView(
+                                  eyeStyle: QrEyeStyle(
+                                    eyeShape: QrEyeShape.square,
+                                    color: Theme.of(context).flixColors.text.primary,
+                                  ),
+                                  dataModuleStyle: QrDataModuleStyle(
+                                      dataModuleShape: QrDataModuleShape.square,
+                                      color: Theme.of(context).flixColors.text.primary),
+                                  data: pairCodeProvider.pairCodeUri ??
+                                      "error://no_pair_code",
+                                  padding: const EdgeInsets.only(top:30,left: 25,right: 25))),
                           Text(
-                            pairCodeProvider.netInterfaces
-                                .map((e) => e.address)
-                                .fold(
-                                    "",
-                                    (previousValue, element) =>
-                                        "$previousValue\n$element")
-                                .trim(),
-                            style: TextStyle(
-                                color: Theme.of(this.context)
-                                    .flixColors
-                                    .text
-                                    .secondary),
+                            S.of(context).paircode_scan_to_add,
+                            style: const TextStyle(fontSize: 16),
                           ),
+                          const SizedBox(height: 20),
+                          ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 400),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        S.of(context).paircode_local_IP,
+                                        style: TextStyle(
+                                          color: Theme.of(context).flixColors.text.secondary,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 3),
+                                      Text(
+                                        pairCodeProvider.netInterfaces
+                                            .map((e) => e.address)
+                                            .fold("", (previousValue, element) => "$previousValue\n$element")
+                                            .trim(),
+                                        style: const TextStyle(
+                                          color: FlixColor.blue,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        S.of(context).paircode_local_port,
+                                        style: TextStyle(
+                                          color: Theme.of(context).flixColors.text.secondary,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 3),
+                                      Text(
+                                        pairCodeProvider.port.toString(),
+                                        style: const TextStyle(
+                                          color: FlixColor.blue,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )),
+                        
+                          Visibility(
+                              visible: isMobile(),
+                              child: CupertinoButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(CupertinoPageRoute(
+                                      builder: (context) => const AddDeviceScreen()));
+                                },
+                                child: Text(S.of(context).paircode_add_manually),
+                              )),
                         ],
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(S.of(context).paircode_local_port),
-                          const SizedBox(height: 10),
-                          Text(
-                            pairCodeProvider.port.toString(),
-                            style: TextStyle(
-                                color: Theme.of(this.context)
-                                    .flixColors
-                                    .text
-                                    .secondary),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )),
-              const SizedBox(height: 20),
-              Visibility(
-                  visible: isMobile(),
-                  child: CupertinoButton(
-                    onPressed: () {
-                      Navigator.of(context).push(CupertinoPageRoute(
-                          builder: (context) => const AddDeviceScreen()));
-                    },
-                    child: Text(S.of(context).paircode_add_manually),
-                  )),
-            ],
-          ),
-        ),
-      );
+                    ),
+                  ),
+                ),
+              );
+
     }
   }
 }
