@@ -496,15 +496,11 @@ class InputAreaState extends State<InputArea> {
                                   groupId: contextMenuGroupId,
                                   consumeOutsideTaps: false,
                                   onTapOutside: (event) {
-                                    talker.debug("event = " +
-                                        event.toString() +
-                                        " down " +
-                                        event.down.toString());
-                                    FocusScopeNode currentFocus =
-                                        FocusScope.of(context);
-                                    if (!currentFocus.hasPrimaryFocus) {
-                                      currentFocus.unfocus();
-                                    }
+                                    // talker.debug("event11 = " +
+                                    //     event.toString() +
+                                    //     " down " +
+                                    //     event.down.toString());
+                                    //   removeAllModals();
                                   },
                                   child: TextField(
                                     contextMenuBuilder: (BuildContext context,
