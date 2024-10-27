@@ -749,7 +749,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
             child: Container(
-              color: const Color.fromRGBO(255, 255, 255, 1).withOpacity(0.9),
+              color: Theme.of(context).flixColors.background.primary.withOpacity(0.9),
               child: BottomNavigationBar(
                 items: [
                   BottomNavigationBarItem(
