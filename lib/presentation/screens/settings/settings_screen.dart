@@ -45,13 +45,14 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback showConnectionInfoCallback;
   final VoidCallback goManualAddCallback;
   final VoidCallback goDonateCallback;
+  final VoidCallback goQACallback;
 
   const SettingsScreen(
       {super.key,
       required this.crossDeviceCallback,
       required this.showConnectionInfoCallback,
       required this.goManualAddCallback,
-      required this.goDonateCallback});
+      required this.goDonateCallback, required this.goQACallback});
 
   @override
   State<StatefulWidget> createState() {
@@ -643,6 +644,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
+
+                  
              Padding(
                       padding: const EdgeInsets.only(
                           left: 16,
@@ -660,6 +663,23 @@ class SettingsScreenState extends State<SettingsScreen> {
                           })),
 
 
+                 
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 16, top: 8, right: 16),
+                      child: ValueListenableBuilder<String>(
+                        valueListenable: version,
+                        builder: (BuildContext context, String value,
+                            Widget? child) {
+                          return ClickableItem(
+                              label: '软件帮助',
+                              iconPath: 'assets/images/qa.svg',
+                              bottomRadius: false,
+                              onClick: widget.goQACallback);
+                        },
+                      ),
+                    ),
+                  
 
              Padding(
               padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
@@ -690,47 +710,9 @@ class SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-              Padding(
-                    padding: const EdgeInsets.only(
-                        left: 20, top: 20, right: 20, bottom: 4),
-                    child: Text(
-                      S.of(context).help_title,
-                      style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.normal,
-                              color:
-                                  Theme.of(context).flixColors.text.secondary)
-                          .fix(),
-                    ),
-                  ),
+             
                   
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 16, right: 16, bottom: 10),
-                    child: QA(
-                        question: S.of(context).help_q_1,
-                        answer: S.of(context).help_a_1),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 16, right: 16, bottom: 10),
-                    child: QA(
-                        question: S.of(context).help_q_2,
-                        answer: S.of(context).help_a_2),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 16, right: 16, bottom: 10),
-                    child: QA(
-                        question: S.of(context).help_q_3,
-                        answer: S.of(context).help_a_3),
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16, right: 16, bottom: 10),
-                      child: QA(
-                          question: S.of(context).help_q_4,
-                          answer: S.of(context).help_a_4)),
+               
           ],
         ),
       ),

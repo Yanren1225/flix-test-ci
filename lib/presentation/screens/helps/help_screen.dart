@@ -33,7 +33,7 @@ class HelpScreen extends StatefulWidget {
   HelpScreen(
       {super.key,
       required this.goVersionScreen,
-      required this.goDonateCallback});
+      required this.goDonateCallback, required Null Function() goQACallback});
 
   @override
   State<StatefulWidget> createState() => HelpScreenState();
@@ -97,7 +97,9 @@ class HelpScreenState extends BaseScreenState<HelpScreen>
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.search),
                   filled: true,
-                  fillColor: Theme.of(context).flixColors.background.primary,
+                  fillColor: Theme.of(context).flixColors.background.primary, 
+                  hoverColor: Colors.transparent, 
+                  focusColor: Theme.of(context).flixColors.background.primary,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                     borderSide: BorderSide.none,
@@ -131,7 +133,9 @@ class HelpScreenState extends BaseScreenState<HelpScreen>
               future: _fetchFilesWithTimeFromDatabase(), 
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black), // 设置颜色为黑色
+                  ),);
                 }
 
                 if (snapshot.hasError) {
@@ -331,7 +335,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen>
             title,
             style: TextStyle(
               color: isSelected
-                  ? const Color.fromRGBO(0, 122, 255, 1)
+                  ? Theme.of(context).flixColors.text.primary
                   : Theme.of(context).flixColors.text.secondary,
             ),
           ),

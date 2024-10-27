@@ -38,6 +38,7 @@ import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
 import 'package:flix/presentation/screens/helps/donate_us.dart';
 import 'package:flix/presentation/screens/helps/help_screen.dart';
+import 'package:flix/presentation/screens/helps/qa.dart';
 import 'package:flix/presentation/screens/intro_screen.dart';
 import 'package:flix/presentation/screens/paircode/add_device_screen.dart';
 import 'package:flix/presentation/screens/paircode/pair_code_screen.dart';
@@ -858,7 +859,12 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                     builder: (context) => DonateUSScreen(
                           showBack: true,
                         )));
-          },
+          }, goQACallback: () { Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => QAScreen(
+                          showBack: true,
+                        ))); },
         );
       case 2:
        return SettingsScreen(
@@ -887,7 +893,12 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                     builder: (context) => DonateUSScreen(
                           showBack: true,
                         )));
-          },
+          }, goQACallback: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => QAScreen(
+                          showBack: true,
+                        ))); },
         );
        
       default:
@@ -1019,6 +1030,13 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               );
             });
           },
+          goQACallback: () {
+            setState(() {
+              thirdWidget = QAScreen(
+                showBack: false,
+              );
+            });
+          },
         );
       case 2:
        return SettingsScreen(crossDeviceCallback: () {
@@ -1039,7 +1057,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 showBack: false,
               );
             });
-          },);
+          }, goQACallback: () {setState(() {
+              thirdWidget = QAScreen(
+                showBack: false,
+              );
+            });  },);
        
       default:
         return const Placeholder();
