@@ -4,6 +4,7 @@ import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/utils/dev_config.dart';
 import 'package:flix/utils/download_nonweb_logs.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/gestures.dart';
@@ -82,14 +83,17 @@ class AboutUSScreenState extends State<AboutUSScreen> {
 
   Widget niceToMeetU() {
     return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Text(S.of(context).help_hello,
-          style: TextStyle(
-                  color: Theme.of(context).flixColors.text.primary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400)
-              .fix()),
-    );
+        padding: const EdgeInsets.all(10.0),
+        child: GestureDetector(
+            child: Text(S.of(context).help_hello,
+                style: TextStyle(
+                        color: Theme.of(context).flixColors.text.primary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400)
+                    .fix()),
+            onTap: () {
+              DevConfig.instance.onCounter();
+            }));
   }
 
   Widget logo() {

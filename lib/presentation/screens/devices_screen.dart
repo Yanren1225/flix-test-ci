@@ -1,4 +1,3 @@
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:figma_squircle/figma_squircle.dart';
@@ -40,7 +39,11 @@ class DeviceScreen extends StatefulWidget {
   final void Function()? onViewConnectInfo;
   final void Function()? onGoManualAdd;
 
-  const DeviceScreen({super.key, required this.onDeviceSelected, this.onViewConnectInfo, this.onGoManualAdd});
+  const DeviceScreen(
+      {super.key,
+      required this.onDeviceSelected,
+      this.onViewConnectInfo,
+      this.onGoManualAdd});
 
   @override
   // ignore: no_logic_in_create_state
@@ -54,7 +57,7 @@ class _DeviceScreenState extends State<DeviceScreen>
   List<DeviceInfo> devices = List.empty(growable: true);
   final _refreshController = EasyRefreshController();
   bool isFirewallAllowed = true;
- 
+
   @override
   Widget build(BuildContext context) {
     final deviceProvider = MultiCastClientProvider.of(context, listen: true);
@@ -81,25 +84,19 @@ class _DeviceScreenState extends State<DeviceScreen>
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      GestureDetector(
-                        child:
-                        SvgPicture.asset(context.imagePath("slogan.svg")),
-                        onTap: () {
-                          DevConfig.instance.onCounter();
-                        },
-                      ),
+                      SvgPicture.asset(context.imagePath("slogan.svg")),
                       Row(
                         children: [
                           Visibility(
                             visible: true,
                             child: Container(
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle, 
+                                shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.04),  
-                                    offset: const Offset(0, 4),             
-                                    blurRadius: 6,       
+                                    color: Colors.black.withOpacity(0.04),
+                                    offset: const Offset(0, 4),
+                                    blurRadius: 6,
                                   ),
                                 ],
                               ),
@@ -107,7 +104,8 @@ class _DeviceScreenState extends State<DeviceScreen>
                                 onTap: () {
                                   _refreshDevice();
                                 },
-                                child: ClipOval( // Ensures the child respects the circular shape
+                                child: ClipOval(
+                                  // Ensures the child respects the circular shape
                                   child: SvgPicture.asset(
                                     context.imagePath("ic_refresh_menu.svg"),
                                   ),
@@ -115,73 +113,72 @@ class _DeviceScreenState extends State<DeviceScreen>
                               ),
                             ),
                           ),
-                            const SizedBox(width: 8),
-                            ModalAnchor(
-                              key: _menuKey,
-                              tag: "open_menu",
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle, 
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.04), 
-                                      offset: const Offset(0, 4),            
-                                      blurRadius: 6,                      
-                                    ),
-                                  ],
-                                ),
-                                child: SizedBox(
-                                  width: 36,
-                                  height: 36,
-                                  child: IconButton(
-                                    splashRadius: 36,
-                                    padding: EdgeInsets.zero,
-                                    icon: SvgPicture.asset(
-                                      context.imagePath("ic_open_menu.svg"),
-                                      width: 36,
-                                      height: 36,
-                                    ),
-                                    onPressed: () {
-                                      showMainMenu(
-                                        context,
-                                        'open_menu',
-                                        widget.onViewConnectInfo,
-                                        widget.onGoManualAdd,
-                                      );
-                                    },
+                          const SizedBox(width: 8),
+                          ModalAnchor(
+                            key: _menuKey,
+                            tag: "open_menu",
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.04),
+                                    offset: const Offset(0, 4),
+                                    blurRadius: 6,
                                   ),
+                                ],
+                              ),
+                              child: SizedBox(
+                                width: 36,
+                                height: 36,
+                                child: IconButton(
+                                  splashRadius: 36,
+                                  padding: EdgeInsets.zero,
+                                  icon: SvgPicture.asset(
+                                    context.imagePath("ic_open_menu.svg"),
+                                    width: 36,
+                                    height: 36,
+                                  ),
+                                  onPressed: () {
+                                    showMainMenu(
+                                      context,
+                                      'open_menu',
+                                      widget.onViewConnectInfo,
+                                      widget.onGoManualAdd,
+                                    );
+                                  },
                                 ),
                               ),
-                            )
+                            ),
+                          )
                         ],
                       )
                     ],
                   ),
                 ),
-              if (!isFirewallAllowed)
-                Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16), 
-                padding: const EdgeInsets.all(10), 
-
-                decoration:  ShapeDecoration(
-                  color: const Color(0xFFFF3B30), 
-                  shape: SmoothRectangleBorder(
-                    borderRadius: SmoothBorderRadius(
-                      cornerRadius: 15,
-                      cornerSmoothing: 0.6,
+                if (!isFirewallAllowed)
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.all(10),
+                    decoration: ShapeDecoration(
+                      color: const Color(0xFFFF3B30),
+                      shape: SmoothRectangleBorder(
+                        borderRadius: SmoothBorderRadius(
+                          cornerRadius: 15,
+                          cornerSmoothing: 0.6,
+                        ),
+                      ),
+                    ),
+                    child: const Text(
+                      '检测到防火墙未放行，可能会导致无法发现设备、传输异常等问题。',
+                      style: TextStyle(
+                        color: Colors.white, // 文本颜色
+                        fontSize: 12, // 文本字体大小
+                      ),
                     ),
                   ),
-                ),
-                child: const Text(
-                  '检测到防火墙未放行，可能会导致无法发现设备、传输异常等问题。', 
-                  style: TextStyle(
-                    color: Colors.white, // 文本颜色
-                    fontSize: 12, // 文本字体大小
-                  ),
-                ),
-              ),
                 Visibility(
-                //  visible: isMobile(),
+                  //  visible: isMobile(),
                   child: Padding(
                     padding: const EdgeInsets.only(
                         left: 16, right: 16, top: 0, bottom: 0),
@@ -321,26 +318,25 @@ class _DeviceScreenState extends State<DeviceScreen>
   }
 
   Future<bool> checkFirewall() async {
-    String exePath = Platform.resolvedExecutable.replaceAll('/', '\\').toLowerCase();
-      try {
-        var result = await Process.run(
-          'powershell',
-          [
-            '-Command',
-            '''
+    String exePath =
+        Platform.resolvedExecutable.replaceAll('/', '\\').toLowerCase();
+    try {
+      var result = await Process.run('powershell', [
+        '-Command',
+        '''
              Get-NetFirewallRule | Where-Object { \$_.DisplayName -like "flix" -and \$_.Enabled -eq "True" -and \$_.Action -eq "Allow" } | Get-NetFirewallApplicationFilter | Where-Object { \$_.Program -eq "$exePath" };
             '''
-          ]
-        );
-        if (result.stdout != null && result.stdout.toString().toLowerCase().contains(exePath)) {
-          return true;
-        } else {
-          return false;
-        }
-      } catch (e) {
+      ]);
+      if (result.stdout != null &&
+          result.stdout.toString().toLowerCase().contains(exePath)) {
+        return true;
+      } else {
         return false;
       }
+    } catch (e) {
+      return false;
     }
+  }
 
   @override
   void initState() {
@@ -366,17 +362,17 @@ class _DeviceScreenState extends State<DeviceScreen>
   Future<void> _refreshDevice() async {
     // 先隐藏防火墙提示再检查防火墙
     setState(() {
-            isFirewallAllowed = true; 
-          });
+      isFirewallAllowed = true;
+    });
     _refreshController.callRefresh(overOffset: 6);
-      if (Platform.isWindows) {
-        bool isAllowed = await checkFirewall();
-        if (mounted) {
-          setState(() {
-            isFirewallAllowed = isAllowed; 
-          });
-        }
-      } 
+    if (Platform.isWindows) {
+      bool isAllowed = await checkFirewall();
+      if (mounted) {
+        setState(() {
+          isFirewallAllowed = isAllowed;
+        });
+      }
+    }
   }
 
   @override
@@ -407,8 +403,6 @@ class _DeviceScreenState extends State<DeviceScreen>
   }
 }
 
-
-
 class HistoryItem extends StatefulWidget {
   final int index;
   final DeviceInfo historyItemInfo;
@@ -430,8 +424,8 @@ class HistoryItem extends StatefulWidget {
 }
 
 class _HistoryItemState extends State<HistoryItem> {
-  double _translateX = 0; 
-  final double _maxSlide = 70; 
+  double _translateX = 0;
+  final double _maxSlide = 70;
 
   void _handlePanUpdate(DragUpdateDetails details) {
     setState(() {
@@ -448,9 +442,9 @@ class _HistoryItemState extends State<HistoryItem> {
   void _handlePanEnd(DragEndDetails details) {
     setState(() {
       if (_translateX < -_maxSlide / 2) {
-        _translateX = -_maxSlide; 
+        _translateX = -_maxSlide;
       } else {
-        _translateX = 0; 
+        _translateX = 0;
       }
     });
   }
@@ -458,9 +452,9 @@ class _HistoryItemState extends State<HistoryItem> {
   void _handleSecondaryTapDown(TapDownDetails details) {
     setState(() {
       if (_translateX == 0) {
-        _translateX = -_maxSlide; 
+        _translateX = -_maxSlide;
       } else {
-        _translateX = 0; 
+        _translateX = 0;
       }
     });
   }
@@ -470,9 +464,9 @@ class _HistoryItemState extends State<HistoryItem> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: GestureDetector(
-        onPanUpdate: _handlePanUpdate, 
-        onPanEnd: _handlePanEnd, 
-        onSecondaryTapDown: _handleSecondaryTapDown, 
+        onPanUpdate: _handlePanUpdate,
+        onPanEnd: _handlePanEnd,
+        onSecondaryTapDown: _handleSecondaryTapDown,
         child: Stack(
           children: [
             Positioned.fill(
@@ -483,21 +477,21 @@ class _HistoryItemState extends State<HistoryItem> {
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
-                        _translateX = 0; 
+                        _translateX = 0;
                       });
-                      widget.onDelete(widget.historyItemInfo); 
+                      widget.onDelete(widget.historyItemInfo);
                     },
                     child: Container(
-                      width: 60, 
+                      width: 60,
                       height: 60,
                       decoration: ShapeDecoration(
-                        color: Theme.of(context).flixColors.background.primary, 
+                        color: Theme.of(context).flixColors.background.primary,
                         shape: SmoothRectangleBorder(
-                        borderRadius: SmoothBorderRadius(
-                          cornerRadius: 15,
-                          cornerSmoothing: 0.6,
+                          borderRadius: SmoothBorderRadius(
+                            cornerRadius: 15,
+                            cornerSmoothing: 0.6,
+                          ),
                         ),
-                      ),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -507,11 +501,11 @@ class _HistoryItemState extends State<HistoryItem> {
                             width: 20,
                             height: 20,
                           ),
-                          const SizedBox(height: 2), 
+                          const SizedBox(height: 2),
                           const Text(
-                            "删除", 
+                            "删除",
                             style: TextStyle(
-                              color: Colors.red, 
+                              color: Colors.red,
                               fontSize: 12,
                             ),
                           ),
@@ -523,16 +517,16 @@ class _HistoryItemState extends State<HistoryItem> {
               ),
             ),
             AnimatedContainer(
-              duration: const Duration(milliseconds: 200), 
-              transform: Matrix4.translationValues(_translateX, 0, 0), 
+              duration: const Duration(milliseconds: 200),
+              transform: Matrix4.translationValues(_translateX, 0, 0),
               child: InkWell(
                 onTap: widget.onTap,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16, right: 16),
                   child: SizedBox(
                     child: DecoratedBox(
-                     decoration: ShapeDecoration(
-                      shadows: [
+                      decoration: ShapeDecoration(
+                        shadows: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.04),
                             offset: const Offset(0, 4),
@@ -548,17 +542,16 @@ class _HistoryItemState extends State<HistoryItem> {
                                 : Theme.of(context).colorScheme.surface),
                         shape: SmoothRectangleBorder(
                           borderRadius: SmoothBorderRadius(
-                            cornerRadius: 15,  
-                            cornerSmoothing: 0.6,  
+                            cornerRadius: 15,
+                            cornerSmoothing: 0.6,
                           ),
                           side: widget.selected
-              ? const BorderSide(
-                  color: Color.fromRGBO(0, 122, 255, 1),
-                  width: 1.4,
-                )
-              : BorderSide.none,
+                              ? const BorderSide(
+                                  color: Color.fromRGBO(0, 122, 255, 1),
+                                  width: 1.4,
+                                )
+                              : BorderSide.none,
                         ),
-                        
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(13),
@@ -567,23 +560,33 @@ class _HistoryItemState extends State<HistoryItem> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Image(
-                              image: Theme.of(context).brightness == Brightness.dark
+                              image: Theme.of(context).brightness ==
+                                      Brightness.dark
                                   ? AssetImage(
                                       'assets/images/dark_noconnect_${widget.historyItemInfo.icon}')
                                   : AssetImage(
                                       'assets/images/noconnect_${widget.historyItemInfo.icon}'),
-                              width: Platform.isAndroid || Platform.isIOS ? 44 : 34, 
-                              height: Platform.isAndroid || Platform.isIOS ? 44 : 34, 
+                              width: Platform.isAndroid || Platform.isIOS
+                                  ? 44
+                                  : 34,
+                              height: Platform.isAndroid || Platform.isIOS
+                                  ? 44
+                                  : 34,
                               fit: BoxFit.fill,
                             ),
-                             SizedBox(width: Platform.isAndroid || Platform.isIOS ? 12 : 10),
+                            SizedBox(
+                                width: Platform.isAndroid || Platform.isIOS
+                                    ? 12
+                                    : 10),
                             Expanded(
                               child: Text(
                                 widget.historyItemInfo.name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                 fontSize: Platform.isAndroid || Platform.isIOS ? 16 : 14, 
+                                  fontSize: Platform.isAndroid || Platform.isIOS
+                                      ? 16
+                                      : 14,
                                   color: Theme.of(context)
                                       .textTheme
                                       .bodyLarge!
