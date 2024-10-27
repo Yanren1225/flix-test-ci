@@ -179,6 +179,34 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("开启"),
         "hotspot_wifi_initializing":
             MessageLookupByLibrary.simpleMessage("正在初始化WiFi"),
+        "intro_last": MessageLookupByLibrary.simpleMessage("上一步"),
+        "intro_next": MessageLookupByLibrary.simpleMessage("继续"),
+        "intro_permission_1":
+            MessageLookupByLibrary.simpleMessage("给 Flix 必要的权限"),
+        "intro_permission_2":
+            MessageLookupByLibrary.simpleMessage("为了保证软件的正常使用，我们需要向你申请\n以下权限："),
+        "intro_permission_3a":
+            MessageLookupByLibrary.simpleMessage("打开和关闭WIFI"),
+        "intro_permission_3b": MessageLookupByLibrary.simpleMessage("扫描附近的设备"),
+        "intro_permission_4a": MessageLookupByLibrary.simpleMessage("存储"),
+        "intro_permission_4b": MessageLookupByLibrary.simpleMessage("保存接收到的文件"),
+        "intro_permission_5a": MessageLookupByLibrary.simpleMessage("通知"),
+        "intro_permission_5b": MessageLookupByLibrary.simpleMessage("接收新文件通知"),
+        "intro_permission_6a": MessageLookupByLibrary.simpleMessage("定位"),
+        "intro_permission_6b": MessageLookupByLibrary.simpleMessage("获取网络名称"),
+        "intro_permission_7a": MessageLookupByLibrary.simpleMessage("相机"),
+        "intro_permission_7b": MessageLookupByLibrary.simpleMessage("扫描二维码"),
+        "intro_permission_8a": MessageLookupByLibrary.simpleMessage("已阅读并同意 "),
+        "intro_permission_8b": MessageLookupByLibrary.simpleMessage("用户协议"),
+        "intro_permission_8c": MessageLookupByLibrary.simpleMessage(" 和 "),
+        "intro_permission_8d": MessageLookupByLibrary.simpleMessage("隐私政策"),
+        "intro_permission_9": MessageLookupByLibrary.simpleMessage("开始使用"),
+        "intro_welcome_1":
+            MessageLookupByLibrary.simpleMessage("Flix，\n像聊天一样传文件。"),
+        "intro_welcome_2": MessageLookupByLibrary.simpleMessage("开始探索"),
+        "intro_wifi_1": MessageLookupByLibrary.simpleMessage("连接其他设备"),
+        "intro_wifi_2": MessageLookupByLibrary.simpleMessage(
+            "让设备处于同一网络环境下，打开 Flix，即可\n发现设备。"),
         "menu_add_manually": MessageLookupByLibrary.simpleMessage("手动添加设备"),
         "menu_add_manually_input":
             MessageLookupByLibrary.simpleMessage("手动输入添加"),

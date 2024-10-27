@@ -1,6 +1,8 @@
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 
+import '../../../l10n/l10n.dart';
+
 class IntroWelcome extends StatelessWidget {
   final VoidCallback onExplorePressed;
 
@@ -20,15 +22,15 @@ class IntroWelcome extends StatelessWidget {
                 child: Row(
                   children: [
                    
-                    const Expanded(
+                    Expanded(
                       flex: 1,
                       child: Center(
                         child: Padding(
-                          padding: EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.all(16.0),
                           child: Text(
-                            'Flix，\n像聊天一样传文件。',
+                            S.of(context).intro_welcome_1,
                             textAlign: TextAlign.left,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.normal,
                             ),
@@ -77,9 +79,9 @@ class IntroWelcome extends StatelessWidget {
                       ),
                       minimumSize: const Size(100, 50),
                     ),
-                    child: const Text(
-                      '开始探索',
-                      style: TextStyle(
+                    child: Text(
+                      S.of(context).intro_welcome_2,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.normal,
@@ -94,13 +96,13 @@ class IntroWelcome extends StatelessWidget {
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 22.0, top: 100),
+              Padding(
+                padding: const EdgeInsets.only(left: 22.0, top: 100),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Flix，\n像聊天一样传文件。',
-                    style: TextStyle(
+                    S.of(context).intro_welcome_1,
+                    style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.normal,
                     ),
@@ -141,9 +143,9 @@ class IntroWelcome extends StatelessWidget {
                       ),
                       minimumSize: const Size(100, 50),
                     ),
-                    child: const Text(
-                      '开始探索',
-                      style: TextStyle(
+                    child: Text(
+                      S.of(context).intro_welcome_2,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 17,
                         fontWeight: FontWeight.normal,

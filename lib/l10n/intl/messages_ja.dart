@@ -20,19 +20,19 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'ja';
 
-  static String m0(count) => "送信([X 4 X])";
+  static String m0(count) => "送信(${count})";
 
-  static String m1(time) => "昨日[X 3 X]";
+  static String m1(time) => "昨日 ${time}";
 
   static String m2(device) => "${device}へ";
 
-  static String m3(error) => "フォルダを選択できませんでした:[X 8 X]";
+  static String m3(error) => "フォルダを選択できませんでした:${error}";
 
-  static String m4(platform) => "保存して[X 6 X]スイープにジャンプ";
+  static String m4(platform) => "保存して${platform} スイープにジャンプ";
 
   static String m5(newVersion) => "新バージョンv${newVersion}";
 
-  static String m6(version) => "現在のソフトウェアバージョン：v[X 8 X]";
+  static String m6(version) => "現在のソフトウェアバージョン：v${version}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{

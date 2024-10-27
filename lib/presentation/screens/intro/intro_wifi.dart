@@ -2,6 +2,8 @@ import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../../l10n/l10n.dart';
+
 class IntroWiFi extends StatelessWidget {
   final VoidCallback onBackPressed; 
   final VoidCallback onContinuePressed; 
@@ -20,25 +22,25 @@ class IntroWiFi extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                       flex: 1,
                       child: Center(
                         child: Padding(
-                          padding: EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.all(16.0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '连接其他设备',
-                                style: TextStyle(
+                                S.of(context).intro_wifi_1,
+                                style: const TextStyle(
                                   fontSize: 30,
                                 ),
                               ),
-                              SizedBox(height: 5),
+                              const SizedBox(height: 5),
                               Text(
-                                '让设备处于同一网络环境下，打开 Flix，即可\n发现设备。',
-                                 style: TextStyle(
+                                S.of(context).intro_wifi_2,
+                                 style: const TextStyle(
                                   fontSize: 16,
                                   color: Color.fromRGBO(60, 60, 67, 0.6),
                             
@@ -89,9 +91,9 @@ class IntroWiFi extends StatelessWidget {
                               ),
                             ),
                           ),
-                          child: const Text(
-                            '上一步',
-                            style: TextStyle(
+                          child: Text(
+                            S.of(context).intro_last,
+                            style: const TextStyle(
                               color: Color.fromRGBO(0, 122, 255, 1),
                               fontSize: 16,
                               fontWeight: FontWeight.normal,
@@ -114,9 +116,9 @@ class IntroWiFi extends StatelessWidget {
                               ),
                             ),
                           ),
-                          child: const Text(
-                            '继续',
-                            style: TextStyle(
+                          child: Text(
+                            S.of(context).intro_next,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.normal,
@@ -135,7 +137,7 @@ class IntroWiFi extends StatelessWidget {
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(left: 22.0, top: 100),
                 child: Align(
                   alignment: Alignment.centerLeft,
@@ -144,12 +146,12 @@ class IntroWiFi extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '连接其他设备',
-                        style: TextStyle(fontSize: 30),
+                        S.of(context).intro_wifi_1,
+                        style: const TextStyle(fontSize: 30),
                       ),
                       Text(
-                        '让设备处于同一网络环境下，打开 Flix，即可发现设备。',
-                         style: TextStyle(
+                        S.of(context).intro_wifi_2,
+                         style: const TextStyle(
                                   fontSize: 16,
                                   color: Color.fromRGBO(60, 60, 67, 0.6),
                             
@@ -189,9 +191,9 @@ class IntroWiFi extends StatelessWidget {
                               ),
                             ),
                           ),
-                          child: const Text(
-                            '上一步',
-                            style: TextStyle(
+                          child: Text(
+                            S.of(context).intro_last,
+                            style: const TextStyle(
                               color: Color.fromRGBO(0, 122, 255, 1),
                               fontSize: 17,
                             ),
@@ -215,9 +217,9 @@ class IntroWiFi extends StatelessWidget {
                               ),
                             ),
                           ),
-                          child: const Text(
-                            '继续',
-                            style: TextStyle(
+                          child: Text(
+                            S.of(context).intro_next,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 17,
                             ),

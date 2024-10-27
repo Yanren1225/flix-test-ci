@@ -32,7 +32,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m5(newVersion) => "New version v${newVersion}";
 
-  static String m6(version) => "Current software version: v ${version}";
+  static String m6(version) => "Current software version: v${version}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -57,16 +57,16 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("No data available"),
         "bubbles_downloaded":
             MessageLookupByLibrary.simpleMessage("Downloaded"),
-        "bubbles_menu_copy": MessageLookupByLibrary.simpleMessage("copy"),
-        "bubbles_menu_delete": MessageLookupByLibrary.simpleMessage("delete"),
-        "bubbles_menu_forward": MessageLookupByLibrary.simpleMessage("forward"),
+        "bubbles_menu_copy": MessageLookupByLibrary.simpleMessage("Copy"),
+        "bubbles_menu_delete": MessageLookupByLibrary.simpleMessage("Delete"),
+        "bubbles_menu_forward": MessageLookupByLibrary.simpleMessage("Forward"),
         "bubbles_menu_free_copy":
             MessageLookupByLibrary.simpleMessage("Free copying"),
         "bubbles_menu_location":
-            MessageLookupByLibrary.simpleMessage("file location"),
+            MessageLookupByLibrary.simpleMessage("Location"),
         "bubbles_menu_multiple":
             MessageLookupByLibrary.simpleMessage("Multiple Choice"),
-        "bubbles_menu_open": MessageLookupByLibrary.simpleMessage("file open"),
+        "bubbles_menu_open": MessageLookupByLibrary.simpleMessage("Open"),
         "bubbles_menu_save_as": MessageLookupByLibrary.simpleMessage("Save as"),
         "bubbles_receive_cancel":
             MessageLookupByLibrary.simpleMessage("Cancelled"),
@@ -95,10 +95,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "device_ap_connected":
             MessageLookupByLibrary.simpleMessage("Connected already"),
         "device_delete": MessageLookupByLibrary.simpleMessage("delete"),
-        "device_name_input": MessageLookupByLibrary.simpleMessage(
-            "Enter the local machine name"),
+        "device_name_input":
+            MessageLookupByLibrary.simpleMessage("Enter the local name"),
         "device_name_input_action":
-            MessageLookupByLibrary.simpleMessage("complete"),
+            MessageLookupByLibrary.simpleMessage("Complete"),
         "device_no_network":
             MessageLookupByLibrary.simpleMessage("Network not connected"),
         "device_offline":
@@ -111,7 +111,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Send"),
         "dialog_confirm_send_subtitle": m2,
         "dialog_confirm_send_title":
-            MessageLookupByLibrary.simpleMessage("send files"),
+            MessageLookupByLibrary.simpleMessage("Send files"),
         "dialog_exit_button": MessageLookupByLibrary.simpleMessage("Exit"),
         "dialog_exit_subtitle": MessageLookupByLibrary.simpleMessage(
             "After exiting, it will not be detected by nearby devices."),
@@ -119,7 +119,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "dialog_new_version_button":
             MessageLookupByLibrary.simpleMessage("Upgrade"),
         "dialog_new_version_subtitle": MessageLookupByLibrary.simpleMessage(
-            "Suggest upgrading to a new version for a better experience"),
+            "Upgrading to a new version for a better experience~"),
         "dialog_new_version_title":
             MessageLookupByLibrary.simpleMessage("Update available"),
         "file_pick_error": m3,
@@ -130,10 +130,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "file_pick_error_20": MessageLookupByLibrary.simpleMessage(
             "Click \'Open\' to select a folder"),
         "help_a_1": MessageLookupByLibrary.simpleMessage(
-            "Please confirm that the sending and receiving devices are in the same network state. For example, using the same WIFI or connecting to other devices using a local hotspot."),
+            "Please confirm that the sending and receiving devices are in the same network state. For example, using the same WiFi or connecting to other devices using a local hotspot."),
         "help_a_2": MessageLookupByLibrary.simpleMessage("Never."),
         "help_a_3": MessageLookupByLibrary.simpleMessage(
-            "请先按照以下步骤，尝试将flix添加到Windows网络防火墙白名单中：\n1. 搜索「允许应用通过Windows防火墙」\n2. 点击「更改设置」\n3. 点击「允许其他应用」\n4. 添加flix.exe路径（C:\\Users\\[用户名]\\AppData\\Roaming\\Flix\\Flix\\flix.exe或C:\\Program Files\\Flix\\flix.exe）\n5. 点击「添加」返回到上一页面\n6. 查看列表中的flix项，勾选「专用」和「公用」\n7. 保存\nIf the above steps still cannot be received, please contact us."),
+            "Please first follow the steps below to try adding flix to the Windows network firewall whitelist:\n1. Search for \'Allow apps to pass through Windows Firewall\'\n2. Click on \'Change Settings\'\n3. Click on \'Allow Other Apps\'\n4. Add the path to flix.exe (C:\\Users\\[username]\\AppData\\Roaming\\Flix\\Flix\\flix.exe or C:\\Program Files\\Flix\\ flix.exe)\n5. Click \"Add\" and return to the previous page\n6. Check the flix items in the list and select \"Private\" and \"Public\"\n7. Save\nIf the above steps still cannot be received, please contact us."),
         "help_a_4": MessageLookupByLibrary.simpleMessage(
             "Please ensure that the PC and other devices are under the same subnet, meaning that their direct upper layer devices are on the same router. If the PC is connected to the optical modem, other devices connected to the router via WiFi will not be able to receive files properly."),
         "help_about": MessageLookupByLibrary.simpleMessage("About US"),
@@ -151,15 +151,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "help_donate_wechat": MessageLookupByLibrary.simpleMessage("WeChat"),
         "help_finally":
             MessageLookupByLibrary.simpleMessage("Finally, you can also"),
-        "help_hello": MessageLookupByLibrary.simpleMessage(
-            "👋 Hello. Nice to meet you.!"),
+        "help_hello":
+            MessageLookupByLibrary.simpleMessage("👋 Hello. Nice to meet you!"),
         "help_join_qq": MessageLookupByLibrary.simpleMessage(
             "Welcome to join the QQ group and contact us~\n"),
-        "help_latest_version": MessageLookupByLibrary.simpleMessage(
-            "It is already the latest version"),
+        "help_latest_version":
+            MessageLookupByLibrary.simpleMessage("No newer version"),
         "help_new_version": m5,
         "help_q_1": MessageLookupByLibrary.simpleMessage(
-            "Can\'t find devices in the list?"),
+            "Can\'t find your devices in the list?"),
         "help_q_2": MessageLookupByLibrary.simpleMessage(
             "Will transferring files consume data?"),
         "help_q_3": MessageLookupByLibrary.simpleMessage(
@@ -168,18 +168,16 @@ class MessageLookup extends MessageLookupByLibrary {
             "Can\'t PC receive/send files when using Ethernet cable?"),
         "help_q_title":
             MessageLookupByLibrary.simpleMessage("About Connection"),
-        "help_qq_1": MessageLookupByLibrary.simpleMessage("User QQ Group 1:\n"),
-        "help_qq_2":
-            MessageLookupByLibrary.simpleMessage("\nUser QQ Group 2:\n"),
-        "help_qq_3":
-            MessageLookupByLibrary.simpleMessage("\nUser QQ Group 3:\n"),
+        "help_qq_1": MessageLookupByLibrary.simpleMessage("QQ Group 1:\n"),
+        "help_qq_2": MessageLookupByLibrary.simpleMessage("\nQQ Group 2:\n"),
+        "help_qq_3": MessageLookupByLibrary.simpleMessage("\nQQ Group 3:\n"),
         "help_recommend":
             MessageLookupByLibrary.simpleMessage("👍 Recommend to friends"),
         "help_sponsor": MessageLookupByLibrary.simpleMessage(
             "Click me to sponsor this project"),
         "help_thanks": MessageLookupByLibrary.simpleMessage(
             ", thank you very much for supporting our continuous development 🙏"),
-        "help_title": MessageLookupByLibrary.simpleMessage("App Help"),
+        "help_title": MessageLookupByLibrary.simpleMessage("Help"),
         "help_version": m6,
         "homepage_select_device":
             MessageLookupByLibrary.simpleMessage("Please select a device"),
@@ -212,7 +210,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "hotspot_info_password":
             MessageLookupByLibrary.simpleMessage("Hotspot password:"),
         "hotspot_info_ssid":
-            MessageLookupByLibrary.simpleMessage("Hotspot Name:"),
+            MessageLookupByLibrary.simpleMessage("Hotspot SSID:"),
         "hotspot_initializing":
             MessageLookupByLibrary.simpleMessage("Initializing hotspot"),
         "hotspot_missing_permission": MessageLookupByLibrary.simpleMessage(
@@ -229,13 +227,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "hotspot_wifi_initializing":
             MessageLookupByLibrary.simpleMessage("Initializing WiFi"),
         "menu_add_manually":
-            MessageLookupByLibrary.simpleMessage("Manually adding devices"),
+            MessageLookupByLibrary.simpleMessage("Manually add devices"),
         "menu_add_manually_input":
-            MessageLookupByLibrary.simpleMessage("Manually input and add"),
+            MessageLookupByLibrary.simpleMessage("Manually add devices"),
         "menu_add_this_device":
             MessageLookupByLibrary.simpleMessage("Add this device"),
         "menu_hotspot": MessageLookupByLibrary.simpleMessage("My hotspot code"),
-        "menu_scan": MessageLookupByLibrary.simpleMessage("scan"),
+        "menu_scan": MessageLookupByLibrary.simpleMessage("Scan"),
         "navigation_config": MessageLookupByLibrary.simpleMessage("Configure"),
         "navigation_help": MessageLookupByLibrary.simpleMessage("Help"),
         "navigation_send": MessageLookupByLibrary.simpleMessage("Transfer"),
@@ -250,9 +248,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "paircode_add_failed":
             MessageLookupByLibrary.simpleMessage("Add failed"),
         "paircode_add_manually":
-            MessageLookupByLibrary.simpleMessage("Manually input and add"),
-        "paircode_add_port":
-            MessageLookupByLibrary.simpleMessage("Network port"),
+            MessageLookupByLibrary.simpleMessage("Manually add devices"),
+        "paircode_add_port": MessageLookupByLibrary.simpleMessage("Port"),
         "paircode_add_success":
             MessageLookupByLibrary.simpleMessage("Added successfully"),
         "paircode_dialog_add_device":
@@ -261,10 +258,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Retry"),
         "paircode_dialog_adding_device":
             MessageLookupByLibrary.simpleMessage("Adding device…"),
-        "paircode_local_IP":
-            MessageLookupByLibrary.simpleMessage("Local IP address"),
+        "paircode_local_IP": MessageLookupByLibrary.simpleMessage("Local IP"),
         "paircode_local_port":
-            MessageLookupByLibrary.simpleMessage("Local network port"),
+            MessageLookupByLibrary.simpleMessage("Local port"),
         "paircode_scan_to_add": MessageLookupByLibrary.simpleMessage(
             "Scan to add this device with Flix"),
         "paircode_toast_config_incorrect":
@@ -273,9 +269,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "pick_one": MessageLookupByLibrary.simpleMessage("Select a device"),
         "qr_no_camera_permission":
             MessageLookupByLibrary.simpleMessage("No camera permission"),
-        "qr_scan": MessageLookupByLibrary.simpleMessage("scan"),
+        "qr_scan": MessageLookupByLibrary.simpleMessage("Scan"),
         "qr_scan_tip": MessageLookupByLibrary.simpleMessage(
-            "Open the Flix QR code and quickly establish a hotspot connection."),
+            "Open the Flix QR code and scan to quickly establish a hotspot connection."),
         "search": MessageLookupByLibrary.simpleMessage("search"),
         "setting_accessibility":
             MessageLookupByLibrary.simpleMessage("Auxiliary functions"),
@@ -288,18 +284,19 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Add this device"),
         "setting_accessibility_add_self_des": MessageLookupByLibrary.simpleMessage(
             "View the connection information of this device to manually add on other devices"),
-        "setting_advances": MessageLookupByLibrary.simpleMessage("Advanced"),
+        "setting_advances":
+            MessageLookupByLibrary.simpleMessage("Advanced functions"),
         "setting_auto_start": MessageLookupByLibrary.simpleMessage(
             "Automatically start upon startup"),
         "setting_confirm_clean_cache":
-            MessageLookupByLibrary.simpleMessage("Clear Cache"),
+            MessageLookupByLibrary.simpleMessage("Clear cache"),
         "setting_confirm_clean_cache_action":
             MessageLookupByLibrary.simpleMessage("Clear"),
         "setting_confirm_clean_cache_subtitle":
             MessageLookupByLibrary.simpleMessage(
                 "Due to system limitations, sent files may be cached. Clearing the cache may interrupt the sending of files and result in some sent files being unable to preview. Clearing the cache does not affect received files"),
         "setting_cross_device_clipboard":
-            MessageLookupByLibrary.simpleMessage("Cross-device Clipboard"),
+            MessageLookupByLibrary.simpleMessage("Cross device Clipboard"),
         "setting_cross_device_clipboard_des":
             MessageLookupByLibrary.simpleMessage(
                 "After linking devices, copied text can be shared"),
@@ -316,7 +313,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage(
                 "Enter the 4-digit number on the other device to enable cross device clipboard. Effective within 5 minutes."),
         "setting_cross_device_clipboard_popup_self_paircode":
-            MessageLookupByLibrary.simpleMessage("Pair Code"),
+            MessageLookupByLibrary.simpleMessage("Pair code"),
         "setting_cross_device_clipboard_popup_self_paircode_subtitle":
             MessageLookupByLibrary.simpleMessage(
                 "The other party can enter your pair code to enable cross device clipboard. Effective within 5 minutes."),
@@ -329,15 +326,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "setting_device_name":
             MessageLookupByLibrary.simpleMessage("Local name"),
         "setting_exit": MessageLookupByLibrary.simpleMessage("Exit"),
-        "setting_more": MessageLookupByLibrary.simpleMessage("more"),
+        "setting_more": MessageLookupByLibrary.simpleMessage("More"),
         "setting_more_clean_cache":
             MessageLookupByLibrary.simpleMessage("Clear cache"),
         "setting_more_dark_mode":
-            MessageLookupByLibrary.simpleMessage("Dark Mode"),
+            MessageLookupByLibrary.simpleMessage("Dark mode"),
         "setting_more_dark_mode_off":
-            MessageLookupByLibrary.simpleMessage("Always closed"),
+            MessageLookupByLibrary.simpleMessage("keep off"),
         "setting_more_dark_mode_on":
-            MessageLookupByLibrary.simpleMessage("Always open"),
+            MessageLookupByLibrary.simpleMessage("Keep on"),
         "setting_more_dark_mode_sync":
             MessageLookupByLibrary.simpleMessage("Follow the system"),
         "setting_more_new_discover": MessageLookupByLibrary.simpleMessage(
@@ -346,27 +343,27 @@ class MessageLookup extends MessageLookupByLibrary {
             "Enabling it can solve the problem of not being able to detect the device after turning on the hotspot. If you encounter compatibility issues, please try turning off this switch and provide us with feedback ❤️"),
         "setting_receive": MessageLookupByLibrary.simpleMessage("Receive"),
         "setting_receive_auto":
-            MessageLookupByLibrary.simpleMessage("Automatic save"),
+            MessageLookupByLibrary.simpleMessage("Automatic receive"),
         "setting_receive_auto_des": MessageLookupByLibrary.simpleMessage(
             "The received files will be automatically saved"),
         "setting_receive_folder":
-            MessageLookupByLibrary.simpleMessage("File receiving directory"),
+            MessageLookupByLibrary.simpleMessage("File saving dictionary"),
         "setting_receive_to_album": MessageLookupByLibrary.simpleMessage(
             "Automatically save pictures and videos to the album"),
         "setting_receive_to_album_des": MessageLookupByLibrary.simpleMessage(
-            "Do not save to receive directory"),
-        "setting_title": MessageLookupByLibrary.simpleMessage("Settings"),
+            "Do not save to saving directory"),
+        "setting_title": MessageLookupByLibrary.simpleMessage("Configurations"),
         "share_flix":
             MessageLookupByLibrary.simpleMessage("Recommend to friends"),
-        "share_flix_action": MessageLookupByLibrary.simpleMessage("complete"),
+        "share_flix_action": MessageLookupByLibrary.simpleMessage("Complete"),
         "share_flix_copied":
-            MessageLookupByLibrary.simpleMessage("Copy to clipboard"),
+            MessageLookupByLibrary.simpleMessage("Copied to clipboard"),
         "share_flix_website": MessageLookupByLibrary.simpleMessage(
-            "Official website (click to copy): flix.center"),
+            "Website (click to copy): flix.center"),
         "toast_copied":
             MessageLookupByLibrary.simpleMessage("Copy to clipboard"),
         "toast_msg_empty_folder": MessageLookupByLibrary.simpleMessage(
-            "The folder is empty, please send to cancel"),
+            "The folder is empty, send cancelled"),
         "tray_menu_display": MessageLookupByLibrary.simpleMessage("Show"),
         "tray_menu_exit": MessageLookupByLibrary.simpleMessage("Exit"),
         "tray_menu_hide": MessageLookupByLibrary.simpleMessage("Hide"),

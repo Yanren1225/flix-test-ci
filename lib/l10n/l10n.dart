@@ -1969,6 +1969,236 @@ class S {
       args: [],
     );
   }
+
+  /// `上一步`
+  String get intro_last {
+    return Intl.message(
+      '上一步',
+      name: 'intro_last',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `继续`
+  String get intro_next {
+    return Intl.message(
+      '继续',
+      name: 'intro_next',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Flix，\n像聊天一样传文件。`
+  String get intro_welcome_1 {
+    return Intl.message(
+      'Flix，\n像聊天一样传文件。',
+      name: 'intro_welcome_1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `开始探索`
+  String get intro_welcome_2 {
+    return Intl.message(
+      '开始探索',
+      name: 'intro_welcome_2',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `给 Flix 必要的权限`
+  String get intro_permission_1 {
+    return Intl.message(
+      '给 Flix 必要的权限',
+      name: 'intro_permission_1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `为了保证软件的正常使用，我们需要向你申请\n以下权限：`
+  String get intro_permission_2 {
+    return Intl.message(
+      '为了保证软件的正常使用，我们需要向你申请\n以下权限：',
+      name: 'intro_permission_2',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `打开和关闭WIFI`
+  String get intro_permission_3a {
+    return Intl.message(
+      '打开和关闭WIFI',
+      name: 'intro_permission_3a',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `扫描附近的设备`
+  String get intro_permission_3b {
+    return Intl.message(
+      '扫描附近的设备',
+      name: 'intro_permission_3b',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `存储`
+  String get intro_permission_4a {
+    return Intl.message(
+      '存储',
+      name: 'intro_permission_4a',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `保存接收到的文件`
+  String get intro_permission_4b {
+    return Intl.message(
+      '保存接收到的文件',
+      name: 'intro_permission_4b',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `通知`
+  String get intro_permission_5a {
+    return Intl.message(
+      '通知',
+      name: 'intro_permission_5a',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `接收新文件通知`
+  String get intro_permission_5b {
+    return Intl.message(
+      '接收新文件通知',
+      name: 'intro_permission_5b',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `定位`
+  String get intro_permission_6a {
+    return Intl.message(
+      '定位',
+      name: 'intro_permission_6a',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `获取网络名称`
+  String get intro_permission_6b {
+    return Intl.message(
+      '获取网络名称',
+      name: 'intro_permission_6b',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `相机`
+  String get intro_permission_7a {
+    return Intl.message(
+      '相机',
+      name: 'intro_permission_7a',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `扫描二维码`
+  String get intro_permission_7b {
+    return Intl.message(
+      '扫描二维码',
+      name: 'intro_permission_7b',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `已阅读并同意 `
+  String get intro_permission_8a {
+    return Intl.message(
+      '已阅读并同意 ',
+      name: 'intro_permission_8a',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `用户协议`
+  String get intro_permission_8b {
+    return Intl.message(
+      '用户协议',
+      name: 'intro_permission_8b',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// ` 和 `
+  String get intro_permission_8c {
+    return Intl.message(
+      ' 和 ',
+      name: 'intro_permission_8c',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `隐私政策`
+  String get intro_permission_8d {
+    return Intl.message(
+      '隐私政策',
+      name: 'intro_permission_8d',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `开始使用`
+  String get intro_permission_9 {
+    return Intl.message(
+      '开始使用',
+      name: 'intro_permission_9',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `连接其他设备`
+  String get intro_wifi_1 {
+    return Intl.message(
+      '连接其他设备',
+      name: 'intro_wifi_1',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `让设备处于同一网络环境下，打开 Flix，即可\n发现设备。`
+  String get intro_wifi_2 {
+    return Intl.message(
+      '让设备处于同一网络环境下，打开 Flix，即可\n发现设备。',
+      name: 'intro_wifi_2',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
