@@ -25,7 +25,7 @@
   "@help_qq_1": {},
   "help_q_3": "Windows側でファイルを受信/送信できませんか？",
   "@help_q_3": {},
-  "bubbles_menu_delete": "削除＃サクジョ＃",
+  "bubbles_menu_delete": "削除",
   "@bubbles_menu_delete": {},
   "hotspot_wifi_disabled": "WiFiがオープンしていません",
   "@hotspot_wifi_disabled": {},
@@ -67,7 +67,7 @@
   "@setting_cross_device_clipboard_other_devices": {},
   "hotspot_get_ap_info_failed_action": "再試行",
   "@hotspot_get_ap_info_failed_action": {},
-  "setting_more_dark_mode_sync": "フォローアップシステム",
+  "setting_more_dark_mode_sync": "システムに合わせる",
   "@setting_more_dark_mode_sync": {},
   "bubbles_wait_for_receive": "受入保留中",
   "@bubbles_wait_for_receive": {},
@@ -89,7 +89,7 @@
   "@setting_cross_device_clipboard_too_low_to_pair": {},
   "widget_delete_msg_history_subtitle": "ファイルが転送中の場合、削除メッセージは転送を中断します",
   "@widget_delete_msg_history_subtitle": {},
-  "device_delete": "削除＃サクジョ＃",
+  "device_delete": "削除",
   "@device_delete": {},
   "toast_copied": "クリップボードにコピーされました",
   "@toast_copied": {},
@@ -99,7 +99,7 @@
   "@qr_no_camera_permission": {},
   "pick_one": "デバイスを選択",
   "@pick_one": {},
-  "dialog_confirm_send_subtitle": "[X 1 X]へ",
+  "dialog_confirm_send_subtitle": "{device}へ",
   "@dialog_confirm_send_subtitle": {
     "placeholders": {
       "device": {
@@ -111,7 +111,7 @@
   "@setting_title": {},
   "paircode_toast_config_incorrect": "IPまたはポートが正しくありません",
   "@paircode_toast_config_incorrect": {},
-  "help_latest_version": "最新バージョン",
+  "help_latest_version": "最新バージョンです",
   "@help_latest_version": {},
   "bubbles_dir_no_data": "データなし",
   "@bubbles_dir_no_data": {},
@@ -135,7 +135,7 @@
   "@device_offline": {},
   "help_qq_3": "\nユーザQQ群3：\n",
   "@help_qq_3": {},
-  "widget_delete_msg_history_action": "削除＃サクジョ＃",
+  "widget_delete_msg_history_action": "削除",
   "@widget_delete_msg_history_action": {},
   "setting_accessibility": "アクセシビリティ",
   "@setting_accessibility": {},
@@ -317,7 +317,7 @@
   "@bubbles_menu_location": {},
   "qr_scan": "さっと動かす",
   "@qr_scan": {},
-  "search": "検索けんさく",
+  "search": "検索",
   "@search": {},
   "paircode_dialog_add_device_action": "再試行",
   "@paircode_dialog_add_device_action": {},
@@ -387,7 +387,7 @@
   "@hotspot_my_qrcode": {},
   "help_q_title": "接続について",
   "@help_q_title": {},
-  "help_new_version": "新バージョンv[X 5 X]",
+  "help_new_version": "新バージョンv{newVersion}",
   "@help_new_version": {
     "placeholders": {
       "newVersion": {
@@ -395,7 +395,7 @@
       }
     }
   },
-  "setting_more_dark_mode": "ダークカラーモード",
+  "setting_more_dark_mode": "ダークモード",
   "@setting_more_dark_mode": {},
   "help_donate_title": "寄付する",
   "@help_donate_title": {},
@@ -415,7 +415,7 @@
   "@tray_menu_exit": {},
   "setting_advances": "ステップ機能",
   "@setting_advances": {},
-  "widget_multiple_delete": "削除＃サクジョ＃",
+  "widget_multiple_delete": "削除",
   "@widget_multiple_delete": {},
   "paircode_add_device": "デバイスの追加",
   "@paircode_add_device": {},
