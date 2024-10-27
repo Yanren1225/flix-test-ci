@@ -46,13 +46,14 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback goManualAddCallback;
   final VoidCallback goDonateCallback;
   final VoidCallback goQACallback;
+  final VoidCallback goVersionScreen;
 
   const SettingsScreen(
       {super.key,
       required this.crossDeviceCallback,
       required this.showConnectionInfoCallback,
       required this.goManualAddCallback,
-      required this.goDonateCallback, required this.goQACallback});
+      required this.goDonateCallback, required this.goQACallback, required this.goVersionScreen});
 
   @override
   State<StatefulWidget> createState() {
@@ -504,6 +505,145 @@ class SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
 
+
+
+
+
+  Padding(
+                      padding:
+                          const EdgeInsets.only(left: 16, top: 16, right: 16),
+                      child: ValueListenableBuilder<String>(
+                        valueListenable: version,
+                        builder: (BuildContext context, String value,
+                            Widget? child) {
+                          return ClickableItem(
+                              label: '软件帮助',
+                              iconPath: 'assets/images/qa.svg',
+                              bottomRadius: false,
+                              onClick: widget.goQACallback);
+                        },
+                      ),
+                    ),
+
+
+              Visibility(
+                    visible: !Platform.isIOS,
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.only(left: 16, top: 0, right: 16),
+                      child: ValueListenableBuilder<String>(
+                        valueListenable: version,
+                        builder: (BuildContext context, String value,
+                            Widget? child) {
+                          return ClickableItem(
+                              label: S.of(context).help_donate,
+                              iconPath: 'assets/images/donate.svg',
+                              bottomRadius: false,
+                              topRadius: false,
+                              onClick: widget.goDonateCallback);
+                        },
+                      ),
+                    ),
+                  ),
+
+                  
+             Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          bottom: 16,
+                          top:  0),
+                      child: ClickableItem(
+                          label: S.of(context).help_recommend,
+                          topRadius: Platform.isIOS,
+                          iconPath: 'assets/images/suggest.svg',
+                          onClick: () {
+                            showCupertinoModalPopup(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    FlixShareBottomSheet(context));
+                          })),
+
+
+                 
+                  
+                  
+
+             Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 0),
+              child: ClickableItem(
+                label: '用户协议',
+                bottomRadius: false,
+                onClick: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const IntroAgreementPage()),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+              child: ClickableItem(
+                label: '隐私政策',
+                topRadius: Platform.isIOS,
+                onClick: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const IntroPrivacyPage()),
+                  );
+                },
+              ),
+            ),
+
+ Padding(
+              padding: const EdgeInsets.only(left: 16, top: 0, right: 16),
+              child: ValueListenableBuilder<String>(
+                valueListenable: version,
+                builder: (BuildContext context, String value, Widget? child) {
+                  return ClickableItem(
+                    label: S.of(context).help_about,
+                    tail: 'v$value',
+                    onClick: widget.goVersionScreen,
+                    iconPath: 'assets/images/about_us.svg',
+                    bottomRadius: Platform.isIOS,
+                    
+                  );
+                },
+              ),
+            ),
+
+  StreamBuilder<String?>(
+              initialData: VersionChecker.newestVersion,
+              stream: VersionChecker.newestVersionStream.stream,
+              builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                final tail = snapshot.data?.isNotEmpty == true
+                    ? S.of(context).help_new_version(snapshot.requireData ?? '')
+                    : S.of(context).help_latest_version;
+                return Visibility(
+                  visible: !Platform.isIOS,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    child: ClickableItem(
+                      label: S.of(context).help_check_update,
+                      iconPath: 'assets/images/check_update.svg',
+                      tail: tail,
+                      tailColor: snapshot.data?.isNotEmpty == true
+                          ? FlixColor.blue
+                          : Theme.of(context).flixColors.text.secondary,
+                      onClick: () {
+                        VersionChecker.checkNewVersion(context,
+                            ignorePromptCount: true);
+                      },
+                      topRadius: false,
+                    ),
+                  ),
+                );
+              },
+            ),
+
             Visibility(
               visible: DevConfig.instance.current,
               child: Column(
@@ -584,131 +724,7 @@ class SettingsScreenState extends State<SettingsScreen> {
 
 
 
-  Padding(
-              padding: const EdgeInsets.only(left: 16, top: 20, right: 16),
-              child: ValueListenableBuilder<String>(
-                valueListenable: version,
-                builder: (BuildContext context, String value, Widget? child) {
-                  return ClickableItem(
-                    label: S.of(context).help_about,
-                    tail: 'v$value',
-                    onClick: () {},
-                    bottomRadius: Platform.isIOS,
-                  );
-                },
-              ),
-            ),
-
-  StreamBuilder<String?>(
-              initialData: VersionChecker.newestVersion,
-              stream: VersionChecker.newestVersionStream.stream,
-              builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-                final tail = snapshot.data?.isNotEmpty == true
-                    ? S.of(context).help_new_version(snapshot.requireData ?? '')
-                    : S.of(context).help_latest_version;
-                return Visibility(
-                  visible: !Platform.isIOS,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: ClickableItem(
-                      label: S.of(context).help_check_update,
-                      tail: tail,
-                      tailColor: snapshot.data?.isNotEmpty == true
-                          ? FlixColor.blue
-                          : Theme.of(context).flixColors.text.secondary,
-                      onClick: () {
-                        VersionChecker.checkNewVersion(context,
-                            ignorePromptCount: true);
-                      },
-                      topRadius: false,
-                    ),
-                  ),
-                );
-              },
-            ),
-
-              Visibility(
-                    visible: !Platform.isIOS,
-                    child: Padding(
-                      padding:
-                          const EdgeInsets.only(left: 16, top: 8, right: 16),
-                      child: ValueListenableBuilder<String>(
-                        valueListenable: version,
-                        builder: (BuildContext context, String value,
-                            Widget? child) {
-                          return ClickableItem(
-                              label: S.of(context).help_donate,
-                              bottomRadius: false,
-                              onClick: widget.goDonateCallback);
-                        },
-                      ),
-                    ),
-                  ),
-
-                  
-             Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16,
-                          right: 16,
-                          bottom: 16,
-                          top:  0),
-                      child: ClickableItem(
-                          label: S.of(context).help_recommend,
-                          topRadius: Platform.isIOS,
-                          onClick: () {
-                            showCupertinoModalPopup(
-                                context: context,
-                                builder: (BuildContext context) =>
-                                    FlixShareBottomSheet(context));
-                          })),
-
-
-                 
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(left: 16, top: 8, right: 16),
-                      child: ValueListenableBuilder<String>(
-                        valueListenable: version,
-                        builder: (BuildContext context, String value,
-                            Widget? child) {
-                          return ClickableItem(
-                              label: '软件帮助',
-                              iconPath: 'assets/images/qa.svg',
-                              bottomRadius: false,
-                              onClick: widget.goQACallback);
-                        },
-                      ),
-                    ),
-                  
-
-             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
-              child: ClickableItem(
-                label: '用户协议',
-                bottomRadius: false,
-                onClick: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const IntroAgreementPage()),
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-              child: ClickableItem(
-                label: '隐私政策',
-                topRadius: Platform.isIOS,
-                onClick: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const IntroPrivacyPage()),
-                  );
-                },
-              ),
-            ),
+ 
 
              
                   

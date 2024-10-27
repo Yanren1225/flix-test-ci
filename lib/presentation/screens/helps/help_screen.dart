@@ -27,12 +27,12 @@ import '../../../l10n/l10n.dart';
 import '../../widgets/helps/flix_share_bottom_sheet.dart';
 
 class HelpScreen extends StatefulWidget {
-  final VoidCallback goVersionScreen;
+
   final VoidCallback goDonateCallback;
 
   HelpScreen(
       {super.key,
-      required this.goVersionScreen,
+     
       required this.goDonateCallback, required Null Function() goQACallback});
 
   @override

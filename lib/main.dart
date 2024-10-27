@@ -844,14 +844,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
         );
       case 1:
          return HelpScreen(
-          goVersionScreen: () {
-            Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => const AboutUSScreen(
-                          showBack: true,
-                        )));
-          },
+         
           goDonateCallback: () {
             Navigator.push(
                 context,
@@ -868,6 +861,14 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
         );
       case 2:
        return SettingsScreen(
+         goVersionScreen: () {
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => const AboutUSScreen(
+                          showBack: true,
+                        )));
+          },
           crossDeviceCallback: () {
             Navigator.push(
                 context,
@@ -1016,13 +1017,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
         );
       case 1:
         return HelpScreen(
-          goVersionScreen: () {
-            setState(() {
-              thirdWidget = const AboutUSScreen(
-                showBack: false,
-              );
-            });
-          },
+          
           goDonateCallback: () {
             setState(() {
               thirdWidget = DonateUSScreen(
@@ -1043,7 +1038,14 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           setState(() {
             thirdWidget = CrossDeviceClipboardScreen();
           });
-        }, showConnectionInfoCallback: () {
+        }, goVersionScreen: () {
+            setState(() {
+              thirdWidget = const AboutUSScreen(
+                showBack: false,
+              );
+            });
+          },
+          showConnectionInfoCallback: () {
           setState(() {
             thirdWidget = const PairCodeScreen();
           });
