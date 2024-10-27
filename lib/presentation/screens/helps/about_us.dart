@@ -1,5 +1,7 @@
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
+import 'package:flix/presentation/screens/intro/intro_agreement.dart';
+import 'package:flix/presentation/screens/intro/intro_privacy.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
@@ -49,10 +51,13 @@ class AboutUSScreenState extends State<AboutUSScreen> {
             niceToMeetU(),
             // logo(),
             brief(),
+            website(),
             participate(),
             feedbackGuide(),
             // donate(),
-            version()
+            privacy(),
+            version(),
+            
           ];
           return ListView.builder(
               physics: const AlwaysScrollableScrollPhysics(
@@ -94,6 +99,33 @@ class AboutUSScreenState extends State<AboutUSScreen> {
             onTap: () {
               DevConfig.instance.onCounter();
             }));
+  }
+
+Widget website() {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Text.rich(TextSpan(
+          children: [
+            TextSpan(text: '我们的官网：'),
+          
+            ClickableSpan('Flix.center', () {
+              final Uri url = Uri.parse('https://flix.center');
+              launchUrl(url).then((value) {
+                if (!value) {
+                  talker.error('join qq error');
+                }
+              }).onError((error, stackTrace) {
+                talker.error('join qq error', error, stackTrace);
+              });
+            }),
+          
+          ],
+          style: TextStyle(
+                  color: Theme.of(context).flixColors.text.primary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400)
+              .fix())),
+    );
   }
 
   Widget logo() {
@@ -228,6 +260,35 @@ class AboutUSScreenState extends State<AboutUSScreen> {
           ),
         ),
       ),
+    );
+  }
+
+
+  Widget privacy() {
+   return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Text.rich(TextSpan(
+          children: [
+          
+            ClickableSpan('用户协议\n', () {
+              Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const IntroAgreementPage()),);
+            }),
+            
+            ClickableSpan('隐私政策', () {
+             Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const IntroPrivacyPage()),);
+            }),
+          ],
+          style: TextStyle(
+                  color: Theme.of(context).flixColors.text.primary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400)
+              .fix())),
     );
   }
 

@@ -569,34 +569,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   
                   
 
-             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 0),
-              child: ClickableItem(
-                label: '用户协议',
-                bottomRadius: false,
-                onClick: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const IntroAgreementPage()),
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-              child: ClickableItem(
-                label: '隐私政策',
-                topRadius: Platform.isIOS,
-                onClick: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const IntroPrivacyPage()),
-                  );
-                },
-              ),
-            ),
+           
 
  Padding(
               padding: const EdgeInsets.only(left: 16, top: 0, right: 16),
