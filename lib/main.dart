@@ -29,6 +29,7 @@ import 'package:flix/domain/uri_router.dart';
 import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/domain/window/flix_window_manager.dart';
 import 'package:flix/l10n/l10n.dart';
+import 'package:flix/l10n/lang_config.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/discover/discover_manager.dart';
 import 'package:flix/network/multicast_client_provider.dart';
@@ -109,10 +110,9 @@ Future<void> main(List<String> arguments) async {
     _initUriNavigator();
     runApp(const WithForegroundTask(child: MyApp()));
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    isFirstRun = prefs.getBool('isFirstRun') ?? true; 
+    isFirstRun = prefs.getBool('isFirstRun') ?? true;
   } catch (e, s) {
     talker.error('launch error', e, s);
-
 
     runApp(MaterialApp(
         home: Center(
@@ -347,10 +347,10 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
       Future.delayed(Duration.zero, () {
         Navigator.push(
           navigatorKey.currentContext!,
-          MaterialPageRoute(builder: (context) => intropage()), 
+          MaterialPageRoute(builder: (context) => intropage()),
         );
       });
-    }  
+    }
   }
 
   @override
@@ -394,13 +394,15 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 ],
                 supportedLocales: S.delegate.supportedLocales,
                 theme: (userDarkMode ? flixDark(context) : flixLight(context)),
-
+                locale: LangConfig.instance.current,
                 // initialRoute: 'home',
                 builder: FToastBuilder(),
                 home: Stack(
                   children: [
                     const MyHomePage(title: 'Flix'),
-                    if (Platform.isMacOS || Platform.isLinux || Platform.isWindows)
+                    if (Platform.isMacOS ||
+                        Platform.isLinux ||
+                        Platform.isWindows)
                       Positioned(
                         top: 0,
                         left: 0,
@@ -410,7 +412,8 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                             windowManager.startDragging();
                           },
                           onDoubleTap: () async {
-                            bool isMaximized = await windowManager.isMaximized();
+                            bool isMaximized =
+                                await windowManager.isMaximized();
                             if (isMaximized) {
                               windowManager.restore();
                             } else {
@@ -423,29 +426,29 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                             child: AppBar(
                               title: const Text(''),
                               actions: [
-                               //  Material(
-                               //   color: Colors.transparent,
-                               //   child: InkWell(
-                               //     customBorder: RoundedRectangleBorder(
-                               //       borderRadius: BorderRadius.circular(0),
-                               //     ),
-                               //     onTap: () async {
-                               //       bool isToped = await windowManager.isAlwaysOnTop();
-                               //       if (isToped) {
-                               //         windowManager.setAlwaysOnTop(false);
-                               //       } else {
-                               //         windowManager.setAlwaysOnTop(true);
+                                //  Material(
+                                //   color: Colors.transparent,
+                                //   child: InkWell(
+                                //     customBorder: RoundedRectangleBorder(
+                                //       borderRadius: BorderRadius.circular(0),
+                                //     ),
+                                //     onTap: () async {
+                                //       bool isToped = await windowManager.isAlwaysOnTop();
+                                //       if (isToped) {
+                                //         windowManager.setAlwaysOnTop(false);
+                                //       } else {
+                                //         windowManager.setAlwaysOnTop(true);
                                 //      }
                                 //    },
-                               //     child: const Padding(
-                               //       padding: EdgeInsets.all(8.0),
-                               //       child: Icon(
-                              //          Icons.push_pin_outlined,
-                                 //       size: 14.0,
-                               //       ),
-                             //       ),
-                             //     ),
-                            //    ),
+                                //     child: const Padding(
+                                //       padding: EdgeInsets.all(8.0),
+                                //       child: Icon(
+                                //          Icons.push_pin_outlined,
+                                //       size: 14.0,
+                                //       ),
+                                //       ),
+                                //     ),
+                                //    ),
                                 Material(
                                   color: Colors.transparent,
                                   child: InkWell(
@@ -471,7 +474,8 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                                       borderRadius: BorderRadius.circular(0),
                                     ),
                                     onTap: () async {
-                                      bool isMaximized = await windowManager.isMaximized();
+                                      bool isMaximized =
+                                          await windowManager.isMaximized();
                                       if (isMaximized) {
                                         windowManager.restore();
                                       } else {
@@ -493,9 +497,11 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                                     customBorder: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(0),
                                     ),
-                                    hoverColor: const Color.fromARGB(255, 208, 24, 11).withOpacity(0.8),
+                                    hoverColor:
+                                        const Color.fromARGB(255, 208, 24, 11)
+                                            .withOpacity(0.8),
                                     onTap: () {
-                                       windowManager.hide();
+                                      windowManager.hide();
                                     },
                                     child: const Padding(
                                       padding: EdgeInsets.all(8.0),
@@ -740,26 +746,26 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
             minHeight: 70 + MediaQuery.of(context).padding.bottom),
         child: ClipRect(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0), 
+            filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
             child: Container(
-            color: const Color.fromRGBO(255, 255, 255, 1).withOpacity(0.9), 
+              color: const Color.fromRGBO(255, 255, 255, 1).withOpacity(0.9),
               child: BottomNavigationBar(
                 items: [
                   BottomNavigationBarItem(
-                      icon: SvgPicture.asset(
-                        width: 26,
-                        height: 26,
-                        'assets/images/ic_share.svg',
-                        colorFilter: ColorFilter.mode(
-                          selectedIndex == 0
-                                ? Theme.of(context).flixColors.text.primary
-                                : (Theme.of(context).brightness == Brightness.dark
-                                    ? const Color.fromRGBO(235, 235, 245, 0.3)
-                                    : const Color.fromRGBO(60, 60, 67, 0.3)),
-                            BlendMode.srcIn,
-                        ),
+                    icon: SvgPicture.asset(
+                      width: 26,
+                      height: 26,
+                      'assets/images/ic_share.svg',
+                      colorFilter: ColorFilter.mode(
+                        selectedIndex == 0
+                            ? Theme.of(context).flixColors.text.primary
+                            : (Theme.of(context).brightness == Brightness.dark
+                                ? const Color.fromRGBO(235, 235, 245, 0.3)
+                                : const Color.fromRGBO(60, 60, 67, 0.3)),
+                        BlendMode.srcIn,
                       ),
-                      label: '',
+                    ),
+                    label: '',
                   ),
                   BottomNavigationBarItem(
                       icon: SvgPicture.asset(
@@ -768,15 +774,14 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                         'assets/images/ic_config.svg',
                         colorFilter: ColorFilter.mode(
                           selectedIndex == 1
-                                ? Theme.of(context).flixColors.text.primary
-                                : (Theme.of(context).brightness == Brightness.dark
-                                    ? const Color.fromRGBO(235, 235, 245, 0.3)
-                                    : const Color.fromRGBO(60, 60, 67, 0.3)),
-                            BlendMode.srcIn,
-                          ),
+                              ? Theme.of(context).flixColors.text.primary
+                              : (Theme.of(context).brightness == Brightness.dark
+                                  ? const Color.fromRGBO(235, 235, 245, 0.3)
+                                  : const Color.fromRGBO(60, 60, 67, 0.3)),
+                          BlendMode.srcIn,
+                        ),
                       ),
-                      label: ''
-                  ),
+                      label: ''),
                   BottomNavigationBarItem(
                       icon: SvgPicture.asset(
                         width: 26,
@@ -784,28 +789,29 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                         'assets/images/ic_help.svg',
                         colorFilter: ColorFilter.mode(
                           selectedIndex == 2
-                                ? Theme.of(context).flixColors.text.primary
-                                : (Theme.of(context).brightness == Brightness.dark
-                                    ? const Color.fromRGBO(235, 235, 245, 0.3)
-                                    : const Color.fromRGBO(60, 60, 67, 0.3)),
-                            BlendMode.srcIn,
-                          ),
-                                  ),
-                                  label: ''),
+                              ? Theme.of(context).flixColors.text.primary
+                              : (Theme.of(context).brightness == Brightness.dark
+                                  ? const Color.fromRGBO(235, 235, 245, 0.3)
+                                  : const Color.fromRGBO(60, 60, 67, 0.3)),
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                      label: ''),
                 ],
-
                 currentIndex: selectedIndex,
                 selectedItemColor: Theme.of(context).flixColors.text.primary,
                 unselectedItemColor: Theme.of(context).flixColors.text.tertiary,
                 selectedFontSize: 12,
                 unselectedFontSize: 12,
-                showSelectedLabels: false, 
-                showUnselectedLabels: false, 
+                showSelectedLabels: false,
+                showUnselectedLabels: false,
                 selectedLabelStyle:
-                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
+                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)
+                        .fix(),
                 unselectedLabelStyle:
-                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 12).fix(),
-                backgroundColor: Colors.transparent, 
+                    const TextStyle(fontWeight: FontWeight.w400, fontSize: 12)
+                        .fix(),
+                backgroundColor: Colors.transparent,
                 elevation: 0,
                 onTap: (value) => setSelectedIndex(value),
               ),
@@ -900,7 +906,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                         width: 26,
                         height: 26,
                         colorFilter: ColorFilter.mode(
-                            getColor(context, 0, selectedIndex), BlendMode.srcIn),
+                            getColor(context, 0, selectedIndex),
+                            BlendMode.srcIn),
                       ),
                       label: const Text('')),
                   NavigationRailDestination(
@@ -909,7 +916,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                         width: 26,
                         height: 26,
                         colorFilter: ColorFilter.mode(
-                            getColor(context, 1, selectedIndex), BlendMode.srcIn),
+                            getColor(context, 1, selectedIndex),
+                            BlendMode.srcIn),
                       ),
                       label: const Text('')),
                   NavigationRailDestination(
@@ -918,13 +926,15 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                         width: 26,
                         height: 26,
                         colorFilter: ColorFilter.mode(
-                            getColor(context, 2, selectedIndex), BlendMode.srcIn),
+                            getColor(context, 2, selectedIndex),
+                            BlendMode.srcIn),
                       ),
                       label: const Text(''))
                 ],
                 labelType: NavigationRailLabelType.all,
                 useIndicator: true,
-                indicatorColor: Theme.of(context).flixColors.background.secondary,
+                indicatorColor:
+                    Theme.of(context).flixColors.background.secondary,
                 groupAlignment: 0.0,
                 extended: false,
                 elevation: null,
@@ -932,7 +942,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 selectedIconTheme: IconThemeData(
                     size: 26, color: Theme.of(context).flixColors.text.primary),
                 unselectedIconTheme: IconThemeData(
-                    size: 26, color: Theme.of(context).flixColors.text.tertiary),
+                    size: 26,
+                    color: Theme.of(context).flixColors.text.tertiary),
                 selectedLabelTextStyle: TextStyle(
                   color: Theme.of(context).flixColors.text.primary,
                   fontSize: 12,
@@ -943,7 +954,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                         fontSize: 12,
                         fontWeight: FontWeight.normal)
                     .fix(),
-                backgroundColor: Theme.of(context).flixColors.background.secondary,
+                backgroundColor:
+                    Theme.of(context).flixColors.background.secondary,
               ),
             ),
           ),
