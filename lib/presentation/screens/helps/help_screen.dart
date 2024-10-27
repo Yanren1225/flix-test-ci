@@ -265,7 +265,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen>
                                   horizontal: 16.0, vertical: 0),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: Theme.of(context).flixColors.background.primary,
                                   borderRadius: borderRadius,
                                  
                                 ),
