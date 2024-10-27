@@ -452,6 +452,9 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                                 //       ),
                                 //     ),
                                 //    ),
+                                if (
+                                Platform.isLinux ||
+                                Platform.isWindows)
                                 Material(
                                   color: Colors.transparent,
                                   child: InkWell(
@@ -470,6 +473,9 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                                     ),
                                   ),
                                 ),
+                                if (
+                                Platform.isLinux ||
+                                Platform.isWindows)
                                 Material(
                                   color: Colors.transparent,
                                   child: InkWell(
@@ -494,6 +500,9 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                                     ),
                                   ),
                                 ),
+                                if (
+                                Platform.isLinux ||
+                                Platform.isWindows)
                                 Material(
                                   color: Colors.transparent,
                                   child: InkWell(
