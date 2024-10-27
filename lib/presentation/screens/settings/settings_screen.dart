@@ -49,6 +49,7 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback goVersionScreen;
   final VoidCallback goGeneralCallback;
   final VoidCallback goSettingFunctionCallback;
+  final VoidCallback goAutomaticReceiveCallback;
 
   const SettingsScreen(
       {super.key,
@@ -59,7 +60,9 @@ class SettingsScreen extends StatefulWidget {
        required this.goQACallback,
         required this.goVersionScreen,
         required this.goGeneralCallback,
-      required this.goSettingFunctionCallback,});
+      required this.goSettingFunctionCallback,
+      required this.goAutomaticReceiveCallback,
+      });
 
   @override
   State<StatefulWidget> createState() {
@@ -143,6 +146,75 @@ class SettingsScreenState extends State<SettingsScreen> {
                         });
                   }),
             ),
+
+
+
+               Visibility(
+              visible: showCustomSaveDir,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16),
+                child: StreamBuilder<String>(
+                  initialData: SettingsRepo.instance.savedDir,
+                  stream: SettingsRepo.instance.savedDirStream.stream,
+                  builder: (context, snapshot) {
+                    return ClickableItem(
+                        label: S.of(context).setting_receive_folder,
+                        iconPath: 'assets/images/where_save.svg',
+                        des: snapshot.data,
+                        topRadius: false,
+                        //bottomRadius: !showAutoSaveMedia,
+                        bottomRadius:false,
+                        onClick: () async {
+                          if (!(await checkStoragePermission(context,
+                              manageExternalStorage: true))) {
+                            return;
+                          }
+
+                          final String initialDirectory;
+                          if (snapshot.data != null &&
+                              await File(snapshot.data!).exists()) {
+                            initialDirectory = snapshot.data!;
+                          } else {
+                            initialDirectory =
+                                await getDefaultDestinationDirectory();
+                          }
+                          final newSavedPath = await FilePicker.platform
+                              .getDirectoryPath(
+                                  initialDirectory: Platform.isWindows
+                                      ? null
+                                      : initialDirectory,
+                                  lockParentWindow: true);
+                          if (newSavedPath != null) {
+                            authPersistentAccess(newSavedPath);
+                            SettingsRepo.instance.setSavedDir(newSavedPath);
+                          }
+                          // showCupertinoModalPopup(context: context, builder: (context) {
+                          //   return NameEditBottomSheet();
+                          // });
+                        });
+                  },
+                ),
+              ),
+            ),
+
+
+
+             Padding(
+                      padding:
+                          const EdgeInsets.only(left: 16, top: 0, right: 16),
+                      child: ValueListenableBuilder<String>(
+                        valueListenable: version,
+                        builder: (BuildContext context, String value,
+                            Widget? child) {
+                          return ClickableItem(
+                              label: '自动接收',
+                              iconPath: 'assets/images/automaticreceive.svg',
+                              bottomRadius: true,
+                              topRadius: false,
+                              onClick: widget.goAutomaticReceiveCallback);
+                        },
+                      ),
+                    ),
 
             // 高度1pt的分割线
             // Visibility(
@@ -253,79 +325,9 @@ class SettingsScreenState extends State<SettingsScreen> {
             ),
             // 高度1pt的分割线
            
-            Padding(
-              padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
-              child: SettingsItemWrapper(
-                topRadius: true,
-                bottomRadius: false,
-                child: StreamBuilder<bool>(
-                  initialData: SettingsRepo.instance.autoReceive,
-                  stream: SettingsRepo.instance.autoReceiveStream.stream,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                    return SwitchableItem(
-                      label: S.of(context).setting_receive_auto,
-                      des: S.of(context).setting_receive_auto_des,
-                      checked: snapshot.data ?? false,
-                      onChanged: (value) {
-                        setState(() {
-                          if (value != null) {
-                            SettingsRepo.instance.setAutoReceive(value);
-                          }
-                        });
-                      },
-                    );
-                  },
-                ),
-              ),
-            ),
+          
             // 高度1pt的分割线
-            Visibility(
-              visible: showCustomSaveDir,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16),
-                child: StreamBuilder<String>(
-                  initialData: SettingsRepo.instance.savedDir,
-                  stream: SettingsRepo.instance.savedDirStream.stream,
-                  builder: (context, snapshot) {
-                    return ClickableItem(
-                        label: S.of(context).setting_receive_folder,
-                        des: snapshot.data,
-                        topRadius: false,
-                        bottomRadius: !showAutoSaveMedia,
-                        onClick: () async {
-                          if (!(await checkStoragePermission(context,
-                              manageExternalStorage: true))) {
-                            return;
-                          }
-
-                          final String initialDirectory;
-                          if (snapshot.data != null &&
-                              await File(snapshot.data!).exists()) {
-                            initialDirectory = snapshot.data!;
-                          } else {
-                            initialDirectory =
-                                await getDefaultDestinationDirectory();
-                          }
-                          final newSavedPath = await FilePicker.platform
-                              .getDirectoryPath(
-                                  initialDirectory: Platform.isWindows
-                                      ? null
-                                      : initialDirectory,
-                                  lockParentWindow: true);
-                          if (newSavedPath != null) {
-                            authPersistentAccess(newSavedPath);
-                            SettingsRepo.instance.setSavedDir(newSavedPath);
-                          }
-                          // showCupertinoModalPopup(context: context, builder: (context) {
-                          //   return NameEditBottomSheet();
-                          // });
-                        });
-                  },
-                ),
-              ),
-            ),
-
+         
             Visibility(
               visible: showAutoSaveMedia,
               child: Container(
@@ -367,7 +369,7 @@ class SettingsScreenState extends State<SettingsScreen> {
 
           
 
-Padding(
+                    Padding(
                       padding:
                           const EdgeInsets.only(left: 16, top: 16, right: 16),
                       child: ValueListenableBuilder<String>(
@@ -382,7 +384,9 @@ Padding(
                         },
                       ),
                     ),
-Padding(
+
+
+                    Padding(
                       padding:
                           const EdgeInsets.only(left: 16, top: 0, right: 16),
                       child: ValueListenableBuilder<String>(

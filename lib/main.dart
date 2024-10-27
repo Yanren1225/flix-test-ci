@@ -48,6 +48,7 @@ import 'package:flix/presentation/screens/settings/function.dart';
 import 'package:flix/presentation/screens/settings/general.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
+import 'package:flix/presentation/widgets/settings/automatic_receive.dart';
 import 'package:flix/setting/setting_provider.dart';
 import 'package:flix/theme/theme.dart';
 import 'package:flix/theme/theme_extensions.dart';
@@ -905,27 +906,44 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                     builder: (context) => DonateUSScreen(
                           showBack: true,
                         )));
-          }, goQACallback: () {  Navigator.push(
+          }, 
+          goQACallback: () {  
+            Navigator.push(
                 context,
                 CupertinoPageRoute(
                     builder: (context) => QAScreen(
                           showBack: true,
-                        ))); },
-                        goGeneralCallback: () {  Navigator.push(
+                        )));
+           },
+          goGeneralCallback: () {  Navigator.push(
                 context,
                 CupertinoPageRoute(
                     builder: (context) => GeneralScreen(
                           showBack: true,
                         ))); 
                         
-                        },
+            },
 
-                         goSettingFunctionCallback: () {  Navigator.push(
+          goSettingFunctionCallback: () {  Navigator.push(
                 context,
                 CupertinoPageRoute(
                     builder: (context) => SettingFunctionScreen(
                           showBack: true,
-                        ))); },
+                        ))); 
+                        
+          },
+
+          goAutomaticReceiveCallback: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => AutomaticReceivenScreen(
+                          showBack: true,
+                        ))); 
+                        
+          },
+
+
+
         );
        
       default:
@@ -1098,6 +1116,12 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
 
              goSettingFunctionCallback: () {setState(() {
               thirdWidget = SettingFunctionScreen(
+                showBack: false,
+              );
+            });  },
+
+            goAutomaticReceiveCallback: () {setState(() {
+              thirdWidget = AutomaticReceivenScreen(
                 showBack: false,
               );
             });  },
