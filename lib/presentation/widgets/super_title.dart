@@ -13,7 +13,7 @@ class SuperTitle extends StatelessWidget {
         style: TextStyle(
                 color: Theme.of(context).flixColors.text.primary,
                 fontSize: 36.0,
-                fontWeight: FontWeight.w300)
+                fontWeight: FontWeight.w500)
             .fix());
   }
 }
