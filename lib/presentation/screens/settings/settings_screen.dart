@@ -29,6 +29,7 @@ import 'package:talker_flutter/talker_flutter.dart';
 import '../../../l10n/l10n.dart';
 import '../../dialog/confirm_exit_app_bottomsheet.dart';
 import '../../widgets/settings/click_action_item.dart';
+import 'dev_new_locale.dart';
 
 class SettingsScreen extends StatefulWidget {
   final VoidCallback crossDeviceCallback;
@@ -216,8 +217,11 @@ class SettingsScreenState extends State<SettingsScreen> {
                       builder:
                           (BuildContext context, AsyncSnapshot<bool> snapshot) {
                         return ClickableItem(
-                          label: S.of(context).setting_accessibility_add_devices,
-                          des: S.of(context).setting_accessibility_add_devices_des,
+                          label:
+                              S.of(context).setting_accessibility_add_devices,
+                          des: S
+                              .of(context)
+                              .setting_accessibility_add_devices_des,
                           topRadius: false,
                           bottomRadius: true,
                           onClick: () {
@@ -500,9 +504,10 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
-                        left: 16, top: 4, right: 16, bottom: 16),
+                        left: 16, top: 4, right: 16),
                     child: ClickableItem(
                         label: '日志',
+                        bottomRadius: false,
                         onClick: () {
                           Navigator.push(
                               context,
@@ -510,6 +515,21 @@ class SettingsScreenState extends State<SettingsScreen> {
                                 builder: (context) =>
                                     TalkerScreen(talker: talker),
                               ));
+                        }),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16, right: 16, bottom: 16),
+                    child: ClickableItem(
+                        label: '语言',
+                        tail: Localizations.localeOf(context).toString(),
+                        topRadius: true,
+                        onClick: () {
+                          showCupertinoModalPopup(
+                              context: context,
+                              builder: (context) {
+                                return const DevNewLocaleBottomSheet();
+                              });
                         }),
                   ),
                 ],

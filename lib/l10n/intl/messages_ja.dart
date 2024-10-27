@@ -24,13 +24,13 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m1(time) => "昨日[X 3 X]";
 
-  static String m2(device) => "[X 1 X]へ";
+  static String m2(device) => "${device}へ";
 
   static String m3(error) => "フォルダを選択できませんでした:[X 8 X]";
 
   static String m4(platform) => "保存して[X 6 X]スイープにジャンプ";
 
-  static String m5(newVersion) => "新バージョンv[X 5 X]";
+  static String m5(newVersion) => "新バージョンv${newVersion}";
 
   static String m6(version) => "現在のソフトウェアバージョン：v[X 8 X]";
 
@@ -55,7 +55,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "bubbles_dir_no_data": MessageLookupByLibrary.simpleMessage("データなし"),
         "bubbles_downloaded": MessageLookupByLibrary.simpleMessage("ダウンロード済み"),
         "bubbles_menu_copy": MessageLookupByLibrary.simpleMessage("レプリケーション"),
-        "bubbles_menu_delete": MessageLookupByLibrary.simpleMessage("削除＃サクジョ＃"),
+        "bubbles_menu_delete": MessageLookupByLibrary.simpleMessage("削除"),
         "bubbles_menu_forward": MessageLookupByLibrary.simpleMessage("転送"),
         "bubbles_menu_free_copy":
             MessageLookupByLibrary.simpleMessage("フリー・レプリケーション"),
@@ -85,7 +85,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "button_cancel_send": MessageLookupByLibrary.simpleMessage("送信のキャンセル"),
         "button_resend": MessageLookupByLibrary.simpleMessage("再送信"),
         "device_ap_connected": MessageLookupByLibrary.simpleMessage("接続済み"),
-        "device_delete": MessageLookupByLibrary.simpleMessage("削除＃サクジョ＃"),
+        "device_delete": MessageLookupByLibrary.simpleMessage("削除"),
         "device_name_input": MessageLookupByLibrary.simpleMessage("ネイティブ名を入力"),
         "device_name_input_action": MessageLookupByLibrary.simpleMessage("完了"),
         "device_no_network":
@@ -140,7 +140,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("👋 こんにちは。よろしくお願いします。！"),
         "help_join_qq":
             MessageLookupByLibrary.simpleMessage("QQグループに参加して私たちと連絡してください~\n"),
-        "help_latest_version": MessageLookupByLibrary.simpleMessage("最新バージョン"),
+        "help_latest_version":
+            MessageLookupByLibrary.simpleMessage("最新バージョンです"),
         "help_new_version": m5,
         "help_q_1": MessageLookupByLibrary.simpleMessage("リストにデバイスが見つかりませんか？"),
         "help_q_2":
@@ -247,7 +248,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "qr_scan": MessageLookupByLibrary.simpleMessage("さっと動かす"),
         "qr_scan_tip": MessageLookupByLibrary.simpleMessage(
             "Flix QRコードを開き、ホットスポット接続を迅速に確立します。"),
-        "search": MessageLookupByLibrary.simpleMessage("検索けんさく"),
+        "search": MessageLookupByLibrary.simpleMessage("検索"),
         "setting_accessibility":
             MessageLookupByLibrary.simpleMessage("アクセシビリティ"),
         "setting_accessibility_add_devices":
@@ -303,13 +304,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "setting_more_clean_cache":
             MessageLookupByLibrary.simpleMessage("キャッシュのクリア"),
         "setting_more_dark_mode":
-            MessageLookupByLibrary.simpleMessage("ダークカラーモード"),
+            MessageLookupByLibrary.simpleMessage("ダークモード"),
         "setting_more_dark_mode_off":
             MessageLookupByLibrary.simpleMessage("常に閉じる"),
         "setting_more_dark_mode_on":
             MessageLookupByLibrary.simpleMessage("常にオン"),
         "setting_more_dark_mode_sync":
-            MessageLookupByLibrary.simpleMessage("フォローアップシステム"),
+            MessageLookupByLibrary.simpleMessage("システムに合わせる"),
         "setting_more_new_discover":
             MessageLookupByLibrary.simpleMessage("新しいデバイス検出方式を有効にする"),
         "setting_more_new_discover_des": MessageLookupByLibrary.simpleMessage(
@@ -341,12 +342,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "widget_delete_msg_history":
             MessageLookupByLibrary.simpleMessage("メッセージ・ログの削除"),
         "widget_delete_msg_history_action":
-            MessageLookupByLibrary.simpleMessage("削除＃サクジョ＃"),
+            MessageLookupByLibrary.simpleMessage("削除"),
         "widget_delete_msg_history_subtitle":
             MessageLookupByLibrary.simpleMessage(
                 "ファイルが転送中の場合、削除メッセージは転送を中断します"),
-        "widget_multiple_delete":
-            MessageLookupByLibrary.simpleMessage("削除＃サクジョ＃"),
+        "widget_multiple_delete": MessageLookupByLibrary.simpleMessage("削除"),
         "widget_toast_prepare_sending":
             MessageLookupByLibrary.simpleMessage("送信準備中です、お待ちください"),
         "widget_verification_action": MessageLookupByLibrary.simpleMessage("完了")
