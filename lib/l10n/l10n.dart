@@ -1470,36 +1470,6 @@ class S {
     );
   }
 
-  /// `推荐给朋友`
-  String get widget_recommend {
-    return Intl.message(
-      '推荐给朋友',
-      name: 'widget_recommend',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `扫码即可下载`
-  String get widget_recommend_subtitle {
-    return Intl.message(
-      '扫码即可下载',
-      name: 'widget_recommend_subtitle',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `完成`
-  String get widget_recommend_action {
-    return Intl.message(
-      '完成',
-      name: 'widget_recommend_action',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `完成`
   String get widget_verification_action {
     return Intl.message(
@@ -2008,6 +1978,7 @@ class AppLocalizationDelegate extends LocalizationsDelegate<S> {
     return const <Locale>[
       Locale.fromSubtags(languageCode: 'zh', countryCode: 'CN'),
       Locale.fromSubtags(languageCode: 'en'),
+      Locale.fromSubtags(languageCode: 'ja'),
     ];
   }
 

@@ -304,10 +304,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "widget_delete_msg_history_subtitle":
             MessageLookupByLibrary.simpleMessage("如果文件正在传输，删除消息会中断传输"),
         "widget_multiple_delete": MessageLookupByLibrary.simpleMessage("删除"),
-        "widget_recommend": MessageLookupByLibrary.simpleMessage("推荐给朋友"),
-        "widget_recommend_action": MessageLookupByLibrary.simpleMessage("完成"),
-        "widget_recommend_subtitle":
-            MessageLookupByLibrary.simpleMessage("扫码即可下载"),
         "widget_toast_prepare_sending":
             MessageLookupByLibrary.simpleMessage("正在准备发送，请稍候"),
         "widget_verification_action": MessageLookupByLibrary.simpleMessage("完成")
