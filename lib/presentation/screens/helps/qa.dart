@@ -42,28 +42,40 @@ class QAScreenState extends State<QAScreen> {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                  padding: const EdgeInsets.only( bottom: 10),
                   child: QA(
                       question: S.of(context).help_q_1,
                       answer: S.of(context).help_a_1),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                  padding: const EdgeInsets.only(bottom: 10),
                   child: QA(
                       question: S.of(context).help_q_2,
                       answer: S.of(context).help_a_2),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                  padding: const EdgeInsets.only( bottom: 10),
                   child: QA(
                       question: S.of(context).help_q_3,
                       answer: S.of(context).help_a_3),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                  padding: const EdgeInsets.only( bottom: 10),
                   child: QA(
                       question: S.of(context).help_q_4,
                       answer: S.of(context).help_a_4),
+                ),
+                 Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: QA(
+                      question: '自动接收是什么？',
+                      answer: '打开自动接收开关后，当你的设备接收到其他设备发来的文件时，将不会弹窗确认，文件会自动保存在设定的目录内，体验更顺畅。'),
+                ),
+                 Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: QA(
+                      question: '我设置了开机自动启动、后台运行本软件，我的设备会变卡吗？',
+                      answer: '不会。Flix 软件内存占用极低，不会影响你的设备。'),
                 ),
                 const SizedBox(height: 40),
               ],
