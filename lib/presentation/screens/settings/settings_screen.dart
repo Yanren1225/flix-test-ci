@@ -130,6 +130,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   bottomRadius: !showAppLaunchConfig,
                   label: S.of(context).setting_device_name,
                   des: deviceName,
+                  iconPath: 'assets/images/device_name.svg',
                   onClick: () {
                     final theme = Theme.of(context);
                     print(theme.flixColors.text.primary);
@@ -171,36 +172,7 @@ class SettingsScreenState extends State<SettingsScreen> {
             // ),
 
             // 高度1pt的分割线
-            Visibility(
-              visible: showAppLaunchConfig,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16),
-                child: SettingsItemWrapper(
-                  topRadius: false,
-                  bottomRadius: true,
-                  child: SwitchableItem(
-                    label: S.of(context).setting_auto_start,
-                    // des: '软件会在后台静默启动，不会弹窗打扰',
-                    checked: isStartUpEnabled,
-                    onChanged: (value) async {
-                      print("startup value = $value");
-                      var success = false;
-                      if (value == true) {
-                        success = await launchAtStartup.enable();
-                      } else {
-                        success = await launchAtStartup.disable();
-                      }
-                      setState(() {
-                        if (success) {
-                          isStartUpEnabled = value!;
-                        }
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
-
+           
             Visibility(
                 visible: false,
                 child: Column(children: [
@@ -228,7 +200,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                           label: S.of(context).setting_accessibility_add_self,
                           des: S.of(context).setting_accessibility_add_self_des,
                           topRadius: true,
-                          bottomRadius: false,
+                          bottomRadius: true,
                           onClick: () {
                             widget.showConnectionInfoCallback();
                           },

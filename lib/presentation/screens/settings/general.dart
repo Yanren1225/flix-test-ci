@@ -14,10 +14,12 @@ import 'package:flix/presentation/widgets/settings/switchable_item.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/pay/pay_util.dart';
+import 'package:flix/utils/platform_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 import '../../../l10n/l10n.dart';
@@ -34,13 +36,29 @@ class GeneralScreen extends StatefulWidget {
 }
 
 class GeneralScreenState extends State<GeneralScreen> {
+var isStartUpEnabled = false;
+@override
+  void initState() {
+    super.initState();
+    
 
+    if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+      launchAtStartup.isEnabled().then((value) {
+        setState(() {
+          isStartUpEnabled = value;
+        });
+      });
+    
+  }
+  }
 
+  
  
 
   @override
  Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
+    final bool showAppLaunchConfig = isDesktop();
     return NavigationScaffold(
       title: '通用',
       
@@ -148,6 +166,35 @@ class GeneralScreenState extends State<GeneralScreen> {
                     },
                   ),
                 ),
+                  Visibility(
+              visible: showAppLaunchConfig,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16),
+                child: SettingsItemWrapper(
+                  topRadius: true,
+                  bottomRadius: true,
+                  child: SwitchableItem(
+                    label: S.of(context).setting_auto_start,
+                    // des: '软件会在后台静默启动，不会弹窗打扰',
+                    checked: isStartUpEnabled,
+                    onChanged: (value) async {
+                      print("startup value = $value");
+                      var success = false;
+                      if (value == true) {
+                        success = await launchAtStartup.enable();
+                      } else {
+                        success = await launchAtStartup.disable();
+                      }
+                      setState(() {
+                        if (success) {
+                          isStartUpEnabled = value!;
+                        }
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
               ],
             ),
               ],
