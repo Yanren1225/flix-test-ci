@@ -771,7 +771,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                       icon: SvgPicture.asset(
                         width: 26,
                         height: 26,
-                        'assets/images/ic_config.svg',
+                        'assets/images/search.svg',
                         colorFilter: ColorFilter.mode(
                           selectedIndex == 1
                               ? Theme.of(context).flixColors.text.primary
@@ -786,7 +786,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                       icon: SvgPicture.asset(
                         width: 26,
                         height: 26,
-                        'assets/images/ic_help.svg',
+                        'assets/images/setting.svg',
                         colorFilter: ColorFilter.mode(
                           selectedIndex == 2
                               ? Theme.of(context).flixColors.text.primary
@@ -842,7 +842,26 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                   builder: (context) => const AddDeviceScreen())),
         );
       case 1:
-        return SettingsScreen(
+         return HelpScreen(
+          goVersionScreen: () {
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => const AboutUSScreen(
+                          showBack: true,
+                        )));
+          },
+          goDonateCallback: () {
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => DonateUSScreen(
+                          showBack: true,
+                        )));
+          },
+        );
+      case 2:
+       return SettingsScreen(
           crossDeviceCallback: () {
             Navigator.push(
                 context,
@@ -861,18 +880,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 CupertinoPageRoute(
                     builder: (context) => const AddDeviceScreen()));
           },
-        );
-      case 2:
-        return HelpScreen(
-          goVersionScreen: () {
-            Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => const AboutUSScreen(
-                          showBack: true,
-                        )));
-          },
-          goDonateCallback: () {
+           goDonateCallback: () {
             Navigator.push(
                 context,
                 CupertinoPageRoute(
@@ -881,6 +889,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                         )));
           },
         );
+       
       default:
         return const Placeholder();
     }
@@ -912,7 +921,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                       label: const Text('')),
                   NavigationRailDestination(
                       icon: SvgPicture.asset(
-                        'assets/images/ic_config.svg',
+                        'assets/images/search.svg',
                         width: 26,
                         height: 26,
                         colorFilter: ColorFilter.mode(
@@ -922,7 +931,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                       label: const Text('')),
                   NavigationRailDestination(
                       icon: SvgPicture.asset(
-                        'assets/images/ic_help.svg',
+                        'assets/images/setting.svg',
                         width: 26,
                         height: 26,
                         colorFilter: ColorFilter.mode(
@@ -995,20 +1004,6 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           },
         );
       case 1:
-        return SettingsScreen(crossDeviceCallback: () {
-          setState(() {
-            thirdWidget = CrossDeviceClipboardScreen();
-          });
-        }, showConnectionInfoCallback: () {
-          setState(() {
-            thirdWidget = const PairCodeScreen();
-          });
-        }, goManualAddCallback: () {
-          setState(() {
-            thirdWidget = const AddDeviceScreen();
-          });
-        });
-      case 2:
         return HelpScreen(
           goVersionScreen: () {
             setState(() {
@@ -1025,6 +1020,27 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
             });
           },
         );
+      case 2:
+       return SettingsScreen(crossDeviceCallback: () {
+          setState(() {
+            thirdWidget = CrossDeviceClipboardScreen();
+          });
+        }, showConnectionInfoCallback: () {
+          setState(() {
+            thirdWidget = const PairCodeScreen();
+          });
+        }, goManualAddCallback: () {
+          setState(() {
+            thirdWidget = const AddDeviceScreen();
+          });
+        }, goDonateCallback: () {
+            setState(() {
+              thirdWidget = DonateUSScreen(
+                showBack: false,
+              );
+            });
+          },);
+       
       default:
         return const Placeholder();
     }

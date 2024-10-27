@@ -1,6 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flix/domain/version/version_checker.dart';
+import 'package:flix/presentation/screens/intro/intro_agreement.dart';
+import 'package:flix/presentation/screens/intro/intro_privacy.dart';
+import 'package:flix/presentation/style/colors/flix_color.dart';
+import 'package:flix/presentation/widgets/helps/flix_share_bottom_sheet.dart';
+import 'package:flix/presentation/widgets/helps/qa.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/settings/option_item.dart';
 import 'package:flix/theme/theme_extensions.dart';
@@ -25,6 +31,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 import '../../../l10n/l10n.dart';
@@ -37,12 +44,14 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback crossDeviceCallback;
   final VoidCallback showConnectionInfoCallback;
   final VoidCallback goManualAddCallback;
+  final VoidCallback goDonateCallback;
 
   const SettingsScreen(
       {super.key,
       required this.crossDeviceCallback,
       required this.showConnectionInfoCallback,
-      required this.goManualAddCallback});
+      required this.goManualAddCallback,
+      required this.goDonateCallback});
 
   @override
   State<StatefulWidget> createState() {
@@ -55,6 +64,7 @@ class SettingsScreenState extends State<SettingsScreen> {
   var deviceName = DeviceProfileRepo.instance.deviceName;
   StreamSubscription<String>? deviceNameSubscription;
   var isStartUpEnabled = false;
+  ValueNotifier<String> version = ValueNotifier('');
 
   @override
   void initState() {
@@ -72,14 +82,21 @@ class SettingsScreenState extends State<SettingsScreen> {
           isStartUpEnabled = value;
         });
       });
-    }
+    PackageInfo.fromPlatform().then((packageInfo) {
+      version.value = packageInfo.version;
+    });
   }
+  }
+
+  
 
   @override
   void dispose() {
     deviceNameSubscription?.cancel();
     super.dispose();
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -562,6 +579,158 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ],
               ),
             ),
+
+
+
+
+  Padding(
+              padding: const EdgeInsets.only(left: 16, top: 20, right: 16),
+              child: ValueListenableBuilder<String>(
+                valueListenable: version,
+                builder: (BuildContext context, String value, Widget? child) {
+                  return ClickableItem(
+                    label: S.of(context).help_about,
+                    tail: 'v$value',
+                    onClick: () {},
+                    bottomRadius: Platform.isIOS,
+                  );
+                },
+              ),
+            ),
+
+  StreamBuilder<String?>(
+              initialData: VersionChecker.newestVersion,
+              stream: VersionChecker.newestVersionStream.stream,
+              builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                final tail = snapshot.data?.isNotEmpty == true
+                    ? S.of(context).help_new_version(snapshot.requireData ?? '')
+                    : S.of(context).help_latest_version;
+                return Visibility(
+                  visible: !Platform.isIOS,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    child: ClickableItem(
+                      label: S.of(context).help_check_update,
+                      tail: tail,
+                      tailColor: snapshot.data?.isNotEmpty == true
+                          ? FlixColor.blue
+                          : Theme.of(context).flixColors.text.secondary,
+                      onClick: () {
+                        VersionChecker.checkNewVersion(context,
+                            ignorePromptCount: true);
+                      },
+                      topRadius: false,
+                    ),
+                  ),
+                );
+              },
+            ),
+
+              Visibility(
+                    visible: !Platform.isIOS,
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.only(left: 16, top: 8, right: 16),
+                      child: ValueListenableBuilder<String>(
+                        valueListenable: version,
+                        builder: (BuildContext context, String value,
+                            Widget? child) {
+                          return ClickableItem(
+                              label: S.of(context).help_donate,
+                              bottomRadius: false,
+                              onClick: widget.goDonateCallback);
+                        },
+                      ),
+                    ),
+                  ),
+             Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
+                          bottom: 16,
+                          top:  0),
+                      child: ClickableItem(
+                          label: S.of(context).help_recommend,
+                          topRadius: Platform.isIOS,
+                          onClick: () {
+                            showCupertinoModalPopup(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    FlixShareBottomSheet(context));
+                          })),
+
+
+
+             Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+              child: ClickableItem(
+                label: '用户协议',
+                bottomRadius: false,
+                onClick: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const IntroAgreementPage()),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+              child: ClickableItem(
+                label: '隐私政策',
+                topRadius: Platform.isIOS,
+                onClick: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const IntroPrivacyPage()),
+                  );
+                },
+              ),
+            ),
+
+              Padding(
+                    padding: const EdgeInsets.only(
+                        left: 20, top: 20, right: 20, bottom: 4),
+                    child: Text(
+                      S.of(context).help_title,
+                      style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.normal,
+                              color:
+                                  Theme.of(context).flixColors.text.secondary)
+                          .fix(),
+                    ),
+                  ),
+                  
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                    child: QA(
+                        question: S.of(context).help_q_1,
+                        answer: S.of(context).help_a_1),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                    child: QA(
+                        question: S.of(context).help_q_2,
+                        answer: S.of(context).help_a_2),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                    child: QA(
+                        question: S.of(context).help_q_3,
+                        answer: S.of(context).help_a_3),
+                  ),
+                  Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16, right: 16, bottom: 10),
+                      child: QA(
+                          question: S.of(context).help_q_4,
+                          answer: S.of(context).help_a_4)),
           ],
         ),
       ),
@@ -580,5 +749,35 @@ class SettingsScreenState extends State<SettingsScreen> {
             },
           );
         });
+  }
+    String trimMultilineString(String input) {
+    // 分割成行
+    List<String> lines = input.split('\n');
+
+    // 移除前后空白行
+    while (lines.isNotEmpty && lines.first.trim().isEmpty) {
+      lines.removeAt(0);
+    }
+    while (lines.isNotEmpty && lines.last.trim().isEmpty) {
+      lines.removeLast();
+    }
+
+    if (lines.isEmpty) {
+      return '';
+    }
+
+    // 找到最小的缩进量
+    int minIndent = lines
+        .where((line) => line.trim().isNotEmpty)
+        .map((line) => line.indexOf(RegExp(r'\S')))
+        .reduce((min, indent) => indent < min ? indent : min);
+
+    // 去除每行的缩进
+    String trimmedString = lines
+        .map((line) =>
+            line.length > minIndent ? line.substring(minIndent) : line)
+        .join('\n');
+
+    return trimmedString;
   }
 }
