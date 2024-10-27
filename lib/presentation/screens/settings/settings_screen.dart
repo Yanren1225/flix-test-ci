@@ -578,7 +578,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 builder: (BuildContext context, String value, Widget? child) {
                   return ClickableItem(
                     label: S.of(context).help_about,
-                    tail: 'v$value',
+                    //tail: 'v$value',
                     onClick: widget.goVersionScreen,
                     iconPath: 'assets/images/about_us.svg',
                     bottomRadius: Platform.isIOS,
@@ -675,7 +675,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(
-                        left: 16, top: 4, right: 16, bottom: 16),
+                        left: 16, top: 4, right: 16, bottom: 26),
                     child: ClickActionItem(
                         label: S.of(context).setting_exit,
                         dangerous: true,

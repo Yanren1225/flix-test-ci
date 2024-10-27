@@ -52,11 +52,11 @@ class ClickableItem extends StatelessWidget {
             children: [
               if (iconPath != null)
                 Padding(
-                  padding: const EdgeInsets.only(right: 12),
+                  padding: const EdgeInsets.only(left:3,right: 12),
                   child: SvgPicture.asset(
                     iconPath!,
-                    height: 22,
-                    width: 22,
+                    height: 20,
+                    width: 20,
                     placeholderBuilder: (BuildContext context) =>
                         CircularProgressIndicator(), 
                   ),

@@ -115,10 +115,11 @@ class HelpScreenState extends BaseScreenState<HelpScreen>
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+           Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal, 
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildTabItem('全部', 0),
                   _buildTabItem('图片', 1),
@@ -129,12 +130,13 @@ class HelpScreenState extends BaseScreenState<HelpScreen>
                 ],
               ),
             ),
+          ),
             FutureBuilder<List<Map<String, dynamic>>>(
               future: _fetchFilesWithTimeFromDatabase(), 
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black), // 设置颜色为黑色
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black), 
                   ),);
                 }
 
@@ -320,16 +322,18 @@ class HelpScreenState extends BaseScreenState<HelpScreen>
     );
   }
 
-  Widget _buildTabItem(String title, int index) {
-    bool isSelected = _selectedIndex == index;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
+ Widget _buildTabItem(String title, int index) {
+  bool isSelected = _selectedIndex == index;
+  return GestureDetector(
+    onTap: () {
+      setState(() {
+        _selectedIndex = index;
+      });
+    },
+    child: Padding(
+      padding: const EdgeInsets.only(right: 20,top: 5),  
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.min, 
         children: [
           Text(
             title,
@@ -337,19 +341,22 @@ class HelpScreenState extends BaseScreenState<HelpScreen>
               color: isSelected
                   ? Theme.of(context).flixColors.text.primary
                   : Theme.of(context).flixColors.text.secondary,
+              fontSize: 16,
             ),
           ),
           if (isSelected)
             Container(
-              margin: const EdgeInsets.only(top: 4),
-              height: 2,
-              width: 20,
-              color: const Color.fromRGBO(0, 122, 255, 1),
+              margin: const EdgeInsets.only(top: 4), 
+              height: 2, 
+              width: 32,
+              color: const Color.fromRGBO(0, 122, 255, 1), 
             ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Future<List<Map<String, dynamic>>> _fetchFilesWithTimeFromDatabase() async {
     final query = await appDatabase.customSelect('''
