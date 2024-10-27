@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/settings/option_item.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/drawin_file_security_extension.dart';
@@ -27,6 +28,7 @@ import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 import '../../../l10n/l10n.dart';
+import '../../../utils/dev_config.dart';
 import '../../dialog/confirm_exit_app_bottomsheet.dart';
 import '../../widgets/settings/click_action_item.dart';
 import 'dev_new_locale.dart';
@@ -485,7 +487,7 @@ class SettingsScreenState extends State<SettingsScreen> {
             ),
 
             Visibility(
-              visible: !kReleaseMode,
+              visible: DevConfig.instance.current,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -503,8 +505,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(
-                        left: 16, top: 4, right: 16),
+                    padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
                     child: ClickableItem(
                         label: '日志',
                         bottomRadius: false,
@@ -518,12 +519,12 @@ class SettingsScreenState extends State<SettingsScreen> {
                         }),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(
-                        left: 16, right: 16, bottom: 16),
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 16),
                     child: ClickableItem(
                         label: '语言',
                         tail: Localizations.localeOf(context).toString(),
-                        topRadius: true,
+                        topRadius: false,
                         onClick: () {
                           showCupertinoModalPopup(
                               context: context,
