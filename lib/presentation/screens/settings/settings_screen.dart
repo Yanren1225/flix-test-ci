@@ -511,7 +511,7 @@ class SettingsScreenState extends State<SettingsScreen> {
 
   Padding(
                       padding:
-                          const EdgeInsets.only(left: 16, top: 16, right: 16),
+                          const EdgeInsets.only(left: 16, top: 0, right: 16),
                       child: ValueListenableBuilder<String>(
                         valueListenable: version,
                         builder: (BuildContext context, String value,
@@ -622,21 +622,9 @@ class SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  
                   Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20, top: 10, right: 20),
-                    child: Text(
-                      '开发者',
-                      style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.normal,
-                              color:
-                                  Theme.of(context).flixColors.text.secondary)
-                          .fix(),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
+                    padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
                     child: ClickableItem(
                         label: '日志',
                         bottomRadius: false,
