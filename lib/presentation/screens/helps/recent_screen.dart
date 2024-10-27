@@ -26,20 +26,20 @@ import 'package:provider/provider.dart';
 import '../../../l10n/l10n.dart';
 import '../../widgets/helps/flix_share_bottom_sheet.dart';
 
-class HelpScreen extends StatefulWidget {
+class recentScreen extends StatefulWidget {
 
   final VoidCallback goDonateCallback;
 
-  HelpScreen(
+  recentScreen(
       {super.key,
      
       required this.goDonateCallback, required Null Function() goQACallback});
 
   @override
-  State<StatefulWidget> createState() => HelpScreenState();
+  State<StatefulWidget> createState() => recentScreenState();
 }
 
-class HelpScreenState extends BaseScreenState<HelpScreen>
+class recentScreenState extends BaseScreenState<recentScreen>
     with SingleTickerProviderStateMixin {
   ValueNotifier<String> version = ValueNotifier('');
   TextEditingController _searchController = TextEditingController();
@@ -207,13 +207,13 @@ class HelpScreenState extends BaseScreenState<HelpScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 8),
+                          padding: const EdgeInsets.only(left: 15,right: 16,bottom: 8,top: 16),
                           child: Row(
                             children: [
                               Text(
                                 formattedDate, 
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 14,
                                   color: Theme.of(context)
                                       .flixColors
                                       .text
@@ -223,7 +223,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen>
                               Text(
                                 ' | ${filesForDate.length} 项', 
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 14,
                                   color: Theme.of(context)
                                       .flixColors
                                       .text
@@ -284,7 +284,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen>
                                   title: Text(
                                     file['name'],
                                     style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 15,
                                         color: Theme.of(context)
                                             .flixColors
                                             .text
@@ -297,7 +297,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen>
                                       Text(file['size'] != null
                                           ? _formatFileSize(file['size'])
                                           : '',style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 13,
                                         color: Theme.of(context)
                                             .flixColors
                                             .text

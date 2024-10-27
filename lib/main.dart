@@ -37,7 +37,7 @@ import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
 import 'package:flix/presentation/screens/helps/donate_us.dart';
-import 'package:flix/presentation/screens/helps/help_screen.dart';
+import 'package:flix/presentation/screens/helps/recent_screen.dart';
 import 'package:flix/presentation/screens/helps/qa.dart';
 import 'package:flix/presentation/screens/intro_screen.dart';
 import 'package:flix/presentation/screens/paircode/add_device_screen.dart';
@@ -843,7 +843,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                   builder: (context) => const AddDeviceScreen())),
         );
       case 1:
-         return HelpScreen(
+         return recentScreen(
          
           goDonateCallback: () {
             Navigator.push(
@@ -1016,7 +1016,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           },
         );
       case 1:
-        return HelpScreen(
+        return recentScreen(
           
           goDonateCallback: () {
             setState(() {
