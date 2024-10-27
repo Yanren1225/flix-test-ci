@@ -56,7 +56,7 @@ class ClickableItem extends StatelessWidget {
                   child: SvgPicture.asset(
                     iconPath!,
                     height: 20,
-                    color: Theme.of(context).flixColors.text.secondary,
+                    color: Theme.of(context).flixColors.text.primary,
                     width: 20,
                     placeholderBuilder: (BuildContext context) =>
                         CircularProgressIndicator(), 
