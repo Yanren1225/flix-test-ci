@@ -117,7 +117,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "这里是 Flix，一个快速简洁的多端互传软件，希望你能喜欢 😆"),
         "help_dev_team": MessageLookupByLibrary.simpleMessage(
             "Flix 制作小组\n------\n✅设计：\nlemo\nkailun\n\n✅开发：\nMovenLecker\nEava_wu\n炎忍\nMashiro.\nGnayoah\n张建\n广靓\nChengi\nxkeyC\n小灰灰\n何言\ngggxbbb\n一季或微凉\n暮间雾\nyuzh"),
-        "help_donate": MessageLookupByLibrary.simpleMessage("❤️ 捐赠支持我们"),
+        "help_donate": MessageLookupByLibrary.simpleMessage("捐赠"),
         "help_donate_alipay": MessageLookupByLibrary.simpleMessage("支付宝"),
         "help_donate_go": m4,
         "help_donate_title": MessageLookupByLibrary.simpleMessage("捐赠"),
@@ -135,7 +135,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "help_qq_1": MessageLookupByLibrary.simpleMessage("用户QQ群1:\n"),
         "help_qq_2": MessageLookupByLibrary.simpleMessage("\n用户QQ群2:\n"),
         "help_qq_3": MessageLookupByLibrary.simpleMessage("\n用户QQ群3:\n"),
-        "help_recommend": MessageLookupByLibrary.simpleMessage("👍 推荐给朋友"),
+        "help_recommend": MessageLookupByLibrary.simpleMessage("推荐给朋友"),
         "help_sponsor": MessageLookupByLibrary.simpleMessage("点我进入捐赠渠道"),
         "help_thanks":
             MessageLookupByLibrary.simpleMessage("，非常感谢你来支持我们的持续开发 🙏"),

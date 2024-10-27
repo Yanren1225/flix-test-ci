@@ -283,7 +283,7 @@ class S {
   /// `❤️ 捐赠支持我们`
   String get help_donate {
     return Intl.message(
-      '❤️ 捐赠支持我们',
+      '捐赠',
       name: 'help_donate',
       desc: '',
       args: [],
@@ -293,7 +293,7 @@ class S {
   /// `👍 推荐给朋友`
   String get help_recommend {
     return Intl.message(
-      '👍 推荐给朋友',
+      '推荐给朋友',
       name: 'help_recommend',
       desc: '',
       args: [],
