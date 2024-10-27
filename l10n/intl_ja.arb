@@ -426,5 +426,11 @@
   "navigation_send": "クロスオーバ",
   "@navigation_send": {},
   "setting_cross_device_clipboard_paired_devices": "関連付けられたデバイス",
-  "@setting_cross_device_clipboard_paired_devices": {}
+  "@setting_cross_device_clipboard_paired_devices": {},
+  "intro_permission_9": "使用開始",
+  "@intro_permission_9": {},
+  "intro_wifi_1": "他のデバイスへの接続",
+  "@intro_wifi_1": {},
+  "intro_wifi_2": "デバイスを検出します。",
+  "@intro_wifi_2": {}
 }
