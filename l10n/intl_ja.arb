@@ -19,7 +19,7 @@
   "@paircode_dialog_add_device": {},
   "setting_cross_device_clipboard_popup_input_paircode_subtitle": "相手機器の4桁の数字を入力すると、クロスデバイスコピー貼り付けが開始されます。5分以内に有効です。",
   "@setting_cross_device_clipboard_popup_input_paircode_subtitle": {},
-  "help_donate_go": "保存して[X 6 X]スイープにジャンプ",
+  "help_donate_go": "保存して{platform} スイープにジャンプ",
   "@help_donate_go": {},
   "help_qq_1": "ユーザQQ群1：\n",
   "@help_qq_1": {},
@@ -45,7 +45,7 @@
   "@help_donate_alipay": {},
   "device_wifi_not_connected": "WiFi未接続",
   "@device_wifi_not_connected": {},
-  "file_pick_error": "フォルダを選択できませんでした:[X 8 X]",
+  "file_pick_error": "フォルダを選択できませんでした:{error}",
   "@file_pick_error": {
     "placeholders": {
       "error": {
@@ -143,7 +143,7 @@
   "@device_ap_connected": {},
   "help_q_2": "ファイルを転送するとトラフィックが消費されますか？",
   "@help_q_2": {},
-  "android_app_send": "送信([X 4 X])",
+  "android_app_send": "送信({count})",
   "@android_app_send": {
     "placeholders": {
       "count": {
@@ -179,7 +179,7 @@
   "@bubbles_menu_save_as": {},
   "file_pick_error_20": "「開く」をクリックしてフォルダを選択",
   "@file_pick_error_20": {},
-  "bubbles_yesterday": "昨日[X 3 X]",
+  "bubbles_yesterday": "昨日 {time}",
   "@bubbles_yesterday": {
     "placeholders": {
       "time": {
@@ -265,7 +265,7 @@
   "@homepage_select_device": {},
   "bubbles_dir_load_error": "ロードミスしましたよ、あとでやってみましょう~",
   "@bubbles_dir_load_error": {},
-  "help_version": "現在のソフトウェアバージョン：v[X 8 X]",
+  "help_version": "現在のソフトウェアバージョン：v{version}",
   "@help_version": {
     "placeholders": {
       "version": {
