@@ -269,15 +269,15 @@ Widget website() {
       padding: const EdgeInsets.all(10.0),
       child: Text.rich(TextSpan(
           children: [
-          
-            ClickableSpan('用户协议\n', () {
+          TextSpan(text: '用户协议:\n'),
+            ClickableSpan('《Flix 用户协议》\n\n', () {
               Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const IntroAgreementPage()),);
             }),
-            
-            ClickableSpan('隐私政策', () {
+             TextSpan(text: '隐私政策:\n'),
+            ClickableSpan('《Flix 隐私政策》', () {
              Navigator.push(
                     context,
                     MaterialPageRoute(
