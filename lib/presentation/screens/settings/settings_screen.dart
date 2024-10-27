@@ -47,13 +47,19 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback goDonateCallback;
   final VoidCallback goQACallback;
   final VoidCallback goVersionScreen;
+  final VoidCallback goGeneralCallback;
+  final VoidCallback goSettingFunctionCallback;
 
   const SettingsScreen(
       {super.key,
       required this.crossDeviceCallback,
       required this.showConnectionInfoCallback,
       required this.goManualAddCallback,
-      required this.goDonateCallback, required this.goQACallback, required this.goVersionScreen});
+      required this.goDonateCallback,
+       required this.goQACallback,
+        required this.goVersionScreen,
+        required this.goGeneralCallback,
+      required this.goSettingFunctionCallback,});
 
   @override
   State<StatefulWidget> createState() {
@@ -254,19 +260,9 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ])),
 
+           
             Padding(
-              padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
-              child: Text(
-                S.of(context).setting_advances,
-                style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.normal,
-                        color: Theme.of(context).flixColors.text.secondary)
-                    .fix(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
+              padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
               child: StreamBuilder<bool>(
                 initialData: SettingsRepo.instance.autoReceive,
                 stream: SettingsRepo.instance.autoReceiveStream.stream,
@@ -284,19 +280,9 @@ class SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             // 高度1pt的分割线
+           
             Padding(
-              padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
-              child: Text(
-                S.of(context).setting_receive,
-                style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.normal,
-                        color: Theme.of(context).flixColors.text.secondary)
-                    .fix(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
+              padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
               child: SettingsItemWrapper(
                 topRadius: true,
                 bottomRadius: false,
@@ -407,111 +393,44 @@ class SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
-                  child: Text(
-                    S.of(context).setting_more,
-                    style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.normal,
-                            color: Theme.of(context).flixColors.text.secondary)
-                        .fix(),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
-                  child: SettingsItemWrapper(
-                    topRadius: true,
-                    bottomRadius: false,
-                    child: StreamBuilder<bool>(
-                      initialData: SettingsRepo.instance.enableMdns,
-                      stream: SettingsRepo.instance.enableMdnsStream.stream,
-                      builder:
-                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                        return SwitchableItem(
-                          label: S.of(context).setting_more_new_discover,
-                          des: S.of(context).setting_more_new_discover_des,
-                          checked: snapshot.data ?? false,
-                          onChanged: (value) {
-                            setState(() {
-                              if (value != null) {
-                                SettingsRepo.instance.setEnableMdns(value);
-                              }
-                            });
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                StreamBuilder<String>(
-                    stream: SettingsRepo.instance.darkModeTagStream.stream,
-                    initialData: SettingsRepo.instance.darkModeTag,
-                    builder: (context, snapshot) {
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 16, right: 16),
-                        child: Builder(builder: (context) {
-                          final options = [
-                            OptionData(
-                                label:
-                                    S.of(context).setting_more_dark_mode_sync,
-                                tag: 'follow_system'),
-                            OptionData(
-                                label: S.of(context).setting_more_dark_mode_on,
-                                tag: 'always_on'),
-                            OptionData(
-                                label: S.of(context).setting_more_dark_mode_off,
-                                tag: 'always_off')
-                          ];
+          
 
-                          return OptionItem(
-                              topRadius: false,
+Padding(
+                      padding:
+                          const EdgeInsets.only(left: 16, top: 16, right: 16),
+                      child: ValueListenableBuilder<String>(
+                        valueListenable: version,
+                        builder: (BuildContext context, String value,
+                            Widget? child) {
+                          return ClickableItem(
+                              label: '通用',
+                              iconPath: 'assets/images/general.svg',
                               bottomRadius: false,
-                              label: S.of(context).setting_more_dark_mode,
-                              tag: 'dark_mode',
-                              options: options,
-                              value: options.firstWhereOrNull(
-                                      (e) => e.tag == snapshot.data) ??
-                                  options[0],
-                              onChanged: (value) {
-                                SettingsRepo.instance.setDarkModeTag(value.tag);
-                              });
-                        }),
-                      );
-                    }),
-                Padding(
-                  padding: const EdgeInsets.only(left: 30, right: 16),
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 14),
-                    height: 0.5,
-                    color: const Color.fromRGBO(0, 0, 0, 0.08),
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                  child: ClickableItem(
-                    label: S.of(context).setting_more_clean_cache,
-                    topRadius: false,
-                    bottomRadius: true,
-                    onClick: () {
-                      showConfirmDeleteCacheBottomSheet();
-                    },
-                  ),
-                ),
-              ],
-            ),
-
-
-
+                              onClick: widget.goGeneralCallback);
+                        },
+                      ),
+                    ),
+Padding(
+                      padding:
+                          const EdgeInsets.only(left: 16, top: 0, right: 16),
+                      child: ValueListenableBuilder<String>(
+                        valueListenable: version,
+                        builder: (BuildContext context, String value,
+                            Widget? child) {
+                          return ClickableItem(
+                              label: '功能',
+                              iconPath: 'assets/images/function.svg',
+                              topRadius: false,
+                              bottomRadius: true,
+                              onClick: widget.goSettingFunctionCallback);
+                        },
+                      ),
+                    ),
 
 
   Padding(
                       padding:
-                          const EdgeInsets.only(left: 16, top: 0, right: 16),
+                          const EdgeInsets.only(left: 16, top: 16, right: 16),
                       child: ValueListenableBuilder<String>(
                         valueListenable: version,
                         builder: (BuildContext context, String value,

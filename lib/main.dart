@@ -44,6 +44,8 @@ import 'package:flix/presentation/screens/paircode/add_device_screen.dart';
 import 'package:flix/presentation/screens/paircode/pair_code_screen.dart';
 import 'package:flix/presentation/screens/pick_device_screen.dart';
 import 'package:flix/presentation/screens/settings/cross_device_clipboard_screen.dart';
+import 'package:flix/presentation/screens/settings/function.dart';
+import 'package:flix/presentation/screens/settings/general.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/setting/setting_provider.dart';
@@ -900,6 +902,21 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                     builder: (context) => QAScreen(
                           showBack: true,
                         ))); },
+                        goGeneralCallback: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => GeneralScreen(
+                          showBack: true,
+                        ))); 
+                        
+                        },
+
+                         goSettingFunctionCallback: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => SettingFunctionScreen(
+                          showBack: true,
+                        ))); },
         );
        
       default:
@@ -1063,7 +1080,19 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               thirdWidget = QAScreen(
                 showBack: false,
               );
-            });  },);
+            });  },
+            goGeneralCallback: () {setState(() {
+              thirdWidget = GeneralScreen(
+                showBack: false,
+              );
+            });  },
+
+             goSettingFunctionCallback: () {setState(() {
+              thirdWidget = SettingFunctionScreen(
+                showBack: false,
+              );
+            });  },
+            );
        
       default:
         return const Placeholder();
