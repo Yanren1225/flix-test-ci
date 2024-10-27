@@ -36,7 +36,7 @@ class QAScreenState extends State<QAScreen> {
       showBackButton: widget.showBack,
       builder: (EdgeInsets padding) {
         return Container(
-          margin: const EdgeInsets.only(left: 16, right: 16, top: 20),
+          margin: const EdgeInsets.only(left: 16, right: 16, top: 10),
           width: double.infinity,
           child: SingleChildScrollView(  // 添加滚动视图
             child: Column(
