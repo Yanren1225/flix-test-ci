@@ -13,4 +13,12 @@ class PingImpl extends PingApi {
     deviceModal.from = from;
     return PingV2Processor.pingV2(ip, port, deviceModal);
   }
+
+  @override
+  Future<DeviceModal?> pingWithTime(
+      String ip, int port, String from, int time) async {
+    var deviceModal = await DeviceProfileRepo.instance.getDeviceModal(port);
+    deviceModal.from = from;
+    return PingV2Processor.pingV2Time(ip, port, deviceModal, time);
+  }
 }

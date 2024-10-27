@@ -105,10 +105,6 @@ class ShipService{
     return false;
   }
 
-  Future<void> ping(String ip, int port, DeviceModal from) async {
-    NetworkConnectManager.instance.connect("ping", ip);
-  }
-
   Future<void> send(PrimitiveBubble primitiveBubble) async {
     try {
       // await checkCancel(uiBubble.shareable.id);

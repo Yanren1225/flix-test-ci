@@ -29,13 +29,13 @@ class PingV2Processor {
         headers: {"Content-type": "application/json; charset=UTF-8"},
       ).timeout(Duration(milliseconds: time));
       if (response.statusCode == 200) {
-        talker.debug('ping success: response: ${response.body}');
         DeviceModal deviceModal =
             DeviceModal.fromJson(jsonDecode(response.body));
         if (deviceModal != null) {
           deviceModal.port = port;
           deviceModal.ip = ip;
         }
+        talker.debug('ping success: response: $deviceModal');
         return deviceModal;
       } else {
         talker.error(
@@ -54,20 +54,20 @@ class PingV2Processor {
   static Future<shelf.Response> receivePingV2(shelf.Request request) async {
     try {
       final body = await request.readAsString();
-      talker.debug("_receivePingV2 from $body");
       final ping = Ping.fromJson(body);
-
       final clientAddress =
           (request.context['shelf.io.connection_info'] as HttpConnectionInfo?)
               ?.remoteAddress
               .address;
-      talker.debug(tag, "receivePingV2 clientAddress = $clientAddress");
       if (clientAddress != null) {
         ping.deviceModal.ip = clientAddress;
       }
+      talker.debug("_receivePingV2 from ${jsonEncode(ping)}");
+      var mineDevice = await DeviceProfileRepo.instance
+          .getDeviceModal(await shipService.getPort());
+      mineDevice.from = ping.deviceModal.from;
       DeviceManager.instance.addDevice(ping.deviceModal);
-      return shelf.Response.ok(jsonEncode(await DeviceProfileRepo.instance
-          .getDeviceModal(await shipService.getPort())));
+      return shelf.Response.ok(jsonEncode(mineDevice));
     } on Exception catch (e, stack) {
       talker.error('receive ping error: ', e, stack);
       return shelf.Response.badRequest();

@@ -39,7 +39,7 @@ class NetworkConnectManager {
       talker.debug('connect failed:$ip is myself,return from = $from');
       return false;
     }
-    var deviceModal = await pingApi.ping(ip, await shipService.getPort(),from);
+    var deviceModal = await pingApi.pingWithTime(ip, await shipService.getPort(),from,2000);
     deviceModal?.from = from;
     talker.debug('connect from = $from ip = $ip deviceModal = $deviceModal');
     if (deviceModal != null) {
@@ -49,4 +49,5 @@ class NetworkConnectManager {
     }
     return false;
   }
+
 }
