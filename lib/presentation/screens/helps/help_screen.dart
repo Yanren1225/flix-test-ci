@@ -91,7 +91,7 @@ class HelpScreenState extends BaseScreenState<HelpScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+              padding: const EdgeInsets.only(top: 6, left: 16, right: 16),
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
@@ -134,11 +134,11 @@ class HelpScreenState extends BaseScreenState<HelpScreen>
             FutureBuilder<List<Map<String, dynamic>>>(
               future: _fetchFilesWithTimeFromDatabase(), 
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black), 
-                  ),);
-                }
+              //  if (snapshot.connectionState == ConnectionState.waiting) {
+               //   return const Center(child: CircularProgressIndicator(
+               //     valueColor: AlwaysStoppedAnimation<Color>(Colors.black), 
+               //   ),);
+              //  }
 
                 if (snapshot.hasError) {
                   return const Center(child: Text('加载失败'));
