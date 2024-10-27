@@ -19,6 +19,7 @@ import 'package:flix/presentation/widgets/net/net_info_bottom_sheet.dart';
 import 'package:flix/resource_extension.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/android/android_utils.dart';
+import 'package:flix/utils/dev_config.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/permission/flix_permission_utils.dart';
 import 'package:flix/utils/platform_utils.dart';
@@ -80,7 +81,13 @@ class _DeviceScreenState extends State<DeviceScreen>
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SvgPicture.asset(context.imagePath("slogan.svg")),
+                      GestureDetector(
+                        child:
+                        SvgPicture.asset(context.imagePath("slogan.svg")),
+                        onTap: () {
+                          DevConfig.instance.onCounter();
+                        },
+                      ),
                       Row(
                         children: [
                           Visibility(
