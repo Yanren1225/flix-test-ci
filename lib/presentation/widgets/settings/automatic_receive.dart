@@ -57,6 +57,7 @@ var isStartUpEnabled = false;
 
   @override
  Widget build(BuildContext context) {
+  final bool showAutoSaveMedia = Platform.isAndroid;
     var width = MediaQuery.of(context).size.width;
     final bool showAppLaunchConfig = isDesktop();
     return NavigationScaffold(
@@ -74,7 +75,7 @@ var isStartUpEnabled = false;
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                   Padding(
-              padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
+              padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
               child: SettingsItemWrapper(
                 topRadius: true,
                 bottomRadius: true,
@@ -96,6 +97,37 @@ var isStartUpEnabled = false;
                       },
                     );
                   },
+                ),
+              ),
+            ),
+
+
+              Visibility(
+              visible: showAutoSaveMedia,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16,top: 8),
+                child: SettingsItemWrapper(
+                  topRadius: true,
+                  bottomRadius: true,
+                  child: StreamBuilder<bool>(
+                    initialData: SettingsRepo.instance.autoSaveToGallery,
+                    stream:
+                        SettingsRepo.instance.autoSaveToGalleryStream.stream,
+                    builder: (context, snapshot) {
+                      return SwitchableItem(
+                        label: S.of(context).setting_receive_to_album,
+                        des: S.of(context).setting_receive_to_album_des,
+                        checked: snapshot.data ?? false,
+                        onChanged: (value) {
+                          setState(() {
+                            if (value != null) {
+                              SettingsRepo.instance.setAutoSaveToGallery(value);
+                            }
+                          });
+                        },
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

@@ -130,7 +130,8 @@ class SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.only(left: 16, right: 16),
               child: ClickableItem(
                   topRadius: true,
-                  bottomRadius: !showAppLaunchConfig,
+                 // bottomRadius: !showAppLaunchConfig,
+                  bottomRadius: false,
                   label: S.of(context).setting_device_name,
                   des: deviceName,
                   iconPath: 'assets/images/device_name.svg',
@@ -328,44 +329,16 @@ class SettingsScreenState extends State<SettingsScreen> {
           
             // 高度1pt的分割线
          
-            Visibility(
-              visible: showAutoSaveMedia,
-              child: Container(
-                margin: const EdgeInsets.only(left: 14),
-                height: 0.5,
-                color: const Color.fromRGBO(0, 0, 0, 0.08),
-              ),
-            ),
+         //   Visibility(
+          //    visible: showAutoSaveMedia,
+          //    child: Container(
+          //      margin: const EdgeInsets.only(left: 14),
+          //      height: 0.5,
+          //      color: const Color.fromRGBO(0, 0, 0, 0.08),
+          //    ),
+          //  ),
 
-            Visibility(
-              visible: showAutoSaveMedia,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16),
-                child: SettingsItemWrapper(
-                  topRadius: false,
-                  bottomRadius: true,
-                  child: StreamBuilder<bool>(
-                    initialData: SettingsRepo.instance.autoSaveToGallery,
-                    stream:
-                        SettingsRepo.instance.autoSaveToGalleryStream.stream,
-                    builder: (context, snapshot) {
-                      return SwitchableItem(
-                        label: S.of(context).setting_receive_to_album,
-                        des: S.of(context).setting_receive_to_album_des,
-                        checked: snapshot.data ?? false,
-                        onChanged: (value) {
-                          setState(() {
-                            if (value != null) {
-                              SettingsRepo.instance.setAutoSaveToGallery(value);
-                            }
-                          });
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
+          
 
           
 
