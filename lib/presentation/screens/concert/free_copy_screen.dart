@@ -35,6 +35,7 @@ class FreeCopyScreenState extends State<FreeCopyScreen> {
           children: [
             // Main content
             Container(
+              padding: const EdgeInsets.only(left: 20,right: 20,bottom: 80,top:65),
               width: double.infinity,
               height: double.infinity,
               decoration: FlixDecoration(
