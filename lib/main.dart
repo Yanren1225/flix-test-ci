@@ -967,73 +967,29 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
       body: Row(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 5),
+            padding: const EdgeInsets.only(left: 24, right: 9),
             child: SizedBox(
-              width: 60,
-              child: NavigationRail(
-                onDestinationSelected: (int index) {
-                  setSelectedIndex(index);
-                  setState(() {
-              thirdWidget = null;
-            });
-                },
-                destinations: [
-                  NavigationRailDestination(
-                      icon: SvgPicture.asset(
-                        'assets/images/ic_share.svg',
-                        width: 26,
-                        height: 26,
-                        colorFilter: ColorFilter.mode(
-                            getColor(context, 0, selectedIndex),
-                            BlendMode.srcIn),
-                      ),
-                      label: const Text('')),
-                  NavigationRailDestination(
-                      icon: SvgPicture.asset(
-                        'assets/images/search.svg',
-                        width: 26,
-                        height: 26,
-                        colorFilter: ColorFilter.mode(
-                            getColor(context, 1, selectedIndex),
-                            BlendMode.srcIn),
-                      ),
-                      label: const Text('')),
-                  NavigationRailDestination(
-                      icon: SvgPicture.asset(
-                        'assets/images/setting.svg',
-                        width: 26,
-                        height: 26,
-                        colorFilter: ColorFilter.mode(
-                            getColor(context, 2, selectedIndex),
-                            BlendMode.srcIn),
-                      ),
-                      label: const Text(''))
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center, 
+                children: [
+                  _buildNavItem(
+                    index: 0,
+                    selectedAssetPath: 'assets/images/ic_share.svg',
+                    unselectedAssetPath: 'assets/images/navitem1.svg',
+                  ),
+                  const SizedBox(height: 42),
+                  _buildNavItem(
+                    index: 1,
+                    selectedAssetPath: 'assets/images/search.svg',
+                    unselectedAssetPath: 'assets/images/navitem2.svg',
+                  ),
+                  const SizedBox(height: 42),
+                  _buildNavItem(
+                    index: 2,
+                    selectedAssetPath: 'assets/images/setting.svg',
+                    unselectedAssetPath: 'assets/images/navitem3.svg',
+                  ),
                 ],
-                labelType: NavigationRailLabelType.all,
-                useIndicator: true,
-                indicatorColor:
-                    Theme.of(context).flixColors.background.secondary,
-                groupAlignment: 0.0,
-                extended: false,
-                elevation: null,
-                selectedIndex: selectedIndex,
-                selectedIconTheme: IconThemeData(
-                    size: 26, color: Theme.of(context).flixColors.text.primary),
-                unselectedIconTheme: IconThemeData(
-                    size: 26,
-                    color: Theme.of(context).flixColors.text.tertiary),
-                selectedLabelTextStyle: TextStyle(
-                  color: Theme.of(context).flixColors.text.primary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.normal,
-                ).fix(),
-                unselectedLabelTextStyle: TextStyle(
-                        color: Theme.of(context).flixColors.text.tertiary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.normal)
-                    .fix(),
-                backgroundColor:
-                    Theme.of(context).flixColors.background.secondary,
               ),
             ),
           ),
@@ -1046,6 +1002,46 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
       ),
     );
   }
+
+  Widget _buildNavItem({
+    required int index,
+    required String selectedAssetPath,
+    required String unselectedAssetPath,
+  }) {
+    bool isSelected = index == selectedIndex;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,  
+      child: GestureDetector(
+        onTap: () {
+          setSelectedIndex(index);
+          setState(() {
+            thirdWidget = null;
+          });
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(),
+          child: SvgPicture.asset(
+            isSelected ? selectedAssetPath : unselectedAssetPath, 
+            width: 25,
+            height: 25,
+            colorFilter: ColorFilter.mode(
+              getNavItemColor(context, index, selectedIndex),
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color getNavItemColor(BuildContext context, int index, int selectedIndex) {
+    if (index == selectedIndex) {
+      return Theme.of(context).flixColors.text.primary;
+    } else {
+      return Theme.of(context).flixColors.text.secondary;
+    }
+  }
+
 
   Widget secondPart() {
     switch (selectedIndex) {
