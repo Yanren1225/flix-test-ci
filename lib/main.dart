@@ -928,7 +928,10 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 context,
                 CupertinoPageRoute(
                     builder: (context) => SettingFunctionScreen(
-                          showBack: true,
+                          showBack: true, crossDeviceCallback: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => CrossDeviceClipboardScreen())); },
                         ))); 
                         
           },
@@ -1116,7 +1119,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
 
              goSettingFunctionCallback: () {setState(() {
               thirdWidget = SettingFunctionScreen(
-                showBack: false,
+                showBack: false, crossDeviceCallback: () { setState(() {
+              thirdWidget = CrossDeviceClipboardScreen(
+              
+              );
+            });  },
               );
             });  },
 
