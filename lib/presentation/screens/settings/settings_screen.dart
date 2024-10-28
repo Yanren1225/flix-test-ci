@@ -514,7 +514,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(
-                        left: 16, top: 4, right: 16, bottom: 26),
+                        left: 16, top: 4, right: 16, bottom: 22),
                     child: ClickActionItem(
                         label: S.of(context).setting_exit,
                         dangerous: true,
@@ -535,12 +535,55 @@ class SettingsScreenState extends State<SettingsScreen> {
 
 
 
-
- 
-
-             
+            Padding(
+              padding: const EdgeInsets.only(left: 10, top: 0, right: 16, bottom: 36),
+              child: Center( 
+                child: Row(
+                  mainAxisSize: MainAxisSize.min, 
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween, 
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                      Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const IntroAgreementPage()),);
+                      },
+                      child: Text(
+                        '用户协议', 
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).flixColors.text.secondary, 
+                        ),
+                      ),
+                    ),
                   
-               
+                    Text(
+                        '  |  ',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).flixColors.text.secondary, 
+                        ),
+                      ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const IntroPrivacyPage()),);
+                      },
+                      child: Text(
+                        '隐私政策',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).flixColors.text.secondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ), 
           ],
         ),
       ),

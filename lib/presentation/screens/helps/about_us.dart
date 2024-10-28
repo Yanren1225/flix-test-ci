@@ -55,7 +55,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
             participate(),
             feedbackGuide(),
             // donate(),
-            privacy(),
+          
             version(),
             
           ];
@@ -264,33 +264,7 @@ Widget website() {
   }
 
 
-  Widget privacy() {
-   return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Text.rich(TextSpan(
-          children: [
-          TextSpan(text: '用户协议:\n'),
-            ClickableSpan('《Flix 用户协议》\n\n', () {
-              Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const IntroAgreementPage()),);
-            }),
-             TextSpan(text: '隐私政策:\n'),
-            ClickableSpan('《Flix 隐私政策》', () {
-             Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const IntroPrivacyPage()),);
-            }),
-          ],
-          style: TextStyle(
-                  color: Theme.of(context).flixColors.text.primary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400)
-              .fix())),
-    );
-  }
+  
 
   TextSpan ClickableSpan(String text, GestureTapCallback onTap) {
     return TextSpan(
