@@ -591,7 +591,7 @@ class _HistoryItemState extends State<HistoryItem> {
                                       .textTheme
                                       .bodyLarge!
                                       .color,
-                                  fontWeight: FontWeight.w500,
+                                  //fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
