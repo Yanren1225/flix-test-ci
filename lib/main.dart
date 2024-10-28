@@ -564,12 +564,14 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
   // DeviceInfo? selectedDevice;
   bool isLeaved = false;
   Widget? thirdWidget;
+  
 
-  Center selectedDeviceTipsScreen() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
+ Center selectedDeviceTipsScreen() {
+  return Center(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (selectedIndex == 0) ...[
           Image.asset(
             isDarkMode(context)
                 ? 'assets/images/image_placeholder_dark.png'
@@ -587,11 +589,16 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                     fontWeight: FontWeight.normal,
                     color: Theme.of(context).flixColors.text.secondary)
                 .fix(),
-          )
+          ),
         ],
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
+
+
+
+  
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
@@ -966,6 +973,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               child: NavigationRail(
                 onDestinationSelected: (int index) {
                   setSelectedIndex(index);
+                  setState(() {
+              thirdWidget = null;
+            });
                 },
                 destinations: [
                   NavigationRailDestination(
