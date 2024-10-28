@@ -50,6 +50,8 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback goGeneralCallback;
   final VoidCallback goSettingFunctionCallback;
   final VoidCallback goAutomaticReceiveCallback;
+  final VoidCallback goSettingPravicyScreen;
+  final VoidCallback goSettingAgreementScreen;
 
   const SettingsScreen(
       {super.key,
@@ -62,6 +64,8 @@ class SettingsScreen extends StatefulWidget {
         required this.goGeneralCallback,
       required this.goSettingFunctionCallback,
       required this.goAutomaticReceiveCallback,
+      required this.goSettingPravicyScreen,
+      required this.goSettingAgreementScreen
       });
 
   @override
@@ -543,12 +547,9 @@ class SettingsScreenState extends State<SettingsScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween, 
                   children: [
                     GestureDetector(
-                      onTap: () {
-                      Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const IntroAgreementPage()),);
-                      },
+                      onTap:  
+                      widget.goSettingAgreementScreen
+                      ,
                       child: Text(
                         '用户协议', 
                         style: TextStyle(
@@ -566,12 +567,9 @@ class SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                     GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const IntroPrivacyPage()),);
-                      },
+                      onTap:  
+                      widget.goSettingPravicyScreen
+                      ,
                       child: Text(
                         '隐私政策',
                         style: TextStyle(

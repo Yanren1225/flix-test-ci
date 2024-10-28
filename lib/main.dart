@@ -43,9 +43,11 @@ import 'package:flix/presentation/screens/intro_screen.dart';
 import 'package:flix/presentation/screens/paircode/add_device_screen.dart';
 import 'package:flix/presentation/screens/paircode/pair_code_screen.dart';
 import 'package:flix/presentation/screens/pick_device_screen.dart';
+import 'package:flix/presentation/screens/settings/agreement.dart';
 import 'package:flix/presentation/screens/settings/cross_device_clipboard_screen.dart';
 import 'package:flix/presentation/screens/settings/function.dart';
 import 'package:flix/presentation/screens/settings/general.dart';
+import 'package:flix/presentation/screens/settings/pravicy.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/settings/automatic_receive.dart';
@@ -952,7 +954,24 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                         
           },
 
+ goSettingPravicyScreen: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => SettingPravicyScreen(
+                          showBack: true,
+                        ))); 
+                        
+            },
 
+
+            goSettingAgreementScreen: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => SettingAgreementScreen(
+                          showBack: true,
+                        ))); 
+                        
+            },
 
         );
        
@@ -1138,6 +1157,19 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 showBack: false,
               );
             });  },
+
+goSettingPravicyScreen: () {setState(() {
+              thirdWidget = SettingPravicyScreen(
+                showBack: false,
+              );
+            });  },
+
+goSettingAgreementScreen: () {setState(() {
+              thirdWidget = SettingAgreementScreen(
+                showBack: false,
+              );
+            });  },
+
             );
        
       default:
