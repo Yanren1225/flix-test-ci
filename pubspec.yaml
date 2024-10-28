@@ -147,6 +147,10 @@ dependencies:
   uri_content: ^2.2.0
   simple_loading_dialog: ^1.0.0
   rxdart: ^0.28.0
+  hooks_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  freezed_annotation: ^2.4.1
 #  simple_native_image_compress: ^1.1.0
 # thumbnailer: ^2.2.0
 
@@ -217,6 +221,12 @@ dev_dependencies:
       url: "https://github.com/bytedance/flutter_ume"
       ref: "73beedf0e00c4c3a3ef36899ff16846395e7c6c6"
       path: "kits/flutter_ume_kit_console"
+  
+  riverpod_lint: ^2.3.12
+  riverpod_generator: ^2.4.2
+
+  freezed: ^2.5.7
+
 
   #  flutter_test:
   #    sdk: flutter
@@ -229,6 +239,7 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   drift_dev: ^2.15.0
   intl_utils: ^2.8.7
+
 
   make:
     path: ./make
