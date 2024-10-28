@@ -306,24 +306,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ])),
 
            
-            Padding(
-              padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
-              child: StreamBuilder<bool>(
-                initialData: SettingsRepo.instance.autoReceive,
-                stream: SettingsRepo.instance.autoReceiveStream.stream,
-                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                  return ClickableItem(
-                    label: S.of(context).setting_cross_device_clipboard,
-                    des: S.of(context).setting_cross_device_clipboard_des,
-                    topRadius: true,
-                    bottomRadius: true,
-                    onClick: () {
-                      widget.crossDeviceCallback();
-                    },
-                  );
-                },
-              ),
-            ),
+          
             // 高度1pt的分割线
            
           

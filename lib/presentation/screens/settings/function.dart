@@ -26,8 +26,9 @@ class SettingFunctionScreen extends StatefulWidget {
   var versionTapCount = 0;
   int lastTapTime = 0;
   bool showBack = true;
+  final VoidCallback crossDeviceCallback;
 
-  SettingFunctionScreen({super.key, required this.showBack});
+  SettingFunctionScreen({super.key, required this.crossDeviceCallback,required this.showBack});
 
   @override
   State<StatefulWidget> createState() => SettingFunctionScreenState();
@@ -55,7 +56,25 @@ class SettingFunctionScreenState extends State<SettingFunctionScreen> {
                     Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              
+               
+            Padding(
+              padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
+              child: StreamBuilder<bool>(
+                initialData: SettingsRepo.instance.autoReceive,
+                stream: SettingsRepo.instance.autoReceiveStream.stream,
+                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  return ClickableItem(
+                    label: S.of(context).setting_cross_device_clipboard,
+                    des: S.of(context).setting_cross_device_clipboard_des,
+                    topRadius: true,
+                    bottomRadius: true,
+                    onClick: () {
+                      widget.crossDeviceCallback();
+                    },
+                  );
+                },
+              ),
+            ),
               ],
             ),
               ],
