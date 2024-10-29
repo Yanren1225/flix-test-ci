@@ -1,4 +1,5 @@
 import 'package:figma_squircle/figma_squircle.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -40,9 +41,9 @@ class IntroWiFi extends StatelessWidget {
                               const SizedBox(height: 5),
                               Text(
                                 S.of(context).intro_wifi_2,
-                                 style: const TextStyle(
+                                 style:  TextStyle(
                                   fontSize: 16,
-                                  color: Color.fromRGBO(60, 60, 67, 0.6),
+                                  color: Theme.of(context).flixColors.text.secondary,
                             
                                 ),
                               ),
@@ -151,9 +152,9 @@ class IntroWiFi extends StatelessWidget {
                       ),
                       Text(
                         S.of(context).intro_wifi_2,
-                         style: const TextStyle(
+                         style:  TextStyle(
                                   fontSize: 16,
-                                  color: Color.fromRGBO(60, 60, 67, 0.6),
+                                  color: Theme.of(context).flixColors.text.secondary,
                             
                                 ),
                       ),

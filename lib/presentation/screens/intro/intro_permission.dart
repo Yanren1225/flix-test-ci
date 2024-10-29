@@ -1,6 +1,7 @@
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flix/presentation/screens/intro/intro_agreement.dart';
 import 'package:flix/presentation/screens/intro/intro_privacy.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -51,9 +52,9 @@ class _IntroPermissionState extends State<IntroPermission> {
                               const SizedBox(height: 5),
                               Text(
                                 S.of(context).intro_permission_2,
-                                style: const TextStyle(
+                                style:  TextStyle(
                                   fontSize: 16,
-                                  color: Color.fromRGBO(60, 60, 67, 0.6),
+                                  color: Theme.of(context).flixColors.text.secondary,
                                 ),
                               ),
                             ],
@@ -108,9 +109,9 @@ class _IntroPermissionState extends State<IntroPermission> {
                         });
                       },
                       checkedColor: const Color.fromARGB(255, 0, 122, 255),
-                      uncheckedColor: const Color.fromRGBO(0, 0, 0, 0.06),
+                      uncheckedColor: Theme.of(context).flixColors.text.tertiary.withOpacity(0.08),
                       border: Border.all(
-                        color: Color.fromARGB(0, 0, 123, 255),
+                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.08),
                         width: 0,
                       ),
                       isChecked: isChecked,
@@ -126,7 +127,7 @@ class _IntroPermissionState extends State<IntroPermission> {
                       textAlign: TextAlign.center,
                       text: TextSpan(
                         text: S.of(context).intro_permission_8a,
-                        style: const TextStyle(color: Colors.black),
+                        style:  TextStyle(color: Theme.of(context).flixColors.text.primary),
                         children: [
                           TextSpan(
                             text: S.of(context).intro_permission_8b,
@@ -144,7 +145,7 @@ class _IntroPermissionState extends State<IntroPermission> {
                           ),
                           TextSpan(
                             text: S.of(context).intro_permission_8c,
-                            style: const TextStyle(color: Colors.black),
+                            style:  TextStyle(color: Theme.of(context).flixColors.text.primary),
                           ),
                           TextSpan(
                             text: S.of(context).intro_permission_8d,
@@ -258,9 +259,9 @@ class _IntroPermissionState extends State<IntroPermission> {
                       ),
                       Text(
                         S.of(context).intro_permission_2,
-                        style: const TextStyle(
+                        style:  TextStyle(
                           fontSize: 16,
-                          color: Color.fromRGBO(60, 60, 67, 0.6),
+                          color: Theme.of(context).flixColors.text.secondary,
                         ),
                       ),
                     ],
@@ -300,9 +301,9 @@ class _IntroPermissionState extends State<IntroPermission> {
                         });
                       },
                       checkedColor: const Color.fromARGB(255, 0, 122, 255),
-                      uncheckedColor: const Color.fromRGBO(0, 0, 0, 0.06),
+                      uncheckedColor: Theme.of(context).flixColors.text.tertiary.withOpacity(0.08),
                       border: Border.all(
-                        color: const Color.fromARGB(0, 0, 123, 255),
+                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.08),
                         width: 0,
                       ),
                       isChecked: isChecked,
@@ -317,7 +318,7 @@ class _IntroPermissionState extends State<IntroPermission> {
                       textAlign: TextAlign.center, 
                       text: TextSpan(
                         text: S.of(context).intro_permission_8a,
-                        style: const TextStyle(color: Colors.black),
+                        style:  TextStyle(color: Theme.of(context).flixColors.text.primary),
                         children: [
                           TextSpan(
                             text: S.of(context).intro_permission_8b,
@@ -334,7 +335,7 @@ class _IntroPermissionState extends State<IntroPermission> {
                           ),
                           TextSpan(
                             text: S.of(context).intro_permission_8c,
-                            style: const TextStyle(color: Colors.black),
+                             style:  TextStyle(color: Theme.of(context).flixColors.text.primary),
                           ),
                           TextSpan(
                             text: S.of(context).intro_permission_8d,
@@ -439,7 +440,7 @@ class _IntroPermissionState extends State<IntroPermission> {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).flixColors.background.primary,
          borderRadius: SmoothBorderRadius(
                                 cornerRadius: 15,
                                 cornerSmoothing: 0.6,
@@ -456,8 +457,8 @@ class _IntroPermissionState extends State<IntroPermission> {
           title: Text(title),
           subtitle: Text(
             subtitle,
-            style: const TextStyle(
-              color: Color.fromRGBO(60, 60, 67, 0.6),
+            style: TextStyle(
+              color: Theme.of(context).flixColors.text.secondary,
             ),
           ),
           horizontalTitleGap: 16.0,

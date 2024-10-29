@@ -45,19 +45,19 @@ class _IntroPrivacyPageState extends State<IntroPrivacyPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    icon:  Icon(Icons.arrow_back, color: Theme.of(context).flixColors.text.primary),
                     onPressed: () {
                       Navigator.pop(context);
                     },
                   ),
-                  const Expanded(
+                   Expanded(
                     child: Text(
                       '隐私政策',
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         fontSize: 18,
                        
-                        color: Colors.black,
+                        color: Theme.of(context).flixColors.text.primary,
                       ),
                     ),
                   ),
