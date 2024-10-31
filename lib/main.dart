@@ -33,6 +33,7 @@ import 'package:flix/l10n/lang_config.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/network/discover/discover_manager.dart';
 import 'package:flix/network/multicast_client_provider.dart';
+import 'package:flix/presentation/screens/account/login.dart';
 import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
@@ -973,6 +974,16 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                         
             },
 
+
+              goLoginPage: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => LoginPage(
+                          showBack: true,
+                        ))); 
+                        
+            },
+
         );
        
       default:
@@ -1166,6 +1177,14 @@ goSettingPravicyScreen: () {setState(() {
 
 goSettingAgreementScreen: () {setState(() {
               thirdWidget = SettingAgreementScreen(
+                showBack: false,
+              );
+            });  },
+
+
+
+            goLoginPage: () {setState(() {
+              thirdWidget = LoginPage(
                 showBack: false,
               );
             });  },

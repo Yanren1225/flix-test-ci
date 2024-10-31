@@ -52,6 +52,7 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback goAutomaticReceiveCallback;
   final VoidCallback goSettingPravicyScreen;
   final VoidCallback goSettingAgreementScreen;
+  final VoidCallback goLoginPage;
 
   const SettingsScreen(
       {super.key,
@@ -65,7 +66,8 @@ class SettingsScreen extends StatefulWidget {
       required this.goSettingFunctionCallback,
       required this.goAutomaticReceiveCallback,
       required this.goSettingPravicyScreen,
-      required this.goSettingAgreementScreen
+      required this.goSettingAgreementScreen,
+      required this.goLoginPage,
       });
 
   @override
@@ -354,7 +356,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                         builder: (BuildContext context, String value,
                             Widget? child) {
                           return ClickableItem(
-                              label: '功能',
+                              label: '扩展功能',
                               iconPath: 'assets/images/function.svg',
                               topRadius: false,
                               bottomRadius: true,
@@ -492,13 +494,14 @@ class SettingsScreenState extends State<SettingsScreen> {
                               ));
                         }),
                   ),
-                  Padding(
+                   Padding(
                     padding:
-                        const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 0),
                     child: ClickableItem(
                         label: '语言',
                         tail: Localizations.localeOf(context).toString(),
                         topRadius: false,
+                        bottomRadius:false,
                         onClick: () {
                           showCupertinoModalPopup(
                               context: context,
@@ -506,6 +509,14 @@ class SettingsScreenState extends State<SettingsScreen> {
                                 return const DevNewLocaleBottomSheet();
                               });
                         }),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                    child: ClickableItem(
+                        label: '账号系统',
+                        topRadius: false,
+                       onClick: widget.goLoginPage),
                   ),
                 ],
               ),
