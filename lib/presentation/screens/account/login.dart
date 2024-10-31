@@ -323,7 +323,7 @@ class _LoginPageState extends State<LoginPage> {
   return InputDecoration(
     labelText: labelText,
     filled: true,
-    fillColor: Colors.white,
+    fillColor: Theme.of(context).flixColors.background.primary,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(15),
       borderSide: BorderSide.none,
@@ -409,7 +409,7 @@ class _LoginPageState extends State<LoginPage> {
                               margin: const EdgeInsets.only(bottom: 10), 
                               padding: const EdgeInsets.symmetric(horizontal: 10), 
                               decoration: BoxDecoration(
-                                color: Colors.white, 
+                                color:  Theme.of(context).flixColors.background.primary, 
                                 borderRadius: BorderRadius.circular(15), 
                               ),
                               child: Align(
@@ -465,7 +465,7 @@ class _LoginPageState extends State<LoginPage> {
                               margin: const EdgeInsets.only(bottom: 10), 
                               padding: const EdgeInsets.symmetric(horizontal: 10), 
                               decoration: BoxDecoration(
-                                color: Colors.white, 
+                                color:  Theme.of(context).flixColors.background.primary, 
                                 borderRadius: BorderRadius.circular(15), 
                               ),
                               child: Align(
@@ -516,7 +516,7 @@ class _LoginPageState extends State<LoginPage> {
                               margin: const EdgeInsets.only(bottom: 10), 
                               padding: const EdgeInsets.symmetric(horizontal: 10), 
                               decoration: BoxDecoration(
-                                color: Colors.white, 
+                                color:  Theme.of(context).flixColors.background.primary, 
                                 borderRadius: BorderRadius.circular(15), 
                               ),
                               child: Align(
