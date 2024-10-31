@@ -2,9 +2,8 @@ import 'package:flix/model/device_info.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/widgets/devices/device_item.dart';
-import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/meida/media_utils.dart';
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
  
 class DeviceList extends StatefulWidget {
@@ -84,6 +83,15 @@ class DeviceListState extends State<DeviceList> {
           },
           onDelete: (item) {
             widget.onHistoryDelete?.call(item);
+          },
+          onManualConnect: (item) {
+            deviceProvider.connectDevice(item).then((result) {
+              if (result) {
+                flixToast.info("添加成功");
+              } else {
+                flixToast.alert("添加失败");
+              }
+            });
           },
         );
       }),

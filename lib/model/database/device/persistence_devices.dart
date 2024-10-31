@@ -9,6 +9,7 @@ class PersistenceDevices extends Table {
   IntColumn get version => integer().nullable()();
   TextColumn get ip => text().nullable()();
   TextColumn get host => text().nullable()();
+  TextColumn get from => text().nullable()();
   DateTimeColumn get insertOrUpdateTime => dateTime().withDefault(currentDateAndTime)();
 
   @override

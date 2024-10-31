@@ -6,7 +6,7 @@ extension DeviceUtils on DeviceModal {
   //   DeviceInfo("1", 1, 'RedmiBook Pro 15 锐龙版', 'pc.webp'),
   //   DeviceInfo("2", 2, 'Xiaomi Pad 14 Max', 'pad.webp'),
   //   DeviceInfo("3", 3, 'Xiaomi Watch S3', 'watch.webp')
-  DeviceInfo toDeviceInfo() {
+  DeviceInfo toDeviceInfo([bool isConnecting = false]) {
     final int type;
     final String icon;
     switch (deviceType) {
@@ -47,6 +47,6 @@ extension DeviceUtils on DeviceModal {
       name = deviceModel ?? "Unknown";
     }
 
-    return DeviceInfo(fingerprint, type, name, icon,version ?? -1);
+    return DeviceInfo(fingerprint, type, name, icon,version ?? -1, from = from, isConnecting = isConnecting);
   }
 }

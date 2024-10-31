@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:figma_squircle/figma_squircle.dart';
@@ -6,8 +8,8 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/badge_service.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/wifi_or_ap_name.dart';
-import 'package:flix/network/discover/discover_manager.dart';
 import 'package:flix/network/multicast_client_provider.dart';
+import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/widgets/basic/icon_label_button.dart';
@@ -18,17 +20,12 @@ import 'package:flix/presentation/widgets/net/net_info_bottom_sheet.dart';
 import 'package:flix/resource_extension.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/android/android_utils.dart';
-import 'package:flix/utils/dev_config.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/permission/flix_permission_utils.dart';
-import 'package:flix/utils/platform_utils.dart';
-import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:flutter_swipe_action_cell/flutter_swipe_action_cell.dart';
 import 'package:modals/modals.dart';
-import 'dart:io';
 
 import '../../l10n/l10n.dart';
 
@@ -53,7 +50,6 @@ class DeviceScreen extends StatefulWidget {
 class _DeviceScreenState extends State<DeviceScreen>
     with RouteAware, WidgetsBindingObserver {
   final _badges = BadgeService.instance.badges;
-  List<DeviceInfo> history = List.empty(growable: true);
   List<DeviceInfo> devices = List.empty(growable: true);
   final _refreshController = EasyRefreshController();
   bool isFirewallAllowed = true;
@@ -61,7 +57,6 @@ class _DeviceScreenState extends State<DeviceScreen>
   @override
   Widget build(BuildContext context) {
     final deviceProvider = MultiCastClientProvider.of(context, listen: true);
-    history = deviceProvider.history.map((d) => d.toDeviceInfo()).toList();
     devices = deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
     return Scaffold(
       body: Container(
@@ -233,16 +228,20 @@ class _DeviceScreenState extends State<DeviceScreen>
                     child: CustomScrollView(
                       slivers: [
                         const SliverPadding(padding: EdgeInsets.only(top: 5)),
-                        DeviceList(
-                          devices: devices,
-                          onDeviceSelected: widget.onDeviceSelected,
-                          showHistory: true,
-                          history: history,
-                          badges: _badges,
-                          onHistoryDelete: (item) {
-                            deviceProvider.deleteHistory(item.id);
-                          },
-                        )
+                        StreamBuilder(
+                            stream: deviceProvider.history,
+                            builder: (context, snapshot) {
+                              return DeviceList(
+                                devices: devices,
+                                onDeviceSelected: widget.onDeviceSelected,
+                                showHistory: true,
+                                history: snapshot.data?.toList() ?? [],
+                                badges: _badges,
+                                onHistoryDelete: (item) {
+                                  deviceProvider.deleteHistory(item.id);
+                                },
+                              );
+                            })
                       ],
                     ),
                   ),
@@ -408,16 +407,18 @@ class HistoryItem extends StatefulWidget {
   final DeviceInfo historyItemInfo;
   final VoidCallback onTap;
   final void Function(DeviceInfo deviceInfo) onDelete;
+  final void Function(DeviceInfo) onManualConnect;
   final bool selected;
 
-  const HistoryItem({
-    Key? key,
-    required this.index,
-    required this.historyItemInfo,
-    this.selected = false,
-    required this.onTap,
-    required this.onDelete,
-  }) : super(key: key);
+  const HistoryItem(
+      {Key? key,
+      required this.index,
+      required this.historyItemInfo,
+      this.selected = false,
+      required this.onTap,
+      required this.onDelete,
+      required this.onManualConnect})
+      : super(key: key);
 
   @override
   _HistoryItemState createState() => _HistoryItemState();
@@ -595,7 +596,58 @@ class _HistoryItemState extends State<HistoryItem> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            Visibility(
+                              visible: widget.historyItemInfo.from ==
+                                  DeviceFrom.manual,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: AnimatedCrossFade(
+                                  duration: const Duration(milliseconds: 80),
+                                  firstChild: TextButton(
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty.all(Color.fromARGB(26, 0, 122, 255)),
+                                    ),
+                                    onPressed: () {
+                                      widget.onManualConnect(
+                                          widget.historyItemInfo);
+                                    },
+                                    child: const Text(
+                                      "连接",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color.fromARGB(255, 0, 122, 255)
+                                      ),
+                                    ),
+                                  ),
+                                  secondChild: TextButton(
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty.all(const Color.fromARGB(26, 0, 122, 255)),
+                                    ),
+                                    onPressed: () {
+
+                                    },
+                                    child: const Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+
+                                        Text(
+                                          "连接中",
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color.fromARGB(255, 0, 122, 255)
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  crossFadeState: widget.historyItemInfo.isConnecting ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
                             SvgPicture.asset(
                               'assets/images/arrow_right.svg',
                               width: 24,

@@ -19,6 +19,7 @@ class DevicesDao extends DatabaseAccessor<AppDatabase> with _$DevicesDaoMixin {
         ip: Value(deviceModal.ip),
         version: Value(deviceModal.version),
         host: Value(deviceModal.host),
+        from: Value(deviceModal.from),
         insertOrUpdateTime: Value(DateTime.now())));
   }
 
@@ -37,7 +38,8 @@ class DevicesDao extends DatabaseAccessor<AppDatabase> with _$DevicesDaoMixin {
                 fingerprint: e.fingerprint,
                 version: e.version,
                 port: e.port,
-                ip: e.ip ?? ""
+                ip: e.ip ?? "",
+                from: e.from ?? ""
             )).toList());
   }
 

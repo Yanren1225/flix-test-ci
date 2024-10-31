@@ -36,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? e]) : super(e ?? _openConnection());
   static const tag = "AppDatabase";
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   static LazyDatabase _openConnection() {
     // the LazyDatabase util lets us find the right location for the file async.
@@ -91,6 +91,9 @@ class AppDatabase extends _$AppDatabase {
         if(from < 9){
           //有的平台会出问题
           await migration8_9(m);
+        }
+        if (from < 10) {
+          await migration9_10(m);
         }
       },
     );
@@ -159,6 +162,13 @@ class AppDatabase extends _$AppDatabase {
   migration8_9(Migrator m) async {
     await m.createTable(directoryContents);
     await m.createTable(pairDevices);
+  }
+
+  migration9_10(Migrator m) async {
+    if (!(await _checkIfColumnExists(
+        persistenceDevices.actualTableName, persistenceDevices.from.name))) {
+      await m.addColumn(persistenceDevices, persistenceDevices.from);
+    }
   }
 }
 

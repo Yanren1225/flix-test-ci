@@ -1260,6 +1260,11 @@ class $PersistenceDevicesTable extends PersistenceDevices
   late final GeneratedColumn<String> host = GeneratedColumn<String>(
       'host', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _fromMeta = const VerificationMeta('from');
+  @override
+  late final GeneratedColumn<String> from = GeneratedColumn<String>(
+      'from', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _insertOrUpdateTimeMeta =
       const VerificationMeta('insertOrUpdateTime');
   @override
@@ -1278,6 +1283,7 @@ class $PersistenceDevicesTable extends PersistenceDevices
         version,
         ip,
         host,
+        from,
         insertOrUpdateTime
       ];
   @override
@@ -1331,6 +1337,10 @@ class $PersistenceDevicesTable extends PersistenceDevices
       context.handle(
           _hostMeta, host.isAcceptableOrUnknown(data['host']!, _hostMeta));
     }
+    if (data.containsKey('from')) {
+      context.handle(
+          _fromMeta, from.isAcceptableOrUnknown(data['from']!, _fromMeta));
+    }
     if (data.containsKey('insert_or_update_time')) {
       context.handle(
           _insertOrUpdateTimeMeta,
@@ -1362,6 +1372,8 @@ class $PersistenceDevicesTable extends PersistenceDevices
           .read(DriftSqlType.string, data['${effectivePrefix}ip']),
       host: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}host']),
+      from: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}from']),
       insertOrUpdateTime: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime,
           data['${effectivePrefix}insert_or_update_time'])!,
@@ -1384,6 +1396,7 @@ class PersistenceDevice extends DataClass
   final int? version;
   final String? ip;
   final String? host;
+  final String? from;
   final DateTime insertOrUpdateTime;
   const PersistenceDevice(
       {required this.alias,
@@ -1394,6 +1407,7 @@ class PersistenceDevice extends DataClass
       this.version,
       this.ip,
       this.host,
+      this.from,
       required this.insertOrUpdateTime});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1418,6 +1432,9 @@ class PersistenceDevice extends DataClass
     if (!nullToAbsent || host != null) {
       map['host'] = Variable<String>(host);
     }
+    if (!nullToAbsent || from != null) {
+      map['from'] = Variable<String>(from);
+    }
     map['insert_or_update_time'] = Variable<DateTime>(insertOrUpdateTime);
     return map;
   }
@@ -1438,6 +1455,7 @@ class PersistenceDevice extends DataClass
           : Value(version),
       ip: ip == null && nullToAbsent ? const Value.absent() : Value(ip),
       host: host == null && nullToAbsent ? const Value.absent() : Value(host),
+      from: from == null && nullToAbsent ? const Value.absent() : Value(from),
       insertOrUpdateTime: Value(insertOrUpdateTime),
     );
   }
@@ -1454,6 +1472,7 @@ class PersistenceDevice extends DataClass
       version: serializer.fromJson<int?>(json['version']),
       ip: serializer.fromJson<String?>(json['ip']),
       host: serializer.fromJson<String?>(json['host']),
+      from: serializer.fromJson<String?>(json['from']),
       insertOrUpdateTime:
           serializer.fromJson<DateTime>(json['insertOrUpdateTime']),
     );
@@ -1470,6 +1489,7 @@ class PersistenceDevice extends DataClass
       'version': serializer.toJson<int?>(version),
       'ip': serializer.toJson<String?>(ip),
       'host': serializer.toJson<String?>(host),
+      'from': serializer.toJson<String?>(from),
       'insertOrUpdateTime': serializer.toJson<DateTime>(insertOrUpdateTime),
     };
   }
@@ -1483,6 +1503,7 @@ class PersistenceDevice extends DataClass
           Value<int?> version = const Value.absent(),
           Value<String?> ip = const Value.absent(),
           Value<String?> host = const Value.absent(),
+          Value<String?> from = const Value.absent(),
           DateTime? insertOrUpdateTime}) =>
       PersistenceDevice(
         alias: alias ?? this.alias,
@@ -1493,6 +1514,7 @@ class PersistenceDevice extends DataClass
         version: version.present ? version.value : this.version,
         ip: ip.present ? ip.value : this.ip,
         host: host.present ? host.value : this.host,
+        from: from.present ? from.value : this.from,
         insertOrUpdateTime: insertOrUpdateTime ?? this.insertOrUpdateTime,
       );
   PersistenceDevice copyWithCompanion(PersistenceDevicesCompanion data) {
@@ -1508,6 +1530,7 @@ class PersistenceDevice extends DataClass
       version: data.version.present ? data.version.value : this.version,
       ip: data.ip.present ? data.ip.value : this.ip,
       host: data.host.present ? data.host.value : this.host,
+      from: data.from.present ? data.from.value : this.from,
       insertOrUpdateTime: data.insertOrUpdateTime.present
           ? data.insertOrUpdateTime.value
           : this.insertOrUpdateTime,
@@ -1525,6 +1548,7 @@ class PersistenceDevice extends DataClass
           ..write('version: $version, ')
           ..write('ip: $ip, ')
           ..write('host: $host, ')
+          ..write('from: $from, ')
           ..write('insertOrUpdateTime: $insertOrUpdateTime')
           ..write(')'))
         .toString();
@@ -1532,7 +1556,7 @@ class PersistenceDevice extends DataClass
 
   @override
   int get hashCode => Object.hash(alias, deviceModel, deviceType, fingerprint,
-      port, version, ip, host, insertOrUpdateTime);
+      port, version, ip, host, from, insertOrUpdateTime);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1545,6 +1569,7 @@ class PersistenceDevice extends DataClass
           other.version == this.version &&
           other.ip == this.ip &&
           other.host == this.host &&
+          other.from == this.from &&
           other.insertOrUpdateTime == this.insertOrUpdateTime);
 }
 
@@ -1557,6 +1582,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
   final Value<int?> version;
   final Value<String?> ip;
   final Value<String?> host;
+  final Value<String?> from;
   final Value<DateTime> insertOrUpdateTime;
   final Value<int> rowid;
   const PersistenceDevicesCompanion({
@@ -1568,6 +1594,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
     this.version = const Value.absent(),
     this.ip = const Value.absent(),
     this.host = const Value.absent(),
+    this.from = const Value.absent(),
     this.insertOrUpdateTime = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -1580,6 +1607,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
     this.version = const Value.absent(),
     this.ip = const Value.absent(),
     this.host = const Value.absent(),
+    this.from = const Value.absent(),
     this.insertOrUpdateTime = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : alias = Value(alias),
@@ -1593,6 +1621,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
     Expression<int>? version,
     Expression<String>? ip,
     Expression<String>? host,
+    Expression<String>? from,
     Expression<DateTime>? insertOrUpdateTime,
     Expression<int>? rowid,
   }) {
@@ -1605,6 +1634,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
       if (version != null) 'version': version,
       if (ip != null) 'ip': ip,
       if (host != null) 'host': host,
+      if (from != null) 'from': from,
       if (insertOrUpdateTime != null)
         'insert_or_update_time': insertOrUpdateTime,
       if (rowid != null) 'rowid': rowid,
@@ -1620,6 +1650,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
       Value<int?>? version,
       Value<String?>? ip,
       Value<String?>? host,
+      Value<String?>? from,
       Value<DateTime>? insertOrUpdateTime,
       Value<int>? rowid}) {
     return PersistenceDevicesCompanion(
@@ -1631,6 +1662,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
       version: version ?? this.version,
       ip: ip ?? this.ip,
       host: host ?? this.host,
+      from: from ?? this.from,
       insertOrUpdateTime: insertOrUpdateTime ?? this.insertOrUpdateTime,
       rowid: rowid ?? this.rowid,
     );
@@ -1663,6 +1695,9 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
     if (host.present) {
       map['host'] = Variable<String>(host.value);
     }
+    if (from.present) {
+      map['from'] = Variable<String>(from.value);
+    }
     if (insertOrUpdateTime.present) {
       map['insert_or_update_time'] =
           Variable<DateTime>(insertOrUpdateTime.value);
@@ -1684,6 +1719,7 @@ class PersistenceDevicesCompanion extends UpdateCompanion<PersistenceDevice> {
           ..write('version: $version, ')
           ..write('ip: $ip, ')
           ..write('host: $host, ')
+          ..write('from: $from, ')
           ..write('insertOrUpdateTime: $insertOrUpdateTime, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -2950,6 +2986,7 @@ typedef $$PersistenceDevicesTableCreateCompanionBuilder
   Value<int?> version,
   Value<String?> ip,
   Value<String?> host,
+  Value<String?> from,
   Value<DateTime> insertOrUpdateTime,
   Value<int> rowid,
 });
@@ -2963,6 +3000,7 @@ typedef $$PersistenceDevicesTableUpdateCompanionBuilder
   Value<int?> version,
   Value<String?> ip,
   Value<String?> host,
+  Value<String?> from,
   Value<DateTime> insertOrUpdateTime,
   Value<int> rowid,
 });
@@ -2999,6 +3037,9 @@ class $$PersistenceDevicesTableFilterComposer
 
   ColumnFilters<String> get host => $composableBuilder(
       column: $table.host, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get from => $composableBuilder(
+      column: $table.from, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get insertOrUpdateTime => $composableBuilder(
       column: $table.insertOrUpdateTime,
@@ -3038,6 +3079,9 @@ class $$PersistenceDevicesTableOrderingComposer
   ColumnOrderings<String> get host => $composableBuilder(
       column: $table.host, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get from => $composableBuilder(
+      column: $table.from, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get insertOrUpdateTime => $composableBuilder(
       column: $table.insertOrUpdateTime,
       builder: (column) => ColumnOrderings(column));
@@ -3075,6 +3119,9 @@ class $$PersistenceDevicesTableAnnotationComposer
 
   GeneratedColumn<String> get host =>
       $composableBuilder(column: $table.host, builder: (column) => column);
+
+  GeneratedColumn<String> get from =>
+      $composableBuilder(column: $table.from, builder: (column) => column);
 
   GeneratedColumn<DateTime> get insertOrUpdateTime => $composableBuilder(
       column: $table.insertOrUpdateTime, builder: (column) => column);
@@ -3116,6 +3163,7 @@ class $$PersistenceDevicesTableTableManager extends RootTableManager<
             Value<int?> version = const Value.absent(),
             Value<String?> ip = const Value.absent(),
             Value<String?> host = const Value.absent(),
+            Value<String?> from = const Value.absent(),
             Value<DateTime> insertOrUpdateTime = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -3128,6 +3176,7 @@ class $$PersistenceDevicesTableTableManager extends RootTableManager<
             version: version,
             ip: ip,
             host: host,
+            from: from,
             insertOrUpdateTime: insertOrUpdateTime,
             rowid: rowid,
           ),
@@ -3140,6 +3189,7 @@ class $$PersistenceDevicesTableTableManager extends RootTableManager<
             Value<int?> version = const Value.absent(),
             Value<String?> ip = const Value.absent(),
             Value<String?> host = const Value.absent(),
+            Value<String?> from = const Value.absent(),
             Value<DateTime> insertOrUpdateTime = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
@@ -3152,6 +3202,7 @@ class $$PersistenceDevicesTableTableManager extends RootTableManager<
             version: version,
             ip: ip,
             host: host,
+            from: from,
             insertOrUpdateTime: insertOrUpdateTime,
             rowid: rowid,
           ),

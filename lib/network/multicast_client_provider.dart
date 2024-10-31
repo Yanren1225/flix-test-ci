@@ -8,24 +8,35 @@ import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/hotspot/direct_wifi_manager.dart';
 import 'package:flix/domain/hotspot/hotspot_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
+import 'package:flix/domain/paircode/pair_router_handler.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
+import 'package:flix/main.dart';
+import 'package:flix/model/device_info.dart';
 import 'package:flix/model/wifi_or_ap_name.dart';
 import 'package:flix/network/discover/discover_manager.dart';
+import 'package:flix/network/nearby_service_info.dart';
 import 'package:flix/network/protocol/device_modal.dart';
+import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/iterable_extension.dart';
+import 'package:flix/utils/net/net_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 
 enum MultiState { idle, scanning, connect, failure }
 
 class MultiCastClientProvider extends ChangeNotifier {
   Set<DeviceModal> get deviceList => DeviceManager.instance.deviceList;
 
-  Set<DeviceModal> get history => DeviceManager.instance.history
-      .where(
-          (e) => deviceList.find((d) => d.fingerprint == e.fingerprint) == null)
-      .toSet();
+  BehaviorSubject<Map<String, bool>> connectingState =
+      BehaviorSubject<Map<String, bool>>.seeded({});
+
+  final BehaviorSubject<Set<DeviceModal>> _originalHistory =
+      BehaviorSubject<Set<DeviceModal>>();
+
+  BehaviorSubject<Set<DeviceInfo>> history = BehaviorSubject();
+
   StreamSubscription? connectivitySubscription;
 
   String? _selectedDeviceId;
@@ -132,6 +143,15 @@ class MultiCastClientProvider extends ChangeNotifier {
         // DeviceDiscover.instance.ping(await shipService.getPort());
       }
     });
+
+    history.addStream(
+        Rx.combineLatest2<Set<DeviceModal>, Map<String, bool>, Set<DeviceInfo>>(
+            _originalHistory, connectingState,
+            (Set<DeviceModal> history, Map<String, bool> connectingState) {
+      return history.map((e) {
+        return e.toDeviceInfo(connectingState[e.fingerprint] == true);
+      }).toSet();
+    }));
   }
 
   void _notifyConnectivityResult(List<ConnectivityResult> result) async {
@@ -178,7 +198,10 @@ class MultiCastClientProvider extends ChangeNotifier {
   }
 
   void _onHistoryListChanged(Set<DeviceModal> history) {
-    notifyListeners();
+    _originalHistory.add(history
+        .where((e) =>
+            deviceList.find((d) => d.fingerprint == e.fingerprint) == null)
+        .toSet());
   }
 
   @override
@@ -236,5 +259,34 @@ class MultiCastClientProvider extends ChangeNotifier {
       }
     }).catchError((error, stackTrace) =>
         talker.error('isServerLiving error', error, stackTrace));
+  }
+
+  Future<bool> connectDevice(DeviceInfo device) async {
+    final deviceModel = _originalHistory.valueOrNull?.find((item) {
+      return item.fingerprint == device.id;
+    });
+    if (deviceModel == null || deviceModel.from != DeviceFrom.manual) {
+      return false;
+    }
+    final Map<String, bool> state;
+    if (connectingState.hasValue) {
+      state = connectingState.value;
+    } else {
+      state = {};
+    }
+    state[deviceModel.fingerprint] = true;
+    connectingState.add(state);
+    try {
+      final result = await PairRouterHandler.addDevice(
+          PairInfo([deviceModel.ip], deviceModel.port ?? defaultPort));
+      state.remove(deviceModel.fingerprint);
+      connectingState.add(state);
+      return result;
+    } catch (e, t) {
+      state.remove(deviceModel.fingerprint);
+      connectingState.add(state);
+      talker.error('connectDevice error', e, t);
+      return false;
+    }
   }
 }
