@@ -6,7 +6,7 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart'; 
-import 'package:flutter_number_captcha/flutter_number_captcha.dart';
+
 
 class LoginPage extends StatefulWidget {
   @override
@@ -104,16 +104,16 @@ class _LoginPageState extends State<LoginPage> {
        setState(() {
       _isSendingCode =false;
     });
-         final bool test = await FlutterNumberCaptcha.show(
-                  context,
-                  titleText: '注册账户',
-                  placeholderText: '输入验证码',
-                  checkCaption: '确认',
-                  accentColor: Color.fromRGBO(0, 122, 255, 1),
-                  invalidText: '验证码错误',
-                );
+        // final bool test = await FlutterNumberCaptcha.show(
+        //          context,
+        //          titleText: '注册账户',
+        //          placeholderText: '输入验证码',
+        //          checkCaption: '确认',
+        //          accentColor: Color.fromRGBO(0, 122, 255, 1),
+         //         invalidText: '验证码错误',
+//       );
 
-    if(test == true){
+   
 
        setState(() {
           
@@ -124,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
          _statusMessage = '请稍后';
           _sendVerificationCode();
         });
-    }
+    
        
       }
     } else {

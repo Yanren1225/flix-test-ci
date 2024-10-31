@@ -48,7 +48,6 @@ dependencies:
   device_info_plus: 9.1.1
   clipboard_watcher: ^0.2.1
   mailer: ^5.0.0
-  flutter_number_captcha: ^0.0.8
   dio: 5.4.0
   slang: 3.26.1
   slang_flutter: 3.26.1
