@@ -512,7 +512,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ),
                   Padding(
                     padding:
-                        const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                        const EdgeInsets.only(left: 16, right: 16, ),
                     child: ClickableItem(
                         label: '账号系统',
                         topRadius: false,
@@ -529,7 +529,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(
-                        left: 16, top: 4, right: 16, bottom: 22),
+                        left: 16, top:20, right: 16, bottom: 22),
                     child: ClickActionItem(
                         label: S.of(context).setting_exit,
                         dangerous: true,
