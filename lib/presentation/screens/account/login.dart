@@ -318,7 +318,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // 编辑框
   InputDecoration _buildInputDecoration(String labelText) {
   return InputDecoration(
     labelText: labelText,
@@ -332,9 +331,11 @@ class _LoginPageState extends State<LoginPage> {
       color: Theme.of(context).flixColors.text.tertiary, 
     ),
     floatingLabelBehavior: FloatingLabelBehavior.never, 
-    hoverColor: Colors.transparent, 
+    hoverColor: Colors.transparent,
+    contentPadding: const EdgeInsets.only(left: 16), 
   );
 }
+
 
 
 
