@@ -386,7 +386,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                     color: Theme.of(context)
                         .flixColors
                         .background
-                        .primary,
+                        .secondary,
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
