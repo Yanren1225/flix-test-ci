@@ -354,7 +354,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
       Future.delayed(Duration.zero, () {
         Navigator.push(
           navigatorKey.currentContext!,
-          MaterialPageRoute(builder: (context) => intropage()),
+          MaterialPageRoute(builder: (context) => IntroPage()),
         );
       });
     }

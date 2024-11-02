@@ -8,12 +8,12 @@ import 'package:window_manager/window_manager.dart';
 import 'dart:io' show Platform;
 
 
-class intropage extends StatefulWidget {
+class IntroPage extends StatefulWidget {
   @override
-  _intropageState createState() => _intropageState();
+  _IntroPageState createState() => _IntroPageState();
 }
 
-class _intropageState extends State<intropage> {
+class _IntroPageState extends State<IntroPage> {
   bool showIntroWiFi = false; 
   bool showIntroPermission = false; 
 
@@ -30,110 +30,132 @@ class _intropageState extends State<intropage> {
       body: Stack(
         children: [
           if (Platform.isMacOS || Platform.isLinux || Platform.isWindows)
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: GestureDetector(
-                onPanStart: (details) {
-                  windowManager.startDragging();
-                },
-                onDoubleTap: () async {
-                  bool isMaximized = await windowManager.isMaximized();
-                  if (isMaximized) {
-                    windowManager.restore();
-                  } else {
-                    windowManager.maximize();
-                  }
-                },
-                child: Container(
-                  height: 30.0,
-                  color: Colors.transparent,
-                  child: AppBar(
-                    automaticallyImplyLeading: false,
-                    title: const Text(''),
-                    actions: [
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          customBorder: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(0),
-                          ),
-                          onTap: () {
-                            windowManager.minimize();
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.horizontal_rule,
-                              size: 14.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          customBorder: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(0),
-                          ),
-                          onTap: () async {
-                            bool isMaximized = await windowManager.isMaximized();
-                            if (isMaximized) {
-                              windowManager.restore();
-                            } else {
-                              windowManager.maximize();
-                            }
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.crop_square,
-                              size: 14.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          customBorder: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(0),
-                          ),
-                          hoverColor: const Color.fromARGB(255, 208, 24, 11).withOpacity(0.8),
-                          onTap: () {
-                            windowManager.hide();
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.close,
-                              size: 15.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                  ),
-                ),
-              ),
-            ),
-          showIntroPermission
-              ? IntroPermission(
-                  onBackPressed: _switchToWiFiPage,
-                  onContinuePressed: _exitintropage, 
-                )
-              : showIntroWiFi
-                  ? IntroWiFi(
-                      onBackPressed: _switchToWelcomePage,
-                      onContinuePressed: _switchToPermissionPage,
+            _buildWindowControls(), 
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 150), 
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              },
+              child: showIntroPermission
+                  ? IntroPermission(
+                      key: const ValueKey('IntroPermission'),
+                      onBackPressed: _switchToWiFiPage,
+                      onContinuePressed: _exitIntroPage,
                     )
-                  : IntroWelcome(onExplorePressed: _switchToWiFiPage),
+                  : showIntroWiFi
+                      ? IntroWiFi(
+                          key: const ValueKey('IntroWiFi'),
+                          onBackPressed: _switchToWelcomePage,
+                          onContinuePressed: _switchToPermissionPage,
+                        )
+                      : IntroWelcome(
+                          key: const ValueKey('IntroWelcome'),
+                          onExplorePressed: _switchToWiFiPage,
+                        ),
+            ),
         ],
       ),
     );
+  }
+
+  Widget _buildWindowControls() {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: GestureDetector(
+        onPanStart: (details) {
+          windowManager.startDragging();
+        },
+        onDoubleTap: () async {
+          bool isMaximized = await windowManager.isMaximized();
+          if (isMaximized) {
+            windowManager.restore();
+          } else {
+            windowManager.maximize();
+          }
+        },
+        child: Container(
+          height: 30.0,
+          color: Colors.transparent,
+          child: AppBar(
+            automaticallyImplyLeading: false,
+            title: const Text(''),
+            actions: _buildWindowActions(),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildWindowActions() {
+    return [
+      Material(
+        color: Colors.transparent,
+        child: InkWell(
+          customBorder: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0),
+          ),
+          onTap: () {
+            windowManager.minimize();
+          },
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(
+              Icons.horizontal_rule,
+              size: 14.0,
+            ),
+          ),
+        ),
+      ),
+      Material(
+        color: Colors.transparent,
+        child: InkWell(
+          customBorder: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0),
+          ),
+          onTap: () async {
+            bool isMaximized = await windowManager.isMaximized();
+            if (isMaximized) {
+              windowManager.restore();
+            } else {
+              windowManager.maximize();
+            }
+          },
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(
+              Icons.crop_square,
+              size: 14.0,
+            ),
+          ),
+        ),
+      ),
+      Material(
+        color: Colors.transparent,
+        child: InkWell(
+          customBorder: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0),
+          ),
+          hoverColor: const Color.fromARGB(255, 208, 24, 11).withOpacity(0.8),
+          onTap: () {
+            windowManager.hide();
+          },
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(
+              Icons.close,
+              size: 15.0,
+            ),
+          ),
+        ),
+      ),
+    ];
   }
 
   void _switchToWiFiPage() {
@@ -156,10 +178,9 @@ class _intropageState extends State<intropage> {
     });
   }
 
-  void _exitintropage() {
+  void _exitIntroPage() {
     Navigator.of(context).pop();
   }
-
 
   void _initSystemChrome() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);

@@ -13,7 +13,7 @@ import '../../../l10n/l10n.dart'; // 引入roundcheckbox插件
 class IntroPermission extends StatefulWidget {
   final VoidCallback onBackPressed; 
 
-  IntroPermission({required this.onBackPressed, required void Function() onContinuePressed});
+  IntroPermission({Key? key,required this.onBackPressed, required void Function() onContinuePressed}): super(key: key);
 
   @override
   _IntroPermissionState createState() => _IntroPermissionState();
