@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/theme/theme_extensions.dart';
@@ -28,7 +30,7 @@ class IconLabelButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        height: 43,
+        height: 40,
         decoration: FlixDecoration(
             color: Theme.of(context)
                 .flixColors
@@ -40,7 +42,7 @@ class IconLabelButton extends StatelessWidget {
           alignment: isLeft ? Alignment.centerLeft : Alignment.centerRight, 
           child: Row(mainAxisSize: MainAxisSize.min, children: [
             const SizedBox(
-              width: 6,
+              width: 3,
             ),
             SvgPicture.asset(icon,
                 colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn)),
@@ -54,12 +56,12 @@ class IconLabelButton extends StatelessWidget {
                   style: TextStyle(
                       color: labelColor ??
                               Theme.of(context).flixColors.text.primary,
-                          fontSize: 16,
+                         fontSize: Platform.isAndroid || Platform.isIOS ? 15 : 13.5,
                           fontWeight: FontWeight.w400)
                       .fix()),
             ),
             const SizedBox(
-              width: 6,
+              width: 3,
             ),
           ]),
         ),
