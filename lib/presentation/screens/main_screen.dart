@@ -59,136 +59,129 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => SettingProvider()),
-          ChangeNotifierProvider<MultiCastClientProvider>(
-              create: (_) => MultiCastClientProvider()),
-          ChangeNotifierProvider(create: (context) => AndropContext())
-        ],
-        child: Stack(
-          children: [
-            const MyHomePage(title: 'Flix'),
-            if (Platform.isMacOS || Platform.isLinux || Platform.isWindows)
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: GestureDetector(
-                  onPanStart: (details) {
-                    windowManager.startDragging();
-                  },
-                  onDoubleTap: () async {
-                    bool isMaximized = await windowManager.isMaximized();
-                    if (isMaximized) {
-                      windowManager.restore();
-                    } else {
-                      windowManager.maximize();
-                    }
-                  },
-                  child: Container(
-                    height: 30.0,
-                    color: const Color.fromARGB(0, 33, 149, 243),
-                    child: AppBar(
-                      title: const Text(''),
-                      actions: [
-                        //  Material(
-                        //   color: Colors.transparent,
-                        //   child: InkWell(
-                        //     customBorder: RoundedRectangleBorder(
-                        //       borderRadius: BorderRadius.circular(0),
-                        //     ),
-                        //     onTap: () async {
-                        //       bool isToped = await windowManager.isAlwaysOnTop();
-                        //       if (isToped) {
-                        //         windowManager.setAlwaysOnTop(false);
-                        //       } else {
-                        //         windowManager.setAlwaysOnTop(true);
-                        //      }
-                        //    },
-                        //     child: const Padding(
-                        //       padding: EdgeInsets.all(8.0),
-                        //       child: Icon(
-                        //          Icons.push_pin_outlined,
-                        //       size: 14.0,
-                        //       ),
-                        //       ),
-                        //     ),
-                        //    ),
-                        if (Platform.isLinux || Platform.isWindows)
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              customBorder: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0),
-                              ),
-                              onTap: () {
-                                windowManager.minimize();
-                              },
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Icon(
-                                  Icons.horizontal_rule,
-                                  size: 14.0,
-                                ),
-                              ),
+    return Stack(
+      children: [
+        const MyHomePage(title: 'Flix'),
+        if (Platform.isMacOS || Platform.isLinux || Platform.isWindows)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: GestureDetector(
+              onPanStart: (details) {
+                windowManager.startDragging();
+              },
+              onDoubleTap: () async {
+                bool isMaximized = await windowManager.isMaximized();
+                if (isMaximized) {
+                  windowManager.restore();
+                } else {
+                  windowManager.maximize();
+                }
+              },
+              child: Container(
+                height: 30.0,
+                color: const Color.fromARGB(0, 33, 149, 243),
+                child: AppBar(
+                  title: const Text(''),
+                  actions: [
+                    //  Material(
+                    //   color: Colors.transparent,
+                    //   child: InkWell(
+                    //     customBorder: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(0),
+                    //     ),
+                    //     onTap: () async {
+                    //       bool isToped = await windowManager.isAlwaysOnTop();
+                    //       if (isToped) {
+                    //         windowManager.setAlwaysOnTop(false);
+                    //       } else {
+                    //         windowManager.setAlwaysOnTop(true);
+                    //      }
+                    //    },
+                    //     child: const Padding(
+                    //       padding: EdgeInsets.all(8.0),
+                    //       child: Icon(
+                    //          Icons.push_pin_outlined,
+                    //       size: 14.0,
+                    //       ),
+                    //       ),
+                    //     ),
+                    //    ),
+                    if (Platform.isLinux || Platform.isWindows)
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          customBorder: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                          onTap: () {
+                            windowManager.minimize();
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.horizontal_rule,
+                              size: 14.0,
                             ),
                           ),
-                        if (Platform.isLinux || Platform.isWindows)
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              customBorder: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0),
-                              ),
-                              onTap: () async {
-                                bool isMaximized =
-                                    await windowManager.isMaximized();
-                                if (isMaximized) {
-                                  windowManager.restore();
-                                } else {
-                                  windowManager.maximize();
-                                }
-                              },
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Icon(
-                                  Icons.crop_square,
-                                  size: 14.0,
-                                ),
-                              ),
+                        ),
+                      ),
+                    if (Platform.isLinux || Platform.isWindows)
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          customBorder: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                          onTap: () async {
+                            bool isMaximized =
+                                await windowManager.isMaximized();
+                            if (isMaximized) {
+                              windowManager.restore();
+                            } else {
+                              windowManager.maximize();
+                            }
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.crop_square,
+                              size: 14.0,
                             ),
                           ),
-                        if (Platform.isLinux || Platform.isWindows)
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              customBorder: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0),
-                              ),
-                              hoverColor: const Color.fromARGB(255, 208, 24, 11)
-                                  .withOpacity(0.8),
-                              onTap: () {
-                                windowManager.hide();
-                              },
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Icon(
-                                  Icons.close,
-                                  size: 15.0,
-                                ),
-                              ),
+                        ),
+                      ),
+                    if (Platform.isLinux || Platform.isWindows)
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          customBorder: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                          hoverColor: const Color.fromARGB(255, 208, 24, 11)
+                              .withOpacity(0.8),
+                          onTap: () {
+                            windowManager.hide();
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.close,
+                              size: 15.0,
                             ),
                           ),
-                      ],
-                      backgroundColor: Colors.transparent,
-                      elevation: 0,
-                    ),
-                  ),
+                        ),
+                      ),
+                  ],
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
                 ),
-              )
-          ],
-        ));
+              ),
+            ),
+          )
+      ],
+    );
   }
 }
 

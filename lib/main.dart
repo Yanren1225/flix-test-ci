@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flix/domain/analytics/flix_analytics.dart';
+import 'package:flix/domain/androp_context.dart';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/clipboard/flix_clipboard_manager.dart';
 import 'package:flix/domain/database/database.dart';
@@ -27,10 +28,12 @@ import 'package:flix/domain/window/flix_window_manager.dart';
 import 'package:flix/l10n/l10n.dart';
 import 'package:flix/l10n/lang_config.dart';
 import 'package:flix/network/discover/discover_manager.dart';
+import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/intro_screen.dart';
 import 'package:flix/presentation/screens/main_screen.dart';
 import 'package:flix/setting/setting_provider.dart';
 import 'package:flix/theme/theme.dart';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/device_info_helper.dart';
 import 'package:flix/utils/exit.dart';
 import 'package:flutter/foundation.dart';
@@ -350,6 +353,9 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => SettingProvider()),
+          ChangeNotifierProvider<MultiCastClientProvider>(
+              create: (_) => MultiCastClientProvider()),
+          ChangeNotifierProvider(create: (context) => AndropContext())
         ],
         child: StreamBuilder<String>(
             initialData: SettingsRepo.instance.darkModeTag,
@@ -377,7 +383,10 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   // initialRoute: 'home',
                   builder: FToastBuilder(),
                   home: Container(
-                    color: const Color.fromARGB(0, 33, 149, 243),
+                    color: Theme.of(context)
+                        .flixColors
+                        .background
+                        .primary,
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
