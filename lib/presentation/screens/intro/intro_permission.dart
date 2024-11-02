@@ -210,8 +210,10 @@ class _IntroPermissionState extends State<IntroPermission> {
                                 SharedPreferences prefs = await SharedPreferences.getInstance();
                                 await prefs.setBool('isFirstRun', false);
 
-                              
-                                Navigator.of(context).popUntil((route) => route.isFirst);
+                                Navigator.pushReplacement(
+                                  navigatorKey.currentContext!,
+                                  MaterialPageRoute(builder: (context) => const MainScreen()),
+                                );
                               }
                             : null, 
                           style: ElevatedButton.styleFrom(
