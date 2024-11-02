@@ -778,13 +778,13 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                     icon: SvgPicture.asset(
                       width: 26,
                       height: 26,
-                      'assets/images/ic_share.svg',
+                      selectedIndex == 0
+                          ? 'assets/images/ic_share.svg'
+                          : 'assets/images/navitem1.svg',
                       colorFilter: ColorFilter.mode(
                         selectedIndex == 0
                             ? Theme.of(context).flixColors.text.primary
-                            : (Theme.of(context).brightness == Brightness.dark
-                                ? const Color.fromRGBO(235, 235, 245, 0.3)
-                                : const Color.fromRGBO(60, 60, 67, 0.3)),
+                            : Theme.of(context).flixColors.text.secondary,
                         BlendMode.srcIn,
                       ),
                     ),
@@ -794,36 +794,38 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                       icon: SvgPicture.asset(
                         width: 26,
                         height: 26,
-                        'assets/images/search.svg',
+                        selectedIndex == 1
+                            ? 'assets/images/search.svg'
+                            : 'assets/images/navitem2.svg',
                         colorFilter: ColorFilter.mode(
                           selectedIndex == 1
                               ? Theme.of(context).flixColors.text.primary
-                              : (Theme.of(context).brightness == Brightness.dark
-                                  ? const Color.fromRGBO(235, 235, 245, 0.3)
-                                  : const Color.fromRGBO(60, 60, 67, 0.3)),
+                              : Theme.of(context).flixColors.text.secondary,
                           BlendMode.srcIn,
                         ),
                       ),
-                      label: ''),
+                      label: '',
+                  ),
                   BottomNavigationBarItem(
                       icon: SvgPicture.asset(
                         width: 26,
                         height: 26,
-                        'assets/images/setting.svg',
+                        selectedIndex == 2
+                            ? 'assets/images/setting.svg'
+                            : 'assets/images/navitem3.svg',
                         colorFilter: ColorFilter.mode(
                           selectedIndex == 2
                               ? Theme.of(context).flixColors.text.primary
-                              : (Theme.of(context).brightness == Brightness.dark
-                                  ? const Color.fromRGBO(235, 235, 245, 0.3)
-                                  : const Color.fromRGBO(60, 60, 67, 0.3)),
+                              : Theme.of(context).flixColors.text.secondary,
                           BlendMode.srcIn,
                         ),
                       ),
-                      label: ''),
+                      label: '',
+                    ),
                 ],
                 currentIndex: selectedIndex,
                 selectedItemColor: Theme.of(context).flixColors.text.primary,
-                unselectedItemColor: Theme.of(context).flixColors.text.tertiary,
+                unselectedItemColor: Theme.of(context).flixColors.text.secondary,
                 selectedFontSize: 12,
                 unselectedFontSize: 12,
                 showSelectedLabels: false,
