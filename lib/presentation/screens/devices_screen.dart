@@ -475,12 +475,17 @@ class _HistoryItemState extends State<HistoryItem> {
                 alignment: Alignment.centerRight,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16),
-                  child: GestureDetector(
-                    onTap: () {
+                  child: TapRegion(
+                    onTapInside: (tap) {
                       setState(() {
                         _translateX = 0;
                       });
                       widget.onDelete(widget.historyItemInfo);
+                    },
+                    onTapOutside: (tap) {
+                      setState(() {
+                        _translateX = 0;
+                      });
                     },
                     child: Container(
                       width: 60,
