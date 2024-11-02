@@ -346,7 +346,7 @@ Widget build(BuildContext context) {
            
             OpenFilex.open(filePath);
           } else {
-         flixToast.alert("文件不存在，可能已被移动或删除");
+        
           }
         },
         ),
