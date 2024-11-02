@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -77,285 +78,305 @@ class recentScreenState extends BaseScreenState<recentScreen>
   }
 
   @override
-  Widget build(BuildContext context) {
-    final currentYear = DateTime.now().year;
+Widget build(BuildContext context) {
+  final currentYear = DateTime.now().year;
+  final ScrollController _scrollController = ScrollController();
 
-    return CupertinoNavigationScaffold(
-      title: '最近文件',
-      isSliverChild: true,
-      padding: 10,
-      enableRefresh: false,
-      child: SliverList.builder(
-        itemCount: 1,
-        itemBuilder: (context, index) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 6, left: 16, right: 16),
+   @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  return Scaffold(
+    backgroundColor: Theme.of(context).flixColors.background.secondary,
+    appBar: PreferredSize(
+      preferredSize: const Size.fromHeight(197), 
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 105 + MediaQuery.of(context).padding.top,
+            padding: EdgeInsets.only(
+              left: 16,
+              bottom: 16,
+              top: MediaQuery.of(context).padding.top,
+            ),
+            color: Theme.of(context).flixColors.background.secondary,
+            alignment: Alignment.bottomLeft,
+            child: Text(
+              '最近文件',
+              style: TextStyle(
+                fontSize: 36.0,
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).flixColors.text.primary,
+              ),
+            ),
+          ),
+          // 搜索框
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            child: Container(
+              height: 46,
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.search),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Theme.of(context).flixColors.text.tertiary,
+                  ),
+                  hoverColor: Colors.transparent,
+                  contentPadding: const EdgeInsets.only(left: 6), 
                   filled: true,
-                  fillColor: Theme.of(context).flixColors.background.primary, 
-                  hoverColor: Colors.transparent, 
-                  focusColor: Theme.of(context).flixColors.background.primary,
+                  fillColor: Theme.of(context).flixColors.background.primary,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                     borderSide: BorderSide.none,
                   ),
                 ),
               ),
             ),
-           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal, 
-              child: Row(
-                children: [
-                  _buildTabItem('全部', 0),
-                  _buildTabItem('图片', 1),
-                  _buildTabItem('视频', 2),
-                  _buildTabItem('音频', 3),
-                  _buildTabItem('安装包', 4),
-                  _buildTabItem('压缩包', 5),
-                ],
+          ),
+          // 分类标签
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: ScrollConfiguration(
+              behavior: ScrollConfiguration.of(context).copyWith(
+                dragDevices: {
+                  PointerDeviceKind.touch,
+                  PointerDeviceKind.mouse,
+                },
+              ),
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildTabItem('全部', 0),
+                    _buildTabItem('图片', 1),
+                    _buildTabItem('视频', 2),
+                    _buildTabItem('音频', 3),
+                    _buildTabItem('安装包', 4),
+                    _buildTabItem('压缩包', 5),
+                    _buildTabItem('文档', 6),
+                  ],
+                ),
               ),
             ),
-          ),
-            FutureBuilder<List<Map<String, dynamic>>>(
-              future: _fetchFilesWithTimeFromDatabase(), 
-              builder: (context, snapshot) {
-              //  if (snapshot.connectionState == ConnectionState.waiting) {
-               //   return const Center(child: CircularProgressIndicator(
-               //     valueColor: AlwaysStoppedAnimation<Color>(Colors.black), 
-               //   ),);
-              //  }
+          )
+        ],
+      ),
+    ),
+    body: CustomScrollView(
+      slivers: [
+        // 列表
+        FutureBuilder<List<Map<String, dynamic>>>(
+          future: _fetchFilesWithTimeFromDatabase(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const SliverToBoxAdapter(
+                child: Center(child: Text('加载失败')),
+              );
+            }
 
-                if (snapshot.hasError) {
-                  return const Center(child: Text('加载失败'));
-                }
+            final files = snapshot.data ?? [];
 
-                final files = snapshot.data ?? [];
-                
-                var filteredFiles = files.where((file) {
-                  return file['name']
-                      .toLowerCase()
-                      .contains(searchQuery.toLowerCase());
-                }).toList();
+            var filteredFiles = files.where((file) {
+              return file['name'].toLowerCase().contains(searchQuery.toLowerCase());
+            }).toList();
 
-               
-                filteredFiles = _filterFilesByTab(filteredFiles, _selectedIndex);
+            filteredFiles = _filterFilesByTab(filteredFiles, _selectedIndex);
+            filteredFiles.sort((a, b) => b['time'].compareTo(a['time']));
 
-            
-                filteredFiles.sort((a, b) => b['time'].compareTo(a['time']));
-
-                if (filteredFiles.isEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: Text(
-                      '暂无最近文件',
-                      style: TextStyle(
-                        color: Theme.of(context).flixColors.text.secondary,
-                        fontSize: 14,
-                      ),
+            if (filteredFiles.isEmpty) {
+              return SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                  child: Text(
+                    '暂无最近文件',
+                    style: TextStyle(
+                      color: Theme.of(context).flixColors.text.secondary,
+                      fontSize: 14,
                     ),
-                  );
-                }
+                  ),
+                ),
+              );
+            }
 
-         
-                Map<String, List<Map<String, dynamic>>> groupedFiles = {};
-                for (var file in filteredFiles) {
-                  final dateKey = DateFormat('yyyy-MM-dd')
-                      .format(DateTime.fromMillisecondsSinceEpoch(file['time']));
-                  if (!groupedFiles.containsKey(dateKey)) {
-                    groupedFiles[dateKey] = [];
+            Map<String, List<Map<String, dynamic>>> groupedFiles = {};
+            for (var file in filteredFiles) {
+              final dateKey = DateFormat('yyyy-MM-dd')
+                  .format(DateTime.fromMillisecondsSinceEpoch(file['time']));
+              if (!groupedFiles.containsKey(dateKey)) {
+                groupedFiles[dateKey] = [];
+              }
+              groupedFiles[dateKey]!.add(file);
+            }
+
+            return SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  String date = groupedFiles.keys.elementAt(index);
+                  List<Map<String, dynamic>> filesForDate = groupedFiles[date]!;
+                  final dateParts = date.split('-');
+                  final year = int.parse(dateParts[0]);
+                  final monthDay = '${dateParts[1]}.${dateParts[2]}';
+
+                  String formattedDate;
+                  if (year == DateTime.now().year) {
+                    formattedDate = monthDay;
+                  } else {
+                    formattedDate = '$year.$monthDay';
                   }
-                  groupedFiles[dateKey]!.add(file);
-                }
 
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: groupedFiles.length,
-                  itemBuilder: (context, index) {
-                    String date = groupedFiles.keys.elementAt(index);
-                    List<Map<String, dynamic>> filesForDate =
-                        groupedFiles[date]!;
-
-                    final dateParts = date.split('-');
-                    final year = int.parse(dateParts[0]);
-                    final monthDay = '${dateParts[1]}.${dateParts[2]}';
-
-                    String formattedDate;
-                    if (year == currentYear) {
-                      formattedDate = monthDay;
-                    } else {
-                      formattedDate = '$year.$monthDay';
-                    }
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15,right: 16,bottom: 8,top: 16),
-                          child: Row(
-                            children: [
-                              Text(
-                                formattedDate, 
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Theme.of(context)
-                                      .flixColors
-                                      .text
-                                      .secondary,
-                                ),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15, right: 16, bottom: 8, top: 14),
+                        child: Row(
+                          children: [
+                            Text(
+                              formattedDate,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context).flixColors.text.secondary,
                               ),
-                              Text(
-                                ' | ${filesForDate.length} 项', 
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Theme.of(context)
-                                      .flixColors
-                                      .text
-                                      .secondary,
-                                ),
+                            ),
+                            Text(
+                              ' | ${filesForDate.length} 项',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context).flixColors.text.secondary,
                               ),
-                            ],
-                          ),
-                     
+                            ),
+                          ],
                         ),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: filesForDate.length,
-                          itemBuilder: (context, index) {
-                            final file = filesForDate[index];
-                            final time = DateTime.fromMillisecondsSinceEpoch(
-                                file['time']);
-                            final formattedTime = DateFormat('HH:mm')
-                                .format(time); 
-
-                          
-                            BorderRadius borderRadius;
-                            if (filesForDate.length == 1) {
-                              borderRadius = BorderRadius.circular(15);
-                            } else if (index == 0) {
-                              borderRadius = const BorderRadius.only(
-                                topLeft: Radius.circular(15),
-                                topRight: Radius.circular(15),
-                              );
-                            } else if (index == filesForDate.length - 1) {
-                            
-                              borderRadius = const BorderRadius.only(
-                                bottomLeft: Radius.circular(15),
-                                bottomRight: Radius.circular(15),
-                              );
-                            } else {
-                             
-                              borderRadius = BorderRadius.zero;
-                            }
-
-                           
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0, vertical: 0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).flixColors.background.primary,
-                                  borderRadius: borderRadius,
-                                 
-                                ),
-                                child: ListTile(
-                                  leading: SvgPicture.asset(
-                                    'assets/images/unknow.svg',
-                                    height: 40,
-                                    width: 40,
-                                  ),
-                                  title: Text(
-                                    file['name'],
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        color: Theme.of(context)
-                                            .flixColors
-                                            .text
-                                            .primary),
-                                  ),
-                                  subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(file['size'] != null
-                                          ? _formatFileSize(file['size'])
-                                          : '',style: TextStyle(
-                                        fontSize: 13,
-                                        color: Theme.of(context)
-                                            .flixColors
-                                            .text
-                                            .secondary)),
-                                   //   Text('$formattedTime'),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+                      ),
+                      for (var i = 0; i < filesForDate.length; i++) ...[
+                        _buildFileItem(filesForDate[i], i, filesForDate.length),
                       ],
-                    );
-                  },
-                );
-              },
+                    ],
+                  );
+                },
+                childCount: groupedFiles.length,
+              ),
+            );
+          },
+        ),
+      ],
+    ),
+  );
+}
+
+
+
+  Widget _buildFileItem(Map<String, dynamic> file, int index, int total) {
+    final time = DateTime.fromMillisecondsSinceEpoch(file['time']);
+    final formattedTime = DateFormat('HH:mm').format(time);
+
+    // 图标
+    String iconPath;
+    if (_isImage(file['name'])) {
+      iconPath = 'assets/images/picture_ic.svg';
+    } else if (_isVideo(file['name'])) {
+      iconPath = 'assets/images/video_ic.svg';
+    } else if (_isAudio(file['name'])) {
+      iconPath = 'assets/images/music_ic.svg';
+    } else if (_isApk(file['name'])) {
+      iconPath = 'assets/images/apk_ic.svg';
+    } else if (_isCompressed(file['name'])) {
+      iconPath = 'assets/images/zip_ic.svg';
+    } else if (_isDoc(file['name'])) {
+      iconPath = 'assets/images/unknow.svg';
+    } else {
+      iconPath = 'assets/images/unknow.svg';
+    }
+
+    BorderRadius borderRadius;
+    if (total == 1) {
+      borderRadius = BorderRadius.circular(15);
+    } else if (index == 0) {
+      borderRadius = const BorderRadius.only(
+        topLeft: Radius.circular(15),
+        topRight: Radius.circular(15),
+      );
+    } else if (index == total - 1) {
+      borderRadius = const BorderRadius.only(
+        bottomLeft: Radius.circular(15),
+        bottomRight: Radius.circular(15),
+      );
+    } else {
+      borderRadius = BorderRadius.zero;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).flixColors.background.primary,
+          borderRadius: borderRadius,
+        ),
+        child: ListTile(
+          leading: SvgPicture.asset(
+            iconPath, 
+            height: 40,
+            width: 40,
+          ),
+          title: Text(
+            file['name'],
+            style: TextStyle(
+              fontSize: 15,
+              color: Theme.of(context).flixColors.text.primary,
             ),
-          ],
+          ),
+          subtitle: Text(
+            file['size'] != null ? _formatFileSize(file['size']) : '',
+            style: TextStyle(
+              fontSize: 13,
+              color: Theme.of(context).flixColors.text.secondary,
+            ),
+          ),
         ),
       ),
     );
   }
 
- Widget _buildTabItem(String title, int index) {
-  bool isSelected = _selectedIndex == index;
-  return GestureDetector(
-    onTap: () {
-      setState(() {
-        _selectedIndex = index;
-      });
-    },
-    child: Padding(
-      padding: const EdgeInsets.only(right: 20,top: 5),  
-      child: Column(
-        mainAxisSize: MainAxisSize.min, 
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: isSelected
-                  ? Theme.of(context).flixColors.text.primary
-                  : Theme.of(context).flixColors.text.secondary,
-              fontSize: 16,
+
+  Widget _buildTabItem(String title, int index) {
+    bool isSelected = _selectedIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(right: 20,top: 5),  
+        child: Column(
+          mainAxisSize: MainAxisSize.min, 
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                color: isSelected
+                    ? Theme.of(context).flixColors.text.primary
+                    : Theme.of(context).flixColors.text.secondary,
+                fontSize: 16,
+              ),
             ),
-          ),
-          if (isSelected)
-            Container(
-              margin: const EdgeInsets.only(top: 4), 
-              height: 2, 
-              width: 32,
-              color: const Color.fromRGBO(0, 122, 255, 1), 
-            ),
-        ],
+            if (isSelected)
+              Container(
+                margin: const EdgeInsets.only(top: 4), 
+                height: 2, 
+                width: 32,
+                color: const Color.fromRGBO(0, 122, 255, 1), 
+              ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
 
   Future<List<Map<String, dynamic>>> _fetchFilesWithTimeFromDatabase() async {
@@ -386,6 +407,8 @@ class recentScreenState extends BaseScreenState<recentScreen>
         return files.where((file) => _isApk(file['name'])).toList();
       case 5: 
         return files.where((file) => _isCompressed(file['name'])).toList();
+      case 6: 
+        return files.where((file) => _isDoc(file['name'])).toList();
       default:
         return files; 
     }
@@ -428,6 +451,17 @@ class recentScreenState extends BaseScreenState<recentScreen>
         fileName.toLowerCase().endsWith('.7z') ||
         fileName.toLowerCase().endsWith('.tar') ||
         fileName.toLowerCase().endsWith('.gz');
+  }
+
+  bool _isDoc(String fileName) {
+    return fileName.toLowerCase().endsWith('.doc') ||
+        fileName.toLowerCase().endsWith('.docx') ||
+        fileName.toLowerCase().endsWith('.txt') ||
+        fileName.toLowerCase().endsWith('.ppt') ||
+        fileName.toLowerCase().endsWith('.pptx')||
+        fileName.toLowerCase().endsWith('.pdf')||
+        fileName.toLowerCase().endsWith('.wps')||
+        fileName.toLowerCase().endsWith('.xlsx');
   }
 
   String _formatFileSize(int size) {
