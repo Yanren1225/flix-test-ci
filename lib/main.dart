@@ -569,7 +569,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
   Widget? thirdWidget;
 
 
-  double _leftWidth = 350.0;
+  double _leftWidth = 365.0;
   final double _minLeftWidth = 300.0; 
   final double _maxLeftWidth = 500.0; 
   
