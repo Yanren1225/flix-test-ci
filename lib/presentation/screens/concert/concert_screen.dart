@@ -119,53 +119,62 @@ class _ConcertScreenState extends State<ConcertScreen>
           valueListenable: concertProvider.deviceName,
           builder: (context, value, child) {
             return PopScope(
-              canPop: !concertProvider.isEditing,
-              onPopInvoked: (didPop) {
-                if (!didPop) {
-                  Future.delayed(Duration.zero, () {
-                    if (concertProvider.isEditing) {
-                      concertProvider.existEditing();
-                    } else {
-                      Navigator.pop(context);
-                    }
-                  });
-                }
-                // Navigator.pop(context);
-              },
-            child: Container(
-                  color: Theme.of(context).flixColors.background.secondary,
-                  child: Padding(
-                    padding: (Platform.isMacOS || Platform.isWindows || Platform.isLinux)
-                        ? const EdgeInsets.only(top: 20)
-                        : EdgeInsets.zero,
-                    child: GestureDetector(
-                      child: NavigationAppbarScaffold(
-                        showBackButton: showBackButton,
-                        title: value,
-                        isEditing: concertProvider.isEditing,
-                        editTitle: '退出多选',
-                        onExitEditing: () {
-                          concertProvider.existEditing();
-                        },
-                        builder: (padding) {
-                          return _isContentReady
-                              ? FadeTransition(
-                                  opacity: _animation,
-                                  child: ShareConcertMainView(
-                                    key: concertProvider.concertMainKey,
-                                    deviceInfo: concertProvider.deviceInfo,
-                                    padding: padding,
-                                    anchor: anchor,
-                                    playable: playable,
-                                  ),
-                                )
-                              : const SizedBox();
-                        },
+                canPop: !concertProvider.isEditing,
+                onPopInvoked: (didPop) {
+                  if (!didPop) {
+                    Future.delayed(Duration.zero, () {
+                      if (concertProvider.isEditing) {
+                        concertProvider.existEditing();
+                      } else {
+                        Navigator.pop(context);
+                      }
+                    });
+                  }
+                  // Navigator.pop(context);
+                },
+                // FIXME 临时解决Linkify的菜单无法收起的问题
+                child: GestureDetector(
+                  behavior: HitTestBehavior.deferToChild,
+                  onTapDown: (TapDownDetails details) {
+                    FocusScope.of(context).unfocus();
+                    ContextMenuController.removeAny();
+                  },
+                  child: Container(
+                    color: Theme.of(context).flixColors.background.secondary,
+                    child: Padding(
+                      padding: (Platform.isMacOS ||
+                              Platform.isWindows ||
+                              Platform.isLinux)
+                          ? const EdgeInsets.only(top: 20)
+                          : EdgeInsets.zero,
+                      child: GestureDetector(
+                        child: NavigationAppbarScaffold(
+                          showBackButton: showBackButton,
+                          title: value,
+                          isEditing: concertProvider.isEditing,
+                          editTitle: '退出多选',
+                          onExitEditing: () {
+                            concertProvider.existEditing();
+                          },
+                          builder: (padding) {
+                            return _isContentReady
+                                ? FadeTransition(
+                                    opacity: _animation,
+                                    child: ShareConcertMainView(
+                                      key: concertProvider.concertMainKey,
+                                      deviceInfo: concertProvider.deviceInfo,
+                                      padding: padding,
+                                      anchor: anchor,
+                                      playable: playable,
+                                    ),
+                                  )
+                                : const SizedBox();
+                          },
+                        ),
                       ),
                     ),
                   ),
-                )
-            );
+                ));
           },
         );
       },
@@ -253,8 +262,6 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
     });
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     final concertProvider = Provider.of<ConcertProvider>(context, listen: true);
@@ -269,18 +276,18 @@ class ShareConcertMainViewState extends BaseScreenState<ShareConcertMainView> {
           reverse: true,
           shrinkWrap: true,
         ),
-         Align(
+        Align(
           alignment: Alignment.bottomCenter,
           child: Visibility(
-            visible: !widget.playable, 
+            visible: !widget.playable,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 30.0),
               child: Text(
                 "此设备已离线",
                 style: TextStyle(
-                    color: Theme.of(context).flixColors.text.secondary,
-                    fontSize: 14,
-                    ),
+                  color: Theme.of(context).flixColors.text.secondary,
+                  fontSize: 14,
+                ),
               ),
             ),
           ),
@@ -603,7 +610,9 @@ class InputAreaState extends State<InputArea> {
               Row(
                 children: [
                   Expanded(child: PickActionsArea(onPicked: onPicked)),
-                  if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) ...[
+                  if (Platform.isWindows ||
+                      Platform.isMacOS ||
+                      Platform.isLinux) ...[
                     IconButton(
                       icon: SvgPicture.asset(
                         'assets/images/screenshot.svg',
@@ -612,7 +621,7 @@ class InputAreaState extends State<InputArea> {
                       ),
                       onPressed: () {
                         FocusScope.of(context).unfocus();
-                        screenshot(concertProvider.deviceInfo, context); 
+                        screenshot(concertProvider.deviceInfo, context);
                       },
                       color: Theme.of(context).flixColors.text.primary,
                     ),
@@ -627,54 +636,52 @@ class InputAreaState extends State<InputArea> {
     );
   }
 
-Future<void> screenshot(DeviceInfo deviceInfo, BuildContext context) async {
-  windowManager.minimize();
-  try {
-    await ScreenCapturer.instance.capture(
-      mode: CaptureMode.region, 
-      imagePath: null,
-      copyToClipboard: true,  
-    );
-
-    await Future.delayed(const Duration(milliseconds: 500));
-    windowManager.show();
-
-    final filePaths = await Pasteboard.files();
-          if (filePaths.isNotEmpty == true) {
-            final files = filePaths.map((e) => XFile(e)).toList();
-            showCupertinoModalPopup(
-                context: context,
-                builder: (_) {
-                  return FilesConfirmBottomSheet(
-                      deviceInfo: deviceInfo, files: files);
-                });
-            return;
-          }
-
-    final imageBytes = await Pasteboard.image;
-    if (imageBytes != null) {
-      final cachePath = await getCachePath();
-      final imageFile = await FileUtils.getTargetFile(
-          cachePath, '${const Uuid().v4()}.jpg');
-      await imageFile.writeAsBytes(imageBytes);
-      showCupertinoModalPopup(
-        context: context,
-        builder: (_) {
-          return FilesConfirmBottomSheet(
-            deviceInfo: deviceInfo, 
-            files: [XFile(imageFile.path)],
-          );
-        },
+  Future<void> screenshot(DeviceInfo deviceInfo, BuildContext context) async {
+    windowManager.minimize();
+    try {
+      await ScreenCapturer.instance.capture(
+        mode: CaptureMode.region,
+        imagePath: null,
+        copyToClipboard: true,
       );
-    } else {
-      // 用户取消截图
+
+      await Future.delayed(const Duration(milliseconds: 500));
+      windowManager.show();
+
+      final filePaths = await Pasteboard.files();
+      if (filePaths.isNotEmpty == true) {
+        final files = filePaths.map((e) => XFile(e)).toList();
+        showCupertinoModalPopup(
+            context: context,
+            builder: (_) {
+              return FilesConfirmBottomSheet(
+                  deviceInfo: deviceInfo, files: files);
+            });
+        return;
+      }
+
+      final imageBytes = await Pasteboard.image;
+      if (imageBytes != null) {
+        final cachePath = await getCachePath();
+        final imageFile = await FileUtils.getTargetFile(
+            cachePath, '${const Uuid().v4()}.jpg');
+        await imageFile.writeAsBytes(imageBytes);
+        showCupertinoModalPopup(
+          context: context,
+          builder: (_) {
+            return FilesConfirmBottomSheet(
+              deviceInfo: deviceInfo,
+              files: [XFile(imageFile.path)],
+            );
+          },
+        );
+      } else {
+        // 用户取消截图
+      }
+    } catch (e) {
+      //print('Error: $e');
     }
-  } catch (e) {
-    //print('Error: $e');
   }
-}
-
-
 
   AdaptiveTextSelectionToolbar buildAdaptiveTextSelectionToolbar(
       EditableTextState editableTextState, ConcertProvider concertProvider) {
