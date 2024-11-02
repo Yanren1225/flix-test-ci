@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
 class BlurAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -12,7 +13,12 @@ class BlurAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return ClipRect(
       child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30), child: appBar),
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          color: Theme.of(context).flixColors.background.secondary.withOpacity(0.7), 
+          child: appBar,
+        ),
+      ),
     );
   }
 
