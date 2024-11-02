@@ -426,7 +426,9 @@ class HistoryItem extends StatefulWidget {
 
 class _HistoryItemState extends State<HistoryItem> {
   double _translateX = 0;
-  final double _maxSlide = 70;
+  final double _maxSlide = Platform.isAndroid || Platform.isIOS
+                                  ? 80
+                                  : 70;
 
   void _handlePanUpdate(DragUpdateDetails details) {
     setState(() {
@@ -488,8 +490,12 @@ class _HistoryItemState extends State<HistoryItem> {
                       });
                     },
                     child: Container(
-                      width: 60,
-                      height: 60,
+                      width: Platform.isAndroid || Platform.isIOS
+                                  ? 70
+                                  : 60,
+                      height: Platform.isAndroid || Platform.isIOS
+                                  ? 70
+                                  : 60,
                       decoration: ShapeDecoration(
                         color: Theme.of(context).flixColors.background.primary,
                         shape: SmoothRectangleBorder(
@@ -504,15 +510,21 @@ class _HistoryItemState extends State<HistoryItem> {
                         children: [
                           SvgPicture.asset(
                             'assets/images/del_device.svg',
-                            width: 20,
-                            height: 20,
+                            width: Platform.isAndroid || Platform.isIOS
+                                  ? 22
+                                  : 20,
+                            height: Platform.isAndroid || Platform.isIOS
+                                  ? 22
+                                  : 20,
                           ),
                           const SizedBox(height: 2),
-                          const Text(
+                          Text(
                             "删除",
                             style: TextStyle(
                               color: Colors.red,
-                              fontSize: 12,
+                              fontSize: Platform.isAndroid || Platform.isIOS
+                                  ? 13.5
+                                  : 12,
                             ),
                           ),
                         ],
