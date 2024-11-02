@@ -82,23 +82,13 @@ class SettingAgreementScreenState extends State<SettingAgreementScreen> {
   }
 
   Widget pra() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 0),
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 0),
+    child: SingleChildScrollView(
       child: Column(
-        mainAxisSize: MainAxisSize.min, 
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start, 
         children: [
-          
-          Flexible(
-            fit: FlexFit.loose, 
-            child: ListView(
-              shrinkWrap: true, 
-              padding: const EdgeInsets.only(top: 0),
-              children: [
-            //   const Text(
-          //  'Flix 隐私政策',
-          //  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        // ),
-        // const SizedBox(height: 10),
           const Text(
                       '更新日期：2024年10月24日',
                       style: TextStyle(fontSize: 14),
@@ -187,15 +177,12 @@ class SettingAgreementScreenState extends State<SettingAgreementScreen> {
 
                     const SizedBox(height: 10),
                     buildSectionTitle('本协议适用于所有使用 Flix 的用户。'),
-                // 其他内容...
+                
               ],
-            ),
-          ),
-        ],
       ),
-    );
-  }
-
+    ),
+  );
+}
   Widget buildSectionTitle(String title) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 2),
