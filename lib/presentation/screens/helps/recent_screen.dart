@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:flix/domain/settings/settings_repo.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart'; 
 import 'dart:io';
 import 'package:package_info_plus/package_info_plus.dart';
-
+import 'package:open_filex/open_filex.dart';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
@@ -337,6 +339,16 @@ Widget build(BuildContext context) {
               color: Theme.of(context).flixColors.text.secondary,
             ),
           ),
+           onTap: () async {
+          final filePath = SettingsRepo.instance.savedDir + '/'+file['name']; 
+          final fileExists = await File(filePath).exists();
+          if (fileExists) {
+           
+            OpenFilex.open(filePath);
+          } else {
+         flixToast.alert("文件不存在，可能已被移动或删除");
+          }
+        },
         ),
       ),
     );
