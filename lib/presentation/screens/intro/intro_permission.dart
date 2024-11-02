@@ -1,6 +1,8 @@
 import 'package:figma_squircle/figma_squircle.dart';
+import 'package:flix/main.dart';
 import 'package:flix/presentation/screens/intro/intro_agreement.dart';
 import 'package:flix/presentation/screens/intro/intro_privacy.dart';
+import 'package:flix/presentation/screens/main_screen.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -397,8 +399,10 @@ class _IntroPermissionState extends State<IntroPermission> {
                   SharedPreferences prefs = await SharedPreferences.getInstance();
                   await prefs.setBool('isFirstRun', false);
 
-               
-                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.pushReplacement(
+                    navigatorKey.currentContext!,
+                    MaterialPageRoute(builder: (context) => const MainScreen()),
+                  );
                 }
               : null, 
                           style: ElevatedButton.styleFrom(
