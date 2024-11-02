@@ -54,7 +54,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("ロードミスしましたよ、あとでやってみましょう~"),
         "bubbles_dir_no_data": MessageLookupByLibrary.simpleMessage("データなし"),
         "bubbles_downloaded": MessageLookupByLibrary.simpleMessage("ダウンロード済み"),
-        "bubbles_menu_copy": MessageLookupByLibrary.simpleMessage("レプリケーション"),
+        "bubbles_menu_copy": MessageLookupByLibrary.simpleMessage("コピー"),
         "bubbles_menu_delete": MessageLookupByLibrary.simpleMessage("削除"),
         "bubbles_menu_forward": MessageLookupByLibrary.simpleMessage("転送"),
         "bubbles_menu_free_copy":
@@ -82,7 +82,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "bubbles_wait_for_receive":
             MessageLookupByLibrary.simpleMessage("受入保留中"),
         "bubbles_yesterday": m1,
-        "button_cancel_send": MessageLookupByLibrary.simpleMessage("送信のキャンセル"),
+        "button_cancel_send": MessageLookupByLibrary.simpleMessage("送信をキャンセル"),
         "button_resend": MessageLookupByLibrary.simpleMessage("再送信"),
         "device_ap_connected": MessageLookupByLibrary.simpleMessage("接続済み"),
         "device_delete": MessageLookupByLibrary.simpleMessage("削除"),
@@ -104,7 +104,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "dialog_exit_button": MessageLookupByLibrary.simpleMessage("終了"),
         "dialog_exit_subtitle":
             MessageLookupByLibrary.simpleMessage("終了すると、近くのデバイスに検出されません。"),
-        "dialog_exit_title": MessageLookupByLibrary.simpleMessage("ソフトウェアの終了"),
+        "dialog_exit_title": MessageLookupByLibrary.simpleMessage("アプリ終了"),
         "dialog_new_version_button":
             MessageLookupByLibrary.simpleMessage("アップグレード"),
         "dialog_new_version_subtitle": MessageLookupByLibrary.simpleMessage(
@@ -196,7 +196,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "hotspot_missing_permission":
             MessageLookupByLibrary.simpleMessage("必要な権限がありません"),
         "hotspot_missing_permission_action":
-            MessageLookupByLibrary.simpleMessage("必要な権限の付与"),
+            MessageLookupByLibrary.simpleMessage("必要な権限を許可する"),
         "hotspot_my_qrcode": MessageLookupByLibrary.simpleMessage("マイQRコード"),
         "hotspot_qrcode_tip": MessageLookupByLibrary.simpleMessage(
             "Flixスイープを開き、ホットスポット接続を迅速に確立します。"),
@@ -206,13 +206,47 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("オープン"),
         "hotspot_wifi_initializing":
             MessageLookupByLibrary.simpleMessage("WiFiを初期化しています"),
+        "intro_last": MessageLookupByLibrary.simpleMessage("前へ"),
+        "intro_next": MessageLookupByLibrary.simpleMessage("続ける"),
+        "intro_permission_1":
+            MessageLookupByLibrary.simpleMessage("Flixに必要な権限"),
+        "intro_permission_2":
+            MessageLookupByLibrary.simpleMessage("次の権限があります。"),
+        "intro_permission_3a":
+            MessageLookupByLibrary.simpleMessage("WIFIのオン/オフ"),
+        "intro_permission_3b":
+            MessageLookupByLibrary.simpleMessage("近くのデバイスをスキャン"),
+        "intro_permission_4a": MessageLookupByLibrary.simpleMessage("ストレージ"),
+        "intro_permission_4b":
+            MessageLookupByLibrary.simpleMessage("受信したファイルを保存"),
+        "intro_permission_5a": MessageLookupByLibrary.simpleMessage("通知"),
+        "intro_permission_5b":
+            MessageLookupByLibrary.simpleMessage("新しいファイル通知の受信"),
+        "intro_permission_6a": MessageLookupByLibrary.simpleMessage("位置情報"),
+        "intro_permission_6b":
+            MessageLookupByLibrary.simpleMessage("ネットワーク名の取得"),
+        "intro_permission_7a": MessageLookupByLibrary.simpleMessage("カメラ"),
+        "intro_permission_7b":
+            MessageLookupByLibrary.simpleMessage("QRコードをスキャン"),
+        "intro_permission_8a":
+            MessageLookupByLibrary.simpleMessage("読んで同意しました "),
+        "intro_permission_8b": MessageLookupByLibrary.simpleMessage("利用規約"),
+        "intro_permission_8c": MessageLookupByLibrary.simpleMessage(" と "),
+        "intro_permission_8d":
+            MessageLookupByLibrary.simpleMessage("プライバシーポリシー"),
+        "intro_permission_9": MessageLookupByLibrary.simpleMessage("利用開始"),
+        "intro_welcome_1":
+            MessageLookupByLibrary.simpleMessage("チャットのようにファイルを渡す。"),
+        "intro_welcome_2": MessageLookupByLibrary.simpleMessage("探索を始める"),
+        "intro_wifi_1": MessageLookupByLibrary.simpleMessage("他のデバイスへの接続"),
+        "intro_wifi_2": MessageLookupByLibrary.simpleMessage("デバイスを検出します。"),
         "menu_add_manually": MessageLookupByLibrary.simpleMessage("手動でデバイスを追加"),
         "menu_add_manually_input":
             MessageLookupByLibrary.simpleMessage("手動入力による追加"),
         "menu_add_this_device":
             MessageLookupByLibrary.simpleMessage("このデバイスを追加"),
         "menu_hotspot": MessageLookupByLibrary.simpleMessage("ホットスポット"),
-        "menu_scan": MessageLookupByLibrary.simpleMessage("さっと動かす"),
+        "menu_scan": MessageLookupByLibrary.simpleMessage("スキャン"),
         "navigation_config": MessageLookupByLibrary.simpleMessage("構成"),
         "navigation_help": MessageLookupByLibrary.simpleMessage("ヘルプ"),
         "navigation_send": MessageLookupByLibrary.simpleMessage("クロスオーバ"),
@@ -245,7 +279,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pick_one": MessageLookupByLibrary.simpleMessage("デバイスを選択"),
         "qr_no_camera_permission":
             MessageLookupByLibrary.simpleMessage("カメラ権限がありません"),
-        "qr_scan": MessageLookupByLibrary.simpleMessage("さっと動かす"),
+        "qr_scan": MessageLookupByLibrary.simpleMessage("スキャン"),
         "qr_scan_tip": MessageLookupByLibrary.simpleMessage(
             "Flix QRコードを開き、ホットスポット接続を迅速に確立します。"),
         "search": MessageLookupByLibrary.simpleMessage("検索"),
@@ -261,13 +295,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "setting_accessibility_add_self_des":
             MessageLookupByLibrary.simpleMessage(
                 "このデバイス接続情報を表示して、他のデバイスに手動で追加します"),
-        "setting_advances": MessageLookupByLibrary.simpleMessage("ステップ機能"),
+        "setting_advances": MessageLookupByLibrary.simpleMessage("アドバンス機能"),
         "setting_auto_start":
             MessageLookupByLibrary.simpleMessage("電源投入時に自動起動"),
         "setting_confirm_clean_cache":
-            MessageLookupByLibrary.simpleMessage("キャッシュのクリア"),
+            MessageLookupByLibrary.simpleMessage("キャッシュを消去"),
         "setting_confirm_clean_cache_action":
-            MessageLookupByLibrary.simpleMessage("パージ"),
+            MessageLookupByLibrary.simpleMessage("消去"),
         "setting_confirm_clean_cache_subtitle":
             MessageLookupByLibrary.simpleMessage(
                 "システムの制限により、送信されたファイルはキャッシュされ、キャッシュをクリアすると送信中のファイルが中断され、送信されたファイルの一部がプレビューできなくなります。キャッシュをクリアすると、受信したファイルに影響しません"),
@@ -299,14 +333,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage(
                 "ターゲットデバイスのバージョンが低すぎてペアリングがサポートされていません"),
         "setting_device_name": MessageLookupByLibrary.simpleMessage("ネイティブ名"),
-        "setting_exit": MessageLookupByLibrary.simpleMessage("ソフトウェアの終了"),
+        "setting_exit": MessageLookupByLibrary.simpleMessage("アプリ終了"),
         "setting_more": MessageLookupByLibrary.simpleMessage("詳細"),
         "setting_more_clean_cache":
-            MessageLookupByLibrary.simpleMessage("キャッシュのクリア"),
+            MessageLookupByLibrary.simpleMessage("キャッシュを消去"),
         "setting_more_dark_mode":
             MessageLookupByLibrary.simpleMessage("ダークモード"),
         "setting_more_dark_mode_off":
-            MessageLookupByLibrary.simpleMessage("常に閉じる"),
+            MessageLookupByLibrary.simpleMessage("常にオフ"),
         "setting_more_dark_mode_on":
             MessageLookupByLibrary.simpleMessage("常にオン"),
         "setting_more_dark_mode_sync":
@@ -325,13 +359,13 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("写真ビデオを自動的にアルバムに保存"),
         "setting_receive_to_album_des":
             MessageLookupByLibrary.simpleMessage("受信ディレクトリに保存しない"),
-        "setting_title": MessageLookupByLibrary.simpleMessage("ソフトウェア設定"),
+        "setting_title": MessageLookupByLibrary.simpleMessage("アプリ設定"),
         "share_flix": MessageLookupByLibrary.simpleMessage("友人におすすめ"),
         "share_flix_action": MessageLookupByLibrary.simpleMessage("完了"),
         "share_flix_copied":
             MessageLookupByLibrary.simpleMessage("クリップボードにコピーされました"),
-        "share_flix_website":
-            MessageLookupByLibrary.simpleMessage("公式サイト（コピークリック）：フリックス・センター"),
+        "share_flix_website": MessageLookupByLibrary.simpleMessage(
+            "公式サイト（クリックしてコピー）：flix.center"),
         "toast_copied":
             MessageLookupByLibrary.simpleMessage("クリップボードにコピーされました"),
         "toast_msg_empty_folder":

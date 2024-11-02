@@ -226,6 +226,46 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Open"),
         "hotspot_wifi_initializing":
             MessageLookupByLibrary.simpleMessage("Initializing WiFi"),
+        "intro_last": MessageLookupByLibrary.simpleMessage("Previous"),
+        "intro_next": MessageLookupByLibrary.simpleMessage("Continue"),
+        "intro_permission_1": MessageLookupByLibrary.simpleMessage(
+            "Give Flix necessary permissions"),
+        "intro_permission_2": MessageLookupByLibrary.simpleMessage(
+            "In order to ensure the normal use of the software, we need to apply to you the following permissions:"),
+        "intro_permission_3a":
+            MessageLookupByLibrary.simpleMessage("Turn on and off WIFI"),
+        "intro_permission_3b":
+            MessageLookupByLibrary.simpleMessage("Scan nearby devices"),
+        "intro_permission_4a": MessageLookupByLibrary.simpleMessage("Storage"),
+        "intro_permission_4b":
+            MessageLookupByLibrary.simpleMessage("Save the received file"),
+        "intro_permission_5a":
+            MessageLookupByLibrary.simpleMessage("Notification"),
+        "intro_permission_5b": MessageLookupByLibrary.simpleMessage(
+            "Receive new file notifications"),
+        "intro_permission_6a": MessageLookupByLibrary.simpleMessage("Location"),
+        "intro_permission_6b":
+            MessageLookupByLibrary.simpleMessage("Get network name"),
+        "intro_permission_7a": MessageLookupByLibrary.simpleMessage("Camera"),
+        "intro_permission_7b":
+            MessageLookupByLibrary.simpleMessage("Scan QR code"),
+        "intro_permission_8a":
+            MessageLookupByLibrary.simpleMessage("I have read and agree "),
+        "intro_permission_8b":
+            MessageLookupByLibrary.simpleMessage("User Agreement"),
+        "intro_permission_8c": MessageLookupByLibrary.simpleMessage(" and "),
+        "intro_permission_8d":
+            MessageLookupByLibrary.simpleMessage("Privacy Policy"),
+        "intro_permission_9":
+            MessageLookupByLibrary.simpleMessage("Start using"),
+        "intro_welcome_1": MessageLookupByLibrary.simpleMessage(
+            "Flix,\nTransfer files like chatting."),
+        "intro_welcome_2":
+            MessageLookupByLibrary.simpleMessage("Start exploring"),
+        "intro_wifi_1":
+            MessageLookupByLibrary.simpleMessage("Connect to other devices"),
+        "intro_wifi_2": MessageLookupByLibrary.simpleMessage(
+            "Place the devices in the same network environment, open Flix, and you will be able to discovered device."),
         "menu_add_manually":
             MessageLookupByLibrary.simpleMessage("Manually add devices"),
         "menu_add_manually_input":
