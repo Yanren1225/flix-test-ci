@@ -61,7 +61,7 @@ class AppDatabase extends _$AppDatabase {
       // Explicitly tell it about the correct temporary directory.
       sqlite3.tempDirectory = cachebase;
 
-      return NativeDatabase.createInBackground(file, logStatements: true);
+      return NativeDatabase.createInBackground(file, logStatements: false);
     });
   }
 

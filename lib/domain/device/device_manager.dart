@@ -172,7 +172,6 @@ class DeviceManager {
       return devices;
     }).listen((value) {
       history.clear();
-      talker.debug("_watchHistory start");
       history.addAll(value);
       notifyHistoryChanged();
     });
