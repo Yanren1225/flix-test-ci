@@ -49,6 +49,9 @@ class FreeCopyScreenState extends State<FreeCopyScreen> {
                     ),
                   ),
                   child: SelectableText(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
                     widget.text,
                     style: const TextStyle(
                       fontSize: 20,
@@ -70,7 +73,7 @@ class FreeCopyScreenState extends State<FreeCopyScreen> {
                  
                 ),
                 child: const Text(
-                  '长按自由复制文本  点击空白处退出',
+                  '长按自由复制文本  点击任意位置退出',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
