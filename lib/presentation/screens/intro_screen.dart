@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flix/presentation/screens/intro/intro_welcome.dart';
 import 'package:flix/presentation/screens/intro/intro_wifi.dart';
 import 'package:flix/presentation/screens/intro/intro_permission.dart'; 
@@ -16,6 +17,8 @@ class IntroPage extends StatefulWidget {
 class _IntroPageState extends State<IntroPage> {
   bool showIntroWiFi = false; 
   bool showIntroPermission = false; 
+  bool isForwardTransition = true;
+  
 
   @override
   void initState() {
@@ -23,43 +26,52 @@ class _IntroPageState extends State<IntroPage> {
     _initSystemChrome(); 
   }
 
-  @override
+   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).flixColors.background.secondary, 
+      backgroundColor: Theme.of(context).flixColors.background.secondary,
       body: Stack(
         children: [
+          
           if (Platform.isMacOS || Platform.isLinux || Platform.isWindows)
-            _buildWindowControls(), 
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 150), 
-              transitionBuilder: (Widget child, Animation<double> animation) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: child,
-                );
-              },
-              child: showIntroPermission
-                  ? IntroPermission(
-                      key: const ValueKey('IntroPermission'),
-                      onBackPressed: _switchToWiFiPage,
-                      onContinuePressed: _exitIntroPage,
-                    )
-                  : showIntroWiFi
-                      ? IntroWiFi(
-                          key: const ValueKey('IntroWiFi'),
-                          onBackPressed: _switchToWelcomePage,
-                          onContinuePressed: _switchToPermissionPage,
-                        )
-                      : IntroWelcome(
-                          key: const ValueKey('IntroWelcome'),
-                          onExplorePressed: _switchToWiFiPage,
-                        ),
-            ),
+            _buildWindowControls(),
+          PageTransitionSwitcher(
+          duration: const Duration(milliseconds: 300), 
+          reverse: !isForwardTransition,
+          transitionBuilder: (child, animation, secondaryAnimation) {
+            return SharedAxisTransition(
+              animation: animation,
+              fillColor:Theme.of(context).flixColors.background.secondary, 
+              secondaryAnimation: secondaryAnimation,
+              transitionType: SharedAxisTransitionType.horizontal, 
+            
+                child: child,
+              
+            );
+          },
+            child: showIntroPermission
+                ? IntroPermission(
+                    key: const ValueKey('IntroPermission'),
+                    onBackPressed: () => _switchToWiFiPage(isReturning: true),
+                    onContinuePressed: _exitIntroPage,
+                  )
+                : showIntroWiFi
+                    ? IntroWiFi(
+                        key: const ValueKey('IntroWiFi'),
+                        onBackPressed: () => _switchToWelcomePage(isReturning: true),
+                        onContinuePressed: () => _switchToPermissionPage(isReturning: false),
+                      )
+                    : IntroWelcome(
+                        key: const ValueKey('IntroWelcome'),
+                        onExplorePressed: () => _switchToWiFiPage(isReturning: false),
+                      ),
+          ),
         ],
       ),
     );
   }
+
+
 
   Widget _buildWindowControls() {
     return Positioned(
@@ -158,21 +170,25 @@ class _IntroPageState extends State<IntroPage> {
     ];
   }
 
-  void _switchToWiFiPage() {
+
+  void _switchToWiFiPage({required bool isReturning}) {
     setState(() {
+      isForwardTransition = !isReturning; 
       showIntroWiFi = true;
       showIntroPermission = false;
     });
   }
 
-  void _switchToPermissionPage() {
+  void _switchToPermissionPage({required bool isReturning}) {
     setState(() {
+      isForwardTransition = !isReturning; 
       showIntroPermission = true;
     });
   }
 
-  void _switchToWelcomePage() {
+  void _switchToWelcomePage({required bool isReturning}) {
     setState(() {
+      isForwardTransition = !isReturning; 
       showIntroWiFi = false;
       showIntroPermission = false;
     });
