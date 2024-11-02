@@ -1,3 +1,5 @@
+import 'package:uuid/uuid.dart';
+
 import '../model/ship/primitive_bubble.dart';
 import '../model/ui_bubble/shareable.dart';
 import '../model/ui_bubble/shared_file.dart';
@@ -43,7 +45,7 @@ PrimitiveBubble fromUIBubble(UIBubble bubbleEntity) {
               meta: sharedDirectory.meta,
               fileBubbles: sharedDirectory.content
                   .map((e) => PrimitiveFileBubble(
-                      id: e.id,
+                      id: Uuid().v4(),
                       from: bubbleEntity.from,
                       to: bubbleEntity.to,
                       type: BubbleType.File,

@@ -404,8 +404,8 @@ class ShipService {
     try {
       var body = await request.readAsString();
       var data = jsonDecode(body) as Map<String, dynamic>;
+      talker.debug("_receiveBubble json===>", body);
       var bubble = PrimitiveBubble.fromJson(data);
-      talker.debug("_receiveBubble===>", data);
       // _notifyNewBubble(bubble);
       if (await SettingsRepo.instance.getAutoReceiveAsync() &&
           (bubble is PrimitiveFileBubble ||
@@ -500,6 +500,7 @@ class ShipService {
       shareId = request.requestedUri.queryParameters['share_id'];
       assert(shareId != null, 'shareId can\'t be null');
       final bubble0 = await _bubblePool.findLastById(shareId!);
+      talker.debug("_receiveFile shareId = $shareId  bubble = $bubble0");
       if (bubble0 == null) {
         throw StateError(
             '$shareId Primitive Bubble with id: $shareId should not null.');
@@ -521,6 +522,7 @@ class ShipService {
       await _checkCancel(bubble!.id);
       try {
         final String desDir = SettingsRepo.instance.savedDir;
+        talker.debug(sendTag,"desDir = $desDir  path = ${bubble?.content.meta.path} bubble = $bubble");
         await resolvePathOnMacOS(desDir, (desDir) async {
           assert(fileName != null, "$shareId filename can't be null");
           // safeJoinPaths 相对路径拼接，文件夹发送处理
