@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/device/device_manager.dart';
@@ -10,7 +11,11 @@ import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/network/protocol/device_modal.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/bubble_convert.dart';
+import 'package:flix/utils/device/device_utils.dart';
+import 'package:flix/utils/platform_utils.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../utils/compat/compat_util.dart';
 
@@ -40,7 +45,17 @@ class ShipServiceProxy{
   Future<void> send(UIBubble uiBubble) async {
     await _awaitServerReady();
     final primitiveBubble = fromUIBubble(uiBubble);
+    showBigFileToast(primitiveBubble);
     _shipService.send(primitiveBubble);
+  }
+
+  void showBigFileToast(PrimitiveBubble<dynamic> primitiveBubble) {
+    if(primitiveBubble is PrimitiveFileBubble){
+      var meta = primitiveBubble.content.meta;
+      if(meta != null && meta.size > 1024*1024*1024*2 && isMobile()){
+        FlixToast.instance.info("文件较大，传输时请不要关闭软件");
+      }
+    }
   }
 
   Future<void> confirmReceive(String from, String bubbleId) async {
