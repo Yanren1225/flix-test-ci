@@ -567,6 +567,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
   // DeviceInfo? selectedDevice;
   bool isLeaved = false;
   Widget? thirdWidget;
+
+
+  double _leftWidth = 350.0;
+  final double _minLeftWidth = 300.0; 
+  final double _maxLeftWidth = 500.0; 
   
 
  Center selectedDeviceTipsScreen() {
@@ -1025,11 +1030,28 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               ),
             ),
           ),
-          Expanded(flex: 2, child: secondPart()),
+          Container(
+            width: _leftWidth, 
+            child: secondPart(),
+          ),
+          GestureDetector(
+            onHorizontalDragUpdate: (details) {
+              setState(() {
+                _leftWidth += details.delta.dx;
+                _leftWidth = _leftWidth.clamp(_minLeftWidth, _maxLeftWidth);
+              });
+            },
+            child: MouseRegion(
+              cursor: SystemMouseCursors.resizeColumn,
+              child: Container(
+                width: 1.3,
+                color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.05),
+              ),
+            ),
+          ),
           Expanded(
-            flex: 3,
-            child: thirdPart(),
-          )
+            child: thirdPart(), 
+          ),
         ],
       ),
     );
