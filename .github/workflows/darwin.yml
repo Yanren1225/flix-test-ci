@@ -39,7 +39,15 @@ jobs:
         env:
           MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+          MACOS_PROVISION_PROFILE_BASE64: ${{ secrets.MACOS_PROVISION_PROFILE_BASE64 }}
         run: |
+          echo "Import provision profile"
+          PP_PATH=$RUNNER_TEMP/temp.provisionprofile
+          echo -n "$MACOS_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+          UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(/usr/bin/security cms -D -i $PP_PATH))
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.provisionprofile
+
           echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
           echo "Create Keychain"
           security create-keychain -p axp0832 build.keychain
