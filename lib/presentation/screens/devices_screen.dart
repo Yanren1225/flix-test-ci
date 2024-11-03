@@ -407,6 +407,9 @@ class _DeviceScreenState extends State<DeviceScreen>
       exit\r\n
   }\r\n
   \r\n
+  Remove-NetFirewallRule -DisplayName "flix"
+  \r\n
+  \r\n
   New-NetFirewallRule -DisplayName "flix" -Direction Inbound -Program "$exePath" -Action Allow -Enabled True\r\n
   ''';
 
