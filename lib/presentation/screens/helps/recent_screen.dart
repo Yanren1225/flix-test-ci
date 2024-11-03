@@ -351,7 +351,7 @@ Widget build(BuildContext context) {
               if (fileExists) {
                 OpenFilex.open(filePath);
               } else {
-                // 文件不存在
+                flixToast.alert("仅支持打开已接收的文件");
               }
             },
           ),
