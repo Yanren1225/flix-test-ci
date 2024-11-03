@@ -504,7 +504,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                   builder: (context) => ConcertScreen(
                         deviceInfo: deviceInfo,
                         showBackButton: true,
-                        playable: true,
+                        playable: !isHistory,
                       ))),
           onViewConnectInfo: () => Navigator.push(context,
               CupertinoPageRoute(builder: (context) => const PairCodeScreen())),
