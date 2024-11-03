@@ -151,14 +151,14 @@ class _LoginPageState extends State<LoginPage> {
     final verificationCode = (100000 + (DateTime.now().millisecondsSinceEpoch % 900000)).toString();
     _generatedCode = verificationCode;
 
-    final smtpServer = SmtpServer('smtp.feishu.cn',
+    final smtpServer = SmtpServer('smtp.qq.com',
         port: 465,
         ssl: true,
-        username: 'flix@mail.cdnfree.cdnfree.cn',
-        password: 'L1CdYkSYt6aQ5tlD');
+        username: 'verification-code@qq.com',
+        password: 'pjubjmzekttgcjii');
 
     final message = Message()
-      ..from = const Address('flix@mail.cdnfree.cdnfree.cn', 'Flix快传')
+      ..from = const Address('verification-code@qq.com', 'Flix快传')
       ..recipients.add(email)
       ..subject = '您的验证码'
       ..text = '【Flix快传】您的验证码是: $verificationCode，请勿将验证码转发给他人。';
