@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -26,6 +27,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modals/modals.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../l10n/l10n.dart';
 
@@ -152,26 +154,64 @@ class _DeviceScreenState extends State<DeviceScreen>
                   ),
                 ),
                 if (!isFirewallAllowed)
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    padding: const EdgeInsets.all(10),
-                    decoration: ShapeDecoration(
-                      color: const Color(0xFFFF3B30),
-                      shape: SmoothRectangleBorder(
-                        borderRadius: SmoothBorderRadius(
-                          cornerRadius: 15,
-                          cornerSmoothing: 0.6,
-                        ),
-                      ),
-                    ),
-                    child: const Text(
-                      '检测到防火墙未放行，可能会导致无法发现设备、传输异常等问题。',
-                      style: TextStyle(
-                        color: Colors.white, // 文本颜色
-                        fontSize: 12, // 文本字体大小
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.all(10),
+                  decoration: ShapeDecoration(
+                    color: const Color(0xFFFF3B30),
+                    shape: SmoothRectangleBorder(
+                      borderRadius: SmoothBorderRadius(
+                        cornerRadius: 15,
+                        cornerSmoothing: 0.6,
                       ),
                     ),
                   ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start, 
+                    children: [
+                      const Text(
+                        '检测到防火墙未放行，可能会导致无法发现设备、传输异常等问题。',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                      ),
+                    
+                      Align(
+                        alignment: Alignment.centerRight, 
+                        child: SizedBox(
+                          width: 55, 
+                          height: 28, 
+                          child: ElevatedButton(
+                            onPressed: () {
+                              runFirewallScript();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.zero, 
+                              backgroundColor: Color.fromRGBO(255, 255, 255, 0.3), 
+                              shadowColor: Colors.transparent, 
+                              elevation: 0, 
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              splashFactory: NoSplash.splashFactory, 
+                              surfaceTintColor: Colors.transparent, 
+                            ),
+                            child: const Center( 
+                              child: Text(
+                                '修复',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 Visibility(
                   //  visible: isMobile(),
                   child: Padding(
@@ -334,6 +374,53 @@ class _DeviceScreenState extends State<DeviceScreen>
       }
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<void> runFirewallScript() async {
+    String exePath = Platform.resolvedExecutable.replaceAll('/', '\\').toLowerCase();
+    try {
+
+      final tempDir = await getTemporaryDirectory();
+      final scriptDirPath = '${tempDir.path}\\flix\\firewall';
+      final scriptDir = Directory(scriptDirPath);
+
+  
+      if (!scriptDir.existsSync()) {
+        await scriptDir.create(recursive: true);
+      }
+
+    
+      final filePath = '${scriptDir.path}\\run_script.ps1';
+      final ps1File = File(filePath);
+
+
+      final scriptContent = '''
+  Write-Output "正在添加Flix到防火墙，请勿关闭此窗口..."\r\n
+  Function Test-Admin {\r\n
+      \$currentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())\r\n
+      return \$currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)\r\n
+  }\r\n
+  \r\n
+  if (-not (Test-Admin)) {\r\n
+      Start-Process powershell -ArgumentList "-File `"\$PSCommandPath`"" -Verb RunAs\r\n
+      exit\r\n
+  }\r\n
+  \r\n
+  New-NetFirewallRule -DisplayName "flix" -Direction Inbound -Program "$exePath" -Action Allow -Enabled True\r\n
+  ''';
+
+
+      final bom = [0xEF, 0xBB, 0xBF];
+      await ps1File.writeAsBytes(bom + utf8.encode(scriptContent), mode: FileMode.write);
+
+
+      await Process.run('powershell', ['-File', filePath]);
+      setState(() {
+        isFirewallAllowed = true;
+      });
+      await checkFirewall();
+    } catch (e) {
     }
   }
 
