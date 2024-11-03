@@ -21,40 +21,48 @@ class QAState extends State<QA> {
           borderRadius: BorderRadius.circular(14)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        child: ExpansionTile(
-          tilePadding: EdgeInsets.zero,
-          expandedAlignment: Alignment.topLeft,
-          expandedCrossAxisAlignment: CrossAxisAlignment.start,
-          backgroundColor: Theme.of(context).flixColors.background.primary,
-          collapsedBackgroundColor:
-              Theme.of(context).flixColors.background.primary,
-          textColor: Theme.of(context).flixColors.text.primary,
-          collapsedTextColor: Theme.of(context).flixColors.text.primary,
-          iconColor: Theme.of(context).flixColors.text.secondary,
-          collapsedIconColor: Theme.of(context).flixColors.text.secondary,
-          shape: InputBorder.none,
-          collapsedShape: InputBorder.none,
-          title: Text(
-            widget.question,
-            style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                    color: Theme.of(context).flixColors.text.primary)
-                .fix(),
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            expansionTileTheme: ExpansionTileThemeData(
+              backgroundColor: Theme.of(context).flixColors.background.primary,
+              collapsedBackgroundColor: Theme.of(context).flixColors.background.primary,
+              textColor: Theme.of(context).flixColors.text.primary,
+              collapsedTextColor: Theme.of(context).flixColors.text.primary,
+              iconColor: Theme.of(context).flixColors.text.secondary,
+              collapsedIconColor: Theme.of(context).flixColors.text.secondary,
+              shape: InputBorder.none,
+              collapsedShape: InputBorder.none,
+            ),
+            splashColor: Colors.transparent,    
+            highlightColor: Colors.transparent, 
+            hoverColor: Colors.transparent,  
           ),
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(
-                widget.answer,
-                style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                        color: Theme.of(context).flixColors.text.secondary)
-                    .fix(),
+          child: ExpansionTile(
+            tilePadding: EdgeInsets.zero,
+            expandedAlignment: Alignment.topLeft,
+            expandedCrossAxisAlignment: CrossAxisAlignment.start,
+            title: Text(
+              widget.question,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.normal,
+                color: Theme.of(context).flixColors.text.primary,
+              ).fix(),
+            ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  widget.answer,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal,
+                    color: Theme.of(context).flixColors.text.secondary,
+                  ).fix(),
+                ),
               ),
-            )
-          ],
+            ],
+          ),
         ),
       ),
     );
