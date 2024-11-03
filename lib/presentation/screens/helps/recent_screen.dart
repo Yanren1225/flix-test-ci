@@ -319,36 +319,42 @@ Widget build(BuildContext context) {
           color: Theme.of(context).flixColors.background.primary,
           borderRadius: borderRadius,
         ),
-        child: ListTile(
-          leading: SvgPicture.asset(
-            iconPath, 
-            height: 40,
-            width: 40,
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            splashColor: Colors.transparent, 
+            highlightColor: Colors.transparent, 
+            hoverColor: Colors.transparent, 
           ),
-          title: Text(
-            file['name'],
-            style: TextStyle(
-              fontSize: 15,
-              color: Theme.of(context).flixColors.text.primary,
+          child: ListTile(
+            leading: SvgPicture.asset(
+              iconPath,
+              height: 40,
+              width: 40,
             ),
-          ),
-          subtitle: Text(
-            file['size'] != null ? _formatFileSize(file['size']) : '',
-            style: TextStyle(
-              fontSize: 13,
-              color: Theme.of(context).flixColors.text.secondary,
+            title: Text(
+              file['name'],
+              style: TextStyle(
+                fontSize: 15,
+                color: Theme.of(context).flixColors.text.primary,
+              ),
             ),
+            subtitle: Text(
+              file['size'] != null ? _formatFileSize(file['size']) : '',
+              style: TextStyle(
+                fontSize: 13,
+                color: Theme.of(context).flixColors.text.secondary,
+              ),
+            ),
+            onTap: () async {
+              final filePath = SettingsRepo.instance.savedDir + '/' + file['name'];
+              final fileExists = await File(filePath).exists();
+              if (fileExists) {
+                OpenFilex.open(filePath);
+              } else {
+                // 文件不存在
+              }
+            },
           ),
-           onTap: () async {
-          final filePath = SettingsRepo.instance.savedDir + '/'+file['name']; 
-          final fileExists = await File(filePath).exists();
-          if (fileExists) {
-           
-            OpenFilex.open(filePath);
-          } else {
-        
-          }
-        },
         ),
       ),
     );
