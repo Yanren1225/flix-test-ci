@@ -27,7 +27,7 @@ class FlixTitleBar extends StatelessWidget {
         },
         child: Container(
           height: 30.0,
-          color: Theme.of(context).flixColors.background.secondary,
+          color: Colors.transparent,
           padding: const EdgeInsets.symmetric(horizontal: 0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
