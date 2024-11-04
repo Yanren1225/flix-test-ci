@@ -210,9 +210,9 @@ class _IntroPermissionState extends State<IntroPermission> {
                                 SharedPreferences prefs = await SharedPreferences.getInstance();
                                 await prefs.setBool('isFirstRun', false);
 
-                                Navigator.pushReplacement(
+                                Navigator.pushReplacementNamed(
                                   navigatorKey.currentContext!,
-                                  MaterialPageRoute(builder: (context) => const MainScreen()),
+                                  "/main",
                                 );
                               }
                             : null, 
@@ -401,9 +401,9 @@ class _IntroPermissionState extends State<IntroPermission> {
                   SharedPreferences prefs = await SharedPreferences.getInstance();
                   await prefs.setBool('isFirstRun', false);
 
-                  Navigator.pushReplacement(
+                  Navigator.pushReplacementNamed(
                     navigatorKey.currentContext!,
-                    MaterialPageRoute(builder: (context) => const MainScreen()),
+                    "/main",
                   );
                 }
               : null, 

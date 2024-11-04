@@ -174,7 +174,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
             CupertinoPageRoute<DeviceInfo?>(
                 builder: (context) =>
                     PickDeviceScreen(sharedMedia: sharedMedia)),
-            ModalRoute.withName('/'))
+            ModalRoute.withName('/main'))
         .then((deviceInfo) {
       if (deviceInfo == null) {
         talker.warning('取消分享，未选择设备');

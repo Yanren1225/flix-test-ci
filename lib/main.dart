@@ -328,9 +328,9 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
       });
     } else {
       Future.delayed(Duration.zero, () {
-        Navigator.pushReplacement(
+        Navigator.pushReplacementNamed(
           navigatorKey.currentContext!,
-          MaterialPageRoute(builder: (context) => const MainScreen()),
+          "/main",
         );
       });
     }
@@ -381,6 +381,9 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       (userDarkMode ? flixDark(context) : flixLight(context)),
                   locale: LangConfig.instance.current,
                   // initialRoute: 'home',
+                  routes: {
+                    "/main": (context) => const MainScreen()
+                  },
                   builder: FToastBuilder(),
                   home: Container(
                     color: Theme.of(context)
