@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
+import 'package:flix/presentation/widgets/flixtitlebar.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flix/presentation/widgets/bubble_context_menu/delete_bottom_sheet_util.dart';
@@ -110,87 +111,106 @@ class _ConcertScreenState extends State<ConcertScreen>
   }
 
   @override
-  Widget build(BuildContext context) {
-    final main = LayoutBuilder(
-      builder: (context, constraints) {
-        final concertProvider =
-            Provider.of<ConcertProvider>(context, listen: true);
-        return ValueListenableBuilder(
-          valueListenable: concertProvider.deviceName,
-          builder: (context, value, child) {
-            return PopScope(
-                canPop: !concertProvider.isEditing,
-                onPopInvoked: (didPop) {
-                  if (!didPop) {
-                    Future.delayed(Duration.zero, () {
-                      if (concertProvider.isEditing) {
-                        concertProvider.existEditing();
-                      } else {
-                        Navigator.pop(context);
-                      }
-                    });
-                  }
-                  // Navigator.pop(context);
-                },
-                // FIXME 临时解决Linkify的菜单无法收起的问题
-                child: GestureDetector(
-                  behavior: HitTestBehavior.deferToChild,
-                  onTapDown: (TapDownDetails details) {
-                    FocusScope.of(context).unfocus();
-                    ContextMenuController.removeAny();
+ @override
+Widget build(BuildContext context) {
+  final main = LayoutBuilder(
+    builder: (context, constraints) {
+      final concertProvider = Provider.of<ConcertProvider>(context, listen: true);
+      return ValueListenableBuilder(
+        valueListenable: concertProvider.deviceName,
+        builder: (context, value, child) {
+          return Stack(
+            children: [
+              // 悬浮在顶部的 FlixTitleBar 组件
+              
+
+              // 页面主要内容
+              Padding(
+                padding: const EdgeInsets.only(top: 0), // 避免内容被标题栏遮挡
+                child: PopScope(
+                  canPop: !concertProvider.isEditing,
+                  onPopInvoked: (didPop) {
+                    if (!didPop) {
+                      Future.delayed(Duration.zero, () {
+                        if (concertProvider.isEditing) {
+                          concertProvider.existEditing();
+                        } else {
+                          Navigator.pop(context);
+                        }
+                      });
+                    }
                   },
-                  child: Container(
-                    color: Theme.of(context).flixColors.background.secondary,
-                    child: Padding(
-                      padding: (Platform.isMacOS ||
-                              Platform.isWindows ||
-                              Platform.isLinux)
-                          ? const EdgeInsets.only(top: 20)
-                          : EdgeInsets.zero,
-                      child: GestureDetector(
-                        child: NavigationAppbarScaffold(
-                          showBackButton: showBackButton,
-                          title: value,
-                          isEditing: concertProvider.isEditing,
-                          editTitle: '退出多选',
-                          onExitEditing: () {
-                            concertProvider.existEditing();
-                          },
-                          builder: (padding) {
-                            return _isContentReady
-                                ? FadeTransition(
-                                    opacity: _animation,
-                                    child: ShareConcertMainView(
-                                      key: concertProvider.concertMainKey,
-                                      deviceInfo: concertProvider.deviceInfo,
-                                      padding: padding,
-                                      anchor: anchor,
-                                      playable: playable,
-                                    ),
-                                  )
-                                : const SizedBox();
-                          },
+
+                  // 解决 Linkify 菜单无法收起的问题
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.deferToChild,
+                    onTapDown: (TapDownDetails details) {
+                      FocusScope.of(context).unfocus();
+                      ContextMenuController.removeAny();
+                    },
+                    child: Container(
+                      color: Theme.of(context).flixColors.background.secondary,
+                      child: Padding(
+                        padding: (Platform.isMacOS || Platform.isWindows || Platform.isLinux)
+                            ? const EdgeInsets.only(top: 20)
+                            : EdgeInsets.zero,
+                        child: GestureDetector(
+                          child: NavigationAppbarScaffold(
+                            showBackButton: showBackButton,
+                            title: value,
+                            isEditing: concertProvider.isEditing,
+                            editTitle: '退出多选',
+                            onExitEditing: () {
+                              concertProvider.existEditing();
+                            },
+                            builder: (padding) {
+                              return _isContentReady
+                                  ? FadeTransition(
+                                      opacity: _animation,
+                                      child: ShareConcertMainView(
+                                        key: concertProvider.concertMainKey,
+                                        deviceInfo: concertProvider.deviceInfo,
+                                        padding: padding,
+                                        anchor: anchor,
+                                        playable: playable,
+                                      ),
+                                    )
+                                  : const SizedBox();
+                            },
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ));
-          },
-        );
-      },
-    );
-    return ChangeNotifierProvider<ConcertProvider>(
-        key: Key(deviceInfo.id),
-        create: (BuildContext context) {
-          return ConcertProvider(deviceInfo: deviceInfo);
+                ),
+              ),
+              const Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: FlixTitleBar(), // 确保 FlixTitleBar 正确导入
+              ),
+            ],
+          );
         },
-        child: playable
-            ? Droper(
-                deviceInfo: deviceInfo,
-                child: main,
-              )
-            : main);
-  }
+      );
+    },
+  );
+
+  return ChangeNotifierProvider<ConcertProvider>(
+    key: Key(deviceInfo.id),
+    create: (BuildContext context) {
+      return ConcertProvider(deviceInfo: deviceInfo);
+    },
+    child: playable
+        ? Droper(
+            deviceInfo: deviceInfo,
+            child: main,
+          )
+        : main,
+  );
+}
+
 
   FadeTransition createFadeTransition(
       ConcertProvider concertProvider, EdgeInsets padding) {
