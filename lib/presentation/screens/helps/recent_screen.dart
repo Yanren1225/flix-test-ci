@@ -266,6 +266,9 @@ Widget build(BuildContext context) {
             );
           },
         ),
+         const SliverToBoxAdapter(
+      child: SizedBox(height: 15), // 间距的高度
+    ),
       ],
     ),
   );
