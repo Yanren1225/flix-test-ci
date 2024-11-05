@@ -363,7 +363,7 @@ class _DeviceScreenState extends State<DeviceScreen>
 
       ProcessResult result = await Process.run(
       'powershell',
-      ['-Command', 'Get-NetFirewallProfile -Profile Domain | Select-Object -Property Enabled']
+      ['-Command', 'Get-NetFirewallProfile -Profile Domain,Public,Private | Select-Object -Property Enabled']
     );
     String output = result.stdout.toString();
 

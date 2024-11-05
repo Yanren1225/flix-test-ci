@@ -121,12 +121,8 @@ Widget build(BuildContext context) {
         builder: (context, value, child) {
           return Stack(
             children: [
-              // 悬浮在顶部的 FlixTitleBar 组件
-              
-
-              // 页面主要内容
               Padding(
-                padding: const EdgeInsets.only(top: 0), // 避免内容被标题栏遮挡
+                padding: const EdgeInsets.only(top: 0), 
                 child: PopScope(
                   canPop: !concertProvider.isEditing,
                   onPopInvoked: (didPop) {
@@ -188,7 +184,7 @@ Widget build(BuildContext context) {
                 top: 0,
                 left: 0,
                 right: 0,
-                child: FlixTitleBar(), // 确保 FlixTitleBar 正确导入
+                child: FlixTitleBar(), 
               ),
             ],
           );
