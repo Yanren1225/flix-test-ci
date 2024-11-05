@@ -356,24 +356,38 @@ class _DeviceScreenState extends State<DeviceScreen>
         });
   }
 
+
+
+
   Future<bool> checkFirewall() async {
-    String exePath =
-        Platform.resolvedExecutable.replaceAll('/', '\\').toLowerCase();
-    try {
-      var result = await Process.run('powershell', [
-        '-Command',
-        '''
-             Get-NetFirewallRule | Where-Object { \$_.DisplayName -like "flix" -and \$_.Enabled -eq "True" -and \$_.Action -eq "Allow" } | Get-NetFirewallApplicationFilter | Where-Object { \$_.Program -eq "$exePath" };
-            '''
-      ]);
-      if (result.stdout != null &&
-          result.stdout.toString().toLowerCase().contains(exePath)) {
-        return true;
-      } else {
+
+      ProcessResult result = await Process.run(
+      'powershell',
+      ['-Command', 'Get-NetFirewallProfile -Profile Domain | Select-Object -Property Enabled']
+    );
+    String output = result.stdout.toString();
+
+    if (output.contains("True")) {
+      String exePath =
+          Platform.resolvedExecutable.replaceAll('/', '\\').toLowerCase();
+      try {
+        var result = await Process.run('powershell', [
+          '-Command',
+          '''
+              Get-NetFirewallRule | Where-Object { \$_.DisplayName -like "flix" -and \$_.Enabled -eq "True" -and \$_.Action -eq "Allow" } | Get-NetFirewallApplicationFilter | Where-Object { \$_.Program -eq "$exePath" };
+              '''
+        ]);
+        if (result.stdout != null &&
+            result.stdout.toString().toLowerCase().contains(exePath)) {
+          return true;
+        } else {
+          return false;
+        }
+      } catch (e) {
         return false;
       }
-    } catch (e) {
-      return false;
+     } else {
+      return true;
     }
   }
 
