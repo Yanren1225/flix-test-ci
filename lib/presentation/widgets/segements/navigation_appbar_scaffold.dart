@@ -69,12 +69,13 @@ class NavigationAppbarScaffold extends StatelessWidget {
    
   leading = GestureDetector(
     onTap: () {
-      if (isOverMediumWidth(context)) {
-        onClearThirdWidget?.call();
-      } else {
-        if (onBackButtonPressed == null || onBackButtonPressed?.call() == false) {
+      if (showBackButton) {
+         if (onBackButtonPressed == null || onBackButtonPressed?.call() == false) {
           Navigator.pop(context);
         }
+      } else {
+        onClearThirdWidget?.call();
+       
       }
     },
     child: Icon(
@@ -83,6 +84,8 @@ class NavigationAppbarScaffold extends StatelessWidget {
       size: 20,
     ),
   );
+
+
 
 
 
