@@ -526,61 +526,78 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
   Widget WideLayout() {
     return Scaffold(
       backgroundColor: Theme.of(context).flixColors.background.secondary,
-      body: Row(
+      body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 24, right: 9),
-            child: SizedBox(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildNavItem(
-                    index: 0,
-                    selectedAssetPath: 'assets/images/ic_share.svg',
-                    unselectedAssetPath: 'assets/images/navitem1.svg',
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 24, right: 9),
+                child: SizedBox(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildNavItem(
+                        index: 0,
+                        selectedAssetPath: 'assets/images/ic_share.svg',
+                        unselectedAssetPath: 'assets/images/navitem1.svg',
+                      ),
+                      const SizedBox(height: 42),
+                      _buildNavItem(
+                        index: 1,
+                        selectedAssetPath: 'assets/images/search.svg',
+                        unselectedAssetPath: 'assets/images/navitem2.svg',
+                      ),
+                      const SizedBox(height: 42),
+                      _buildNavItem(
+                        index: 2,
+                        selectedAssetPath: 'assets/images/setting.svg',
+                        unselectedAssetPath: 'assets/images/navitem3.svg',
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 42),
-                  _buildNavItem(
-                    index: 1,
-                    selectedAssetPath: 'assets/images/search.svg',
-                    unselectedAssetPath: 'assets/images/navitem2.svg',
+                ),
+              ),
+              Container(
+                width: _leftWidth,
+                child: secondPart(),
+              ),
+              GestureDetector(
+                onHorizontalDragUpdate: (details) {
+                  setState(() {
+                    _leftWidth += details.delta.dx;
+                    _leftWidth = _leftWidth.clamp(_minLeftWidth, _maxLeftWidth);
+                  });
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.resizeColumn,
+                  child: Container(
+                    width: 1.3,
+                    color: Theme.of(context)
+                        .flixColors
+                        .text
+                        .tertiary
+                        .withOpacity(0.05),
                   ),
-                  const SizedBox(height: 42),
-                  _buildNavItem(
-                    index: 2,
-                    selectedAssetPath: 'assets/images/setting.svg',
-                    unselectedAssetPath: 'assets/images/navitem3.svg',
-                  ),
-                ],
+                ),
+              ),
+              Expanded(
+                child: thirdPart(),
+              ),
+            ],
+          ),
+          if (thirdWidget != null)
+            Positioned(
+              left: _leftWidth + 70, 
+              top: 26,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  setState(() {
+                    thirdWidget = null;
+                  });
+                },
               ),
             ),
-          ),
-          Container(
-            width: _leftWidth,
-            child: secondPart(),
-          ),
-          GestureDetector(
-            onHorizontalDragUpdate: (details) {
-              setState(() {
-                _leftWidth += details.delta.dx;
-                _leftWidth = _leftWidth.clamp(_minLeftWidth, _maxLeftWidth);
-              });
-            },
-            child: MouseRegion(
-              cursor: SystemMouseCursors.resizeColumn,
-              child: Container(
-                width: 1.3,
-                color: Theme.of(context)
-                    .flixColors
-                    .text
-                    .tertiary
-                    .withOpacity(0.05),
-              ),
-            ),
-          ),
-          Expanded(
-            child: thirdPart(),
-          ),
         ],
       ),
     );
