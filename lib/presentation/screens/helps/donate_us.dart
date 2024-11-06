@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
+import 'package:flix/presentation/screens/main_screen.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flix/utils/pay/pay_util.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 import '../../../l10n/l10n.dart';
 
@@ -27,6 +29,10 @@ class DonateUSScreenState extends State<DonateUSScreen> {
   String alipayButton = "支付宝";
   String buttonName = "微信";
 
+
+ void clearThirdWidget() {
+    Provider.of<BackProvider>(context, listen: false).backMethod();
+  }
   void _selectButton(String buttonName) {
     // 当点击按钮时，更新选中状态
     setState(() {
@@ -43,6 +49,7 @@ class DonateUSScreenState extends State<DonateUSScreen> {
     return NavigationScaffold(
       title: S.of(context).help_donate_title,
       showBackButton: widget.showBack,
+      onClearThirdWidget: clearThirdWidget,
       builder: (EdgeInsets padding) {
         return Container(
           margin: const EdgeInsets.only(left: 16, right: 16, top: 20),
