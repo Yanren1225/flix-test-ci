@@ -2,6 +2,7 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/presentation/screens/intro/intro_agreement.dart';
 import 'package:flix/presentation/screens/intro/intro_privacy.dart';
+import 'package:flix/presentation/screens/main_screen.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
@@ -12,6 +13,7 @@ import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
 import 'package:talker/talker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -30,6 +32,10 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   var versionTapCount = 0;
   int lastTapTime = 0;
 
+ void clearThirdWidget() {
+    Provider.of<BackProvider>(context, listen: false).backMethod();
+  }
+
   final ValueNotifier<String> _version = ValueNotifier('');
 
   @override
@@ -45,6 +51,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
     return NavigationScaffold(
         showBackButton: widget.showBack,
         toolbarCoverBody: true,
+        onClearThirdWidget: clearThirdWidget,
         title: S.of(context).help_about,
         builder: (padding) {
           final widgets = <Widget>[

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/widgets/blur_appbar.dart';
 import 'package:flix/presentation/widgets/toolbar.dart';
@@ -15,6 +17,7 @@ class NavigationScaffold extends StatelessWidget {
   final bool toolbarCoverBody;
 
   final String? editTitle;
+  final VoidCallback? onClearThirdWidget;
   final VoidCallback? onExitEditing;
 
   const NavigationScaffold(
@@ -25,6 +28,7 @@ class NavigationScaffold extends StatelessWidget {
       this.toolbarCoverBody = false,
       this.editTitle,
       this.onBackButtonPressed,
+      this.onClearThirdWidget, 
       this.onExitEditing,
       required this.builder});
 
@@ -69,32 +73,9 @@ class NavigationScaffold extends StatelessWidget {
       titleSpacing: 6,
     );
 
+
+
     if (showBackButton) {
-      leading = GestureDetector(
-        onTap: () {
-          if (onBackButtonPressed == null ||
-              onBackButtonPressed?.call() == false) {
-            Navigator.pop(context);
-          }
-        },
-        child: Icon(
-          Icons.arrow_back_ios,
-          color: Theme.of(context).flixColors.text.primary,
-          size: 20,
-        ),
-      );
-    } else {
-      leading = null;
-    }
-
-    final normalAppBar = AppBar(
-      leading: leading,
-      centerTitle: true,
-      title: toolbar,
-      backgroundColor: Theme.of(context).flixColors.background.secondary,
-      surfaceTintColor: Theme.of(context).flixColors.background.secondary,
-    );
-
     var toolbarHeight = 124.0;
     double stateBarHeight = MediaQuery.of(context).padding.top;
     final Widget appBar = AnimatedCrossFade(
@@ -120,6 +101,56 @@ class NavigationScaffold extends StatelessWidget {
       ),
       body: builder(EdgeInsets.only(
           top: toolbarCoverBody ? appBarHeight + stateBarHeight : 0)),
+    );}else{
+      leading = GestureDetector(
+        onTap: () {
+          onClearThirdWidget?.call();
+        },
+       child: Padding(
+   padding: EdgeInsets.only(top: Platform.isWindows || Platform.isMacOS || Platform.isLinux ? 20.0 : 0.0), 
+    child: Icon(
+      Icons.arrow_back_ios,
+      color: Theme.of(context).flixColors.text.primary,
+      size: 20,
+    ),
+  ),
+);
+      final normalAppBar = AppBar(
+      leading: leading,
+      centerTitle: true,
+      title: Padding(
+  padding: EdgeInsets.only(top: Platform.isWindows || Platform.isMacOS || Platform.isLinux ? 20.0 : 0.0), 
+  child: Text(
+    title,
+  ),
+),
+
+      titleTextStyle: TextStyle(
+              color: Theme.of(context).flixColors.text.primary,
+              fontSize: 18,
+              fontWeight: FontWeight.w500)
+          .fix(),
+      backgroundColor: Theme.of(context).flixColors.background.secondary,
+      surfaceTintColor: Theme.of(context).flixColors.background.secondary,
     );
+    final Widget appBar = AnimatedCrossFade(
+        firstChild: normalAppBar,
+        secondChild: editingAppBar,
+        crossFadeState:
+            isEditing ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+        duration: const Duration(milliseconds: 100));
+
+    final appBarHeight =
+        normalAppBar.preferredSize.height + MediaQuery.of(context).padding.top;
+    return Scaffold(
+      backgroundColor: Theme.of(context).flixColors.background.secondary,
+      extendBodyBehindAppBar: false,
+      appBar: BlurAppBar(
+        appBar: appBar,
+        cpreferredSize: normalAppBar.preferredSize,
+      ),
+      body: builder(EdgeInsets.only(top: appBarHeight)),
+    );
+    }
   }
 }

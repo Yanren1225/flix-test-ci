@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
+import 'package:flix/presentation/screens/main_screen.dart';
 import 'package:flix/presentation/widgets/helps/qa.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flix/utils/pay/pay_util.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 import '../../../l10n/l10n.dart';
 
@@ -25,7 +27,9 @@ class QAScreen extends StatefulWidget {
 
 class QAScreenState extends State<QAScreen> {
 
-
+ void clearThirdWidget() {
+    Provider.of<BackProvider>(context, listen: false).backMethod();
+  }
  
 
   @override
@@ -33,6 +37,7 @@ class QAScreenState extends State<QAScreen> {
     var width = MediaQuery.of(context).size.width;
     return NavigationScaffold(
       title: '软件帮助',
+      onClearThirdWidget: clearThirdWidget,
       showBackButton: widget.showBack,
       builder: (EdgeInsets padding) {
         return Container(
