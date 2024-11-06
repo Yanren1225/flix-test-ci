@@ -1,5 +1,6 @@
 import 'package:flix/presentation/widgets/blur_appbar.dart';
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/utils/meida/media_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,6 +13,7 @@ class NavigationAppbarScaffold extends StatelessWidget {
   final bool isEditing;
   final String? editTitle;
   final VoidCallback? onExitEditing;
+  final VoidCallback? onClearThirdWidget;
 
   const NavigationAppbarScaffold(
       {super.key,
@@ -21,6 +23,7 @@ class NavigationAppbarScaffold extends StatelessWidget {
       this.editTitle,
       this.onBackButtonPressed,
       this.onExitEditing,
+      this.onClearThirdWidget, 
       required this.builder});
 
   @override
@@ -63,23 +66,25 @@ class NavigationAppbarScaffold extends StatelessWidget {
       titleSpacing: 6,
     );
 
-    if (showBackButton) {
-      leading = GestureDetector(
-        onTap: () {
-          if (onBackButtonPressed == null ||
-              onBackButtonPressed?.call() == false) {
-            Navigator.pop(context);
-          }
-        },
-        child: Icon(
-          Icons.arrow_back_ios,
-          color: Theme.of(context).flixColors.text.primary,
-          size: 20,
-        ),
-      );
-    } else {
-      leading = null;
-    }
+   
+  leading = GestureDetector(
+    onTap: () {
+      if (isOverMediumWidth(context)) {
+        onClearThirdWidget?.call();
+      } else {
+        if (onBackButtonPressed == null || onBackButtonPressed?.call() == false) {
+          Navigator.pop(context);
+        }
+      }
+    },
+    child: Icon(
+      Icons.arrow_back_ios,
+      color: Theme.of(context).flixColors.text.primary,
+      size: 20,
+    ),
+  );
+
+
 
     final normalAppBar = AppBar(
       leading: leading,

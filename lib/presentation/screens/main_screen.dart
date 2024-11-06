@@ -62,7 +62,10 @@ class MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        const MyHomePage(title: 'Flix'),
+        MyHomePage(
+          key: MyHomePage.homePageKey,
+          title: 'Flix',
+        ),
         if (Platform.isMacOS || Platform.isLinux || Platform.isWindows)
           const FlixTitleBar(),
       ],
@@ -70,7 +73,20 @@ class MainScreenState extends State<MainScreen> {
   }
 }
 
+class BackProvider with ChangeNotifier {
+  void backMethod() {
+    final homePageState = MyHomePage.homePageKey.currentState;
+    if (homePageState != null) {
+      homePageState.clearThirdWidget(); 
+    } else {
+    }
+  }
+}
+
+
+
 class MyHomePage extends StatefulWidget {
+  static final GlobalKey<_MyHomePageState> homePageKey = GlobalKey(); 
   const MyHomePage({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -95,6 +111,12 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
   // DeviceInfo? selectedDevice;
   bool isLeaved = false;
   Widget? thirdWidget;
+
+   void clearThirdWidget() {
+    setState(() {
+      thirdWidget = null;
+    });
+  }
 
   double _leftWidth = 365.0;
   final double _minLeftWidth = 300.0;
@@ -390,6 +412,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                         deviceInfo: deviceInfo,
                         showBackButton: true,
                         playable: !isHistory,
+                        
                       ))),
           onViewConnectInfo: () => Navigator.push(context,
               CupertinoPageRoute(builder: (context) => const PairCodeScreen())),
@@ -585,19 +608,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               ),
             ],
           ),
-          if (thirdWidget != null)
-            Positioned(
-              left: _leftWidth + 70, 
-              top: 26,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  setState(() {
-                    thirdWidget = null;
-                  });
-                },
-              ),
-            ),
+          
         ],
       ),
     );

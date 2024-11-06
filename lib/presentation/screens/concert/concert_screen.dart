@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
+import 'package:flix/presentation/screens/main_screen.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/flixtitlebar.dart';
 import 'package:flix/theme/theme_extensions.dart';
@@ -82,6 +83,12 @@ class _ConcertScreenState extends State<ConcertScreen>
   late AnimationController _controller;
   late Animation<double> _animation;
 
+
+  void clearThirdWidget() {
+Provider.of<BackProvider>(context, listen: false).backMethod();
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -155,6 +162,7 @@ Widget build(BuildContext context) {
                             showBackButton: showBackButton,
                             title: value,
                             isEditing: concertProvider.isEditing,
+                            onClearThirdWidget: clearThirdWidget,
                             editTitle: '退出多选',
                             onExitEditing: () {
                               concertProvider.existEditing();

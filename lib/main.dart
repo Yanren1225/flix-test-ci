@@ -355,7 +355,8 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
           ChangeNotifierProvider(create: (_) => SettingProvider()),
           ChangeNotifierProvider<MultiCastClientProvider>(
               create: (_) => MultiCastClientProvider()),
-          ChangeNotifierProvider(create: (context) => AndropContext())
+          ChangeNotifierProvider(create: (context) => AndropContext()),
+          ChangeNotifierProvider(create: (_) => BackProvider()),
         ],
         child: StreamBuilder<String>(
             initialData: SettingsRepo.instance.darkModeTag,
