@@ -44,6 +44,7 @@ class _LoginPageState extends State<LoginPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _loggedInEmail = prefs.getString('loggedInEmail');
+      _title = '我的账户';
     });
   }
 
@@ -121,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
           _isSendingCode = true;
           _emailSubmitted = true;
           _statusMessage = '';
-         _statusMessage = '请稍后';
+         _statusMessage = '';
           _sendVerificationCode();
         });
     
@@ -147,40 +148,39 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-   
-    final verificationCode = (100000 + (DateTime.now().millisecondsSinceEpoch % 900000)).toString();
-    _generatedCode = verificationCode;
+    setState(() {
+      _isSendingCode = true;
+    });
 
-    final smtpServer = SmtpServer('smtp.qq.com',
-        port: 465,
-        ssl: true,
-        username: 'verification-code@qq.com',
-        password: 'pjubjmzekttgcjii');
+    final url = Uri.parse('http://test-flix.cdnfree.cn/mail/send_verification_code.php');
+    final response = await http.post(url, body: {
+      'email': email,
+    });
 
-    final message = Message()
-      ..from = const Address('verification-code@qq.com', 'Flix快传')
-      ..recipients.add(email)
-      ..subject = '您的验证码'
-      ..text = '【Flix快传】您的验证码是: $verificationCode，请勿将验证码转发给他人。';
-
-    try {
-      final sendReport = await send(message, smtpServer);
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['status'] == 'success') {
+        setState(() {
+          _generatedCode = responseData['code'].toString();
+          _isCodeSent = true;
+          _statusMessage = '验证码已发送到邮箱';
+          _title = '邮箱验证';
+          _isSendingCode = false;
+        });
+      } else {
+        setState(() {
+          _statusMessage = responseData['message'];
+          _isSendingCode = false;
+        });
+      }
+    } else {
       setState(() {
-        _isCodeSent = true;
-        _statusMessage = '验证码已发送到邮箱';
-        _title = '邮箱验证';
-        _isSendingCode = false;
-      });
-    } on MailerException catch (e) {
-      setState(() {
-        _statusMessage = '邮件发送失败: ${e.toString()}';
-      });
-    } finally {
-      setState(() {
+        _statusMessage = '服务器错误';
         _isSendingCode = false;
       });
     }
   }
+
 
   Future<void> _verifyCode() async {
     final inputCode = _verificationCodeController.text.trim();
