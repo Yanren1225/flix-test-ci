@@ -533,7 +533,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                         label: '语言',
                         tail: Localizations.localeOf(context).toString(),
                         topRadius: false,
-                        bottomRadius:false,
+                        bottomRadius:true,
                         onClick: () {
                           showCupertinoModalPopup(
                               context: context,
@@ -542,14 +542,14 @@ class SettingsScreenState extends State<SettingsScreen> {
                               });
                         }),
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 16, right: 16, ),
-                    child: ClickableItem(
-                        label: '账号系统',
-                        topRadius: false,
-                       onClick: widget.goLoginPage),
-                  ),
+          //        Padding(
+               //     padding:
+                 //       const EdgeInsets.only(left: 16, right: 16, ),
+                   // child: ClickableItem(
+                     //   label: '账号系统',
+                       // topRadius: false,
+                       //onClick: widget.goLoginPage),
+               //   ),
                 ],
               ),
             ),
