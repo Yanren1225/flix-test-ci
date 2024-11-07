@@ -367,8 +367,10 @@ class _DeviceScreenState extends State<DeviceScreen>
     );
     String output = result.stdout.toString();
 
-    if (output.contains("True")) {
-      String exePath =
+    if (output.contains("False")) {
+     return true;
+     } else {
+       String exePath =
           Platform.resolvedExecutable.replaceAll('/', '\\').toLowerCase();
       try {
         var result = await Process.run('powershell', [
@@ -384,10 +386,8 @@ class _DeviceScreenState extends State<DeviceScreen>
           return false;
         }
       } catch (e) {
-        return false;
+        return true;
       }
-     } else {
-      return true;
     }
   }
 
