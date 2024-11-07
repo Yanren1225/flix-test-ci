@@ -245,6 +245,7 @@ dev_dependencies:
 
   make:
     path: ./make
+  msix: ^3.16.8
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -292,3 +293,11 @@ flutter_intl:
   output_dir: lib/l10n
   arb_dir: l10n
 
+msix_config:
+  display_name: Flix快传
+  publisher_display_name: 江河智连（武汉）网络技术有限公司
+  identity_name: 5ABC96AE.624155B9C0B
+  publisher: CN=2B7B66B7-9563-4400-8C40-BCD7B665A40D
+  msix_version: 0.10.0.0
+  logo_path: D:\dev\flix.png
+  store: true
