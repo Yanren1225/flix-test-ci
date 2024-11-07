@@ -85,7 +85,7 @@ class CupertinoNavigationScalffoldState
           border: null,
           backgroundColor: Theme.of(context).flixColors.background.secondary),
       SliverPadding(
-          padding: EdgeInsets.only(top: padding),
+          padding: EdgeInsets.only(top: 0),
           sliver: isSliverChild
               ? child
               : SliverFillRemaining(

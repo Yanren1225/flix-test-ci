@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'package:flix/presentation/screens/main_screen.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart'; 
 
 
@@ -44,7 +46,9 @@ class _LoginPageState extends State<LoginPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _loggedInEmail = prefs.getString('loggedInEmail');
-      _title = '我的账户';
+      if (_loggedInEmail != null){
+         _title = '我的账户';
+      }
     });
   }
 
@@ -337,13 +341,16 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 
-
+ void clearThirdWidget() {
+    Provider.of<BackProvider>(context, listen: false).backMethod();
+  }
 
     @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     return NavigationScaffold(
       title: _title,
+      onClearThirdWidget: clearThirdWidget,
       showBackButton: widget.showBack,
       builder: (EdgeInsets padding) {
         return Stack(

@@ -32,6 +32,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 import '../../../l10n/l10n.dart';
@@ -82,15 +83,19 @@ class SettingsScreenState extends State<SettingsScreen> {
   StreamSubscription<String>? deviceNameSubscription;
   var isStartUpEnabled = false;
   ValueNotifier<String> version = ValueNotifier('');
+  String _title = '注册/登录 >';
+  String? _loggedInEmail; 
 
   @override
   void initState() {
     super.initState();
+    _checkLoginStatus(); 
     deviceNameSubscription =
         DeviceProfileRepo.instance.deviceNameBroadcast.stream.listen((event) {
       setState(() {
         deviceName = event;
       });
+   
     });
 
     if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
@@ -105,7 +110,15 @@ class SettingsScreenState extends State<SettingsScreen> {
   }
   }
 
-  
+  Future<void> _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _loggedInEmail = prefs.getString('loggedInEmail');
+      if (_loggedInEmail != null){
+         _title = '我的账户 >';
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -132,8 +145,27 @@ class SettingsScreenState extends State<SettingsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
+
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: GestureDetector(
+              onTap:  widget.goLoginPage,
+              child: Text(
+                _title,
+                style: TextStyle(
+                  fontSize: 13.5,
+                  color: Theme.of(context).flixColors.text.secondary,
+                ),
+                textAlign: TextAlign.left,
+              ),
+            ),
+          ),
+
+
+            
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16),
+              padding: const EdgeInsets.only(left: 16, right: 16,top: 20),
               child: ClickableItem(
                   topRadius: true,
                  // bottomRadius: !showAppLaunchConfig,
