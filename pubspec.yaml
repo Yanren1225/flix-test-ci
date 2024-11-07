@@ -301,3 +301,4 @@ msix_config:
   msix_version: 0.10.0.0
   logo_path: D:\dev\flix.png
   store: true
+  languages: zh-CN
