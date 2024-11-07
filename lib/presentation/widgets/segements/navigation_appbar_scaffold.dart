@@ -79,9 +79,9 @@ class NavigationAppbarScaffold extends StatelessWidget {
       }
     },
     child: Icon(
-      Icons.arrow_back_ios,
+      Icons.arrow_back,
       color: Theme.of(context).flixColors.text.primary,
-      size: 20,
+      size: 22,
     ),
   );
 

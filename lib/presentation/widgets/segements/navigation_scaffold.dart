@@ -109,9 +109,9 @@ class NavigationScaffold extends StatelessWidget {
        child: Padding(
    padding: EdgeInsets.only(top: Platform.isWindows || Platform.isMacOS || Platform.isLinux ? 20.0 : 0.0), 
     child: Icon(
-      Icons.arrow_back_ios,
+      Icons.arrow_back,
       color: Theme.of(context).flixColors.text.primary,
-      size: 20,
+      size: 22,
     ),
   ),
 );
