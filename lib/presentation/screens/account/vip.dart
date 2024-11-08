@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
+import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -7,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PayScreen extends StatefulWidget {
   @override
@@ -20,7 +23,7 @@ class _PayScreenState extends State<PayScreen> {
   String _paymentStatus = '未支付';
   final String _merchantId = '1000';
   final String _key = 'tM4mIOvt0ockkId38zIzV8IZ834fwiiZ';
-String? _userEmail;
+  String? _userEmail;
   String? _vipDate;
   String _statusMessage = '';
 
@@ -29,17 +32,35 @@ String? _userEmail;
     super.initState();
     _loadUserEmail();
   }
-    Future<void> _loadUserEmail() async {
+
+  // 加载用户邮箱并检查未完成的支付订单
+  Future<void> _loadUserEmail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _userEmail = prefs.getString('loggedInEmail');
     });
     if (_userEmail != null) {
+      await _checkPendingPayment(); 
       _fetchVipDate();
     }
   }
 
-   Future<void> _fetchVipDate() async {
+  
+  Future<void> _checkPendingPayment() async {
+    final url = Uri.parse('http://test-flix.cdnfree.cn/get_payid.php?email=$_userEmail');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['status'] == 'success' && responseData['payid'] != null) {
+        _orderId = responseData['payid'];
+        await _checkPaymentStatus(); 
+      }
+    }
+  }
+
+  
+  Future<void> _fetchVipDate() async {
     final url = Uri.parse('http://test-flix.cdnfree.cn/get_vip_date.php?email=$_userEmail');
     final response = await http.get(url);
 
@@ -59,7 +80,7 @@ String? _userEmail;
     }
   }
 
- 
+  // 更新 VIP 日期
   Future<void> _updateVipDate(int days) async {
     final url = Uri.parse('http://test-flix.cdnfree.cn/update_vip_date.php');
     final response = await http.post(url, body: {
@@ -72,7 +93,7 @@ String? _userEmail;
       setState(() {
         if (responseData['status'] == 'success') {
           _statusMessage = 'VIP 日期已更新';
-          _fetchVipDate(); 
+          _fetchVipDate();
         } else {
           _statusMessage = responseData['message'];
         }
@@ -84,7 +105,7 @@ String? _userEmail;
     }
   }
 
-  
+  // 生成 MD5 签名
   String generateMD5Sign(Map<String, String> params, String key) {
     params.removeWhere((k, v) => k == 'sign' || k == 'sign_type' || v.isEmpty);
     var sortedKeys = params.keys.toList()..sort();
@@ -93,7 +114,7 @@ String? _userEmail;
     return md5.convert(utf8.encode(finalStr)).toString();
   }
 
-  
+  // 生成支付链接并保存订单号
   Future<void> _generatePayLink() async {
     String type = 'alipay';
     String outTradeNo = DateTime.now().millisecondsSinceEpoch.toString();
@@ -123,18 +144,27 @@ String? _userEmail;
     Map<String, String> headers = {'Content-Type': 'application/x-www-form-urlencoded'};
 
     http.Response response = await http.post(url, headers: headers, body: params);
-
+  Future<void> _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw '无法打开链接: $url';
+    }
+  }
     if (response.statusCode == 200) {
       var jsonResponse = json.decode(response.body);
       if (jsonResponse['code'] == 1) {
         setState(() {
           _payLink = jsonResponse['payurl'] ?? jsonResponse['qrcode'] ?? jsonResponse['urlscheme'];
-          _orderId = outTradeNo; // 保存订单号用于后续查询
+          _orderId = outTradeNo;
           _paymentStatus = '支付链接已生成，等待支付';
         });
-
-        
+        _saveOrderId(_orderId);
         _startCheckingStatus();
+        // 检测平台并在移动设备上打开链接
+        if (Platform.isAndroid || Platform.isIOS) {
+          _launchURL(_payLink);
+        }
       } else {
         setState(() {
           _payLink = '支付失败: ${jsonResponse['msg']}';
@@ -145,133 +175,223 @@ String? _userEmail;
         _payLink = '请求失败: ${response.statusCode}';
       });
     }
-  }
+
 
   
-  void _startCheckingStatus() {
-    setState(() {
-      _isCheckingStatus = true;
-    });
-    Timer.periodic(Duration(seconds: 1), (timer) async {
-      if (!_isCheckingStatus) {
-        timer.cancel();
-      } else {
-        await _checkPaymentStatus();
-      }
-    });
   }
 
-  // 查询支付状态
-  Future<void> _checkPaymentStatus() async {
-    Uri url = Uri.parse(
-        'https://payment-flix.cdnfree.cn/api.php?act=order&pid=$_merchantId&key=$_key&out_trade_no=$_orderId');
-    http.Response response = await http.get(url);
+  // 保存订单号到数据库
+  Future<void> _saveOrderId(String orderId) async {
+    final url = Uri.parse('http://test-flix.cdnfree.cn/save_payid.php');
+    final response = await http.post(url, body: {
+      'email': _userEmail,
+      'payid': orderId,
+    });
 
     if (response.statusCode == 200) {
-      var jsonResponse = json.decode(response.body);
-      print('订单查询响应: $jsonResponse'); 
-      print('code类型: ${jsonResponse['code'].runtimeType}, status类型: ${jsonResponse['status'].runtimeType}'); 
-
-      
-      if (jsonResponse['code'].toString() == '1' && jsonResponse['status'].toString() == '1') {
+      final responseData = json.decode(response.body);
+      if (responseData['status'] != 'success') {
         setState(() {
-          _paymentStatus = '支付成功，已增加30天VIP';
-          _isCheckingStatus = false; 
-          _payLink = ''; 
-        });
-        _updateVipDate(31);
-      } else {
-        setState(() {
-          _paymentStatus = '支付未完成';
+          _statusMessage = responseData['message'];
         });
       }
     } else {
       setState(() {
-        _paymentStatus = '请求失败: ${response.statusCode}';
+        _statusMessage = '无法保存订单号，请稍后再试。';
+      });
+    }
+  }
+
+  // 开始检查支付状态
+  // 开始检查支付状态，最多检测600次
+void _startCheckingStatus() {
+  setState(() {
+    _isCheckingStatus = true;
+  });
+
+  int checkCount = 0; // 检测次数计数器
+
+  Timer.periodic(const Duration(seconds: 1), (timer) async {
+    if (!_isCheckingStatus || checkCount >= 600) {
+      timer.cancel(); // 取消定时器
+      // 示例：在 setState 前检查 mounted
+if (mounted) {
+  setState(() {
+    _isCheckingStatus = false;
+    if (checkCount >= 600) {
+      _paymentStatus = '检测超时，停止检测';
+    }
+  });
+}
+
+    } else {
+      await _checkPaymentStatus();
+      checkCount++; // 增加计数
+    }
+  });
+}
+
+
+  // 查询支付状态
+ // 查询支付状态
+Future<void> _checkPaymentStatus() async {
+  Uri url = Uri.parse(
+      'https://payment-flix.cdnfree.cn/api.php?act=order&pid=$_merchantId&key=$_key&out_trade_no=$_orderId');
+  http.Response response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    var jsonResponse = json.decode(response.body);
+
+    if (jsonResponse['code'].toString() == '1' && jsonResponse['status'].toString() == '1') {
+      setState(() {
+        _paymentStatus = '支付成功，已增加30天VIP';
+        _isCheckingStatus = false;
+        _payLink = '';
+      });
+      _updateVipDate(31);
+      _deleteOrderId();
+      _showSuccessBottomSheet(); // 显示成功提示弹窗
+    } else {
+      setState(() {
+        _paymentStatus = '支付未完成';
+      });
+    }
+  } else {
+    setState(() {
+      _paymentStatus = '请求失败: ${response.statusCode}';
+    });
+  }
+}
+
+// 显示支付成功的 FlixBottomSheet
+void _showSuccessBottomSheet() {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return FlixBottomSheet(
+        title: '支付成功',
+        subTitle: '您的 VIP 已成功延长 30 天。',
+        buttonText: '确认',
+     
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text(
+            '感谢您支持 Flix Elite！',
+            style: TextStyle(
+              color: Theme.of(context).flixColors.text.primary,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+
+  // 删除订单号
+  Future<void> _deleteOrderId() async {
+    final url = Uri.parse('http://test-flix.cdnfree.cn/delete_payid.php');
+    final response = await http.post(url, body: {
+      'email': _userEmail,
+    });
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['status'] != 'success') {
+        setState(() {
+          _statusMessage = responseData['message'];
+        });
+      }
+    } else {
+      setState(() {
+        _statusMessage = '无法删除订单号，请稍后再试。';
       });
     }
   }
 
   @override
   void dispose() {
-    _isCheckingStatus = false; 
+    _isCheckingStatus = false;
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Theme.of(context).flixColors.background.secondary, // 设置背景颜色
-    body: Center( // 将内容居中
-      child: Padding(
-        padding: const EdgeInsets.only(top:60.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center, // 水平居中
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  SvgPicture.asset(
-                    'assets/images/ic_cross_device.svg',
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(
-                      Theme.of(context).flixColors.text.primary,
-                      BlendMode.srcIn,
+    return Scaffold(
+      backgroundColor: Theme.of(context).flixColors.background.secondary,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 60.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    SvgPicture.asset(
+                      'assets/images/ic_cross_device.svg',
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        Theme.of(context).flixColors.text.primary,
+                        BlendMode.srcIn,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                  Text(
-                    '成为 Flix Elite 用户',
-                    style: const TextStyle(fontSize: 30),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '升级到 Flix Elite，为 Flix 添砖加瓦，我们也为你准备了以下功能：',
-                    style: TextStyle(
-                      fontSize: 16,
-                  
-                      color: Theme.of(context).flixColors.text.secondary,
+                    const SizedBox(height: 30),
+                    const Text(
+                      '成为 Flix Elite 用户',
+                      style: TextStyle(fontSize: 30),
                     ),
-                  ),
-                  const SizedBox(height: 16.0),
-                ],
-              ),
-            ),
-            if (_vipDate != null)
-              Text(
-                'VIP 到期日期: $_vipDate',
-                style: TextStyle(fontSize: 18),
-              )
-            else if (_statusMessage.isNotEmpty)
-              Text(
-                _statusMessage,
-                style: TextStyle(fontSize: 16, color: Colors.red),
-              )
-            else
-              Center(child: CircularProgressIndicator()),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _generatePayLink,
-              child: Text('生成支付链接'),
-            ),
-            if (_payLink.isNotEmpty)
-              Center(
-                child: QrImageView(
-                  data: _payLink,
-                  version: QrVersions.auto,
-                  size: 200.0,
+                    const SizedBox(height: 2),
+                    Text(
+                      '升级到 Flix Elite，为 Flix 添砖加瓦，我们也为你准备了以下功能：',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).flixColors.text.secondary,
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
+                  ],
                 ),
               ),
-            SizedBox(height: 20),
-            Text('支付状态: $_paymentStatus'),
-          ],
+              if (_vipDate != null)
+                Text(
+                  'VIP 到期日期: $_vipDate',
+                  style: const TextStyle(fontSize: 18),
+                )
+              else if (_statusMessage.isNotEmpty)
+                Text(
+                  _statusMessage,
+                  style: const TextStyle(fontSize: 16, color: Colors.red),
+                )
+              else
+                const Center(child: CircularProgressIndicator()),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _generatePayLink,
+                child: const Text('生成支付链接'),
+              ),
+             // 仅在桌面端显示二维码
+if (_payLink.isNotEmpty && (Platform.isMacOS || Platform.isWindows))
+  Center(
+    child: QrImageView(
+      data: _payLink,
+      version: QrVersions.auto,
+      size: 200.0,
+    ),
+  ),
+              const SizedBox(height: 20),
+         //     Text('支付状态: $_paymentStatus'),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 }
