@@ -642,12 +642,12 @@ class InputAreaState extends State<InputArea> {
                         'assets/images/screenshot.svg',
                         width: 22,
                         height: 22,
+                        color: Theme.of(context).flixColors.text.primary,
                       ),
                       onPressed: () {
                         FocusScope.of(context).unfocus();
                         screenshot(concertProvider.deviceInfo, context);
                       },
-                      color: Theme.of(context).flixColors.text.primary,
                     ),
                     const SizedBox(width: 16),
                   ],
