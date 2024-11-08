@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flix/domain/version/version_checker.dart';
-import 'package:flix/presentation/screens/account/pay.dart';
 import 'package:flix/presentation/screens/account/vip.dart';
 import 'package:flix/presentation/screens/cloud/home.dart';
 import 'package:flix/presentation/screens/intro/intro_agreement.dart';
