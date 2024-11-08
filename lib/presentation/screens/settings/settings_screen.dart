@@ -57,6 +57,7 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback goSettingAgreementScreen;
   final VoidCallback goLoginPage;
   final VoidCallback goCloudScreenPage;
+  final VoidCallback goPayScreen;
 
   const SettingsScreen(
       {super.key,
@@ -73,6 +74,7 @@ class SettingsScreen extends StatefulWidget {
       required this.goSettingAgreementScreen,
       required this.goLoginPage,
       required this.goCloudScreenPage,
+      required this.goPayScreen,
       });
 
   @override
@@ -561,12 +563,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                           label: '账号VIP API',
                           topRadius: false,
                            bottomRadius:false,
-                          onClick: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => PayScreen()),
-                            );
-                          },
+                         onClick: widget.goPayScreen
                         ),
                       ),
 Padding(

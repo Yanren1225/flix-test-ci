@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -97,7 +99,7 @@ String? _userEmail;
     String outTradeNo = DateTime.now().millisecondsSinceEpoch.toString();
     String notifyUrl = 'http://www.example.com/notify';
     String returnUrl = 'http://www.example.com/return';
-    String name = 'Flix Elite';
+    String name = 'Flix Elite For 30 Days';
     String money = '0.01';
     String clientIp = '192.168.1.100';
     String signType = 'MD5';
@@ -150,7 +152,7 @@ String? _userEmail;
     setState(() {
       _isCheckingStatus = true;
     });
-    Timer.periodic(Duration(seconds: 5), (timer) async {
+    Timer.periodic(Duration(seconds: 1), (timer) async {
       if (!_isCheckingStatus) {
         timer.cancel();
       } else {
@@ -173,8 +175,9 @@ String? _userEmail;
       
       if (jsonResponse['code'].toString() == '1' && jsonResponse['status'].toString() == '1') {
         setState(() {
-          _paymentStatus = '支付成功';
+          _paymentStatus = '支付成功，已增加30天VIP';
           _isCheckingStatus = false; 
+          _payLink = ''; 
         });
         _updateVipDate(31);
       } else {
@@ -197,18 +200,49 @@ String? _userEmail;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('支付页面'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+  return Scaffold(
+    backgroundColor: Theme.of(context).flixColors.background.secondary, // 设置背景颜色
+    body: Center( // 将内容居中
+      child: Padding(
+        padding: const EdgeInsets.only(top:60.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center, // 水平居中
           children: [
-              if (_vipDate != null)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  SvgPicture.asset(
+                    'assets/images/ic_cross_device.svg',
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(
+                      Theme.of(context).flixColors.text.primary,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  Text(
+                    '成为 Flix Elite 用户',
+                    style: const TextStyle(fontSize: 30),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '升级到 Flix Elite，为 Flix 添砖加瓦，我们也为你准备了以下功能：',
+                    style: TextStyle(
+                      fontSize: 16,
+                  
+                      color: Theme.of(context).flixColors.text.secondary,
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                ],
+              ),
+            ),
+            if (_vipDate != null)
               Text(
-                'VIP 日期: $_vipDate',
+                'VIP 到期日期: $_vipDate',
                 style: TextStyle(fontSize: 18),
               )
             else if (_statusMessage.isNotEmpty)
@@ -219,24 +253,11 @@ String? _userEmail;
             else
               Center(child: CircularProgressIndicator()),
             SizedBox(height: 20),
-            
-          
-           
             ElevatedButton(
               onPressed: _generatePayLink,
               child: Text('生成支付链接'),
             ),
-            SizedBox(height: 20),
-            TextField(
-              readOnly: true,
-              controller: TextEditingController(text: _payLink),
-              decoration: InputDecoration(
-                labelText: '支付链接',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20),
-            if (_payLink.isNotEmpty) 
+            if (_payLink.isNotEmpty)
               Center(
                 child: QrImageView(
                   data: _payLink,
@@ -249,6 +270,8 @@ String? _userEmail;
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }
