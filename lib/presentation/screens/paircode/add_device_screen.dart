@@ -1,6 +1,7 @@
 import 'package:flix/design_widget/design_blue_round_button.dart';
 import 'package:flix/design_widget/design_text_field.dart';
 import 'package:flix/domain/paircode/pair_router_handler.dart';
+import 'package:flix/presentation/screens/main_screen.dart';
 import 'package:flix/presentation/screens/paircode/pair_code_screen.dart';
 import 'package:flix/presentation/style/flix_text_style.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
@@ -10,6 +11,7 @@ import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/net/net_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_loading_dialog/simple_loading_dialog.dart';
 
 import '../../../l10n/l10n.dart';
@@ -39,11 +41,16 @@ class AddDeviceScreenState extends State<AddDeviceScreen> {
     return isValid;
   }
 
+  void clearThirdWidget() {
+    Provider.of<BackProvider>(context, listen: false).backMethod();
+  }
+
   @override
   Widget build(BuildContext context) {
     //TODO: 统一header
     return NavigationScaffold(
       title: S.of(context).paircode_add_manually,
+       onClearThirdWidget: clearThirdWidget,
       showBackButton: Navigator.canPop(context),
       builder: (EdgeInsets padding) {
         return LayoutBuilder(
