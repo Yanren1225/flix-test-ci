@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flix/domain/version/version_checker.dart';
+import 'package:flix/presentation/screens/account/pay.dart';
 import 'package:flix/presentation/screens/intro/intro_agreement.dart';
 import 'package:flix/presentation/screens/intro/intro_privacy.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
@@ -550,6 +551,20 @@ class SettingsScreenState extends State<SettingsScreen> {
                        // topRadius: false,
                        //onClick: widget.goLoginPage),
                //   ),
+                       Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 16),
+                        child: ClickableItem(
+                          label: 'VIP API',
+                          topRadius: false,
+                          onClick: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => PaymentScreen()),
+                            );
+                          },
+                        ),
+                      ),
+
                 ],
               ),
             ),
