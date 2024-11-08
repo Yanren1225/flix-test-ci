@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/presentation/screens/account/pay.dart';
+import 'package:flix/presentation/screens/cloud/home.dart';
 import 'package:flix/presentation/screens/intro/intro_agreement.dart';
 import 'package:flix/presentation/screens/intro/intro_privacy.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
@@ -55,6 +56,7 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback goSettingPravicyScreen;
   final VoidCallback goSettingAgreementScreen;
   final VoidCallback goLoginPage;
+  final VoidCallback goCloudScreenPage;
 
   const SettingsScreen(
       {super.key,
@@ -70,6 +72,7 @@ class SettingsScreen extends StatefulWidget {
       required this.goSettingPravicyScreen,
       required this.goSettingAgreementScreen,
       required this.goLoginPage,
+      required this.goCloudScreenPage,
       });
 
   @override
@@ -534,7 +537,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                         label: '语言',
                         tail: Localizations.localeOf(context).toString(),
                         topRadius: false,
-                        bottomRadius:true,
+                        bottomRadius:false,
                         onClick: () {
                           showCupertinoModalPopup(
                               context: context,
@@ -543,19 +546,21 @@ class SettingsScreenState extends State<SettingsScreen> {
                               });
                         }),
                   ),
-          //        Padding(
-               //     padding:
-                 //       const EdgeInsets.only(left: 16, right: 16, ),
-                   // child: ClickableItem(
-                     //   label: '账号系统',
-                       // topRadius: false,
-                       //onClick: widget.goLoginPage),
-               //   ),
+                Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, ),
+                    child: ClickableItem(
+                        label: '账号系统',
+                       topRadius: false,
+                        bottomRadius:false,
+                       onClick: widget.goLoginPage),
+                 ),
                        Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: ClickableItem(
-                          label: 'VIP API',
+                          label: '账号VIP API',
                           topRadius: false,
+                           bottomRadius:false,
                           onClick: () {
                             Navigator.push(
                               context,
@@ -564,7 +569,15 @@ class SettingsScreenState extends State<SettingsScreen> {
                           },
                         ),
                       ),
+Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 16),
+                        child: ClickableItem(
+                          label: '云同步',
+                          topRadius: false,
 
+                         onClick: widget.goCloudScreenPage
+                        ),
+                      ),
                 ],
               ),
             ),

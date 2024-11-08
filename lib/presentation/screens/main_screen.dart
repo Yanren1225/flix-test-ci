@@ -14,6 +14,7 @@ import 'package:flix/model/device_info.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/account/login.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
+import 'package:flix/presentation/screens/cloud/home.dart';
 import 'package:flix/presentation/screens/concert/concert_screen.dart';
 import 'package:flix/presentation/screens/devices_screen.dart';
 import 'package:flix/presentation/screens/helps/about_us.dart';
@@ -538,7 +539,12 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                     builder: (context) => LoginPage(
                           showBack: true,
                         )));
-          },
+          }, goCloudScreenPage: () {   Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => CloudScreenPage(
+                         // showBack: true,
+                        )));},
         );
 
       default:
@@ -779,7 +785,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 showBack: false,
               );
             });
-          },
+          }, goCloudScreenPage: () {  setState(() {
+              thirdWidget = CloudScreenPage(
+              //  showBack: false,
+              );
+            }); },
         );
 
       default:
