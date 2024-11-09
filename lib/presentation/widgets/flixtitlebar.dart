@@ -1,12 +1,23 @@
 import 'package:flix/design_widget/design_blue_round_button.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:io';
 
 class FlixTitleBar extends StatelessWidget {
   const FlixTitleBar({Key? key}) : super(key: key);
 
+   Future<void> _handleTap() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isDirectExitEnabled = prefs.getBool('direct_exit') ?? true; 
+    if (isDirectExitEnabled) {
+      await windowManager.hide();
+    } else {
+      exit(0);
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -84,7 +95,7 @@ class FlixTitleBar extends StatelessWidget {
                       color: Colors.transparent,
                       child: InkWell(
                         onTap: () {
-                          windowManager.hide();
+                          _handleTap();
                         },
                         hoverColor: const Color.fromARGB(255, 208, 24, 11).withOpacity(0.8),
                         child: Container(

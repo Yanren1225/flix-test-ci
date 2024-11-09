@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 import '../../../l10n/l10n.dart';
@@ -39,11 +40,13 @@ class GeneralScreen extends StatefulWidget {
 
 class GeneralScreenState extends State<GeneralScreen> {
 var isStartUpEnabled = false;
+bool isDirectExitEnabled = true; 
+
 @override
   void initState() {
     super.initState();
+    _loadDirectExitStatus(); 
     
-
     if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
       launchAtStartup.isEnabled().then((value) {
         setState(() {
@@ -58,6 +61,24 @@ var isStartUpEnabled = false;
     Provider.of<BackProvider>(context, listen: false).backMethod();
   }
  
+  Future<void> _loadDirectExitStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey('direct_exit')) {
+      setState(() {
+        isDirectExitEnabled = prefs.getBool('direct_exit')!;
+      });
+    } else {
+      await prefs.setBool('direct_exit', true);
+      setState(() {
+        isDirectExitEnabled = true;
+      });
+    }
+  }
+
+  Future<void> _saveDirectExitStatus(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('direct_exit', value);
+  }
 
   @override
  Widget build(BuildContext context) {
@@ -176,7 +197,7 @@ var isStartUpEnabled = false;
                 padding: const EdgeInsets.only(left: 16, right: 16),
                 child: SettingsItemWrapper(
                   topRadius: true,
-                  bottomRadius: true,
+                  bottomRadius: false,
                   child: SwitchableItem(
                     label: S.of(context).setting_auto_start,
                     // des: '软件会在后台静默启动，不会弹窗打扰',
@@ -199,6 +220,31 @@ var isStartUpEnabled = false;
                 ),
               ),
             ),
+
+            Visibility(
+              visible: showAppLaunchConfig, 
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16),
+                child: SettingsItemWrapper(
+                  topRadius: false,
+                  bottomRadius: true,
+                  child: SwitchableItem(
+                    label: '退出时最小化到系统托盘',           
+                    checked: isDirectExitEnabled, 
+                    onChanged: (value) async {
+                      setState(() {
+                        isDirectExitEnabled = value!;
+                        _saveDirectExitStatus(value); 
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+
+
+
+
               ],
             ),
               ],
