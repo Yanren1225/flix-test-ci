@@ -271,20 +271,7 @@ class _PayScreenState extends State<PayScreen> {
                 ),
               ),
               
-              if (_vipDate != null)
-              const SizedBox(height: 0)
-                //Text(
-                //  '您的到期日期: $_vipDate',
-                //  style: const TextStyle(fontSize: 16),
-                //)
-              else if (_statusMessage.isNotEmpty)
-                Text(
-                  _statusMessage,
-                  style: const TextStyle(fontSize: 16, color: Colors.red),
-                )
-              else
-            //  const Center(child: CircularProgressIndicator()),
-              const SizedBox(height: 20),
+            
               ElevatedButton(
                 onPressed: (){
                     Navigator.push(

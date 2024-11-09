@@ -382,7 +382,11 @@ void _showSuccessBottomSheet() {
              //   const Center(child: CircularProgressIndicator()),
             //  const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _generatePayLink,
+                onPressed:() async {
+                  await _loadUserEmail();
+                  _generatePayLink();
+
+                } ,
                 child: const Text('生成支付链接'),
               ),
              // 仅在桌面端显示二维码

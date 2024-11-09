@@ -482,7 +482,7 @@ Future<void> _checkPaymentStatus() async {
         return Stack(
        children: [
           Container(
-          margin: const EdgeInsets.only(top: 0),
+          margin: const EdgeInsets.only(top: 8),
           width: double.infinity,
           child: Column(
             children: [
