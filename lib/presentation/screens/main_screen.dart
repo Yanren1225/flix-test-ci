@@ -123,6 +123,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
   double _leftWidth = 365.0;
   final double _minLeftWidth = 300.0;
   final double _maxLeftWidth = 500.0;
+  bool _isTitleBarHidden = true;
 
   Center selectedDeviceTipsScreen() {
     return Center(
@@ -223,6 +224,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
     initWindowClose();
     _initNotificationListener();
     VersionChecker.checkNewVersion(context);
+    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      windowManager.addListener(this);
+    }
   }
 
   @override
@@ -230,6 +234,20 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
       VersionChecker.checkNewVersion(context);
+    }
+  }
+
+  @override
+  void onWindowEvent(String eventName) async {
+    // Assume we want to check for a particular event name, like 'focus' or 'blur'
+    if (eventName == 'focus' || eventName == 'blur') {
+      // If the title bar should be hidden but might be visible, re-hide it
+      if (!_isTitleBarHidden) {
+        await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
+        setState(() {
+          _isTitleBarHidden = true;
+        });
+      }
     }
   }
 
@@ -276,6 +294,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
     flixNotification.receptionNotificationStream.close();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      windowManager.removeListener(this);
+    }
   }
 
   void setSelectedIndex(int index) {
