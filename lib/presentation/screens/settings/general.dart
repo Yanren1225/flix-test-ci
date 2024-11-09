@@ -98,49 +98,24 @@ bool isDirectExitEnabled = true;
                     Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //Padding(
-               //   padding: const EdgeInsets.only(left: 20, top: 0, right: 20),
-                //  child: Text(
-                //    S.of(context).setting_more,
-                //    style: TextStyle(
-                //            fontSize: 12,
-                 //           fontWeight: FontWeight.normal,
-                 //           color: Theme.of(context).flixColors.text.secondary)
-                 //       .fix(),
-                //  ),
-               // ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
-                  child: SettingsItemWrapper(
-                    topRadius: true,
-                    bottomRadius: false,
-                    child: StreamBuilder<bool>(
-                      initialData: SettingsRepo.instance.enableMdns,
-                      stream: SettingsRepo.instance.enableMdnsStream.stream,
-                      builder:
-                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                        return SwitchableItem(
-                          label: S.of(context).setting_more_new_discover,
-                          des: S.of(context).setting_more_new_discover_des,
-                          checked: snapshot.data ?? false,
-                          onChanged: (value) {
-                            setState(() {
-                              if (value != null) {
-                                SettingsRepo.instance.setEnableMdns(value);
-                              }
-                            });
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ),
+                 padding: const EdgeInsets.only(left: 20, top: 10, right: 20),
+                  child: Text(
+                    '界面显示',
+                    style: TextStyle(
+                          fontSize: 13.5,
+                           fontWeight: FontWeight.normal,
+                          color: Theme.of(context).flixColors.text.secondary)
+                      .fix(),
+                 ),
+               ),
+               
               StreamBuilder<String>(
                     stream: SettingsRepo.instance.darkModeTagStream.stream,
                     initialData: SettingsRepo.instance.darkModeTag,
                     builder: (context, snapshot) {
                       return Padding(
-                        padding: const EdgeInsets.only(left: 16, right: 16),
+                        padding: const EdgeInsets.only(left: 16, right: 16,top:6,bottom:14),
                         child: Builder(builder: (context) {
                           final options = [
                             OptionData(
@@ -156,8 +131,8 @@ bool isDirectExitEnabled = true;
                           ];
 
                           return OptionItem(
-                              topRadius: false,
-                              bottomRadius: false,
+                              topRadius: true,
+                              bottomRadius: true,
                               label: S.of(context).setting_more_dark_mode,
                               tag: 'dark_mode',
                               options: options,
@@ -170,31 +145,24 @@ bool isDirectExitEnabled = true;
                         }),
                       );
                     }),
-                Padding(
-                  padding: const EdgeInsets.only(left: 30, right: 16),
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 14),
-                    height: 0.5,
-                    color: const Color.fromRGBO(0, 0, 0, 0.08),
-                  ),
-                ),
+               
                 
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                  child: ClickableItem(
-                    label: S.of(context).setting_more_clean_cache,
-                    topRadius: false,
-                    bottomRadius: true,
-                    onClick: () {
-                      showConfirmDeleteCacheBottomSheet();
-                    },
-                  ),
-                ),
+                 Padding(
+                 padding: const EdgeInsets.only(left: 20, top: 0, right: 20),
+                  child: Text(
+                    '运行',
+                    style: TextStyle(
+                          fontSize: 13.5,
+                           fontWeight: FontWeight.normal,
+                          color: Theme.of(context).flixColors.text.secondary)
+                      .fix(),
+                 ),
+               ),
+                
                   Visibility(
               visible: showAppLaunchConfig,
               child: Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16),
+                padding: const EdgeInsets.only(left: 16, right: 16,top: 6),
                 child: SettingsItemWrapper(
                   topRadius: true,
                   bottomRadius: false,
@@ -224,7 +192,7 @@ bool isDirectExitEnabled = true;
             Visibility(
               visible: showAppLaunchConfig, 
               child: Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16),
+                padding: const EdgeInsets.only(left: 16, right: 16,bottom: 14),
                 child: SettingsItemWrapper(
                   topRadius: false,
                   bottomRadius: true,
@@ -242,8 +210,57 @@ bool isDirectExitEnabled = true;
               ),
             ),
 
+             Padding(
+                 padding: const EdgeInsets.only(left: 20, top: 0, right: 20),
+                  child: Text(
+                    '其他',
+                    style: TextStyle(
+                          fontSize: 13.5,
+                           fontWeight: FontWeight.normal,
+                          color: Theme.of(context).flixColors.text.secondary)
+                      .fix(),
+                 ),
+               ),
 
+ Padding(
+                  padding: const EdgeInsets.only(left: 16, top: 6, right: 16),
+                  child: SettingsItemWrapper(
+                    topRadius: true,
+                    bottomRadius: false,
+                    child: StreamBuilder<bool>(
+                      initialData: SettingsRepo.instance.enableMdns,
+                      stream: SettingsRepo.instance.enableMdnsStream.stream,
+                      builder:
+                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                        return SwitchableItem(
+                          label: S.of(context).setting_more_new_discover,
+                          des: S.of(context).setting_more_new_discover_des,
+                          checked: snapshot.data ?? false,
+                          onChanged: (value) {
+                            setState(() {
+                              if (value != null) {
+                                SettingsRepo.instance.setEnableMdns(value);
+                              }
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
 
+Padding(
+                  padding:
+                      const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                  child: ClickableItem(
+                    label: S.of(context).setting_more_clean_cache,
+                    topRadius: false,
+                    bottomRadius: true,
+                    onClick: () {
+                      showConfirmDeleteCacheBottomSheet();
+                    },
+                  ),
+                ),
 
               ],
             ),

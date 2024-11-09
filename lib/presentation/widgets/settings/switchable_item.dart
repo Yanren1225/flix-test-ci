@@ -23,18 +23,18 @@ class SwitchableItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(child: SettingsLabel(label: label, des: des)),
-        Switch(
-          value: checked,
-          onChanged: onChanged,
-          inactiveTrackColor:
-              Theme.of(context).flixColors.switchable.inactive.track,
-          inactiveThumbColor:
-              Theme.of(context).flixColors.switchable.inactive.thumb,
-          activeTrackColor:
-              Theme.of(context).flixColors.switchable.active.track,
-          activeColor: Theme.of(context).flixColors.switchable.active.thumb,
-          thumbColor: null,
-          trackOutlineColor: MaterialStateColor.resolveWith((states) => Colors.transparent),
+        SizedBox(
+          height: 20.0, 
+          child: Switch(
+            value: checked,
+            onChanged: onChanged,
+            inactiveTrackColor: Theme.of(context).flixColors.switchable.inactive.track,
+            inactiveThumbColor: Theme.of(context).flixColors.switchable.inactive.thumb,
+            activeTrackColor: Theme.of(context).flixColors.switchable.active.track,
+            activeColor: Theme.of(context).flixColors.switchable.active.thumb,
+            thumbColor: null,
+            trackOutlineColor: MaterialStateColor.resolveWith((states) => Colors.transparent),
+          ),
         )
       ],
     );
