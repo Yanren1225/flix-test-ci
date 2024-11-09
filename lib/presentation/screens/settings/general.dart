@@ -147,7 +147,9 @@ bool isDirectExitEnabled = true;
                     }),
                
                 
-                 Padding(
+                    Visibility(
+              visible: showAppLaunchConfig,
+              child:  Padding(
                  padding: const EdgeInsets.only(left: 20, top: 0, right: 20),
                   child: Text(
                     '运行',
@@ -157,7 +159,7 @@ bool isDirectExitEnabled = true;
                           color: Theme.of(context).flixColors.text.secondary)
                       .fix(),
                  ),
-               ),
+               ),   ),
                 
                   Visibility(
               visible: showAppLaunchConfig,
