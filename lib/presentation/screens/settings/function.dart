@@ -62,14 +62,14 @@ class SettingFunctionScreenState extends State<SettingFunctionScreen> {
               children: [
                
             Padding(
-              padding: const EdgeInsets.only(left: 16, top: 10, right: 16),
+              padding: const EdgeInsets.only(left: 16, top: 4, right: 16),
               child: StreamBuilder<bool>(
                 initialData: SettingsRepo.instance.autoReceive,
                 stream: SettingsRepo.instance.autoReceiveStream.stream,
                 builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                   return ClickableItem(
                     label: S.of(context).setting_cross_device_clipboard,
-                    des: S.of(context).setting_cross_device_clipboard_des,
+                    //des: S.of(context).setting_cross_device_clipboard_des,
                     topRadius: true,
                     bottomRadius: true,
                     onClick: () {

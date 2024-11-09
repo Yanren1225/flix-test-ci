@@ -33,6 +33,9 @@ class ClickableItem extends StatelessWidget {
       onTap: () {
         onClick?.call();
       },
+      splashColor: Colors.transparent, 
+      highlightColor: Colors.transparent, 
+      hoverColor: Colors.transparent, 
       child: DecoratedBox(
         decoration: FlixDecoration(
           color: Theme.of(context).flixColors.background.primary,

@@ -49,7 +49,7 @@ class QAScreenState extends State<QAScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                  Padding(
-                 padding: const EdgeInsets.only(left: 4, top: 10, right: 4,bottom: 6),
+                 padding: const EdgeInsets.only(left: 4, top: 4, right: 4,bottom: 6),
                   child: Text(
                     'Windows 连接与传输',
                     style: TextStyle(

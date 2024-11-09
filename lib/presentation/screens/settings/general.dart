@@ -99,7 +99,7 @@ bool isDirectExitEnabled = true;
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                 padding: const EdgeInsets.only(left: 20, top: 10, right: 20),
+                 padding: const EdgeInsets.only(left: 20, top: 4, right: 20),
                   child: Text(
                     '界面显示',
                     style: TextStyle(

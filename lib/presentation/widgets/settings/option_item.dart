@@ -55,6 +55,9 @@ class OptionItem extends StatelessWidget {
               tag: tag,
             )));
       },
+      splashColor: Colors.transparent, 
+      highlightColor: Colors.transparent, 
+      hoverColor: Colors.transparent, 
       child: DecoratedBox(
         decoration: FlixDecoration(
             color: Theme.of(context).flixColors.background.primary,
