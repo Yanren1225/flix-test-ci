@@ -3,7 +3,7 @@ import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flix/presentation/widgets/settings/settings_label.dart';
-import 'package:flutter_svg/flutter_svg.dart'; 
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ClickableItem extends StatelessWidget {
   final String label;
@@ -13,7 +13,7 @@ class ClickableItem extends StatelessWidget {
   final bool topRadius;
   final bool bottomRadius;
   final GestureTapCallback? onClick;
-  final String? iconPath; 
+  final String? iconPath;
 
   const ClickableItem({
     super.key,
@@ -24,7 +24,7 @@ class ClickableItem extends StatelessWidget {
     this.topRadius = true,
     this.bottomRadius = true,
     this.onClick,
-    this.iconPath, 
+    this.iconPath,
   });
 
   @override
@@ -33,9 +33,9 @@ class ClickableItem extends StatelessWidget {
       onTap: () {
         onClick?.call();
       },
-      splashColor: Colors.transparent, 
-      highlightColor: Colors.transparent, 
-      hoverColor: Colors.transparent, 
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
       child: DecoratedBox(
         decoration: FlixDecoration(
           color: Theme.of(context).flixColors.background.primary,
@@ -53,22 +53,46 @@ class ClickableItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              if (iconPath != null)
-                Padding(
-                  padding: const EdgeInsets.only(left:3,right: 12),
-                  child: SvgPicture.asset(
-                    iconPath!,
-                    height: 20,
-                    color: Theme.of(context).flixColors.text.primary,
-                    width: 20,
-                    placeholderBuilder: (BuildContext context) =>
-                        CircularProgressIndicator(), 
-                  ),
-                ),
+             
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: SettingsLabel(label: label, des: des),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        if (iconPath != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: SvgPicture.asset(
+                              iconPath!,
+                              height: 20,
+                              color: Theme.of(context).flixColors.text.primary,
+                              width: 20,
+                            ),
+                          ),
+                           const SizedBox(width: 4),
+                        Text(
+                          label,
+                          style: TextStyle(
+                            fontSize: 16,
+                         
+                            color: Theme.of(context).flixColors.text.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (des != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          des!,
+                          style: TextStyle(
+                            fontSize: 13.5,
+                            color: Theme.of(context).flixColors.text.secondary,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
               Visibility(
@@ -80,7 +104,8 @@ class ClickableItem extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.normal,
-                      color: tailColor ?? Theme.of(context).flixColors.text.secondary,
+                      color: tailColor ??
+                          Theme.of(context).flixColors.text.secondary,
                     ).fix(),
                   ),
                 ),

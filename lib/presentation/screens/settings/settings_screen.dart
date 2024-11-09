@@ -192,7 +192,15 @@ class SettingsScreenState extends State<SettingsScreen> {
                   }),
             ),
 
-
+  Container(
+                      color: Theme.of(context).flixColors.background.primary, 
+                      margin: const EdgeInsets.only(left: 16, right: 16), 
+                      child: Container(
+                        height: 0.5, 
+                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
+                        margin: const EdgeInsets.only(left: 16), 
+                      ),
+                    ),
 
                Visibility(
               visible: showCustomSaveDir,
@@ -242,7 +250,17 @@ class SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-
+    Visibility(
+              visible: showCustomSaveDir,
+              child: Container(
+                      color: Theme.of(context).flixColors.background.primary, 
+                      margin: const EdgeInsets.only(left: 16, right: 16), 
+                      child: Container(
+                        height: 0.5, 
+                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
+                        margin: const EdgeInsets.only(left: 16), 
+                      ),
+                    ),  ),
 
              Padding(
                       padding:
@@ -385,6 +403,17 @@ class SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
 
+                    Container(
+                      color: Theme.of(context).flixColors.background.primary, 
+                      margin: const EdgeInsets.only(left: 16, right: 16), 
+                      child: Container(
+                        height: 0.5, 
+                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
+                        margin: const EdgeInsets.only(left: 16), 
+                      ),
+                    ),
+
+
 
                     Padding(
                       padding:
@@ -404,6 +433,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                     ),
 
 
+
+
                     Padding(
                       padding:
                           const EdgeInsets.only(left: 16, top: 16, right: 16),
@@ -417,6 +448,16 @@ class SettingsScreenState extends State<SettingsScreen> {
                               bottomRadius: false,
                               onClick: widget.goQACallback);
                         },
+                      ),
+                    ),
+
+                           Container(
+                      color: Theme.of(context).flixColors.background.primary, 
+                      margin: const EdgeInsets.only(left: 16, right: 16), 
+                      child: Container(
+                        height: 0.5, 
+                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
+                        margin: const EdgeInsets.only(left: 16), 
                       ),
                     ),
 
@@ -441,6 +482,18 @@ class SettingsScreenState extends State<SettingsScreen> {
                       ),
                    ),
 
+
+         Visibility(
+                      visible: !Platform.isIOS,
+                      child: Container(
+                      color: Theme.of(context).flixColors.background.primary, 
+                      margin: const EdgeInsets.only(left: 16, right: 16), 
+                      child: Container(
+                        height: 0.5, 
+                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
+                        margin: const EdgeInsets.only(left: 16), 
+                      ),
+                    ), ),
                   
                     Padding(
                       padding: const EdgeInsets.only(
@@ -482,6 +535,16 @@ class SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
             ),
+
+                   Container(
+                      color: Theme.of(context).flixColors.background.primary, 
+                      margin: const EdgeInsets.only(left: 16, right: 16), 
+                      child: Container(
+                        height: 0.5, 
+                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
+                        margin: const EdgeInsets.only(left: 16), 
+                      ),
+                    ),
 
             StreamBuilder<String?>(
               initialData: VersionChecker.newestVersion,
@@ -532,6 +595,19 @@ class SettingsScreenState extends State<SettingsScreen> {
                               ));
                         }),
                   ),
+
+
+       Container(
+                      color: Theme.of(context).flixColors.background.primary, 
+                      margin: const EdgeInsets.only(left: 16, right: 16), 
+                      child: Container(
+                        height: 0.5, 
+                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
+                        margin: const EdgeInsets.only(left: 16), 
+                      ),
+                    ),
+
+
                    Padding(
                     padding:
                         const EdgeInsets.only(left: 16, right: 16, bottom: 0),
@@ -548,6 +624,18 @@ class SettingsScreenState extends State<SettingsScreen> {
                               });
                         }),
                   ),
+
+       Container(
+                      color: Theme.of(context).flixColors.background.primary, 
+                      margin: const EdgeInsets.only(left: 16, right: 16), 
+                      child: Container(
+                        height: 0.5, 
+                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
+                        margin: const EdgeInsets.only(left: 16), 
+                      ),
+                    ),
+
+
                 Padding(
                     padding:
                         const EdgeInsets.only(left: 16, right: 16, ),
@@ -558,6 +646,17 @@ class SettingsScreenState extends State<SettingsScreen> {
                        onClick: widget.goLoginPage),
                  ),
                       
+
+       Container(
+                      color: Theme.of(context).flixColors.background.primary, 
+                      margin: const EdgeInsets.only(left: 16, right: 16), 
+                      child: Container(
+                        height: 0.5, 
+                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
+                        margin: const EdgeInsets.only(left: 16), 
+                      ),
+                    ),
+
                   Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: ClickableItem(
