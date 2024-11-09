@@ -116,34 +116,34 @@ class _PayScreenState extends State<PayScreen> {
   }
 
  
-Future<void> _checkPaymentStatus() async {
-  Uri url = Uri.parse(
-      'https://payment-flix.cdnfree.cn/api.php?act=order&pid=$_merchantId&key=$_key&out_trade_no=$_orderId');
-  http.Response response = await http.get(url);
+  Future<void> _checkPaymentStatus() async {
+    Uri url = Uri.parse(
+        'https://payment-flix.cdnfree.cn/api.php?act=order&pid=$_merchantId&key=$_key&out_trade_no=$_orderId');
+    http.Response response = await http.get(url);
 
-  if (response.statusCode == 200) {
-    var jsonResponse = json.decode(response.body);
+    if (response.statusCode == 200) {
+      var jsonResponse = json.decode(response.body);
 
-    if (jsonResponse['code'].toString() == '1' && jsonResponse['status'].toString() == '1') {
-      setState(() {
-        _paymentStatus = '支付成功，已增加30天VIP';
-        _isCheckingStatus = false;
-        _payLink = '';
-      });
-      _updateVipDate(31);
-      _deleteOrderId();
-     
+      if (jsonResponse['code'].toString() == '1' && jsonResponse['status'].toString() == '1') {
+        setState(() {
+          _paymentStatus = '支付成功，已增加30天VIP';
+          _isCheckingStatus = false;
+          _payLink = '';
+        });
+        _updateVipDate(31);
+        _deleteOrderId();
+      
+      } else {
+        setState(() {
+          _paymentStatus = '支付未完成';
+        });
+      }
     } else {
       setState(() {
-        _paymentStatus = '支付未完成';
+        _paymentStatus = '请求失败: ${response.statusCode}';
       });
     }
-  } else {
-    setState(() {
-      _paymentStatus = '请求失败: ${response.statusCode}';
-    });
   }
-}
 
 
 
@@ -220,56 +220,56 @@ Future<void> _checkPaymentStatus() async {
                   ],
                 ),
               ),
-Container(
-        width: double.infinity,
-        constraints: const BoxConstraints(
-          maxWidth: 450, 
-        ),
-        decoration: BoxDecoration(
-          color: Theme.of(context).flixColors.background.primary,
-          border: Border.all(
-            color: Color.fromRGBO(7, 144, 255, 1),
-            width: 1.6,
-          ),
-          borderRadius: BorderRadius.circular(15.0),
-        ),
-        child: const Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '30天订阅',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+              Container(
+                width: double.infinity,
+                constraints: const BoxConstraints(
+                  maxWidth: 450, 
+                ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).flixColors.background.primary,
+                  border: Border.all(
+                    color: Color.fromRGBO(7, 144, 255, 1),
+                    width: 1.6,
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    '请我们喝一杯奶茶',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '30天订阅',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            '请我们喝一杯奶茶',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '¥ 0.01',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Color.fromRGBO(7, 144, 255, 1),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              Text(
-                '¥ 0.01',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Color.fromRGBO(7, 144, 255, 1),
-                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
               
               if (_vipDate != null)
               const SizedBox(height: 0)
@@ -295,15 +295,6 @@ Container(
                 child: const Text('订阅'),
               ),
             
-if (_payLink.isNotEmpty && (Platform.isMacOS || Platform.isWindows))
-  Center(
-    child: QrImageView(
-      data: _payLink,
-      version: QrVersions.auto,
-      size: 200.0,
-    ),
-  ),
-              const SizedBox(height: 20),
          //     Text('支付状态: $_paymentStatus'),
             ],
           ),

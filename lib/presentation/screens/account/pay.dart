@@ -386,14 +386,14 @@ void _showSuccessBottomSheet() {
                 child: const Text('生成支付链接'),
               ),
              // 仅在桌面端显示二维码
-if (_payLink.isNotEmpty && (Platform.isMacOS || Platform.isWindows))
-  Center(
-    child: QrImageView(
-      data: _payLink,
-      version: QrVersions.auto,
-      size: 200.0,
-    ),
-  ),
+            if (_payLink.isNotEmpty && (Platform.isMacOS || Platform.isWindows))
+              Center(
+                child: QrImageView(
+                  data: _payLink,
+                  version: QrVersions.auto,
+                  size: 200.0,
+                ),
+              ),
               const SizedBox(height: 20),
          //     Text('支付状态: $_paymentStatus'),
             ],

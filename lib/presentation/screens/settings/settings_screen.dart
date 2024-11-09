@@ -404,7 +404,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                     ),
 
 
-  Padding(
+                    Padding(
                       padding:
                           const EdgeInsets.only(left: 16, top: 16, right: 16),
                       child: ValueListenableBuilder<String>(
@@ -421,28 +421,28 @@ class SettingsScreenState extends State<SettingsScreen> {
                     ),
 
 
-              Visibility(
-                    visible: !Platform.isIOS,
-                    child: Padding(
-                      padding:
-                          const EdgeInsets.only(left: 16, top: 0, right: 16),
-                      child: ValueListenableBuilder<String>(
-                        valueListenable: version,
-                        builder: (BuildContext context, String value,
-                            Widget? child) {
-                          return ClickableItem(
-                              label: S.of(context).help_donate,
-                              iconPath: 'assets/images/donate.svg',
-                              bottomRadius: false,
-                              topRadius: false,
-                              onClick: widget.goDonateCallback);
-                        },
+                    Visibility(
+                      visible: !Platform.isIOS,
+                      child: Padding(
+                        padding:
+                            const EdgeInsets.only(left: 16, top: 0, right: 16),
+                        child: ValueListenableBuilder<String>(
+                          valueListenable: version,
+                          builder: (BuildContext context, String value,
+                              Widget? child) {
+                            return ClickableItem(
+                                label: S.of(context).help_donate,
+                                iconPath: 'assets/images/donate.svg',
+                                bottomRadius: false,
+                                topRadius: false,
+                                onClick: widget.goDonateCallback);
+                          },
+                        ),
                       ),
-                    ),
-                  ),
+                   ),
 
                   
-             Padding(
+                    Padding(
                       padding: const EdgeInsets.only(
                           left: 16,
                           right: 16,
@@ -466,7 +466,7 @@ class SettingsScreenState extends State<SettingsScreen> {
 
            
 
- Padding(
+            Padding(
               padding: const EdgeInsets.only(left: 16, top: 0, right: 16),
               child: ValueListenableBuilder<String>(
                 valueListenable: version,
@@ -483,7 +483,7 @@ class SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-  StreamBuilder<String?>(
+            StreamBuilder<String?>(
               initialData: VersionChecker.newestVersion,
               stream: VersionChecker.newestVersionStream.stream,
               builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
@@ -558,7 +558,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                        onClick: widget.goLoginPage),
                  ),
                       
-Padding(
+                  Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: ClickableItem(
                           label: '云同步',

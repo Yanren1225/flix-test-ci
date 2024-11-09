@@ -497,48 +497,47 @@ Future<void> _checkPaymentStatus() async {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           
-                          // 已经登录
+                         
                           if (_loggedInEmail != null) ...[
-                         SizedBox(
-  width: double.infinity, // 设置宽度为最大宽度
-  child: Card(
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(15), // 设置圆角半径
-    ),
-    elevation: 0, // 卡片阴影
-    child: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('$_loggedInEmail', style: const TextStyle(fontSize: 18)),
-          const SizedBox(height: 2), // 间距
-          if (_vipDate != null) ...[
-            Text('Flix Elite 到期日: $_vipDate', style:  TextStyle(fontSize: 15,color: Theme.of(context).flixColors.text.secondary)),
-          ],
-          if (_vipDate == null) ...[
-          Text('Flix Elite 到期日: -', style:  TextStyle(fontSize: 15,color: Theme.of(context).flixColors.text.secondary)),
-        ],
-       
-        ],
-      ),
-    ),
-  ),
-
-),
-  Padding(
-                        padding: const EdgeInsets.only(top: 10,left: 4,right: 4),
-                        child: ClickableItem(
-                          label: '成为 Flix Elite 用户',
-                           iconPath: 'assets/images/donate.svg',
-                          topRadius: true,
-                           bottomRadius:true,
-                         onClick: widget.goPayScreen
-                        ),
-                      ),
-                           ],
-                          // 未登录显示登录表单
+                            SizedBox(
+                              width: double.infinity,
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15), 
+                                ),
+                                elevation: 0, 
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('$_loggedInEmail', style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 2), 
+                                      if (_vipDate != null) ...[
+                                        Text('Flix Elite 到期日: $_vipDate', style:  TextStyle(fontSize: 15,color: Theme.of(context).flixColors.text.secondary)),
+                                      ],
+                                      if (_vipDate == null) ...[
+                                      Text('Flix Elite 到期日: -', style:  TextStyle(fontSize: 15,color: Theme.of(context).flixColors.text.secondary)),
+                                    ],
+                                  
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10,left: 4,right: 4),
+                              child: ClickableItem(
+                                label: '成为 Flix Elite 用户',
+                                iconPath: 'assets/images/donate.svg',
+                                topRadius: true,
+                                bottomRadius:true,
+                              onClick: widget.goPayScreen
+                              ),
+                            ),
+                          ],
+                          // 未登录
                           if (_loggedInEmail == null && !_emailSubmitted) ...[
                             Container(
                               width: double.infinity, 
