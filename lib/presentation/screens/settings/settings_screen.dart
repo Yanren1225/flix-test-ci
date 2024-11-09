@@ -153,25 +153,25 @@ class SettingsScreenState extends State<SettingsScreen> {
           children: [
 
 
-          Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16),
-            child: GestureDetector(
-              onTap:  widget.goLoginPage,
-              child: Text(
-                _title,
-                style: TextStyle(
-                  fontSize: 13.5,
-                  color: Theme.of(context).flixColors.text.secondary,
-                ),
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
+        //  Padding(
+        //    padding: const EdgeInsets.only(left: 16, right: 16，bottom:10),
+          ///  child: GestureDetector(
+          //    onTap:  widget.goLoginPage,
+          //    child: Text(
+            //    _title,
+          //      style: TextStyle(
+          //        fontSize: 13.5,
+         //         color: Theme.of(context).flixColors.text.secondary,
+         //       ),
+        //        textAlign: TextAlign.left,
+        //      ),
+        //    ),
+        //  ),
 
 
             
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16,top: 20),
+              padding: const EdgeInsets.only(left: 16, right: 16,top: 10),
               child: ClickableItem(
                   topRadius: true,
                  // bottomRadius: !showAppLaunchConfig,
@@ -557,15 +557,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                         bottomRadius:false,
                        onClick: widget.goLoginPage),
                  ),
-                       Padding(
-                        padding: const EdgeInsets.only(left: 16, right: 16),
-                        child: ClickableItem(
-                          label: '账号VIP API',
-                          topRadius: false,
-                           bottomRadius:false,
-                         onClick: widget.goPayScreen
-                        ),
-                      ),
+                      
 Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: ClickableItem(

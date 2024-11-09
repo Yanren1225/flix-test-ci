@@ -26,6 +26,7 @@ class _PayVIPScreenState extends State<PayVIPScreen> {
   String? _userEmail;
   String? _vipDate;
   String _statusMessage = '';
+  Timer? _statusCheckTimer;
 
 
   String type = 'alipay';
@@ -209,63 +210,69 @@ class _PayVIPScreenState extends State<PayVIPScreen> {
 
  
   // 检查支付状态，最多检测600次
-void _startCheckingStatus() {
+ void _startCheckingStatus() {
   setState(() {
     _isCheckingStatus = true;
   });
 
-  int checkCount = 0; 
+  int checkCount = 0;
 
-  Timer.periodic(const Duration(seconds: 1), (timer) async {
-    if (!_isCheckingStatus || checkCount >= 600) {
-      timer.cancel(); 
-     
-if (mounted) {
-  setState(() {
-    _isCheckingStatus = false;
-    if (checkCount >= 600) {
-      _paymentStatus = '检测超时，停止检测';
+  _statusCheckTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+    // 检查组件是否已被移除或计数已达到上限
+    if (!_isCheckingStatus || !mounted || checkCount >= 600) {
+      timer.cancel();
+      if (mounted) {
+        setState(() {
+          _isCheckingStatus = false;
+          if (checkCount >= 600) {
+            _paymentStatus = '检测超时，停止检测';
+          }
+        });
+      }
+      return;
     }
+
+    checkCount++;
+    await _checkPaymentStatus();
   });
 }
-
-    } else {
-      await _checkPaymentStatus();
-      checkCount++; 
-    }
-  });
-}
-
 
 
 Future<void> _checkPaymentStatus() async {
+  if (!mounted) return; // 在开始执行时检查挂载状态
+
   Uri url = Uri.parse(
       'https://payment-flix.cdnfree.cn/api.php?act=order&pid=$_merchantId&key=$_key&out_trade_no=$_orderId');
   http.Response response = await http.get(url);
+
+  if (!mounted) return; // 再次检查挂载状态
 
   if (response.statusCode == 200) {
     var jsonResponse = json.decode(response.body);
 
     if (jsonResponse['code'].toString() == '1' && jsonResponse['status'].toString() == '1') {
-      setState(() {
-        _paymentStatus = '支付成功，已增加30天VIP';
-        _isCheckingStatus = false;
-        _payLink = '';
-      });
+      if (mounted) {
+        setState(() {
+          _paymentStatus = '支付成功，已增加30天VIP';
+          _isCheckingStatus = false;
+          _payLink = '';
+        });
+      }
       _updateVipDate(31);
       _deleteOrderId();
-      _showSuccessBottomSheet(); 
-    } else {
+      _showSuccessBottomSheet();
+    } else if (mounted) {
       setState(() {
         _paymentStatus = '支付未完成';
       });
     }
-  } else {
+  } else if (mounted) {
     setState(() {
       _paymentStatus = '请求失败: ${response.statusCode}';
     });
   }
 }
+
 
 // 显示支付成功
 void _showSuccessBottomSheet() {
@@ -322,6 +329,7 @@ void _showSuccessBottomSheet() {
   @override
   void dispose() {
     _isCheckingStatus = false;
+     _statusCheckTimer?.cancel();
     super.dispose();
   }
 

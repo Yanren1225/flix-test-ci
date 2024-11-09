@@ -538,7 +538,12 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 context,
                 CupertinoPageRoute(
                     builder: (context) => LoginPage(
-                          showBack: true,
+                          showBack: true, goPayScreen: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => PayScreen(
+                        //  showBack: true,
+                        ))); },
                         )));
           }, goCloudScreenPage: () {   Navigator.push(
                 context,
@@ -788,7 +793,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           goLoginPage: () {
             setState(() {
               thirdWidget = LoginPage(
-                showBack: false,
+                showBack: false, goPayScreen: () { setState(() {
+              thirdWidget = PayScreen(
+                //showBack: false,
+              );
+            }); },
               );
             });
           }, goCloudScreenPage: () {  setState(() {

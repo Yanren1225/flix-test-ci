@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flix/presentation/screens/main_screen.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
+import 'package:flix/presentation/widgets/settings/clickable_item.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
@@ -11,9 +12,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 class LoginPage extends StatefulWidget {
+  final VoidCallback goPayScreen;
   @override
   bool showBack = true;
-  LoginPage({super.key, required this.showBack});
+  LoginPage({super.key, required this.showBack, required this.goPayScreen,});
 
 
   
@@ -33,14 +35,135 @@ class _LoginPageState extends State<LoginPage> {
   String _statusMessage = '';
   String? _loggedInEmail; 
   String _title = '登录';
+  String? _userEmail;
+  String? _vipDate;
+  final String _merchantId = '1000';
+  final String _key = 'tM4mIOvt0ockkId38zIzV8IZ834fwiiZ';
+  String _orderId = '';
   
 
   @override
   void initState() {
     super.initState();
     _checkLoginStatus(); 
+    _loadUserEmail();
   }
 
+  // 检查未完成的支付订单
+  Future<void> _loadUserEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userEmail = prefs.getString('loggedInEmail');
+    });
+    if (_userEmail != null) {
+      await _checkPendingPayment(); 
+      _fetchVipDate();
+    }
+  }
+
+   Future<void> _checkPendingPayment() async {
+    final url = Uri.parse('http://test-flix.cdnfree.cn/get_payid.php?email=$_userEmail');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['status'] == 'success' && responseData['payid'] != null) {
+        _orderId = responseData['payid'];
+        await _checkPaymentStatus(); 
+      }
+    }
+  }
+
+Future<void> _fetchVipDate() async {
+    final url = Uri.parse('http://test-flix.cdnfree.cn/get_vip_date.php?email=$_userEmail');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      setState(() {
+        if (responseData['status'] == 'success') {
+          _vipDate = responseData['vip_date'];
+        } else {
+          _statusMessage = responseData['message'];
+        }
+      });
+    } else {
+      setState(() {
+        _statusMessage = '无法获取 VIP 日期，请稍后再试。';
+      });
+    }
+  }
+
+  // 更新 VIP 日期
+  Future<void> _updateVipDate(int days) async {
+    final url = Uri.parse('http://test-flix.cdnfree.cn/update_vip_date.php');
+    final response = await http.post(url, body: {
+      'email': _userEmail,
+      'days': days.toString(),
+    });
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      setState(() {
+        if (responseData['status'] == 'success') {
+          _statusMessage = 'VIP 日期已更新';
+          _fetchVipDate();
+        } else {
+          _statusMessage = responseData['message'];
+        }
+      });
+    } else {
+      setState(() {
+        _statusMessage = '无法更新 VIP 日期，请稍后再试。';
+      });
+    }
+  }
+
+  
+Future<void> _checkPaymentStatus() async {
+  Uri url = Uri.parse(
+      'https://payment-flix.cdnfree.cn/api.php?act=order&pid=$_merchantId&key=$_key&out_trade_no=$_orderId');
+  http.Response response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    var jsonResponse = json.decode(response.body);
+
+    if (jsonResponse['code'].toString() == '1' && jsonResponse['status'].toString() == '1') {
+      
+      _updateVipDate(31);
+      _deleteOrderId();
+     
+    } else {
+      
+    }
+  } else {
+   
+  }
+}
+
+
+
+
+  // 删除订单号
+  Future<void> _deleteOrderId() async {
+    final url = Uri.parse('http://test-flix.cdnfree.cn/delete_payid.php');
+    final response = await http.post(url, body: {
+      'email': _userEmail,
+    });
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      if (responseData['status'] != 'success') {
+        setState(() {
+          _statusMessage = responseData['message'];
+        });
+      }
+    } else {
+      setState(() {
+        _statusMessage = '无法删除订单号，请稍后再试。';
+      });
+    }
+  }
 
   Future<void> _checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -246,8 +369,9 @@ class _LoginPageState extends State<LoginPage> {
       final responseData = json.decode(response.body);
       if (responseData['status'] == 'success') {
         await _saveLoggedInEmail(email); 
+        _loadUserEmail();
         setState(() {
-          _statusMessage = responseData['message'];
+        //  _statusMessage = responseData['message'];
           _loggedInEmail = email; 
           _emailSubmitted = false; 
           _isAccountExists = false; 
@@ -299,6 +423,7 @@ class _LoginPageState extends State<LoginPage> {
       final responseData = json.decode(response.body);
       if (responseData['status'] == 'success') {
         await _saveLoggedInEmail(email); 
+        _loadUserEmail();
         setState(() {
           _statusMessage = responseData['message'];
           _loggedInEmail = email; 
@@ -307,6 +432,7 @@ class _LoginPageState extends State<LoginPage> {
           _isVerified = false; 
           _title = '我的账户';
           _isSendingCode = false;
+          
         });
       } else {
         setState(() {
@@ -356,7 +482,7 @@ class _LoginPageState extends State<LoginPage> {
         return Stack(
        children: [
           Container(
-          margin: const EdgeInsets.only(top: 6),
+          margin: const EdgeInsets.only(top: 0),
           width: double.infinity,
           child: Column(
             children: [
@@ -366,17 +492,52 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     Container(
                       color: Theme.of(context).flixColors.background.secondary,
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.only(left: 16,right: 16,bottom: 16),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           
                           // 已经登录
                           if (_loggedInEmail != null) ...[
-                            Text('已登录账户: $_loggedInEmail', style: const TextStyle(fontSize: 18)),
-                            const SizedBox(height: 20),
-                         
-                          ],
+                         SizedBox(
+  width: double.infinity, // 设置宽度为最大宽度
+  child: Card(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(15), // 设置圆角半径
+    ),
+    elevation: 0, // 卡片阴影
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('$_loggedInEmail', style: const TextStyle(fontSize: 18)),
+          const SizedBox(height: 2), // 间距
+          if (_vipDate != null) ...[
+            Text('Flix Elite 到期日: $_vipDate', style:  TextStyle(fontSize: 15,color: Theme.of(context).flixColors.text.secondary)),
+          ],
+          if (_vipDate == null) ...[
+          Text('Flix Elite 到期日: -', style:  TextStyle(fontSize: 15,color: Theme.of(context).flixColors.text.secondary)),
+        ],
+       
+        ],
+      ),
+    ),
+  ),
+
+),
+  Padding(
+                        padding: const EdgeInsets.only(top: 10,left: 4,right: 4),
+                        child: ClickableItem(
+                          label: '成为 Flix Elite 用户',
+                           iconPath: 'assets/images/donate.svg',
+                          topRadius: true,
+                           bottomRadius:true,
+                         onClick: widget.goPayScreen
+                        ),
+                      ),
+                           ],
                           // 未登录显示登录表单
                           if (_loggedInEmail == null && !_emailSubmitted) ...[
                             Container(
