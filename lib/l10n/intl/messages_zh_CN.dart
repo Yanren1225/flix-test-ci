@@ -139,7 +139,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "help_sponsor": MessageLookupByLibrary.simpleMessage("点我进入捐赠渠道"),
         "help_thanks":
             MessageLookupByLibrary.simpleMessage("，非常感谢你来支持我们的持续开发 🙏"),
-        "help_title": MessageLookupByLibrary.simpleMessage("软件帮助"),
+        "help_title": MessageLookupByLibrary.simpleMessage("帮助"),
         "help_version": m6,
         "homepage_select_device": MessageLookupByLibrary.simpleMessage("请选择设备"),
         "hotspot_connect_failed":

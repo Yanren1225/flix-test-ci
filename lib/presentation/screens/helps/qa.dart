@@ -37,7 +37,7 @@ class QAScreenState extends State<QAScreen> {
  Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     return NavigationScaffold(
-      title: '软件帮助',
+      title: '帮助',
       onClearThirdWidget: clearThirdWidget,
       showBackButton: widget.showBack,
       builder: (EdgeInsets padding) {

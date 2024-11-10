@@ -481,7 +481,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                         builder: (BuildContext context, String value,
                             Widget? child) {
                           return ClickableItem(
-                              label: '软件帮助',
+                              label: '帮助',
                               iconPath: 'assets/images/qa.svg',
                               bottomRadius: false,
                               onClick: widget.goQACallback);
