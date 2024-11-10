@@ -45,16 +45,16 @@ class FlixToast {
         borderRadius: BorderRadius.circular(25.0),
         color: Theme.of(_fToast.context!).flixColors.background.primary,
         boxShadow: [
-          BoxShadow(
-            color: Theme.of(_fToast.context!)
-                .flixColors
-                .background
-                .tertiary
-                .withOpacity(0.1),
-            spreadRadius: 2,
-            blurRadius: 4,
-            offset: const Offset(2, 4),
-          ),
+        BoxShadow(
+          color: Theme.of(_fToast.context!).flixColors.text.primary.withOpacity(0.025), 
+          offset: const Offset(0, -3), 
+          blurRadius: 6,
+        ),
+        BoxShadow(
+          color: Theme.of(_fToast.context!).flixColors.text.primary.withOpacity(0.025), 
+          offset: const Offset(0, 8), 
+          blurRadius: 8,
+        ),
         ],
       ),
       child: Row(
