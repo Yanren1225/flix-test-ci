@@ -318,7 +318,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                     icon: isAp
                         ? 'assets/images/ic_ap.svg'
                         : 'assets/images/ic_wifi.svg',
-                    label: name,
+                    label: utf8.decode(snapshot.requireData.name.runes.toList()),
                     iconColor: FlixColor.blue,
                     isLeft: false,
                     onTap: () {
