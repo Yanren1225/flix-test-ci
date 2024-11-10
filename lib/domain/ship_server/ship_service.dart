@@ -524,7 +524,8 @@ class ShipService {
       await _checkCancel(bubble!.id);
       try {
         final String desDir = SettingsRepo.instance.savedDir;
-        talker.debug(sendTag,"desDir = $desDir  path = ${bubble?.content.meta.path} bubble = $bubble");
+        talker.debug(sendTag,
+            "desDir = $desDir  path = ${bubble?.content.meta.path} bubble = $bubble");
         await resolvePathOnMacOS(desDir, (desDir) async {
           assert(fileName != null, "$shareId filename can't be null");
           // safeJoinPaths 相对路径拼接，文件夹发送处理
@@ -603,9 +604,26 @@ class ShipService {
                   bubble is! PrimitiveDirectoryBubble)) {
             return Response.notFound('bubble not found');
           }
-          await updateBubbleShareState(
-              _bubblePool, intent.bubbleId, FileState.cancelled);
-          await _checkCancel(intent.bubbleId);
+
+          var isCancelable = false;
+          if (bubble is PrimitiveFileBubble) {
+            final fileBubble = bubble as PrimitiveFileBubble;
+            isCancelable =
+                fileBubble.content.state != FileState.receiveCompleted &&
+                    fileBubble.content.state != FileState.completed &&
+                    fileBubble.content.state != FileState.cancelled;
+          } else if (bubble is PrimitiveDirectoryBubble) {
+            final directoryBubble = bubble as PrimitiveDirectoryBubble;
+            isCancelable = directoryBubble.content.fileBubbles.any((element) =>
+                element.content.state != FileState.receiveCompleted &&
+                element.content.state != FileState.completed &&
+                element.content.state != FileState.cancelled);
+          }
+          if (isCancelable) {
+            await updateBubbleShareState(
+                _bubblePool, intent.bubbleId, FileState.cancelled);
+            await _checkCancel(intent.bubbleId);
+          }
           break;
         case TransAction.confirmBreakPoint:
           if (bubble == null ||
@@ -766,7 +784,8 @@ class ShipService {
     await _bubblePool.add(updatedBubble);
   }
 
-  Future<SimpleResourceEntity?> _saveMediaToAlbumOnMobile(File outFile, bool isImage,
+  Future<SimpleResourceEntity?> _saveMediaToAlbumOnMobile(
+      File outFile, bool isImage,
       {String? tag}) async {
     try {
       if (Platform.isAndroid) {
