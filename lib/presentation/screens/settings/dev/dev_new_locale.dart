@@ -7,8 +7,8 @@ import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../../l10n/l10n.dart';
-import '../../../l10n/lang_config.dart';
+import '../../../../l10n/l10n.dart';
+import '../../../../l10n/lang_config.dart';
 
 class DevNewLocaleBottomSheet extends StatefulWidget {
   const DevNewLocaleBottomSheet({super.key});

@@ -7,7 +7,7 @@ import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flix/theme/theme_extensions.dart';
-import 'package:flix/utils/dev_config.dart';
+import 'package:flix/presentation/screens/settings/dev/dev_config.dart';
 import 'package:flix/utils/download_nonweb_logs.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/gestures.dart';

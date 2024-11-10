@@ -156,6 +156,7 @@ dependencies:
 
   flix_rust: 
     path: ./flix_rust
+  flutter95: ^1.3.0
 #  simple_native_image_compress: ^1.1.0
 # thumbnailer: ^2.2.0
 

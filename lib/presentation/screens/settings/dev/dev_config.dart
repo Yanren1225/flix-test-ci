@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
-import '../domain/log/flix_log.dart';
-import '../presentation/widgets/flix_toast.dart';
+import '../../../../domain/log/flix_log.dart';
+import '../../../widgets/flix_toast.dart';
 
 class DevConfig {
   var dev = false;

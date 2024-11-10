@@ -38,10 +38,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 import '../../../l10n/l10n.dart';
-import '../../../utils/dev_config.dart';
+import 'dev/client_info_page.dart';
+import 'dev/dev_config.dart';
 import '../../dialog/confirm_exit_app_bottomsheet.dart';
 import '../../widgets/settings/click_action_item.dart';
-import 'dev_new_locale.dart';
+import 'dev/dev_new_locale.dart';
 
 class SettingsScreen extends StatefulWidget {
   final VoidCallback crossDeviceCallback;
@@ -60,24 +61,24 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback goPayScreen;
   final VoidCallback goHotkeyScreen;
 
-  const SettingsScreen(
-      {super.key,
-      required this.crossDeviceCallback,
-      required this.showConnectionInfoCallback,
-      required this.goManualAddCallback,
-      required this.goDonateCallback,
-       required this.goQACallback,
-        required this.goVersionScreen,
-        required this.goGeneralCallback,
-      required this.goSettingFunctionCallback,
-      required this.goAutomaticReceiveCallback,
-      required this.goSettingPravicyScreen,
-      required this.goSettingAgreementScreen,
-      required this.goLoginPage,
-      required this.goCloudScreenPage,
-      required this.goPayScreen,
-       required this.goHotkeyScreen,
-      });
+  const SettingsScreen({
+    super.key,
+    required this.crossDeviceCallback,
+    required this.showConnectionInfoCallback,
+    required this.goManualAddCallback,
+    required this.goDonateCallback,
+    required this.goQACallback,
+    required this.goVersionScreen,
+    required this.goGeneralCallback,
+    required this.goSettingFunctionCallback,
+    required this.goAutomaticReceiveCallback,
+    required this.goSettingPravicyScreen,
+    required this.goSettingAgreementScreen,
+    required this.goLoginPage,
+    required this.goCloudScreenPage,
+    required this.goPayScreen,
+    required this.goHotkeyScreen,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -92,18 +93,17 @@ class SettingsScreenState extends State<SettingsScreen> {
   var isStartUpEnabled = false;
   ValueNotifier<String> version = ValueNotifier('');
   String _title = '注册/登录 >';
-  String? _loggedInEmail; 
+  String? _loggedInEmail;
 
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus(); 
+    _checkLoginStatus();
     deviceNameSubscription =
         DeviceProfileRepo.instance.deviceNameBroadcast.stream.listen((event) {
       setState(() {
         deviceName = event;
       });
-   
     });
 
     if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
@@ -112,18 +112,18 @@ class SettingsScreenState extends State<SettingsScreen> {
           isStartUpEnabled = value;
         });
       });
-    PackageInfo.fromPlatform().then((packageInfo) {
-      version.value = packageInfo.version;
-    });
-  }
+      PackageInfo.fromPlatform().then((packageInfo) {
+        version.value = packageInfo.version;
+      });
+    }
   }
 
   Future<void> _checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _loggedInEmail = prefs.getString('loggedInEmail');
-      if (_loggedInEmail != null){
-         _title = '我的账户 >';
+      if (_loggedInEmail != null) {
+        _title = '我的账户 >';
       }
     });
   }
@@ -133,8 +133,6 @@ class SettingsScreenState extends State<SettingsScreen> {
     deviceNameSubscription?.cancel();
     super.dispose();
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -154,30 +152,26 @@ class SettingsScreenState extends State<SettingsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
-
-        //  Padding(
-        //    padding: const EdgeInsets.only(left: 16, right: 16，bottom:10),
-          ///  child: GestureDetector(
-          //    onTap:  widget.goLoginPage,
-          //    child: Text(
+            //  Padding(
+            //    padding: const EdgeInsets.only(left: 16, right: 16，bottom:10),
+            ///  child: GestureDetector(
+            //    onTap:  widget.goLoginPage,
+            //    child: Text(
             //    _title,
-          //      style: TextStyle(
-          //        fontSize: 13.5,
-         //         color: Theme.of(context).flixColors.text.secondary,
-         //       ),
-        //        textAlign: TextAlign.left,
-        //      ),
-        //    ),
-        //  ),
+            //      style: TextStyle(
+            //        fontSize: 13.5,
+            //         color: Theme.of(context).flixColors.text.secondary,
+            //       ),
+            //        textAlign: TextAlign.left,
+            //      ),
+            //    ),
+            //  ),
 
-
-            
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16,top: 10),
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 10),
               child: ClickableItem(
                   topRadius: true,
-                 // bottomRadius: !showAppLaunchConfig,
+                  // bottomRadius: !showAppLaunchConfig,
                   bottomRadius: false,
                   label: S.of(context).setting_device_name,
                   des: deviceName,
@@ -195,17 +189,18 @@ class SettingsScreenState extends State<SettingsScreen> {
                   }),
             ),
 
-  Container(
-                      color: Theme.of(context).flixColors.background.primary, 
-                      margin: const EdgeInsets.only(left: 16, right: 16), 
-                      child: Container(
-                        height: 0.5, 
-                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
-                        margin: const EdgeInsets.only(left: 16), 
-                      ),
-                    ),
+            Container(
+              color: Theme.of(context).flixColors.background.primary,
+              margin: const EdgeInsets.only(left: 16, right: 16),
+              child: Container(
+                height: 0.5,
+                color:
+                    Theme.of(context).flixColors.text.tertiary.withOpacity(0.1),
+                margin: const EdgeInsets.only(left: 16),
+              ),
+            ),
 
-               Visibility(
+            Visibility(
               visible: showCustomSaveDir,
               child: Padding(
                 padding: const EdgeInsets.only(left: 16, right: 16),
@@ -219,7 +214,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                         des: snapshot.data,
                         topRadius: false,
                         //bottomRadius: !showAutoSaveMedia,
-                        bottomRadius:false,
+                        bottomRadius: false,
                         onClick: () async {
                           if (!(await checkStoragePermission(context,
                               manageExternalStorage: true))) {
@@ -253,34 +248,37 @@ class SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-    Visibility(
+            Visibility(
               visible: showCustomSaveDir,
               child: Container(
-                      color: Theme.of(context).flixColors.background.primary, 
-                      margin: const EdgeInsets.only(left: 16, right: 16), 
-                      child: Container(
-                        height: 0.5, 
-                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
-                        margin: const EdgeInsets.only(left: 16), 
-                      ),
-                    ),  ),
+                color: Theme.of(context).flixColors.background.primary,
+                margin: const EdgeInsets.only(left: 16, right: 16),
+                child: Container(
+                  height: 0.5,
+                  color: Theme.of(context)
+                      .flixColors
+                      .text
+                      .tertiary
+                      .withOpacity(0.1),
+                  margin: const EdgeInsets.only(left: 16),
+                ),
+              ),
+            ),
 
-             Padding(
-                      padding:
-                          const EdgeInsets.only(left: 16, top: 0, right: 16),
-                      child: ValueListenableBuilder<String>(
-                        valueListenable: version,
-                        builder: (BuildContext context, String value,
-                            Widget? child) {
-                          return ClickableItem(
-                              label: '自动接收',
-                              iconPath: 'assets/images/automaticreceive.svg',
-                              bottomRadius: true,
-                              topRadius: false,
-                              onClick: widget.goAutomaticReceiveCallback);
-                        },
-                      ),
-                    ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, top: 0, right: 16),
+              child: ValueListenableBuilder<String>(
+                valueListenable: version,
+                builder: (BuildContext context, String value, Widget? child) {
+                  return ClickableItem(
+                      label: '自动接收',
+                      iconPath: 'assets/images/automaticreceive.svg',
+                      bottomRadius: true,
+                      topRadius: false,
+                      onClick: widget.goAutomaticReceiveCallback);
+                },
+              ),
+            ),
 
             // 高度1pt的分割线
             // Visibility(
@@ -310,7 +308,7 @@ class SettingsScreenState extends State<SettingsScreen> {
             // ),
 
             // 高度1pt的分割线
-           
+
             Visibility(
                 visible: false,
                 child: Column(children: [
@@ -370,192 +368,167 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ])),
 
-           
-          
             // 高度1pt的分割线
-           
-          
+
             // 高度1pt的分割线
-         
-         //   Visibility(
-          //    visible: showAutoSaveMedia,
-          //    child: Container(
-          //      margin: const EdgeInsets.only(left: 14),
-          //      height: 0.5,
-          //      color: const Color.fromRGBO(0, 0, 0, 0.08),
-          //    ),
-          //  ),
 
-          
+            //   Visibility(
+            //    visible: showAutoSaveMedia,
+            //    child: Container(
+            //      margin: const EdgeInsets.only(left: 14),
+            //      height: 0.5,
+            //      color: const Color.fromRGBO(0, 0, 0, 0.08),
+            //    ),
+            //  ),
 
-          
+            Padding(
+              padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
+              child: ValueListenableBuilder<String>(
+                valueListenable: version,
+                builder: (BuildContext context, String value, Widget? child) {
+                  return ClickableItem(
+                      label: '通用',
+                      iconPath: 'assets/images/general.svg',
+                      bottomRadius: false,
+                      onClick: widget.goGeneralCallback);
+                },
+              ),
+            ),
 
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(left: 16, top: 16, right: 16),
-                      child: ValueListenableBuilder<String>(
-                        valueListenable: version,
-                        builder: (BuildContext context, String value,
-                            Widget? child) {
-                          return ClickableItem(
-                              label: '通用',
-                              iconPath: 'assets/images/general.svg',
-                              bottomRadius: false,
-                              onClick: widget.goGeneralCallback);
-                        },
-                      ),
-                    ),
+            Container(
+              color: Theme.of(context).flixColors.background.primary,
+              margin: const EdgeInsets.only(left: 16, right: 16),
+              child: Container(
+                height: 0.5,
+                color:
+                    Theme.of(context).flixColors.text.tertiary.withOpacity(0.1),
+                margin: const EdgeInsets.only(left: 16),
+              ),
+            ),
 
-                    Container(
-                      color: Theme.of(context).flixColors.background.primary, 
-                      margin: const EdgeInsets.only(left: 16, right: 16), 
-                      child: Container(
-                        height: 0.5, 
-                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
-                        margin: const EdgeInsets.only(left: 16), 
-                      ),
-                    ),
-
-  Visibility(
+            Visibility(
               visible: showHotkey,
               child: Padding(
-                      padding:
-                          const EdgeInsets.only(left: 16, top: 0, right: 16),
-                      child: ValueListenableBuilder<String>(
-                        valueListenable: version,
-                        builder: (BuildContext context, String value,
-                            Widget? child) {
-                          return ClickableItem(
-                              label: '快捷键',
-                              iconPath: 'assets/images/hotkey.svg',
-                              topRadius: false,
-                              bottomRadius: false,
-                              onClick: widget.goHotkeyScreen);
-                        },
-                      ),
-                    ),),
+                padding: const EdgeInsets.only(left: 16, top: 0, right: 16),
+                child: ValueListenableBuilder<String>(
+                  valueListenable: version,
+                  builder: (BuildContext context, String value, Widget? child) {
+                    return ClickableItem(
+                        label: '快捷键',
+                        iconPath: 'assets/images/hotkey.svg',
+                        topRadius: false,
+                        bottomRadius: false,
+                        onClick: widget.goHotkeyScreen);
+                  },
+                ),
+              ),
+            ),
 
-
-
-                      Visibility(
+            Visibility(
               visible: showHotkey,
               child: Container(
-                      color: Theme.of(context).flixColors.background.primary, 
-                      margin: const EdgeInsets.only(left: 16, right: 16), 
-                      child: Container(
-                        height: 0.5, 
-                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
-                        margin: const EdgeInsets.only(left: 16), 
-                      ),
-                    ),),
+                color: Theme.of(context).flixColors.background.primary,
+                margin: const EdgeInsets.only(left: 16, right: 16),
+                child: Container(
+                  height: 0.5,
+                  color: Theme.of(context)
+                      .flixColors
+                      .text
+                      .tertiary
+                      .withOpacity(0.1),
+                  margin: const EdgeInsets.only(left: 16),
+                ),
+              ),
+            ),
 
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(left: 16, top: 0, right: 16),
-                      child: ValueListenableBuilder<String>(
-                        valueListenable: version,
-                        builder: (BuildContext context, String value,
-                            Widget? child) {
-                          return ClickableItem(
-                              label: '扩展功能',
-                              iconPath: 'assets/images/function.svg',
-                              topRadius: false,
-                              bottomRadius: true,
-                              onClick: widget.goSettingFunctionCallback);
-                        },
-                      ),
-                    ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, top: 0, right: 16),
+              child: ValueListenableBuilder<String>(
+                valueListenable: version,
+                builder: (BuildContext context, String value, Widget? child) {
+                  return ClickableItem(
+                      label: '扩展功能',
+                      iconPath: 'assets/images/function.svg',
+                      topRadius: false,
+                      bottomRadius: true,
+                      onClick: widget.goSettingFunctionCallback);
+                },
+              ),
+            ),
 
+            Padding(
+              padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
+              child: ValueListenableBuilder<String>(
+                valueListenable: version,
+                builder: (BuildContext context, String value, Widget? child) {
+                  return ClickableItem(
+                      label: '帮助',
+                      iconPath: 'assets/images/qa.svg',
+                      bottomRadius: false,
+                      onClick: widget.goQACallback);
+                },
+              ),
+            ),
 
+            Container(
+              color: Theme.of(context).flixColors.background.primary,
+              margin: const EdgeInsets.only(left: 16, right: 16),
+              child: Container(
+                height: 0.5,
+                color:
+                    Theme.of(context).flixColors.text.tertiary.withOpacity(0.1),
+                margin: const EdgeInsets.only(left: 16),
+              ),
+            ),
 
-                    
+            Visibility(
+              visible: !Platform.isIOS,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, top: 0, right: 16),
+                child: ValueListenableBuilder<String>(
+                  valueListenable: version,
+                  builder: (BuildContext context, String value, Widget? child) {
+                    return ClickableItem(
+                        label: S.of(context).help_donate,
+                        iconPath: 'assets/images/donate.svg',
+                        bottomRadius: false,
+                        topRadius: false,
+                        onClick: widget.goDonateCallback);
+                  },
+                ),
+              ),
+            ),
 
+            Visibility(
+              visible: !Platform.isIOS,
+              child: Container(
+                color: Theme.of(context).flixColors.background.primary,
+                margin: const EdgeInsets.only(left: 16, right: 16),
+                child: Container(
+                  height: 0.5,
+                  color: Theme.of(context)
+                      .flixColors
+                      .text
+                      .tertiary
+                      .withOpacity(0.1),
+                  margin: const EdgeInsets.only(left: 16),
+                ),
+              ),
+            ),
 
-
-
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(left: 16, top: 16, right: 16),
-                      child: ValueListenableBuilder<String>(
-                        valueListenable: version,
-                        builder: (BuildContext context, String value,
-                            Widget? child) {
-                          return ClickableItem(
-                              label: '帮助',
-                              iconPath: 'assets/images/qa.svg',
-                              bottomRadius: false,
-                              onClick: widget.goQACallback);
-                        },
-                      ),
-                    ),
-
-                           Container(
-                      color: Theme.of(context).flixColors.background.primary, 
-                      margin: const EdgeInsets.only(left: 16, right: 16), 
-                      child: Container(
-                        height: 0.5, 
-                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
-                        margin: const EdgeInsets.only(left: 16), 
-                      ),
-                    ),
-
-
-                    Visibility(
-                      visible: !Platform.isIOS,
-                      child: Padding(
-                        padding:
-                            const EdgeInsets.only(left: 16, top: 0, right: 16),
-                        child: ValueListenableBuilder<String>(
-                          valueListenable: version,
-                          builder: (BuildContext context, String value,
-                              Widget? child) {
-                            return ClickableItem(
-                                label: S.of(context).help_donate,
-                                iconPath: 'assets/images/donate.svg',
-                                bottomRadius: false,
-                                topRadius: false,
-                                onClick: widget.goDonateCallback);
-                          },
-                        ),
-                      ),
-                   ),
-
-
-         Visibility(
-                      visible: !Platform.isIOS,
-                      child: Container(
-                      color: Theme.of(context).flixColors.background.primary, 
-                      margin: const EdgeInsets.only(left: 16, right: 16), 
-                      child: Container(
-                        height: 0.5, 
-                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
-                        margin: const EdgeInsets.only(left: 16), 
-                      ),
-                    ), ),
-                  
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16,
-                          right: 16,
-                          bottom: 16,
-                          top:  0),
-                      child: ClickableItem(
-                          label: S.of(context).help_recommend,
-                          topRadius: Platform.isIOS,
-                          iconPath: 'assets/images/suggest.svg',
-                          onClick: () {
-                            showCupertinoModalPopup(
-                                context: context,
-                                builder: (BuildContext context) =>
-                                    FlixShareBottomSheet(context));
-                          })),
-
-
-                 
-                  
-                  
-
-           
+            Padding(
+                padding: const EdgeInsets.only(
+                    left: 16, right: 16, bottom: 16, top: 0),
+                child: ClickableItem(
+                    label: S.of(context).help_recommend,
+                    topRadius: Platform.isIOS,
+                    iconPath: 'assets/images/suggest.svg',
+                    onClick: () {
+                      showCupertinoModalPopup(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              FlixShareBottomSheet(context));
+                    })),
 
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 0, right: 16),
@@ -568,21 +541,21 @@ class SettingsScreenState extends State<SettingsScreen> {
                     onClick: widget.goVersionScreen,
                     iconPath: 'assets/images/about_us.svg',
                     bottomRadius: Platform.isIOS,
-                    
                   );
                 },
               ),
             ),
 
-                   Container(
-                      color: Theme.of(context).flixColors.background.primary, 
-                      margin: const EdgeInsets.only(left: 16, right: 16), 
-                      child: Container(
-                        height: 0.5, 
-                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
-                        margin: const EdgeInsets.only(left: 16), 
-                      ),
-                    ),
+            Container(
+              color: Theme.of(context).flixColors.background.primary,
+              margin: const EdgeInsets.only(left: 16, right: 16),
+              child: Container(
+                height: 0.5,
+                color:
+                    Theme.of(context).flixColors.text.tertiary.withOpacity(0.1),
+                margin: const EdgeInsets.only(left: 16),
+              ),
+            ),
 
             StreamBuilder<String?>(
               initialData: VersionChecker.newestVersion,
@@ -618,9 +591,9 @@ class SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  
                   Padding(
-                    padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
+                    padding:
+                        const EdgeInsets.only(left: 16, top: 16, right: 16),
                     child: ClickableItem(
                         label: '日志',
                         bottomRadius: false,
@@ -633,27 +606,27 @@ class SettingsScreenState extends State<SettingsScreen> {
                               ));
                         }),
                   ),
-
-
-       Container(
-                      color: Theme.of(context).flixColors.background.primary, 
-                      margin: const EdgeInsets.only(left: 16, right: 16), 
-                      child: Container(
-                        height: 0.5, 
-                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
-                        margin: const EdgeInsets.only(left: 16), 
-                      ),
+                  Container(
+                    color: Theme.of(context).flixColors.background.primary,
+                    margin: const EdgeInsets.only(left: 16, right: 16),
+                    child: Container(
+                      height: 0.5,
+                      color: Theme.of(context)
+                          .flixColors
+                          .text
+                          .tertiary
+                          .withOpacity(0.1),
+                      margin: const EdgeInsets.only(left: 16),
                     ),
-
-
-                   Padding(
+                  ),
+                  Padding(
                     padding:
                         const EdgeInsets.only(left: 16, right: 16, bottom: 0),
                     child: ClickableItem(
                         label: '语言',
                         tail: Localizations.localeOf(context).toString(),
                         topRadius: false,
-                        bottomRadius:false,
+                        bottomRadius: false,
                         onClick: () {
                           showCupertinoModalPopup(
                               context: context,
@@ -662,48 +635,66 @@ class SettingsScreenState extends State<SettingsScreen> {
                               });
                         }),
                   ),
-
-       Container(
-                      color: Theme.of(context).flixColors.background.primary, 
-                      margin: const EdgeInsets.only(left: 16, right: 16), 
-                      child: Container(
-                        height: 0.5, 
-                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
-                        margin: const EdgeInsets.only(left: 16), 
-                      ),
-                    ),
-
-
-                Padding(
+                  Padding(
                     padding:
-                        const EdgeInsets.only(left: 16, right: 16, ),
+                    const EdgeInsets.only(left: 16, right: 16, bottom: 0),
+                    child: ClickableItem(
+                        label: '客户端信息',
+                        topRadius: false,
+                        bottomRadius: false,
+                        onClick: () {
+                          Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                builder: (context) =>
+                                    const ClientInfoPage(),
+                              ));
+                        }),
+                  ),
+                  Container(
+                    color: Theme.of(context).flixColors.background.primary,
+                    margin: const EdgeInsets.only(left: 16, right: 16),
+                    child: Container(
+                      height: 0.5,
+                      color: Theme.of(context)
+                          .flixColors
+                          .text
+                          .tertiary
+                          .withOpacity(0.1),
+                      margin: const EdgeInsets.only(left: 16),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                    ),
                     child: ClickableItem(
                         label: '账号系统',
-                       topRadius: false,
-                        bottomRadius:false,
-                       onClick: widget.goLoginPage),
-                 ),
-                      
-
-       Container(
-                      color: Theme.of(context).flixColors.background.primary, 
-                      margin: const EdgeInsets.only(left: 16, right: 16), 
-                      child: Container(
-                        height: 0.5, 
-                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
-                        margin: const EdgeInsets.only(left: 16), 
-                      ),
+                        topRadius: false,
+                        bottomRadius: false,
+                        onClick: widget.goLoginPage),
+                  ),
+                  Container(
+                    color: Theme.of(context).flixColors.background.primary,
+                    margin: const EdgeInsets.only(left: 16, right: 16),
+                    child: Container(
+                      height: 0.5,
+                      color: Theme.of(context)
+                          .flixColors
+                          .text
+                          .tertiary
+                          .withOpacity(0.1),
+                      margin: const EdgeInsets.only(left: 16),
                     ),
-
+                  ),
                   Padding(
-                        padding: const EdgeInsets.only(left: 16, right: 16),
-                        child: ClickableItem(
-                          label: '云同步',
-                          topRadius: false,
-
-                         onClick: widget.goCloudScreenPage
-                        ),
-                      ),
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    child: ClickableItem(
+                        label: '云同步',
+                        topRadius: false,
+                        onClick: widget.goCloudScreenPage),
+                  ),
                 ],
               ),
             ),
@@ -715,7 +706,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(
-                        left: 16, top:20, right: 16, bottom: 22),
+                        left: 16, top: 20, right: 16, bottom: 22),
                     child: ClickActionItem(
                         label: S.of(context).setting_exit,
                         dangerous: true,
@@ -734,39 +725,33 @@ class SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-
-
             Padding(
-              padding: const EdgeInsets.only(left: 10, top: 0, right: 16, bottom: 36),
-              child: Center( 
+              padding: const EdgeInsets.only(
+                  left: 10, top: 0, right: 16, bottom: 36),
+              child: Center(
                 child: Row(
-                  mainAxisSize: MainAxisSize.min, 
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween, 
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                      onTap:  
-                      widget.goSettingAgreementScreen
-                      ,
+                      onTap: widget.goSettingAgreementScreen,
                       child: Text(
-                        '用户协议', 
+                        '用户协议',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Theme.of(context).flixColors.text.secondary, 
+                          color: Theme.of(context).flixColors.text.secondary,
                         ),
                       ),
                     ),
-                  
                     Text(
-                        '  |  ',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Theme.of(context).flixColors.text.secondary, 
-                        ),
+                      '  |  ',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).flixColors.text.secondary,
                       ),
+                    ),
                     GestureDetector(
-                      onTap:  
-                      widget.goSettingPravicyScreen
-                      ,
+                      onTap: widget.goSettingPravicyScreen,
                       child: Text(
                         '隐私政策',
                         style: TextStyle(
@@ -778,7 +763,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ],
                 ),
               ),
-            ), 
+            ),
           ],
         ),
       ),
@@ -798,7 +783,8 @@ class SettingsScreenState extends State<SettingsScreen> {
           );
         });
   }
-    String trimMultilineString(String input) {
+
+  String trimMultilineString(String input) {
     // 分割成行
     List<String> lines = input.split('\n');
 
