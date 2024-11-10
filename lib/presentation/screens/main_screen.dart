@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
@@ -29,10 +30,12 @@ import 'package:flix/presentation/screens/settings/agreement.dart';
 import 'package:flix/presentation/screens/settings/cross_device_clipboard_screen.dart';
 import 'package:flix/presentation/screens/settings/function.dart';
 import 'package:flix/presentation/screens/settings/general.dart';
+import 'package:flix/presentation/screens/settings/hotkey.dart';
 import 'package:flix/presentation/screens/settings/pravicy.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/flixtitlebar.dart';
+import 'package:flix/presentation/widgets/hotkeyprovider.dart';
 import 'package:flix/presentation/widgets/settings/automatic_receive.dart';
 import 'package:flix/setting/setting_provider.dart';
 import 'package:flix/theme/theme_extensions.dart';
@@ -43,9 +46,12 @@ import 'package:flix/utils/meida/media_utils.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:share_handler/share_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
 class MainScreen extends StatefulWidget {
@@ -60,6 +66,64 @@ class MainScreen extends StatefulWidget {
 }
 
 class MainScreenState extends State<MainScreen> {
+  HotKey? _registeredHotKey;
+
+  @override
+  void initState() {
+    super.initState();
+    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      _initHotKey();
+    }
+
+    
+    Provider.of<HotKeyProvider>(context, listen: false).addListener(_onHotKeyUpdated);
+  }
+
+  
+  Future<void> _initHotKey() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hotKeyProvider = Provider.of<HotKeyProvider>(context, listen: false);
+
+    final hotKeyString = prefs.getString('hotkey');
+    if (hotKeyString != null) {
+      final hotKeyMap = jsonDecode(hotKeyString) as Map<String, dynamic>;
+      hotKeyProvider.updateHotKey(HotKey.fromJson(hotKeyMap));
+    }
+    _registerHotKey(hotKeyProvider.hotKey);
+  }
+
+ 
+  Future<void> _registerHotKey(HotKey hotKey) async {
+    if (_registeredHotKey != null) {
+      await hotKeyManager.unregister(_registeredHotKey!); 
+    }
+
+    await hotKeyManager.register(
+      hotKey,
+      keyDownHandler: (hotKey) async {
+        if (await windowManager.isVisible()) {
+          await windowManager.hide();
+        } else {
+          await windowManager.show();
+        }
+      },
+    );
+    _registeredHotKey = hotKey;
+  }
+
+ 
+  void _onHotKeyUpdated() {
+    final hotKeyProvider = Provider.of<HotKeyProvider>(context, listen: false);
+    _registerHotKey(hotKeyProvider.hotKey);
+  }
+
+  @override
+  void dispose() {
+    hotKeyManager.unregister(_registeredHotKey!);
+    Provider.of<HotKeyProvider>(context, listen: false).removeListener(_onHotKeyUpdated);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -542,7 +606,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
             Navigator.push(
                 context,
                 CupertinoPageRoute(
-                    builder: (context) => SettingPravicyScreen(
+                    builder: (context) => const SettingPravicyScreen(
                           showBack: true,
                         )));
           },
@@ -550,7 +614,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
             Navigator.push(
                 context,
                 CupertinoPageRoute(
-                    builder: (context) => SettingAgreementScreen(
+                    builder: (context) => const SettingAgreementScreen(
                           showBack: true,
                         )));
           },
@@ -576,7 +640,16 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 CupertinoPageRoute(
                     builder: (context) => PayScreen(
                         //  showBack: true,
-                        ))); },
+                        ))); }, 
+                        
+                        
+                        
+                        goHotkeyScreen: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => HotkeyScreen(
+                         showBack: true,
+                        )));  },
         );
 
       default:
@@ -829,7 +902,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               thirdWidget = PayScreen(
                 //showBack: false,
               );
-            }); },
+            }); }, goHotkeyScreen: () {setState(() {
+              thirdWidget = HotkeyScreen(
+                showBack: false,
+              );
+            });  },
         );
 
       default:

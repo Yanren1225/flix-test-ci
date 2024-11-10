@@ -47,7 +47,7 @@ class ClickableItem extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(13),
           child: Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -62,7 +62,7 @@ class ClickableItem extends StatelessWidget {
                       children: [
                         if (iconPath != null)
                           Padding(
-                            padding: const EdgeInsets.only(right: 8),
+                            padding: const EdgeInsets.only(right: 8,top: 1.5),
                             child: SvgPicture.asset(
                               iconPath!,
                               height: 20,
@@ -83,7 +83,7 @@ class ClickableItem extends StatelessWidget {
                     ),
                     if (des != null)
                       Padding(
-                        padding: const EdgeInsets.only(top: 4),
+                        padding: const EdgeInsets.only(top: 0.5),
                         child: Text(
                           des!,
                           style: TextStyle(
