@@ -230,10 +230,10 @@ class S {
     );
   }
 
-  /// `帮助`
+  /// `软件帮助`
   String get help_title {
     return Intl.message(
-      '帮助',
+      '软件帮助',
       name: 'help_title',
       desc: '',
       args: [],

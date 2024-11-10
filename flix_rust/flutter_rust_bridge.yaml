@@ -1,0 +1,3 @@
+rust_input: crate::image_compress
+rust_root: rust/
+dart_output: lib/src/rust

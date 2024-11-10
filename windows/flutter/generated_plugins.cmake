@@ -11,6 +11,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_windows
   firebase_core
   flutter_desktop_sleep
+  hotkey_manager_windows
   local_notifier
   open_dir_windows
   pasteboard
@@ -27,7 +28,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
-  simple_native_image_compress
+  flix_rust
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

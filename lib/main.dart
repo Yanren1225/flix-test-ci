@@ -52,6 +52,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:flix_rust/flix_rust.dart';
 
 import 'domain/foreground_service/flix_foreground_service.dart';
 import 'firebase_options.dart';
@@ -86,6 +87,7 @@ Future<void> main(List<String> arguments) async {
     _initAppLifecycle();
     _initSystemChrome();
     _initUriNavigator();
+    await RustLib.init();
     runApp(const WithForegroundTask(child: MyApp()));
     SharedPreferences prefs = await SharedPreferences.getInstance();
     isFirstRun = prefs.getBool('isFirstRun') ?? true;

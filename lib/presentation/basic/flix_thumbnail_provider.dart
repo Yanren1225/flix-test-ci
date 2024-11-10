@@ -7,8 +7,8 @@ import 'package:flix/utils/file/file_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:simple_native_image_compress/simple_native_image_compress.dart' as native_compress;
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import 'package:flix_rust/image_compress.dart' as native_compress;
 
 final _providerLocks = <FlixThumbnailProvider, Completer<Codec>>{};
 final photoManagerPlugin = PhotoManagerPlugin();
@@ -22,7 +22,6 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
   final int preferWidth;
   final int preferHeight;
 
-  static final compress = native_compress.SimpleNativeImageCompress();
 
   FlixThumbnailProvider(
       {required this.id,
@@ -67,13 +66,13 @@ class FlixThumbnailProvider extends ImageProvider<FlixThumbnailProvider> {
 
   Future<XFile?> _compressImage(FlixThumbnailProvider key) async {
     if (Platform.isWindows || Platform.isLinux) {
-      final bytes = await compress.contain(
-          filePath: key.resourcePath!,
-          compressFormat: native_compress.CompressFormat.Jpeg,
+      final bytes = await native_compress.contain(
+          pathStr: key.resourcePath!,
+          compressFormat: native_compress.CompressFormat.jpeg,
           quality: 90,
           maxWidth: key.preferWidth,
           maxHeight: key.preferHeight,
-          samplingFilter: native_compress.FilterType.Lanczos3);
+          samplingFilter: native_compress.FilterType.lanczos3);
 
       final thumbnailFile = File(await _getThumbnailCachePath(key));
       if (!(await thumbnailFile.exists())) {
