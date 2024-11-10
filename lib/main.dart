@@ -31,6 +31,7 @@ import 'package:flix/network/discover/discover_manager.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/intro_screen.dart';
 import 'package:flix/presentation/screens/main_screen.dart';
+import 'package:flix/presentation/widgets/hotkeyprovider.dart';
 import 'package:flix/setting/setting_provider.dart';
 import 'package:flix/theme/theme.dart';
 import 'package:flix/theme/theme_extensions.dart';
@@ -43,6 +44,7 @@ import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:modals/modals.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -87,6 +89,8 @@ Future<void> main(List<String> arguments) async {
     runApp(const WithForegroundTask(child: MyApp()));
     SharedPreferences prefs = await SharedPreferences.getInstance();
     isFirstRun = prefs.getBool('isFirstRun') ?? true;
+    // For hot reload, `unregisterAll()` needs to be called.
+    await hotKeyManager.unregisterAll();
   } catch (e, s) {
     talker.error('launch error', e, s);
 
@@ -357,6 +361,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
               create: (_) => MultiCastClientProvider()),
           ChangeNotifierProvider(create: (context) => AndropContext()),
           ChangeNotifierProvider(create: (_) => BackProvider()),
+          ChangeNotifierProvider(create: (_) => HotKeyProvider()),
         ],
         child: StreamBuilder<String>(
             initialData: SettingsRepo.instance.darkModeTag,

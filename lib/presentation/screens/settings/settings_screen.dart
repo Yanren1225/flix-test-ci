@@ -58,6 +58,7 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback goLoginPage;
   final VoidCallback goCloudScreenPage;
   final VoidCallback goPayScreen;
+  final VoidCallback goHotkeyScreen;
 
   const SettingsScreen(
       {super.key,
@@ -75,6 +76,7 @@ class SettingsScreen extends StatefulWidget {
       required this.goLoginPage,
       required this.goCloudScreenPage,
       required this.goPayScreen,
+       required this.goHotkeyScreen,
       });
 
   @override
@@ -139,6 +141,7 @@ class SettingsScreenState extends State<SettingsScreen> {
     final bool showAutoSaveMedia = Platform.isAndroid;
     final bool showCustomSaveDir = !Platform.isIOS;
     final bool showAppLaunchConfig = isDesktop();
+    final bool showHotkey = isDesktop();
 
     return CupertinoNavigationScaffold(
       title: S.of(context).setting_title,
@@ -413,7 +416,38 @@ class SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
 
+  Visibility(
+              visible: showHotkey,
+              child: Padding(
+                      padding:
+                          const EdgeInsets.only(left: 16, top: 0, right: 16),
+                      child: ValueListenableBuilder<String>(
+                        valueListenable: version,
+                        builder: (BuildContext context, String value,
+                            Widget? child) {
+                          return ClickableItem(
+                              label: '快捷键',
+                              iconPath: 'assets/images/hotkey.svg',
+                              topRadius: false,
+                              bottomRadius: false,
+                              onClick: widget.goHotkeyScreen);
+                        },
+                      ),
+                    ),),
 
+
+
+                      Visibility(
+              visible: showHotkey,
+              child: Container(
+                      color: Theme.of(context).flixColors.background.primary, 
+                      margin: const EdgeInsets.only(left: 16, right: 16), 
+                      child: Container(
+                        height: 0.5, 
+                        color: Theme.of(context).flixColors.text.tertiary.withOpacity(0.1), 
+                        margin: const EdgeInsets.only(left: 16), 
+                      ),
+                    ),),
 
                     Padding(
                       padding:
@@ -431,6 +465,10 @@ class SettingsScreenState extends State<SettingsScreen> {
                         },
                       ),
                     ),
+
+
+
+                    
 
 
 
