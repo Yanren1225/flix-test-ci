@@ -621,11 +621,12 @@ packages:
   figma_squircle:
     dependency: "direct main"
     description:
-      name: figma_squircle
-      sha256: "790b91a9505e90d246f6efe2fa065ff7fffe658c7b44fe9b5b20c7b0ad3818c0"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.5.3"
+      path: "."
+      ref: HEAD
+      resolved-ref: d4699310b1c0b42583781aa4e83f1c38b1b233f6
+      url: "https://github.com/flix-pro/figma_squircle.git"
+    source: git
+    version: "0.5.6"
   file:
     dependency: transitive
     description:
