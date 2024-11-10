@@ -47,14 +47,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "bubbles_accept":
             MessageLookupByLibrary.simpleMessage("Click to receive"),
         "bubbles_click_to_accept":
-            MessageLookupByLibrary.simpleMessage("Click to confirm receipt"),
+            MessageLookupByLibrary.simpleMessage("Click to confirm receiving"),
         "bubbles_copied":
-            MessageLookupByLibrary.simpleMessage("Copy to clipboard"),
+            MessageLookupByLibrary.simpleMessage("Copied to clipboard"),
         "bubbles_dir": MessageLookupByLibrary.simpleMessage("Folder contents"),
         "bubbles_dir_load_error": MessageLookupByLibrary.simpleMessage(
             "Loading error, please try again later~"),
-        "bubbles_dir_no_data":
-            MessageLookupByLibrary.simpleMessage("No data available"),
+        "bubbles_dir_no_data": MessageLookupByLibrary.simpleMessage("No data"),
         "bubbles_downloaded":
             MessageLookupByLibrary.simpleMessage("Downloaded"),
         "bubbles_menu_copy": MessageLookupByLibrary.simpleMessage("Copy"),
@@ -74,10 +73,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Receiving failed"),
         "bubbles_send_cancel":
             MessageLookupByLibrary.simpleMessage("Cancelled"),
-        "bubbles_send_done":
-            MessageLookupByLibrary.simpleMessage("has been sent"),
-        "bubbles_send_failed":
-            MessageLookupByLibrary.simpleMessage("Sending exception"),
+        "bubbles_send_done": MessageLookupByLibrary.simpleMessage("Done"),
+        "bubbles_send_failed": MessageLookupByLibrary.simpleMessage("Error"),
         "bubbles_toast_re_receive":
             MessageLookupByLibrary.simpleMessage("Re receive files"),
         "bubbles_toast_resend":
@@ -94,7 +91,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "button_resend": MessageLookupByLibrary.simpleMessage("Resend"),
         "device_ap_connected":
             MessageLookupByLibrary.simpleMessage("Connected already"),
-        "device_delete": MessageLookupByLibrary.simpleMessage("delete"),
+        "device_delete": MessageLookupByLibrary.simpleMessage("Delete"),
         "device_name_input":
             MessageLookupByLibrary.simpleMessage("Enter the local name"),
         "device_name_input_action":
@@ -112,10 +109,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "dialog_confirm_send_subtitle": m2,
         "dialog_confirm_send_title":
             MessageLookupByLibrary.simpleMessage("Send files"),
-        "dialog_exit_button": MessageLookupByLibrary.simpleMessage("Exit"),
-        "dialog_exit_subtitle": MessageLookupByLibrary.simpleMessage(
-            "After exiting, it will not be detected by nearby devices."),
-        "dialog_exit_title": MessageLookupByLibrary.simpleMessage("Exit"),
         "dialog_new_version_button":
             MessageLookupByLibrary.simpleMessage("Upgrade"),
         "dialog_new_version_subtitle": MessageLookupByLibrary.simpleMessage(
@@ -143,8 +136,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "This is Flix, a fast and simple multi terminal transmission software. Hope you like it 😆"),
         "help_dev_team": MessageLookupByLibrary.simpleMessage(
             "Flix Develop Team\n------\n✅Design：\nlemo\nkailun\n\n✅Develop：\nMovenLecker\nEava_wu\n炎忍\nMashiro.\nGnayoah\n张建\n广靓\nChengi\nxkeyC\n小灰灰\n何言\ngggxbbb\n一季或微凉\n暮间雾\nyuzh"),
-        "help_donate":
-            MessageLookupByLibrary.simpleMessage("❤️ Donate to support us"),
+        "help_donate": MessageLookupByLibrary.simpleMessage("Sponsor"),
         "help_donate_alipay": MessageLookupByLibrary.simpleMessage("Alipay"),
         "help_donate_go": m4,
         "help_donate_title": MessageLookupByLibrary.simpleMessage("Sponsor"),
@@ -172,7 +164,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "help_qq_2": MessageLookupByLibrary.simpleMessage("\nQQ Group 2:\n"),
         "help_qq_3": MessageLookupByLibrary.simpleMessage("\nQQ Group 3:\n"),
         "help_recommend":
-            MessageLookupByLibrary.simpleMessage("👍 Recommend to friends"),
+            MessageLookupByLibrary.simpleMessage("Recommend to friends"),
         "help_sponsor": MessageLookupByLibrary.simpleMessage(
             "Click me to sponsor this project"),
         "help_thanks": MessageLookupByLibrary.simpleMessage(
@@ -182,29 +174,29 @@ class MessageLookup extends MessageLookupByLibrary {
         "homepage_select_device":
             MessageLookupByLibrary.simpleMessage("Please select a device"),
         "hotspot_connect_failed":
-            MessageLookupByLibrary.simpleMessage("Hotspot connection failed"),
+            MessageLookupByLibrary.simpleMessage("Hotspot connected failed"),
         "hotspot_connect_failed_action":
             MessageLookupByLibrary.simpleMessage("Retry"),
         "hotspot_connect_success": MessageLookupByLibrary.simpleMessage(
-            "Hotspot connection successful"),
+            "Hotspot connected successfully"),
         "hotspot_connect_success_action":
             MessageLookupByLibrary.simpleMessage("Return to transfer"),
         "hotspot_connecting":
             MessageLookupByLibrary.simpleMessage("Connecting to hotspot"),
         "hotspot_disabled":
-            MessageLookupByLibrary.simpleMessage("Hotspot has been closed"),
+            MessageLookupByLibrary.simpleMessage("Hotspot has been disabled"),
         "hotspot_disabled_action":
-            MessageLookupByLibrary.simpleMessage("Restart"),
+            MessageLookupByLibrary.simpleMessage("Enable"),
         "hotspot_enable_failed":
-            MessageLookupByLibrary.simpleMessage("Failed to activate hotspot"),
+            MessageLookupByLibrary.simpleMessage("Failed to enable hotspot"),
         "hotspot_enable_failed_action":
-            MessageLookupByLibrary.simpleMessage("Try again"),
+            MessageLookupByLibrary.simpleMessage("Retry"),
         "hotspot_enable_failed_tip": MessageLookupByLibrary.simpleMessage(
             "Turn off your system hotspot,\nTry again after reopening WiFi."),
         "hotspot_enabling":
             MessageLookupByLibrary.simpleMessage("Opening hotspot"),
-        "hotspot_get_ap_info_failed": MessageLookupByLibrary.simpleMessage(
-            "Failed to obtain hotspot information"),
+        "hotspot_get_ap_info_failed":
+            MessageLookupByLibrary.simpleMessage("Failed to get hotspot info"),
         "hotspot_get_ap_info_failed_action":
             MessageLookupByLibrary.simpleMessage("Retry"),
         "hotspot_info_password":
@@ -221,9 +213,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "hotspot_qrcode_tip": MessageLookupByLibrary.simpleMessage(
             "Open Flix and scan to quickly establish hotspot connections."),
         "hotspot_wifi_disabled":
-            MessageLookupByLibrary.simpleMessage("WiFi not turned on"),
+            MessageLookupByLibrary.simpleMessage("WiFi is disabled"),
         "hotspot_wifi_disabled_action":
-            MessageLookupByLibrary.simpleMessage("Open"),
+            MessageLookupByLibrary.simpleMessage("Enable"),
         "hotspot_wifi_initializing":
             MessageLookupByLibrary.simpleMessage("Initializing WiFi"),
         "intro_last": MessageLookupByLibrary.simpleMessage("Previous"),
@@ -265,7 +257,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "intro_wifi_1":
             MessageLookupByLibrary.simpleMessage("Connect to other devices"),
         "intro_wifi_2": MessageLookupByLibrary.simpleMessage(
-            "Place the devices in the same network environment, open Flix, and you will be able to discovered device."),
+            "Place your devices in the same network environment, open Flix, and you will be able to discover devices."),
         "menu_add_manually":
             MessageLookupByLibrary.simpleMessage("Manually add devices"),
         "menu_add_manually_input":
@@ -277,11 +269,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "navigation_config": MessageLookupByLibrary.simpleMessage("Configure"),
         "navigation_help": MessageLookupByLibrary.simpleMessage("Help"),
         "navigation_send": MessageLookupByLibrary.simpleMessage("Transfer"),
-        "net_ap_close": MessageLookupByLibrary.simpleMessage("close"),
-        "net_info": MessageLookupByLibrary.simpleMessage(
-            "Network connection information"),
+        "net_ap_close": MessageLookupByLibrary.simpleMessage("Disable"),
+        "net_info":
+            MessageLookupByLibrary.simpleMessage("Network connection info"),
         "net_toast_ap_close":
-            MessageLookupByLibrary.simpleMessage("Hotspot has been closed"),
+            MessageLookupByLibrary.simpleMessage("Hotspot has been disabled"),
         "paircode_add_IP": MessageLookupByLibrary.simpleMessage("IP"),
         "paircode_add_device":
             MessageLookupByLibrary.simpleMessage("Add device"),
@@ -305,18 +297,18 @@ class MessageLookup extends MessageLookupByLibrary {
             "Scan to add this device with Flix"),
         "paircode_toast_config_incorrect":
             MessageLookupByLibrary.simpleMessage("Incorrect IP or port"),
-        "permission_confirm": MessageLookupByLibrary.simpleMessage("confirm"),
+        "permission_confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
         "pick_one": MessageLookupByLibrary.simpleMessage("Select a device"),
         "qr_no_camera_permission":
             MessageLookupByLibrary.simpleMessage("No camera permission"),
         "qr_scan": MessageLookupByLibrary.simpleMessage("Scan"),
         "qr_scan_tip": MessageLookupByLibrary.simpleMessage(
             "Open the Flix QR code and scan to quickly establish a hotspot connection."),
-        "search": MessageLookupByLibrary.simpleMessage("search"),
+        "search": MessageLookupByLibrary.simpleMessage("Search"),
         "setting_accessibility":
             MessageLookupByLibrary.simpleMessage("Auxiliary functions"),
         "setting_accessibility_add_devices":
-            MessageLookupByLibrary.simpleMessage("Manually adding devices"),
+            MessageLookupByLibrary.simpleMessage("Add devices manually"),
         "setting_accessibility_add_devices_des":
             MessageLookupByLibrary.simpleMessage(
                 "Enter other device connection information to manually add devices"),
@@ -385,7 +377,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "setting_receive_auto":
             MessageLookupByLibrary.simpleMessage("Automatic receive"),
         "setting_receive_auto_des": MessageLookupByLibrary.simpleMessage(
-            "The received files will be automatically saved"),
+            "Received files will be automatically saved"),
         "setting_receive_folder":
             MessageLookupByLibrary.simpleMessage("File saving dictionary"),
         "setting_receive_to_album": MessageLookupByLibrary.simpleMessage(
@@ -401,23 +393,23 @@ class MessageLookup extends MessageLookupByLibrary {
         "share_flix_website": MessageLookupByLibrary.simpleMessage(
             "Website (click to copy): flix.center"),
         "toast_copied":
-            MessageLookupByLibrary.simpleMessage("Copy to clipboard"),
+            MessageLookupByLibrary.simpleMessage("Copied to clipboard"),
         "toast_msg_empty_folder": MessageLookupByLibrary.simpleMessage(
             "The folder is empty, send cancelled"),
         "tray_menu_display": MessageLookupByLibrary.simpleMessage("Show"),
         "tray_menu_exit": MessageLookupByLibrary.simpleMessage("Exit"),
         "tray_menu_hide": MessageLookupByLibrary.simpleMessage("Hide"),
         "widget_delete_msg_history":
-            MessageLookupByLibrary.simpleMessage("Delete message records"),
+            MessageLookupByLibrary.simpleMessage("Delete history messages"),
         "widget_delete_msg_history_action":
-            MessageLookupByLibrary.simpleMessage("delete"),
+            MessageLookupByLibrary.simpleMessage("Delete"),
         "widget_delete_msg_history_subtitle": MessageLookupByLibrary.simpleMessage(
             "If the file is being transferred, deleting the message will interrupt the transfer"),
         "widget_multiple_delete":
-            MessageLookupByLibrary.simpleMessage("delete"),
+            MessageLookupByLibrary.simpleMessage("Delete"),
         "widget_toast_prepare_sending": MessageLookupByLibrary.simpleMessage(
             "Preparing to send, please wait"),
         "widget_verification_action":
-            MessageLookupByLibrary.simpleMessage("complete")
+            MessageLookupByLibrary.simpleMessage("Done")
       };
 }

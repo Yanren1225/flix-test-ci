@@ -18,6 +18,7 @@ import firebase_crashlytics
 import flutter_desktop_sleep
 import flutter_image_compress_macos
 import flutter_local_notifications
+import hotkey_manager_macos
 import local_notifier
 import macos_secure_bookmarks
 import network_info_plus
@@ -52,6 +53,7 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   FlutterDesktopSleepPlugin.register(with: registry.registrar(forPlugin: "FlutterDesktopSleepPlugin"))
   FlutterImageCompressMacosPlugin.register(with: registry.registrar(forPlugin: "FlutterImageCompressMacosPlugin"))
   FlutterLocalNotificationsPlugin.register(with: registry.registrar(forPlugin: "FlutterLocalNotificationsPlugin"))
+  HotkeyManagerMacosPlugin.register(with: registry.registrar(forPlugin: "HotkeyManagerMacosPlugin"))
   LocalNotifierPlugin.register(with: registry.registrar(forPlugin: "LocalNotifierPlugin"))
   SecureBookmarksPlugin.register(with: registry.registrar(forPlugin: "SecureBookmarksPlugin"))
   NetworkInfoPlusPlugin.register(with: registry.registrar(forPlugin: "NetworkInfoPlusPlugin"))

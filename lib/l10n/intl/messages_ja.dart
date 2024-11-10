@@ -79,14 +79,13 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("保存に成功しました"),
         "bubbles_wait_for_confirm":
             MessageLookupByLibrary.simpleMessage("相手の確認待ち"),
-        "bubbles_wait_for_receive":
-            MessageLookupByLibrary.simpleMessage("受入保留中"),
+        "bubbles_wait_for_receive": MessageLookupByLibrary.simpleMessage("待機中"),
         "bubbles_yesterday": m1,
         "button_cancel_send": MessageLookupByLibrary.simpleMessage("送信をキャンセル"),
         "button_resend": MessageLookupByLibrary.simpleMessage("再送信"),
         "device_ap_connected": MessageLookupByLibrary.simpleMessage("接続済み"),
         "device_delete": MessageLookupByLibrary.simpleMessage("削除"),
-        "device_name_input": MessageLookupByLibrary.simpleMessage("ネイティブ名を入力"),
+        "device_name_input": MessageLookupByLibrary.simpleMessage("デバイス名を入力"),
         "device_name_input_action": MessageLookupByLibrary.simpleMessage("完了"),
         "device_no_network":
             MessageLookupByLibrary.simpleMessage("ネットワークが接続されていません"),
@@ -332,7 +331,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "setting_cross_device_clipboard_too_low_to_pair":
             MessageLookupByLibrary.simpleMessage(
                 "ターゲットデバイスのバージョンが低すぎてペアリングがサポートされていません"),
-        "setting_device_name": MessageLookupByLibrary.simpleMessage("ネイティブ名"),
+        "setting_device_name": MessageLookupByLibrary.simpleMessage("デバイス名"),
         "setting_exit": MessageLookupByLibrary.simpleMessage("アプリ終了"),
         "setting_more": MessageLookupByLibrary.simpleMessage("詳細"),
         "setting_more_clean_cache":

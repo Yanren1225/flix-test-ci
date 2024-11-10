@@ -1,0 +1,25 @@
+[package]
+name = "flix_rust"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+flutter_rust_bridge = {version = "=2.5.1" }
+image = {version =  "0.24.7", features = ["webp-encoder"]}
+kamadak-exif = "0.5.5"
+anyhow = "1.0.79"
+
+[profile.dev]
+lto = true
+panic = "abort"
+opt-level = "z"
+strip = "debuginfo"
+
+[profile.release]
+lto = true
+panic = "abort"
+opt-level = "z"
+strip = "debuginfo"
