@@ -571,10 +571,7 @@ class InputAreaState extends State<InputArea> {
                                             .flixColors
                                             .background
                                             .primary,
-                                        hoverColor: Theme.of(context)
-                                            .flixColors
-                                            .background
-                                            .primary,
+                                        hoverColor: Colors.transparent,
                                         contentPadding: EdgeInsets.only(
                                             left: 12,
                                             right: 12,
