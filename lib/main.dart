@@ -90,7 +90,9 @@ Future<void> main(List<String> arguments) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     isFirstRun = prefs.getBool('isFirstRun') ?? true;
     // For hot reload, `unregisterAll()` needs to be called.
-    await hotKeyManager.unregisterAll();
+    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux){
+      await hotKeyManager.unregisterAll();
+    }
   } catch (e, s) {
     talker.error('launch error', e, s);
 
