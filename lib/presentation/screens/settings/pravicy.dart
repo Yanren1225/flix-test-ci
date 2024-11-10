@@ -2,6 +2,7 @@ import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/presentation/basic/corner/flix_clip_r_rect.dart';
 import 'package:flix/presentation/screens/intro/intro_agreement.dart';
 import 'package:flix/presentation/screens/intro/intro_privacy.dart';
+import 'package:flix/presentation/screens/main_screen.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
@@ -12,6 +13,7 @@ import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
 import 'package:talker/talker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -40,12 +42,17 @@ class SettingPravicyScreenState extends State<SettingPravicyScreen> {
     });
   }
 
+     void clearThirdWidget() {
+    Provider.of<BackProvider>(context, listen: false).backMethod();
+  }
+
   @override
   Widget build(BuildContext context) {
     return NavigationScaffold(
         showBackButton: widget.showBack,
         toolbarCoverBody: true,
         title:'隐私政策',
+       onClearThirdWidget: clearThirdWidget,
         builder: (padding) {
           final widgets = <Widget>[
             pra(),
