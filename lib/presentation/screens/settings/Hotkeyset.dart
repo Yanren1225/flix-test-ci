@@ -45,19 +45,23 @@ class HotkeyBottomSheet extends StatefulWidget {
 class _HotkeyBottomSheetState extends State<HotkeyBottomSheet> {
   HotKey? _hotKey;
   String _hotKeyDisplay = "按下快捷键组合"; 
+  late String firstkey;
 
   @override
   Widget build(BuildContext context) {
     return FlixBottomSheet(
       title: "设置快捷键",
+      subTitle: '请直接在键盘上按下按键',
       buttonText: "确定",
       onClickFuture: () async {
-        if (_hotKey != null && !_hotKeyDisplay.contains("Unknown")) {
+        if (_hotKey != null && !_hotKeyDisplay.contains("Unknown") && firstkey != "") {
           widget.onHotKeySelected(_hotKey!); 
+        }else{
+             flixToast.alert("快捷键无效");
         }
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        padding: const EdgeInsets.only(left: 22, bottom: 24,top: 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -69,15 +73,8 @@ class _HotkeyBottomSheetState extends State<HotkeyBottomSheet> {
                 });
               },
             ),
-            const SizedBox(height: 16),
-            Text(
-              _hotKeyDisplay,
-              style: TextStyle(
-                color: Theme.of(context).flixColors.text.primary,
-                fontSize: 16,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
+        
+      
           ],
         ),
       ),
@@ -97,11 +94,12 @@ class _HotkeyBottomSheetState extends State<HotkeyBottomSheet> {
         case HotKeyModifier.meta:
           return "Meta";
         default:
-          return "";
+          return "Unsupport";
       }
     }).join(" + ");
 
     final key = _getKeyLabel(hotKey.key);
+    firstkey = modifiers!;
     return "$modifiers + $key";
   }
 
