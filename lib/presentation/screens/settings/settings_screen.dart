@@ -4,8 +4,6 @@ import 'dart:io';
 import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/presentation/screens/account/vip.dart';
 import 'package:flix/presentation/screens/cloud/home.dart';
-import 'package:flix/presentation/screens/intro/intro_agreement.dart';
-import 'package:flix/presentation/screens/intro/intro_privacy.dart';
 import 'package:flix/presentation/screens/winbar.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/widgets/helps/flix_share_bottom_sheet.dart';
@@ -704,7 +702,9 @@ class SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   
-                   Padding(
+                   Visibility(
+              visible: isDesktop(),
+              child:  Padding(
                     padding:
                         const EdgeInsets.only(left: 16, right: 16),
                     child: ClickableItem(
@@ -719,7 +719,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                                     const WinBarScreen(),
                               ));
                         }),
-                  ),
+                  ), ),
                     Container(
                     color: Theme.of(context).flixColors.background.primary,
                     margin: const EdgeInsets.only(left: 16, right: 16),

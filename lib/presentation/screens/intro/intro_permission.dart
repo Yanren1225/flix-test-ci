@@ -1,8 +1,8 @@
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flix/main.dart';
-import 'package:flix/presentation/screens/intro/intro_agreement.dart';
-import 'package:flix/presentation/screens/intro/intro_privacy.dart';
 import 'package:flix/presentation/screens/main_screen.dart';
+import 'package:flix/presentation/screens/settings/agreement.dart';
+import 'package:flix/presentation/screens/settings/pravicy.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -141,7 +141,7 @@ class _IntroPermissionState extends State<IntroPermission> {
                               ..onTap = () {
                                 Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const IntroAgreementPage()),
+                                MaterialPageRoute(builder: (context) => const SettingAgreementScreen()),
                               );
                             }
                           ),
@@ -158,7 +158,7 @@ class _IntroPermissionState extends State<IntroPermission> {
                               ..onTap = () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => const IntroPrivacyPage()),
+                                  MaterialPageRoute(builder: (context) => const SettingPravicyScreen()),
                                 );
                               }
                           ),
@@ -333,7 +333,7 @@ class _IntroPermissionState extends State<IntroPermission> {
                               ..onTap = () {
                                 Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const IntroAgreementPage()),
+                                MaterialPageRoute(builder: (context) => const SettingAgreementScreen()),
                               );
                             }
                           ),
@@ -350,7 +350,7 @@ class _IntroPermissionState extends State<IntroPermission> {
                               ..onTap = () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => const IntroPrivacyPage()),
+                                  MaterialPageRoute(builder: (context) => const SettingPravicyScreen()),
                                 );
                               }
                           ),

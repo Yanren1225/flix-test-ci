@@ -12,8 +12,6 @@ import 'package:open_filex/open_filex.dart';
 import 'package:flix/domain/database/database.dart';
 import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/presentation/screens/base_screen.dart';
-import 'package:flix/presentation/screens/intro/intro_agreement.dart';
-import 'package:flix/presentation/screens/intro/intro_privacy.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/widgets/helps/qa.dart';
 import 'package:flix/presentation/widgets/segements/cupertino_navigation_scaffold.dart';
