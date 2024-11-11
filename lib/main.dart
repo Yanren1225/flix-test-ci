@@ -31,6 +31,7 @@ import 'package:flix/network/discover/discover_manager.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/intro_screen.dart';
 import 'package:flix/presentation/screens/main_screen.dart';
+import 'package:flix/presentation/widgets/WindowState.dart';
 import 'package:flix/presentation/widgets/hotkeyprovider.dart';
 import 'package:flix/setting/setting_provider.dart';
 import 'package:flix/theme/theme.dart';
@@ -366,6 +367,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
           ChangeNotifierProvider(create: (context) => AndropContext()),
           ChangeNotifierProvider(create: (_) => BackProvider()),
           ChangeNotifierProvider(create: (_) => HotKeyProvider()),
+          ChangeNotifierProvider(create: (_) => WindowState()),
         ],
         child: StreamBuilder<String>(
             initialData: SettingsRepo.instance.darkModeTag,

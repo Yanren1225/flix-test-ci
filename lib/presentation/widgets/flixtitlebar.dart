@@ -1,6 +1,6 @@
-import 'package:flix/design_widget/design_blue_round_button.dart';
-import 'package:flix/theme/theme_extensions.dart';
+import 'package:flix/presentation/widgets/WindowState.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:io';
@@ -8,7 +8,7 @@ import 'dart:io';
 class FlixTitleBar extends StatelessWidget {
   const FlixTitleBar({Key? key}) : super(key: key);
 
-   Future<void> _handleTap() async {
+  Future<void> _handleTap() async {
     final prefs = await SharedPreferences.getInstance();
     bool isDirectExitEnabled = prefs.getBool('direct_exit') ?? true; 
     if (isDirectExitEnabled) {
@@ -17,7 +17,7 @@ class FlixTitleBar extends StatelessWidget {
       exit(0);
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -49,6 +49,31 @@ class FlixTitleBar extends StatelessWidget {
               ),
               Row(
                 children: [
+                  if (Platform.isLinux || Platform.isWindows)
+                    Consumer<WindowState>(
+                      builder: (context, windowState, child) {
+                        return Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            customBorder: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            onTap: () {
+                              windowState.toggleAlwaysOnTop();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(
+                                windowState.isPinned
+                                    ? Icons.push_pin
+                                    : Icons.push_pin_outlined,
+                                size: 14.0,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   if (Platform.isLinux || Platform.isWindows)
                     Material(
                       color: Colors.transparent,
@@ -97,7 +122,8 @@ class FlixTitleBar extends StatelessWidget {
                         onTap: () {
                           _handleTap();
                         },
-                        hoverColor: const Color.fromARGB(255, 208, 24, 11).withOpacity(0.8),
+                        hoverColor: const Color.fromARGB(255, 208, 24, 11)
+                            .withOpacity(0.8),
                         child: Container(
                           width: 30.0,
                           height: 30.0,
@@ -105,7 +131,6 @@ class FlixTitleBar extends StatelessWidget {
                           child: const Icon(
                             Icons.close,
                             size: 15.0,
-                           
                           ),
                         ),
                       ),
