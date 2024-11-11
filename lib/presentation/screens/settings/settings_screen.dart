@@ -6,6 +6,7 @@ import 'package:flix/presentation/screens/account/vip.dart';
 import 'package:flix/presentation/screens/cloud/home.dart';
 import 'package:flix/presentation/screens/intro/intro_agreement.dart';
 import 'package:flix/presentation/screens/intro/intro_privacy.dart';
+import 'package:flix/presentation/screens/winbar.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/widgets/helps/flix_share_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/helps/qa.dart';
@@ -521,7 +522,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                     left: 16, right: 16, bottom: 16, top: 0),
                 child: ClickableItem(
                     label: S.of(context).help_recommend,
-                    topRadius: Platform.isIOS,
+                    topRadius: false,
                     iconPath: 'assets/images/suggest.svg',
                     onClick: () {
                       showCupertinoModalPopup(
@@ -591,6 +592,7 @@ class SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  
                   Padding(
                     padding:
                         const EdgeInsets.only(left: 16, top: 16, right: 16),
@@ -634,6 +636,19 @@ class SettingsScreenState extends State<SettingsScreen> {
                                 return const DevNewLocaleBottomSheet();
                               });
                         }),
+                  ),
+                    Container(
+                    color: Theme.of(context).flixColors.background.primary,
+                    margin: const EdgeInsets.only(left: 16, right: 16),
+                    child: Container(
+                      height: 0.5,
+                      color: Theme.of(context)
+                          .flixColors
+                          .text
+                          .tertiary
+                          .withOpacity(0.1),
+                      margin: const EdgeInsets.only(left: 16),
+                    ),
                   ),
                   Padding(
                     padding:
@@ -688,6 +703,36 @@ class SettingsScreenState extends State<SettingsScreen> {
                       margin: const EdgeInsets.only(left: 16),
                     ),
                   ),
+                  
+                   Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16),
+                    child: ClickableItem(
+                        label: '托盘页',
+                        topRadius: false,
+                        bottomRadius: false,
+                        onClick: () {
+                          Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                builder: (context) =>
+                                    const WinBarScreen(),
+                              ));
+                        }),
+                  ),
+                    Container(
+                    color: Theme.of(context).flixColors.background.primary,
+                    margin: const EdgeInsets.only(left: 16, right: 16),
+                    child: Container(
+                      height: 0.5,
+                      color: Theme.of(context)
+                          .flixColors
+                          .text
+                          .tertiary
+                          .withOpacity(0.1),
+                      margin: const EdgeInsets.only(left: 16),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(left: 16, right: 16),
                     child: ClickableItem(
@@ -706,7 +751,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(
-                        left: 16, top: 20, right: 16, bottom: 22),
+                        left: 16, top: 20, right: 16),
                     child: ClickActionItem(
                         label: S.of(context).setting_exit,
                         dangerous: true,
@@ -727,7 +772,7 @@ class SettingsScreenState extends State<SettingsScreen> {
 
             Padding(
               padding: const EdgeInsets.only(
-                  left: 10, top: 0, right: 16, bottom: 36),
+                  left: 10, top: 22, right: 16, bottom: 36),
               child: Center(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
