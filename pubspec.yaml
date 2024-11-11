@@ -85,7 +85,7 @@ dependencies:
   open_filex: ^4.4.0
   downloadsfolder: ^1.1.0
   open_dir: ^0.0.1+5
-  connectivity_plus: ^5.0.2
+  connectivity_plus: ^6.1.0
   quiver: ^3.2.1
   chinese_font_library: ^1.1.0
   flutter_verification_code: ^1.1.7

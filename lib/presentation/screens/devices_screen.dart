@@ -342,7 +342,17 @@ class _DeviceScreenState extends State<DeviceScreen>
                 AndroidUtils.openWifiSettings();
               },
             );
-          } else {
+          }else if (connectivityResult == ConnectivityResult.ethernet || connectivityResult == ConnectivityResult.other) {
+            return IconLabelButton(
+              icon: 'assets/images/ethernet.svg',
+              label: '已连接网络',
+            iconColor: FlixColor.blue,
+              isLeft: false,
+              onTap: () {
+                AndroidUtils.openWifiSettings();
+              },
+            );
+          }  else {
             return IconLabelButton(
                 icon: 'assets/images/ic_no_wifi.svg',
                 label: S.of(context).device_wifi_not_connected,
