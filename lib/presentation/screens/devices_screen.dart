@@ -646,6 +646,7 @@ class _HistoryItemState extends State<HistoryItem> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16, right: 16),
                   child: SizedBox(
+                     height: Platform.isAndroid || Platform.isIOS ? 68 : 60, 
                     child: DecoratedBox(
                       decoration: ShapeDecoration(
                         shadows: [

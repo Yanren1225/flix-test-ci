@@ -48,6 +48,7 @@ class DeviceItemState extends State<DeviceItem> {
       child: InkWell(
         onTap: onTap,
         child: SizedBox(
+          height: Platform.isAndroid || Platform.isIOS ? 68 : 60, 
         child: DecoratedBox(
          decoration: ShapeDecoration(
         shadows: [
