@@ -343,6 +343,12 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
         );
       });
     }
+    LangConfig.instance.onLangChange = (lang) {
+      setState(() {
+        // ignore: invalid_use_of_protected_member
+        LangConfig.instance.lang = lang;
+      });
+    };
   }
 
   @override

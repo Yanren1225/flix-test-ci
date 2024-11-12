@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flix/domain/version/version_checker.dart';
+import 'package:flix/l10n/lang_config.dart';
 import 'package:flix/presentation/screens/account/vip.dart';
 import 'package:flix/presentation/screens/cloud/home.dart';
 import 'package:flix/presentation/screens/winbar.dart';
@@ -37,7 +38,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 import '../../../l10n/l10n.dart';
-import 'dev/client_info_page.dart';
+import 'dev/client_debug_page.dart';
 import 'dev/dev_config.dart';
 import '../../dialog/confirm_exit_app_bottomsheet.dart';
 import '../../widgets/settings/click_action_item.dart';
@@ -59,6 +60,7 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback goCloudScreenPage;
   final VoidCallback goPayScreen;
   final VoidCallback goHotkeyScreen;
+  final VoidCallback goClientDebugScreen;
 
   const SettingsScreen({
     super.key,
@@ -77,6 +79,7 @@ class SettingsScreen extends StatefulWidget {
     required this.goCloudScreenPage,
     required this.goPayScreen,
     required this.goHotkeyScreen,
+    required this.goClientDebugScreen,
   });
 
   @override
@@ -590,7 +593,6 @@ class SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  
                   Padding(
                     padding:
                         const EdgeInsets.only(left: 16, top: 16, right: 16),
@@ -624,7 +626,16 @@ class SettingsScreenState extends State<SettingsScreen> {
                         const EdgeInsets.only(left: 16, right: 16, bottom: 0),
                     child: ClickableItem(
                         label: '语言',
-                        tail: Localizations.localeOf(context).toString(),
+                        tail: () {
+                          var lang = LangConfig.instance.current;
+                          var sysLang =
+                              Localizations.localeOf(context).toString();
+                          if (lang == null) {
+                            return "$sysLang(default)";
+                          } else {
+                            return lang.toString();
+                          }
+                        }(),
                         topRadius: false,
                         bottomRadius: false,
                         onClick: () {
@@ -635,7 +646,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                               });
                         }),
                   ),
-                    Container(
+                  Container(
                     color: Theme.of(context).flixColors.background.primary,
                     margin: const EdgeInsets.only(left: 16, right: 16),
                     child: Container(
@@ -650,19 +661,12 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ),
                   Padding(
                     padding:
-                    const EdgeInsets.only(left: 16, right: 16, bottom: 0),
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 0),
                     child: ClickableItem(
-                        label: '客户端信息',
+                        label: '调试信息',
                         topRadius: false,
                         bottomRadius: false,
-                        onClick: () {
-                          Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                builder: (context) =>
-                                    const ClientInfoPage(),
-                              ));
-                        }),
+                        onClick: widget.goClientDebugScreen),
                   ),
                   Container(
                     color: Theme.of(context).flixColors.background.primary,
@@ -701,26 +705,24 @@ class SettingsScreenState extends State<SettingsScreen> {
                       margin: const EdgeInsets.only(left: 16),
                     ),
                   ),
-                  
-                   Visibility(
-              visible: isDesktop(),
-              child:  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 16, right: 16),
-                    child: ClickableItem(
-                        label: '托盘页',
-                        topRadius: false,
-                        bottomRadius: false,
-                        onClick: () {
-                          Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                builder: (context) =>
-                                    const WinBarScreen(),
-                              ));
-                        }),
-                  ), ),
-                    Container(
+                  Visibility(
+                    visible: isDesktop(),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      child: ClickableItem(
+                          label: '托盘页',
+                          topRadius: false,
+                          bottomRadius: false,
+                          onClick: () {
+                            Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                  builder: (context) => const WinBarScreen(),
+                                ));
+                          }),
+                    ),
+                  ),
+                  Container(
                     color: Theme.of(context).flixColors.background.primary,
                     margin: const EdgeInsets.only(left: 16, right: 16),
                     child: Container(
@@ -750,8 +752,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(
-                        left: 16, top: 20, right: 16),
+                    padding:
+                        const EdgeInsets.only(left: 16, top: 20, right: 16),
                     child: ClickActionItem(
                         label: S.of(context).setting_exit,
                         dangerous: true,

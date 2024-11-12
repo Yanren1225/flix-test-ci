@@ -28,6 +28,7 @@ import 'package:flix/presentation/screens/paircode/pair_code_screen.dart';
 import 'package:flix/presentation/screens/pick_device_screen.dart';
 import 'package:flix/presentation/screens/settings/agreement.dart';
 import 'package:flix/presentation/screens/settings/cross_device_clipboard_screen.dart';
+import 'package:flix/presentation/screens/settings/dev/client_debug_page.dart';
 import 'package:flix/presentation/screens/settings/function.dart';
 import 'package:flix/presentation/screens/settings/general.dart';
 import 'package:flix/presentation/screens/settings/hotkey.dart';
@@ -75,11 +76,10 @@ class MainScreenState extends State<MainScreen> {
       _initHotKey();
     }
 
-    
-    Provider.of<HotKeyProvider>(context, listen: false).addListener(_onHotKeyUpdated);
+    Provider.of<HotKeyProvider>(context, listen: false)
+        .addListener(_onHotKeyUpdated);
   }
 
-  
   Future<void> _initHotKey() async {
     final prefs = await SharedPreferences.getInstance();
     final hotKeyProvider = Provider.of<HotKeyProvider>(context, listen: false);
@@ -92,10 +92,9 @@ class MainScreenState extends State<MainScreen> {
     _registerHotKey(hotKeyProvider.hotKey);
   }
 
- 
   Future<void> _registerHotKey(HotKey hotKey) async {
     if (_registeredHotKey != null) {
-      await hotKeyManager.unregister(_registeredHotKey!); 
+      await hotKeyManager.unregister(_registeredHotKey!);
     }
 
     await hotKeyManager.register(
@@ -111,7 +110,6 @@ class MainScreenState extends State<MainScreen> {
     _registeredHotKey = hotKey;
   }
 
- 
   void _onHotKeyUpdated() {
     final hotKeyProvider = Provider.of<HotKeyProvider>(context, listen: false);
     _registerHotKey(hotKeyProvider.hotKey);
@@ -120,7 +118,8 @@ class MainScreenState extends State<MainScreen> {
   @override
   void dispose() {
     hotKeyManager.unregister(_registeredHotKey!);
-    Provider.of<HotKeyProvider>(context, listen: false).removeListener(_onHotKeyUpdated);
+    Provider.of<HotKeyProvider>(context, listen: false)
+        .removeListener(_onHotKeyUpdated);
     super.dispose();
   }
 
@@ -143,16 +142,14 @@ class BackProvider with ChangeNotifier {
   void backMethod() {
     final homePageState = MyHomePage.homePageKey.currentState;
     if (homePageState != null) {
-      homePageState.clearThirdWidget(); 
-    } else {
-    }
+      homePageState.clearThirdWidget();
+    } else {}
   }
 }
 
-
-
 class MyHomePage extends StatefulWidget {
-  static final GlobalKey<_MyHomePageState> homePageKey = GlobalKey(); 
+  static final GlobalKey<_MyHomePageState> homePageKey = GlobalKey();
+
   const MyHomePage({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -178,7 +175,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
   bool isLeaved = false;
   Widget? thirdWidget;
 
-   void clearThirdWidget() {
+  void clearThirdWidget() {
     setState(() {
       thirdWidget = null;
     });
@@ -499,7 +496,6 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                         deviceInfo: deviceInfo,
                         showBackButton: true,
                         playable: !isHistory,
-                        
                       ))),
           onViewConnectInfo: () => Navigator.push(context,
               CupertinoPageRoute(builder: (context) => const PairCodeScreen())),
@@ -623,33 +619,47 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 context,
                 CupertinoPageRoute(
                     builder: (context) => LoginPage(
-                          showBack: true, goPayScreen: () {  Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => PayScreen(
-                        //  showBack: true,
-                        ))); },
+                          showBack: true,
+                          goPayScreen: () {
+                            Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) => PayScreen(
+                                        //  showBack: true,
+                                        )));
+                          },
                         )));
-          }, goCloudScreenPage: () {   Navigator.push(
+          },
+          goCloudScreenPage: () {
+            Navigator.push(
                 context,
                 CupertinoPageRoute(
                     builder: (context) => CloudScreenPage(
-                         // showBack: true,
-                        )));}, goPayScreen: () {   Navigator.push(
+                        // showBack: true,
+                        )));
+          },
+          goPayScreen: () {
+            Navigator.push(
                 context,
                 CupertinoPageRoute(
                     builder: (context) => PayScreen(
                         //  showBack: true,
-                        ))); }, 
-                        
-                        
-                        
-                        goHotkeyScreen: () {  Navigator.push(
+                        )));
+          },
+          goHotkeyScreen: () {
+            Navigator.push(
                 context,
                 CupertinoPageRoute(
                     builder: (context) => HotkeyScreen(
-                         showBack: true,
-                        )));  },
+                          showBack: true,
+                        )));
+          },
+          goClientDebugScreen: () {
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => const ClientInfoPage()));
+          },
         );
 
       default:
@@ -719,7 +729,6 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               ),
             ],
           ),
-          
         ],
       ),
     );
@@ -887,26 +896,47 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           goLoginPage: () {
             setState(() {
               thirdWidget = LoginPage(
-                showBack: false, goPayScreen: () { setState(() {
-              thirdWidget = PayScreen(
-                //showBack: false,
-              );
-            }); },
+                showBack: false,
+                goPayScreen: () {
+                  setState(() {
+                    thirdWidget = PayScreen(
+                        //showBack: false,
+                        );
+                  });
+                },
               );
             });
-          }, goCloudScreenPage: () {  setState(() {
+          },
+          goCloudScreenPage: () {
+            setState(() {
               thirdWidget = CloudScreenPage(
-              //  showBack: false,
-              );
-            }); }, goPayScreen: () {  setState(() {
+                  //  showBack: false,
+                  );
+            });
+          },
+          goPayScreen: () {
+            setState(() {
               thirdWidget = PayScreen(
-                //showBack: false,
-              );
-            }); }, goHotkeyScreen: () {setState(() {
+                  //showBack: false,
+                  );
+            });
+          },
+          goHotkeyScreen: () {
+            setState(() {
               thirdWidget = HotkeyScreen(
                 showBack: false,
               );
-            });  },
+            });
+          },
+          goClientDebugScreen: () {
+            setState(() {
+              thirdWidget = ClientInfoPage(
+                onClosePressed: (context) {
+                  clearThirdWidget();
+                },
+              );
+            });
+          },
         );
 
       default:

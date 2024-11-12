@@ -1,24 +1,42 @@
 import 'dart:io';
 
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
-import 'package:flix/utils/device/device_utils.dart';
+import 'package:flix/l10n/lang_config.dart';
 import 'package:flix/utils/platform_utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter95/flutter95.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../domain/device/device_manager.dart';
-import '../../../../network/multicast_client_provider.dart';
-import '../../../../utils/net/net_utils.dart';
+import '../../../../l10n/l10n.dart';
+import '../../../../main.dart';
+import '../../intro_screen.dart';
 
-class ClientInfoPage extends StatelessWidget {
-  const ClientInfoPage({Key? key}) : super(key: key);
+class ClientInfoPage extends StatefulWidget {
 
+  final void Function(BuildContext)? onClosePressed;
+
+  const ClientInfoPage({
+    Key? key,
+    this.onClosePressed,
+  }) : super(key: key);
+
+  @override
+  State<ClientInfoPage> createState() {
+    return ClientInfoPageState();
+  }
+}
+
+class ClientInfoPageState extends State<ClientInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold95(
       title: '客户端信息',
+      onClosePressed: widget.onClosePressed,
       toolbar: Toolbar95(actions: [
         Item95(
             label: "ShipServerProxy",
@@ -43,6 +61,54 @@ class ClientInfoPage extends StatelessWidget {
                       break;
                   }
                 })),
+        Item95(
+            label: "欢迎页",
+            menu: Menu95(
+              items: [
+                MenuItem95(
+                  value: 0,
+                  label: "重置 isFirstRun",
+                ),
+                MenuItem95(
+                  value: 1,
+                  label: "显示欢迎页",
+                ),
+              ],
+              onItemSelected: (index) {
+                switch (index) {
+                  case 0:
+                    Future<SharedPreferences> prefs =
+                        SharedPreferences.getInstance();
+                    prefs.then((value) {
+                      value.setBool("isFirstRun", true);
+                    });
+                    break;
+                  case 1:
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => IntroPage(),
+                        ));
+                    break;
+                }
+              },
+            )),
+        Item95(
+          label: "语言",
+          menu: Menu95(
+              items: [
+                for (var index = 0;
+                    index < S.delegate.supportedLocales.length;
+                    index++)
+                  MenuItem95(
+                    value: index,
+                    label: S.delegate.supportedLocales[index].toString(),
+                  )
+              ],
+              onItemSelected: (index) async {
+                LangConfig.instance.setLang(S.delegate.supportedLocales[index]);
+              }),
+        )
       ]),
       body: Expanded(
         child: Elevation95(

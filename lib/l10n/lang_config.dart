@@ -1,14 +1,17 @@
 import 'package:flutter/cupertino.dart';
 
-class LangConfig {
+import 'l10n.dart';
 
+class LangConfig {
   Locale? lang;
+  Null Function(Locale)? onLangChange;
 
   static LangConfig? _instance;
 
   LangConfig();
 
-  void setLang(Locale newLang){
+  void setLang(Locale newLang) {
+    onLangChange?.call(newLang);
     lang = newLang;
   }
 
@@ -18,5 +21,4 @@ class LangConfig {
     _instance ??= LangConfig();
     return _instance!;
   }
-
 }
