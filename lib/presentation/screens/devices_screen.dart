@@ -467,12 +467,20 @@ class _DeviceScreenState extends State<DeviceScreen>
     deviceProvider.connectivityResultStream.stream.listen((event) {
       if (event != ConnectivityResult.none &&
           event != ConnectivityResult.mobile) {
-        _refreshDevice();
+        try {
+          _refreshDevice();
+        } catch (e) {
+          talker.debug("_refreshDevice failed error msg = $e");
+        }
       }
     });
   }
 
   Future<void> _refreshDevice() async {
+    if (!mounted) {
+      talker.debug("_refreshDevice return case not mounted");
+      return;
+    }
     // 先隐藏防火墙提示再检查防火墙
     setState(() {
       isFirewallAllowed = true;
