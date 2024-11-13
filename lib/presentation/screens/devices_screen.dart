@@ -23,11 +23,13 @@ import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/android/android_utils.dart';
 import 'package:flix/utils/device/device_utils.dart';
 import 'package:flix/utils/permission/flix_permission_utils.dart';
+import 'package:flix/utils/platform_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modals/modals.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../../l10n/l10n.dart';
 
@@ -468,7 +470,10 @@ class _DeviceScreenState extends State<DeviceScreen>
       if (event != ConnectivityResult.none &&
           event != ConnectivityResult.mobile) {
         try {
-          _refreshDevice();
+          if (isDesktop()) {
+            windowManager.setTitleBarStyle(TitleBarStyle.hidden);
+          }
+          _refreshDevice();         
         } catch (e) {
           talker.debug("_refreshDevice failed error msg = $e");
         }
@@ -477,6 +482,10 @@ class _DeviceScreenState extends State<DeviceScreen>
   }
 
   Future<void> _refreshDevice() async {
+    if (isDesktop()) {
+        await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
+    }
+
     if (!mounted) {
       talker.debug("_refreshDevice return case not mounted");
       return;

@@ -300,15 +300,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
 
   @override
   void onWindowEvent(String eventName) async {
-    // Assume we want to check for a particular event name, like 'focus' or 'blur'
     if (eventName == 'focus' || eventName == 'blur') {
       // If the title bar should be hidden but might be visible, re-hide it
-      if (!_isTitleBarHidden) {
-        await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
-        setState(() {
-          _isTitleBarHidden = true;
-        });
-      }
+        await windowManager.setTitleBarStyle(TitleBarStyle.hidden);  
     }
   }
 
