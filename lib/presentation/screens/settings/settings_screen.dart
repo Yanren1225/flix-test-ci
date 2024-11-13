@@ -141,7 +141,7 @@ class SettingsScreenState extends State<SettingsScreen> {
     final bool showAutoSaveMedia = Platform.isAndroid;
     final bool showCustomSaveDir = !Platform.isIOS;
     final bool showAppLaunchConfig = isDesktop();
-    final bool showHotkey = isDesktop();
+    final bool showHotkey = Platform.isWindows;
 
     return CupertinoNavigationScaffold(
       title: S.of(context).setting_title,
