@@ -354,6 +354,16 @@ class _DeviceScreenState extends State<DeviceScreen>
                 AndroidUtils.openWifiSettings();
               },
             );
+          } else if (connectivityResult == ConnectivityResult.vpn) {
+            return IconLabelButton(
+              icon: 'assets/images/ethernet.svg',
+              label: '已连接VPN',
+            iconColor: FlixColor.blue,
+              isLeft: false,
+              onTap: () {
+                AndroidUtils.openWifiSettings();
+              },
+            );
           }  else {
             return IconLabelButton(
                 icon: 'assets/images/ic_no_wifi.svg',
