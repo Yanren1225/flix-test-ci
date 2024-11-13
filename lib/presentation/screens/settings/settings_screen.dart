@@ -5,7 +5,6 @@ import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/l10n/lang_config.dart';
 import 'package:flix/presentation/screens/account/vip.dart';
 import 'package:flix/presentation/screens/cloud/home.dart';
-import 'package:flix/presentation/screens/winbar.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/widgets/helps/flix_share_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/helps/qa.dart';
@@ -692,36 +691,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                         bottomRadius: false,
                         onClick: widget.goLoginPage),
                   ),
-                  Container(
-                    color: Theme.of(context).flixColors.background.primary,
-                    margin: const EdgeInsets.only(left: 16, right: 16),
-                    child: Container(
-                      height: 0.5,
-                      color: Theme.of(context)
-                          .flixColors
-                          .text
-                          .tertiary
-                          .withOpacity(0.1),
-                      margin: const EdgeInsets.only(left: 16),
-                    ),
-                  ),
-                  Visibility(
-                    visible: isDesktop(),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 16, right: 16),
-                      child: ClickableItem(
-                          label: '托盘页',
-                          topRadius: false,
-                          bottomRadius: false,
-                          onClick: () {
-                            Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                  builder: (context) => const WinBarScreen(),
-                                ));
-                          }),
-                    ),
-                  ),
+                
+                
                   Container(
                     color: Theme.of(context).flixColors.background.primary,
                     margin: const EdgeInsets.only(left: 16, right: 16),
