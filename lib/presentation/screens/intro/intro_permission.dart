@@ -293,7 +293,7 @@ class _IntroPermissionState extends State<IntroPermission> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 20.0),
+                padding: const EdgeInsets.only(bottom: 20.0,left: 28,right: 28),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -318,45 +318,47 @@ class _IntroPermissionState extends State<IntroPermission> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    RichText(
-                      textAlign: TextAlign.center, 
-                      text: TextSpan(
-                        text: S.of(context).intro_permission_8a,
-                        style:  TextStyle(color: Theme.of(context).flixColors.text.primary),
-                        children: [
-                          TextSpan(
-                            text: S.of(context).intro_permission_8b,
-                            style: const TextStyle(
-                              color: Color.fromRGBO(0, 122, 255, 1),
+                    Expanded(
+                      child: RichText(
+                        textAlign: TextAlign.left, 
+                        text: TextSpan(
+                          text: S.of(context).intro_permission_8a,
+                          style: TextStyle(color: Theme.of(context).flixColors.text.primary),
+                          children: [
+                            TextSpan(
+                              text: S.of(context).intro_permission_8b,
+                              style: const TextStyle(
+                                color: Color.fromRGBO(0, 122, 255, 1),
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const SettingAgreementScreen()),
+                                  );
+                                }
                             ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const SettingAgreementScreen()),
-                              );
-                            }
-                          ),
-                          TextSpan(
-                            text: S.of(context).intro_permission_8c,
-                             style:  TextStyle(color: Theme.of(context).flixColors.text.primary),
-                          ),
-                          TextSpan(
-                            text: S.of(context).intro_permission_8d,
-                            style: const TextStyle(
-                              color: Color.fromRGBO(0, 122, 255, 1),
+                            TextSpan(
+                              text: S.of(context).intro_permission_8c,
+                              style: TextStyle(color: Theme.of(context).flixColors.text.primary),
                             ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => const SettingPravicyScreen()),
-                                );
-                              }
-                          ),
-                        ],
+                            TextSpan(
+                              text: S.of(context).intro_permission_8d,
+                              style: const TextStyle(
+                                color: Color.fromRGBO(0, 122, 255, 1),
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const SettingPravicyScreen()),
+                                  );
+                                }
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),
