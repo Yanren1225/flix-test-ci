@@ -19,6 +19,7 @@ import '../../../../domain/database/database.dart';
 import '../../../../domain/device/device_manager.dart';
 import '../../../../l10n/l10n.dart';
 import '../../../../main.dart';
+import '../../../../network/multicast_client_provider.dart';
 import '../../intro_screen.dart';
 
 class ClientInfoPage extends StatefulWidget {
@@ -49,6 +50,8 @@ class ClientInfoPageState extends State<ClientInfoPage> {
   DeviceModal? deviceModal;
 
   List<NetworkInterface> networkInfo = [];
+
+  bool showLocalhost = false;
 
   void _onDeviceListChangedD(Set<DeviceModal> devices) {
     setState(() {
@@ -260,6 +263,59 @@ class ClientInfoPageState extends State<ClientInfoPage> {
                         for (var device in deviceList)
                           "alias: ${device.alias}, deviceModel: ${device.deviceModel}, deviceType: ${device.deviceType}, fingerprint: ${device.fingerprint}, version: ${device.version}, port: ${device.port}, ip: ${device.ip}, host: ${device.host}, from: ${device.from}\n",
                       ])),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    width: double.infinity,
+                    child: Row(
+                      children: [
+                        Checkbox95(
+                          value: showLocalhost,
+                          onChanged: (value) {
+                            setState(() {
+                              showLocalhost = value;
+                            });
+                            generateLocalhostDevice()
+                                .then((DeviceModal localhost) {
+                              if (value == true) {
+                                DeviceManager.instance.addDevice(localhost);
+                              } else {
+                                DeviceManager.instance.deleteDevice(localhost);
+                                MultiCastClientProvider.of(context,
+                                        listen: false)
+                                    .deleteHistory(localhost.fingerprint);
+                              }
+                            });
+                          },
+                        ),
+                        const Padding(padding: EdgeInsets.only(right: 2)),
+                        text95("显示 localhost"),
+                        const Padding(padding: EdgeInsets.only(right: 8)),
+                        Button95(
+                          child: const Text("显示"),
+                          onTap: () async {
+                            var localhost = await generateLocalhostDevice();
+                            DeviceManager.instance.addDevice(localhost);
+                            setState(() {
+                              showLocalhost = true;
+                            });
+                          },
+                        ),
+                        const Padding(padding: EdgeInsets.only(right: 8)),
+                        Button95(
+                          child: const Text("删除"),
+                          onTap: () async {
+                            var localhost = await generateLocalhostDevice();
+                            DeviceManager.instance.deleteDevice(localhost);
+                            MultiCastClientProvider.of(context, listen: false)
+                                .deleteHistory(localhost.fingerprint);
+                            setState(() {
+                              showLocalhost = false;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                   infoBox(
                       "Device History",
                       joinList([
@@ -332,4 +388,19 @@ Widget infoBox(String title, String content) {
 
 String joinList(List<String> list) {
   return list.join("\n");
+}
+
+Future<DeviceModal> generateLocalhostDevice() async {
+  return DeviceModal(
+    alias: "Localhost[DebugOnly]",
+    deviceModel: "Localhost[DebugOnly]",
+    deviceType: await DeviceProfileRepo.instance
+        .getDeviceInfo()
+        .then((value) => value.deviceType),
+    fingerprint: "00000000-0000-0000-0000-000000000000",
+    version: int.parse(
+        await PackageInfo.fromPlatform().then((value) => value.buildNumber)),
+    port: await shipService.getPort(),
+    ip: "127.0.0.1",
+  );
 }
