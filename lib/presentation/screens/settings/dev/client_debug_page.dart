@@ -1,9 +1,13 @@
 import 'dart:io';
 
+import 'package:easy_refresh/easy_refresh.dart';
+import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/l10n/lang_config.dart';
+import 'package:flix/network/protocol/device_modal.dart';
+import 'package:flix/utils/device_info_helper.dart';
 import 'package:flix/utils/platform_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,13 +15,13 @@ import 'package:flutter95/flutter95.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../domain/database/database.dart';
 import '../../../../domain/device/device_manager.dart';
 import '../../../../l10n/l10n.dart';
 import '../../../../main.dart';
 import '../../intro_screen.dart';
 
 class ClientInfoPage extends StatefulWidget {
-
   final void Function(BuildContext)? onClosePressed;
 
   const ClientInfoPage({
@@ -32,8 +36,102 @@ class ClientInfoPage extends StatefulWidget {
 }
 
 class ClientInfoPageState extends State<ClientInfoPage> {
+  final EasyRefreshController _controller = EasyRefreshController();
+
+  List<DeviceModal> deviceList = [];
+  List<DeviceModal> history = [];
+  List<PairDevice> pairDevices = [];
+
+  PackageInfo? packageInfo;
+  DeviceInfoResult? deviceInfo;
+
+  int? port;
+  DeviceModal? deviceModal;
+
+  List<NetworkInterface> networkInfo = [];
+
+  void _onDeviceListChangedD(Set<DeviceModal> devices) {
+    setState(() {
+      deviceList = devices.toList();
+    });
+  }
+
+  void _onHistoryChangedD(Set<DeviceModal> devices) {
+    setState(() {
+      history = devices.toList();
+    });
+  }
+
+  void _onPairDeviceChangedD(Set<PairDevice> devices) {
+    setState(() {
+      pairDevices = devices.toList();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    DeviceManager.instance.addDeviceListChangeListener(_onDeviceListChangedD);
+    DeviceManager.instance.addHistoryChangeListener(_onHistoryChangedD);
+    DeviceManager.instance.addPairDeviceChangeListener(_onPairDeviceChangedD);
+    initAsync();
+  }
+
+  void initAsync() async {
+    port = await shipService.getPort();
+    PackageInfo.fromPlatform().then((PackageInfo info) {
+      setState(() {
+        packageInfo = info;
+      });
+    });
+    DeviceProfileRepo.instance
+        .getDeviceInfo()
+        .then((DeviceInfoResult deviceInfo2) {
+      setState(() {
+        deviceInfo = deviceInfo2;
+      });
+    });
+    DeviceProfileRepo.instance
+        .getDeviceInfo()
+        .then((DeviceInfoResult deviceProfile) {
+      setState(() {
+        deviceProfile = deviceProfile;
+      });
+    });
+    DeviceProfileRepo.instance.getDeviceModal(port!).then((DeviceModal modal) {
+      setState(() {
+        deviceModal = modal;
+      });
+    });
+    NetworkInterface.list(
+            includeLoopback: false,
+            includeLinkLocal: false,
+            type: InternetAddressType.IPv4)
+        .then((List<NetworkInterface> data) {
+      setState(() {
+        networkInfo = data;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    DeviceManager.instance
+        .removeDeviceListChangeListener(_onDeviceListChangedD);
+    DeviceManager.instance.removeHistoryChangeListener(_onHistoryChangedD);
+    DeviceManager.instance
+        .removePairDeviceChangeListener(_onPairDeviceChangedD);
+  }
+
   @override
   Widget build(BuildContext context) {
+    var _isMobile = isMobile();
+    var _isDesktop = isDesktop();
+    var os = Platform.operatingSystem;
+    var version = Platform.operatingSystemVersion;
+    var locale = Platform.localeName;
+
     return Scaffold95(
       title: '客户端信息',
       onClosePressed: widget.onClosePressed,
@@ -115,90 +213,84 @@ class ClientInfoPageState extends State<ClientInfoPage> {
           type: Elevation95Type.down,
           child: Padding(
             padding: const EdgeInsets.all(8),
-            child: ListView(
-              children: [
-                dumpProfileRepo(),
-                FutureBuilder<Widget>(
-                  future: dumpDeviceModal(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return snapshot.data!;
-                    } else {
-                      return infoBox("Device Modal", "加载失败");
-                    }
-                  },
-                ),
-                FutureBuilder<Widget>(
-                  future: dumpPackageInfo(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return snapshot.data!;
-                    } else {
-                      return infoBox("Package Info", "加载失败");
-                    }
-                  },
-                ),
-                FutureBuilder<Widget>(
-                  future: dumpNetworkInfo(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return snapshot.data!;
-                    } else {
-                      return infoBox("Network Info", "加载失败");
-                    }
-                  },
-                ),
-                FutureBuilder<Widget>(
-                  future: dumpDevices(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return snapshot.data!;
-                    } else {
-                      return infoBox("Devices", "加载失败");
-                    }
-                  },
-                ),
-                FutureBuilder<Widget>(
-                  future: dumpDeviceHistory(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return snapshot.data!;
-                    } else {
-                      return infoBox("Device History", "加载失败");
-                    }
-                  },
-                ),
-                FutureBuilder<Widget>(
-                  future: dumpPairDevices(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return snapshot.data!;
-                    } else {
-                      return infoBox("Pair Devices", "加载失败");
-                    }
-                  },
-                ),
-                FutureBuilder<Widget>(
-                  future: dumpPlatformInfo(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return snapshot.data!;
-                    } else {
-                      return infoBox("Platform Info", "加载失败");
-                    }
-                  },
-                ),
-                FutureBuilder<Widget>(
-                  future: dumpDeviceInfo(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return snapshot.data!;
-                    } else {
-                      return infoBox("Device Info", "加载失败");
-                    }
-                  },
-                ),
-              ],
+            child: EasyRefresh(
+              controller: _controller,
+              onRefresh: () {
+                initAsync();
+              },
+              child: ListView(
+                children: [
+                  infoBox(
+                      "Device Profile Repo",
+                      joinList([
+                        "did: ${DeviceProfileRepo.instance.did}",
+                        "deviceName: ${DeviceProfileRepo.instance.deviceName}",
+                      ])),
+                  infoBox(
+                      "Platform Info",
+                      joinList([
+                        "isMobile: $_isMobile",
+                        "isDesktop: $_isDesktop",
+                        "os: $os",
+                        "version: $version",
+                        "locale: $locale",
+                      ])),
+                  infoBox(
+                      "Package Info",
+                      joinList([
+                        "appName: ${packageInfo?.appName}",
+                        "packageName: ${packageInfo?.packageName}",
+                        "version: ${packageInfo?.version}",
+                        "buildNumber: ${packageInfo?.buildNumber}",
+                        "buildSignature: ${packageInfo?.buildSignature}",
+                        "installerStore: ${packageInfo?.installerStore}",
+                      ])),
+                  infoBox(
+                      "Network Info",
+                      joinList([
+                        for (var info in networkInfo)
+                          "name: ${info.name}, address: ${[
+                            for (var address in info.addresses)
+                              '${address.address}(host=${address.host})'
+                          ].join(", ")}",
+                      ])),
+                  infoBox(
+                      "Devices",
+                      joinList([
+                        for (var device in deviceList)
+                          "alias: ${device.alias}, deviceModel: ${device.deviceModel}, deviceType: ${device.deviceType}, fingerprint: ${device.fingerprint}, version: ${device.version}, port: ${device.port}, ip: ${device.ip}, host: ${device.host}, from: ${device.from}\n",
+                      ])),
+                  infoBox(
+                      "Device History",
+                      joinList([
+                        for (var device in history)
+                          "alias: ${device.alias}, deviceModel: ${device.deviceModel}, deviceType: ${device.deviceType}, fingerprint: ${device.fingerprint}, version: ${device.version}, port: ${device.port}, ip: ${device.ip}, host: ${device.host}, from: ${device.from}\n",
+                      ])),
+                  infoBox(
+                      "Pair Devices",
+                      joinList([
+                        for (var device in pairDevices)
+                          "code: ${device.code}, fingerprint: ${device.fingerprint}, insertOrUpdateTime: ${device.insertOrUpdateTime}\n",
+                      ])),
+                  infoBox(
+                      "Platform Info",
+                      joinList([
+                        "isMobile: $_isMobile",
+                        "isDesktop: $_isDesktop",
+                        "os: $os",
+                        "version: $version",
+                        "locale: $locale",
+                      ])),
+                  infoBox(
+                      "Device Info",
+                      joinList([
+                        "alias: ${deviceInfo?.alias}",
+                        "deviceType: ${deviceInfo?.deviceType}",
+                        "deviceModel: ${deviceInfo?.deviceModel}",
+                        "androidSdkInt: ${deviceInfo?.androidSdkInt}",
+                      ])),
+                ],
+              ),
             ),
           ),
         ),
@@ -240,117 +332,4 @@ Widget infoBox(String title, String content) {
 
 String joinList(List<String> list) {
   return list.join("\n");
-}
-
-Widget dumpProfileRepo() {
-  return infoBox(
-      "Device Profile Repo",
-      joinList([
-        "did: ${DeviceProfileRepo.instance.did}",
-        "deviceName: ${DeviceProfileRepo.instance.deviceName}",
-      ]));
-}
-
-Future<Widget> dumpPlatformInfo() async {
-  var _isMobile = isMobile();
-  var _isDesktop = isDesktop();
-  var os = Platform.operatingSystem;
-  var version = Platform.operatingSystemVersion;
-  var locale = Platform.localeName;
-  return infoBox(
-      "Platform Info",
-      joinList([
-        "isMobile: $_isMobile",
-        "isDesktop: $_isDesktop",
-        "os: $os",
-        "version: $version",
-        "locale: $locale",
-      ]));
-}
-
-Future<Widget> dumpPackageInfo() async {
-  var packageInfo = await PackageInfo.fromPlatform();
-  return infoBox(
-      "Package Info",
-      joinList([
-        "appName: ${packageInfo.appName}",
-        "packageName: ${packageInfo.packageName}",
-        "version: ${packageInfo.version}",
-        "buildNumber: ${packageInfo.buildNumber}",
-        "buildSignature: ${packageInfo.buildSignature}",
-        "installerStore: ${packageInfo.installerStore}",
-      ]));
-}
-
-Future<Widget> dumpDeviceInfo() async {
-  var deviceInfo = await DeviceProfileRepo.instance.getDeviceInfo();
-  return infoBox(
-      "Device Info",
-      joinList([
-        "alias: ${deviceInfo.alias}",
-        "deviceType: ${deviceInfo.deviceType}",
-        "deviceModel: ${deviceInfo.deviceModel}",
-        "androidSdkInt: ${deviceInfo.androidSdkInt}",
-      ]));
-}
-
-Future<Widget> dumpDeviceModal() async {
-  var port = await shipService.getPort();
-  var deviceModal = await DeviceProfileRepo.instance.getDeviceModal(port);
-  return infoBox(
-      "Device Modal",
-      joinList([
-        "alias: ${deviceModal.alias}",
-        "deviceType: ${deviceModal.deviceType}",
-        "fingerprint: ${deviceModal.fingerprint}",
-        "port: ${deviceModal.port}",
-        "version: ${deviceModal.version}",
-        "deviceModel: ${deviceModal.deviceModel}",
-      ]));
-}
-
-Future<Widget> dumpNetworkInfo() async {
-  var networkInfo = await await NetworkInterface.list(
-      includeLoopback: false,
-      includeLinkLocal: false,
-      type: InternetAddressType.IPv4);
-  return infoBox(
-      "Network Info",
-      joinList([
-        for (var info in networkInfo)
-          "name: ${info.name}, address: ${[
-            for (var address in info.addresses)
-              '${address.address}(host=${address.host})'
-          ].join(", ")}",
-      ]));
-}
-
-Future<Widget> dumpDevices() async {
-  final devices = DeviceManager.instance.deviceList;
-  return infoBox(
-      "Devices",
-      joinList([
-        for (var device in devices)
-          "alias: ${device.alias}, deviceModel: ${device.deviceModel}, deviceType: ${device.deviceType}, fingerprint: ${device.fingerprint}, version: ${device.version}, port: ${device.port}, ip: ${device.ip}, host: ${device.host}, from: ${device.from}\n",
-      ]));
-}
-
-Future<Widget> dumpDeviceHistory() async {
-  var deviceInfo = DeviceManager.instance.history;
-  return infoBox(
-      "Device History",
-      joinList([
-        for (var device in deviceInfo)
-          "alias: ${device.alias}, deviceModel: ${device.deviceModel}, deviceType: ${device.deviceType}, fingerprint: ${device.fingerprint}, version: ${device.version}, port: ${device.port}, ip: ${device.ip}, host: ${device.host}, from: ${device.from}\n",
-      ]));
-}
-
-Future<Widget> dumpPairDevices() async {
-  var pairDevices = DeviceManager.instance.pairDevices;
-  return infoBox(
-      "Pair Devices",
-      joinList([
-        for (var device in pairDevices)
-          "code: ${device.code}, fingerprint: ${device.fingerprint}, insertOrUpdateTime: ${device.insertOrUpdateTime}\n",
-      ]));
 }
