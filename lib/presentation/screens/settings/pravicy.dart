@@ -48,41 +48,14 @@ class SettingPravicyScreenState extends State<SettingPravicyScreen> {
   Widget build(BuildContext context) {
     return NavigationScaffold(
         showBackButton: widget.showBack,
-        toolbarCoverBody: true,
         title:'隐私政策',
        onClearThirdWidget: clearThirdWidget,
-        builder: (padding) {
-          final widgets = <Widget>[
-            pra(),
-            
-         
-         
-            
-          ];
-          return ListView.builder(
-              physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics(
-                      decelerationRate: ScrollDecelerationRate.fast)),
-              padding: padding.copyWith(
-                  bottom: padding.bottom +
-                      MediaQuery.of(context).padding.bottom +
-                      20),
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(
-                      left: 16.0, right: 16.0, top: 12, bottom: 12),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: DecoratedBox(
-                        decoration: BoxDecoration(
-                            color:
-                                Theme.of(context).flixColors.background.secondary,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: widgets[index]),
-                  ),
-                );
-              },
-              itemCount: widgets.length);
+        builder: (EdgeInsets padding) {
+           return Container(
+            margin: const EdgeInsets.only( top: 10,right: 16,left: 16,bottom: 30),
+          width: double.infinity,
+            child: pra(),
+           );
         });
   }
 

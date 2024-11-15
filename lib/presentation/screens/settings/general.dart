@@ -82,7 +82,6 @@ bool isDirectExitEnabled = true;
 
   @override
  Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
     final bool showAppLaunchConfig = isDesktop();
     return NavigationScaffold(
       title: '通用',
