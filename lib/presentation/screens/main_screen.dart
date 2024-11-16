@@ -34,6 +34,7 @@ import 'package:flix/presentation/screens/settings/general.dart';
 import 'package:flix/presentation/screens/settings/hotkey.dart';
 import 'package:flix/presentation/screens/settings/pravicy.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
+import 'package:flix/presentation/screens/webflix.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/flixtitlebar.dart';
 import 'package:flix/presentation/widgets/hotkeyprovider.dart';
@@ -653,7 +654,13 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 context,
                 CupertinoPageRoute(
                     builder: (context) => const ClientInfoPage()));
-          },
+          }, goFileUploadServer: () { 
+
+              Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => FileUploadServer()));
+           },
         );
 
       default:
@@ -930,7 +937,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 },
               );
             });
-          },
+          }, goFileUploadServer: () { setState(() {
+              thirdWidget = FileUploadServer(
+               
+              );
+            }); },
         );
 
       default:
