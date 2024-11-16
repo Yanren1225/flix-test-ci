@@ -5,6 +5,7 @@ import 'package:flix/domain/version/version_checker.dart';
 import 'package:flix/l10n/lang_config.dart';
 import 'package:flix/presentation/screens/account/vip.dart';
 import 'package:flix/presentation/screens/cloud/home.dart';
+import 'package:flix/presentation/screens/webflix.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/widgets/helps/flix_share_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/helps/qa.dart';
@@ -60,6 +61,7 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback goPayScreen;
   final VoidCallback goHotkeyScreen;
   final VoidCallback goClientDebugScreen;
+  final VoidCallback goFileUploadServer;
 
   const SettingsScreen({
     super.key,
@@ -79,6 +81,7 @@ class SettingsScreen extends StatefulWidget {
     required this.goPayScreen,
     required this.goHotkeyScreen,
     required this.goClientDebugScreen,
+    required this.goFileUploadServer,
   });
 
   @override
@@ -711,7 +714,30 @@ class SettingsScreenState extends State<SettingsScreen> {
                     child: ClickableItem(
                         label: '云同步',
                         topRadius: false,
+                        bottomRadius: false,
                         onClick: widget.goCloudScreenPage),
+                  ),
+
+ Container(
+                    color: Theme.of(context).flixColors.background.primary,
+                    margin: const EdgeInsets.only(left: 16, right: 16),
+                    child: Container(
+                      height: 0.5,
+                      color: Theme.of(context)
+                          .flixColors
+                          .text
+                          .tertiary
+                          .withOpacity(0.1),
+                      margin: const EdgeInsets.only(left: 16),
+                    ),
+                  ),
+
+                   Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    child: ClickableItem(
+                        label: 'Web版',
+                        topRadius: false,
+                        onClick:widget.goFileUploadServer),
                   ),
                 ],
               ),
