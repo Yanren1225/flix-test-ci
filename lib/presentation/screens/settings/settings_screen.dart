@@ -36,6 +36,7 @@ import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talker_flutter/talker_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../l10n/l10n.dart';
 import 'dev/client_debug_page.dart';
@@ -252,9 +253,36 @@ class SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-            Visibility(
-              visible: showCustomSaveDir,
-              child: Container(
+
+             Visibility(
+              visible: !showCustomSaveDir,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16),
+                child: StreamBuilder<String>(
+                  initialData: SettingsRepo.instance.savedDir,
+                  stream: SettingsRepo.instance.savedDirStream.stream,
+                  builder: (context, snapshot) {
+                    return ClickableItem(
+                        label: S.of(context).setting_receive_folder,
+                        iconPath: 'assets/images/where_save.svg',
+                      
+                        topRadius: false,
+                        //bottomRadius: !showAutoSaveMedia,
+                        bottomRadius: false,
+                        onClick: () async {
+                          const String settingsUrl = 'app-settings:';
+    if (await canLaunchUrl(Uri.parse(settingsUrl))) {
+      await launchUrl(Uri.parse(settingsUrl));
+    } 
+                        });
+                  },
+                ),
+              ),
+            ),
+
+            
+
+           Container(
                 color: Theme.of(context).flixColors.background.primary,
                 margin: const EdgeInsets.only(left: 16, right: 16),
                 child: Container(
@@ -267,7 +295,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   margin: const EdgeInsets.only(left: 16),
                 ),
               ),
-            ),
+            
 
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 0, right: 16),
