@@ -50,6 +50,7 @@ class _FileUploadServerState extends State<FileUploadServer> {
 
       server = await HttpServer.bind(InternetAddress.anyIPv4, port);
       server!.listen((HttpRequest request) async {
+        print(request.uri.path);
         if (request.uri.path == '/$randomNumber') {
           request.response.headers.contentType = ContentType.html;
           request.response.write(_generateChatHtml());
@@ -85,7 +86,7 @@ class _FileUploadServerState extends State<FileUploadServer> {
               clients.remove(socket);
             });
           }
-        } else {
+        } else{
             request.response.headers.contentType = ContentType.html;
           request.response.write(_generateMainpage());
           request.response.close();
@@ -253,10 +254,10 @@ class _FileUploadServerState extends State<FileUploadServer> {
         function redirect(event) {
             event.preventDefault();
             const ip = document.getElementById('ipInput').value.trim();
-            if (ip) {
+            if (ip == $randomNumber) {
                 window.location.href = "/" + ip;
             } else {
-                alert("请输入连接码");
+                alert("连接码错误，请重新输入！");
             }
         }
     </script>
