@@ -93,7 +93,7 @@ Future<void> main(List<String> arguments) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     isFirstRun = prefs.getBool('isFirstRun') ?? true;
     // For hot reload, `unregisterAll()` needs to be called.
-    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux){
+    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       await hotKeyManager.unregisterAll();
     }
   } catch (e, s) {
@@ -343,17 +343,18 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
         );
       });
     }
-    LangConfig.instance.onLangChange = (lang) {
-      setState(() {
-        // ignore: invalid_use_of_protected_member
-        LangConfig.instance.lang = lang;
-      });
-    };
+
+    // 关联 setState 实现自动刷新, 需在每个 App 根布局添加
+    LangConfig.instance.linkSetState(setState);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+
+    // 取消关联 setState, 需在每个 App 根布局添加
+    LangConfig.instance.unlinkSetState(setState);
+
     super.dispose();
   }
 
@@ -399,15 +400,10 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       (userDarkMode ? flixDark(context) : flixLight(context)),
                   locale: LangConfig.instance.current,
                   // initialRoute: 'home',
-                  routes: {
-                    "/main": (context) => const MainScreen()
-                  },
+                  routes: {"/main": (context) => const MainScreen()},
                   builder: FToastBuilder(),
                   home: Container(
-                    color: Theme.of(context)
-                        .flixColors
-                        .background
-                        .secondary,
+                    color: Theme.of(context).flixColors.background.secondary,
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
