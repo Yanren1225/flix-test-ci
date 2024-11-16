@@ -135,18 +135,26 @@ class PickActionAreaState extends State<PickActionsArea> {
       if (await FlixPermissionUtils.checkVideosPermission(context)) {
         // showMaskLoading(context);
         try {
-          final XFile? pickedFile =
-              await _picker.pickVideo(source: ImageSource.gallery);
-          talker.debug('video selected: ${pickedFile?.path}');
-          if (pickedFile != null) {
-            onPicked([
+          var pickedFileList = await _picker.pickMultipleMedia();
+          onPicked([
+            for (final f in pickedFileList)
               PickableFile(
                   type: PickedFileType.Video,
-                  content: await pickedFile.toFileMeta(isVideo: true))
-            ]);
-          } else {
-            talker.error("pick video failed, return null");
-          }
+                  content: await f.toFileMeta(isVideo: true))
+          ]);
+
+          // final XFile? pickedFile =
+          //     await _picker.pickVideo(source: ImageSource.gallery);
+          // talker.debug('video selected: ${pickedFile?.path}');
+          // if (pickedFile != null) {
+          //   onPicked([
+          //     PickableFile(
+          //         type: PickedFileType.Video,
+          //         content: await pickedFile.toFileMeta(isVideo: true))
+          //   ]);
+          // } else {
+          //   talker.error("pick video failed, return null");
+          // }
         } catch (e) {
           talker.error("pick video failed: ", e);
           setState(() {

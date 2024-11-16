@@ -73,7 +73,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Receiving failed"),
         "bubbles_send_cancel":
             MessageLookupByLibrary.simpleMessage("Cancelled"),
-        "bubbles_send_done": MessageLookupByLibrary.simpleMessage("Done"),
+        "bubbles_send_done": MessageLookupByLibrary.simpleMessage("Sent"),
         "bubbles_send_failed": MessageLookupByLibrary.simpleMessage("Error"),
         "bubbles_toast_re_receive":
             MessageLookupByLibrary.simpleMessage("Re receive files"),
