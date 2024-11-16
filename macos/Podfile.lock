@@ -87,6 +87,8 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 7.13)
     - nanopb (< 2.30911.0, >= 2.30908.0)
     - PromisesSwift (~> 2.1)
+  - flix_rust (0.0.1):
+    - FlutterMacOS
   - flutter_desktop_sleep (0.0.1):
     - FlutterMacOS
   - flutter_image_compress_macos (1.0.0):
@@ -146,6 +148,10 @@ PODS:
   - GoogleUtilities/UserDefaults (7.13.3):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
+  - HotKey (0.2.0)
+  - hotkey_manager_macos (0.0.1):
+    - FlutterMacOS
+    - HotKey
   - local_notifier (0.1.0):
     - FlutterMacOS
   - macos_secure_bookmarks (0.0.3):
@@ -221,10 +227,12 @@ DEPENDENCIES:
   - firebase_analytics (from `Flutter/ephemeral/.symlinks/plugins/firebase_analytics/macos`)
   - firebase_core (from `Flutter/ephemeral/.symlinks/plugins/firebase_core/macos`)
   - firebase_crashlytics (from `Flutter/ephemeral/.symlinks/plugins/firebase_crashlytics/macos`)
+  - flix_rust (from `Flutter/ephemeral/.symlinks/plugins/flix_rust/macos`)
   - flutter_desktop_sleep (from `Flutter/ephemeral/.symlinks/plugins/flutter_desktop_sleep/macos`)
   - flutter_image_compress_macos (from `Flutter/ephemeral/.symlinks/plugins/flutter_image_compress_macos/macos`)
   - flutter_local_notifications (from `Flutter/ephemeral/.symlinks/plugins/flutter_local_notifications/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
+  - hotkey_manager_macos (from `Flutter/ephemeral/.symlinks/plugins/hotkey_manager_macos/macos`)
   - local_notifier (from `Flutter/ephemeral/.symlinks/plugins/local_notifier/macos`)
   - macos_secure_bookmarks (from `Flutter/ephemeral/.symlinks/plugins/macos_secure_bookmarks/macos`)
   - network_info_plus (from `Flutter/ephemeral/.symlinks/plugins/network_info_plus/macos`)
@@ -259,6 +267,7 @@ SPEC REPOS:
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleUtilities
+    - HotKey
     - nanopb
     - PromisesObjC
     - PromisesSwift
@@ -285,6 +294,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/firebase_core/macos
   firebase_crashlytics:
     :path: Flutter/ephemeral/.symlinks/plugins/firebase_crashlytics/macos
+  flix_rust:
+    :path: Flutter/ephemeral/.symlinks/plugins/flix_rust/macos
   flutter_desktop_sleep:
     :path: Flutter/ephemeral/.symlinks/plugins/flutter_desktop_sleep/macos
   flutter_image_compress_macos:
@@ -293,6 +304,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/flutter_local_notifications/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
+  hotkey_manager_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/hotkey_manager_macos/macos
   local_notifier:
     :path: Flutter/ephemeral/.symlinks/plugins/local_notifier/macos
   macos_secure_bookmarks:
@@ -352,6 +365,7 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 913cf60d0400ebd5d6b63a28b290372ab44590dd
   FirebaseRemoteConfigInterop: 6efda51fb5e2f15b16585197e26eaa09574e8a4d
   FirebaseSessions: dbd14adac65ce996228652c1fc3a3f576bdf3ecc
+  flix_rust: 26d32e3a873394164c750b02a459d6baae985997
   flutter_desktop_sleep: d7e29bb5c2944a0db954674f53ad190b79a7d69d
   flutter_image_compress_macos: c26c3c13ea0f28ae6dea4e139b3292e7729f99f1
   flutter_local_notifications: 4b427ffabf278fc6ea9484c97505e231166927a5
@@ -359,6 +373,8 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: f9de05ee17401e3355f68e8fc8b5064d429f5918
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
+  HotKey: e96d8a2ddbf4591131e2bb3f54e69554d90cdca6
+  hotkey_manager_macos: 1e2edb0c7ae4fe67108af44a9d3445de41404160
   local_notifier: e9506bc66fc70311e8bc7291fb70f743c081e4ff
   macos_secure_bookmarks: cff041c4b377fa00941bb901aaec4d27fac5edf2
   nanopb: 438bc412db1928dac798aa6fd75726007be04262

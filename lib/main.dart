@@ -71,13 +71,19 @@ bool isFirstRun = true;
 
 Future<void> main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await initWindowManager(arguments.contains(kAppTrayModeArg));
+  isFirstRun =  prefs.getBool('isFirstRun') ?? true;
+  runApp(MyApp());
+}
+
+Future<void> initAllConfig() async {
   try {
     await logPersistence.init();
     initLog();
     await _initHighRefreshRate();
     await initFireBase();
     _initForegroundTask();
-    await initWindowManager(arguments.contains(kAppTrayModeArg));
     await initBootStartUp();
     await _initNotification();
     await initSystemManager();
@@ -89,23 +95,13 @@ Future<void> main(List<String> arguments) async {
     _initSystemChrome();
     _initUriNavigator();
     await RustLib.init();
-    runApp(const WithForegroundTask(child: MyApp()));
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    isFirstRun = prefs.getBool('isFirstRun') ?? true;
+
     // For hot reload, `unregisterAll()` needs to be called.
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       await hotKeyManager.unregisterAll();
     }
   } catch (e, s) {
     talker.error('launch error', e, s);
-
-    runApp(MaterialApp(
-        home: Center(
-      child: Text(
-        '启动失败, $e\n$s',
-        style: const TextStyle(fontSize: 16),
-      ),
-    )));
   }
 }
 

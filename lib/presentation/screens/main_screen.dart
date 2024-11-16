@@ -69,14 +69,15 @@ class MainScreen extends StatefulWidget {
 
 class MainScreenState extends State<MainScreen> {
   HotKey? _registeredHotKey;
-
+  bool isInitial = false;
   @override
   void initState() {
     super.initState();
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       _initHotKey();
     }
-
+    isInitial = false;
+    startInit();
     Provider.of<HotKeyProvider>(context, listen: false)
         .addListener(_onHotKeyUpdated);
   }
@@ -126,16 +127,30 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if(!isInitial){
+      return const CircularProgressIndicator();
+    }
+    return buildStack();
+  }
+
+  Stack buildStack() {
     return Stack(
-      children: [
-        MyHomePage(
-          key: MyHomePage.homePageKey,
-          title: 'Flix',
-        ),
-        if (Platform.isMacOS || Platform.isLinux || Platform.isWindows)
-          const FlixTitleBar(),
-      ],
-    );
+    children: [
+      MyHomePage(
+        key: MyHomePage.homePageKey,
+        title: 'Flix',
+      ),
+      if (Platform.isMacOS || Platform.isLinux || Platform.isWindows)
+        const FlixTitleBar(),
+    ],
+  );
+  }
+
+  Future<void> startInit() async {
+    await initAllConfig();
+    setState(() {
+      isInitial = true;
+    });
   }
 }
 
