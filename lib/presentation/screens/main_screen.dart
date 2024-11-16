@@ -127,8 +127,16 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if(!isInitial){
-      return const CircularProgressIndicator();
+    if (!isInitial) {
+      return Container(
+          color: Theme.of(context).flixColors.background.secondary,
+          child: const Center(
+            child: SizedBox(
+              width: 50,
+              height: 50,
+              child: CircularProgressIndicator(),
+            ),
+          ));
     }
     return buildStack();
   }
@@ -318,7 +326,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
   void onWindowEvent(String eventName) async {
     if (eventName == 'focus' || eventName == 'blur') {
       // If the title bar should be hidden but might be visible, re-hide it
-        await windowManager.setTitleBarStyle(TitleBarStyle.hidden);  
+      await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
     }
   }
 
