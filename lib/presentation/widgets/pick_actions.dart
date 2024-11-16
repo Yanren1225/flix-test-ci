@@ -13,6 +13,7 @@ import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/android/android_pick_files.dart';
 import 'package:flix/utils/file/file_helper.dart';
 import 'package:flix/utils/permission/flix_permission_utils.dart';
+import 'package:flix/utils/string_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -136,25 +137,20 @@ class PickActionAreaState extends State<PickActionsArea> {
         // showMaskLoading(context);
         try {
           var pickedFileList = await _picker.pickMultipleMedia();
-          onPicked([
-            for (final f in pickedFileList)
-              PickableFile(
+          List<PickableFile> pickableFileList = [];
+          for (final f in pickedFileList) {
+            if (f.name.isImgName()) {
+              pickableFileList.add(PickableFile(
+                  type: PickedFileType.Image,
+                  content: await f.toFileMeta(isImg: true)));
+            }
+            if (f.name.isVideoName()) {
+              pickableFileList.add(PickableFile(
                   type: PickedFileType.Video,
-                  content: await f.toFileMeta(isVideo: true))
-          ]);
-
-          // final XFile? pickedFile =
-          //     await _picker.pickVideo(source: ImageSource.gallery);
-          // talker.debug('video selected: ${pickedFile?.path}');
-          // if (pickedFile != null) {
-          //   onPicked([
-          //     PickableFile(
-          //         type: PickedFileType.Video,
-          //         content: await pickedFile.toFileMeta(isVideo: true))
-          //   ]);
-          // } else {
-          //   talker.error("pick video failed, return null");
-          // }
+                  content: await f.toFileMeta(isVideo: true)));
+            }
+          }
+          onPicked(pickableFileList);
         } catch (e) {
           talker.error("pick video failed: ", e);
           setState(() {
