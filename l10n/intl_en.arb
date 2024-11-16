@@ -323,7 +323,7 @@
   "@bubbles_dir_no_data": {},
   "bubbles_wait_for_confirm": "Waiting for confirmation from the other party",
   "@bubbles_wait_for_confirm": {},
-  "bubbles_send_done": "Done",
+  "bubbles_send_done": "Sent",
   "@bubbles_send_done": {},
   "bubbles_send_failed": "Error",
   "@bubbles_send_failed": {},
