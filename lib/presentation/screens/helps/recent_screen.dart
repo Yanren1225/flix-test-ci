@@ -291,7 +291,7 @@ Widget build(BuildContext context) {
     } else if (_isCompressed(file['name'])) {
       iconPath = 'assets/images/zip_ic.svg';
     } else if (_isDoc(file['name'])) {
-      iconPath = 'assets/images/unknow.svg';
+      iconPath = 'assets/images/ic_txt.svg';
     } else {
       iconPath = 'assets/images/unknow.svg';
     }

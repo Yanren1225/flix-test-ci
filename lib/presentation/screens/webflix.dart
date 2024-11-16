@@ -40,6 +40,7 @@ class _FileUploadServerState extends State<FileUploadServer> {
           }
         }
       }
+      
 
       server = await HttpServer.bind(InternetAddress.anyIPv4, port);
       server!.listen((HttpRequest request) async {
@@ -100,7 +101,7 @@ class _FileUploadServerState extends State<FileUploadServer> {
       <style>
         body {
           font-family: Arial, sans-serif;
-          background-color: #f2f2f2;
+          background-color: #ffffff;
           margin: 0;
           padding: 0;
           display: flex;
@@ -117,10 +118,13 @@ class _FileUploadServerState extends State<FileUploadServer> {
           font-size: 18px;
           font-weight: bold;
           color: #000000;
-          box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
           flex-shrink: 0;
+          margin: auto; 
+          box-sizing: border-box;
         }
         .chat-container {
+          background-color: #F2F2F2;
+          margin: auto; 
           flex: 1;
           max-width: 600px;
           width: 100%;
@@ -136,19 +140,18 @@ class _FileUploadServerState extends State<FileUploadServer> {
           padding: 10px 15px;
           border-radius: 15px;
           max-width: 80%;
-          box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
           word-wrap: break-word;
           word-break: break-word;
         }
         .left {
           align-self: flex-start;
-          background-color: #a8e6cf;
-          color: #004d40;
+          background-color: #ffffff;
+          color: #000000;
         }
         .right {
           align-self: flex-end;
-          background-color: #d1e7ff;
-          color: #003366;
+          background-color: #007bff;
+          color: #ffffff;
         }
         .footer {
           width: 100%;
@@ -159,9 +162,9 @@ class _FileUploadServerState extends State<FileUploadServer> {
           transform: translateX(-50%);
           display: flex;
           align-items: center;
-          background-color: #ffffff;
+          background-color: #F2F2F2;
           padding: 10px;
-          box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+         
           box-sizing: border-box;
           z-index: 10;
         }
@@ -326,12 +329,45 @@ class _FileUploadServerState extends State<FileUploadServer> {
                 Expanded(
                   child: TextField(
                     controller: _textController,
-                    decoration: InputDecoration(
-                      hintText: "",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                    ),
+                     style: TextStyle(
+                                            color: Theme.of(context)
+                                                .flixColors
+                                                .text
+                                                .primary,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal),
+                                            
+                  keyboardType: TextInputType.multiline,
+                                    minLines: null,
+                                    maxLines: null,
+                                    decoration: InputDecoration(
+                                        isDense: true,
+                                        // hintText: 'Input something.',
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide.none,
+                                          gapPadding: 0,
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        filled: true,
+                                        fillColor: Theme.of(context)
+                                            .flixColors
+                                            .background
+                                            .primary,
+                                        hoverColor: Colors.transparent,
+                                        contentPadding: EdgeInsets.only(
+                                            left: 12,
+                                            right: 12,
+                                            top: 8,
+                                            bottom: Platform.isMacOS ||
+                                                    Platform.isWindows ||
+                                                    Platform.isLinux
+                                                ? 16
+                                                : 8)),
+                                    cursorColor: Theme.of(context)
+                                        .flixColors
+                                        .text
+                                        .primary,
                   ),
                 ),
                 SizedBox(width: 8.0),
