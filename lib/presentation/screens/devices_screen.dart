@@ -313,11 +313,13 @@ class _DeviceScreenState extends State<DeviceScreen>
                     AsyncSnapshot<WifiOrApName> snapshot) {
                   final isAp = snapshot.requireData.isAp;
                   String name = snapshot.requireData.name;
+                  String wifiname = deviceProvider.wifiName;
                   if (name.isEmpty) {
                     name = S.of(context).device_ap_connected;
                   }
                   if(Platform.isWindows){
                     name = utf8.decode(snapshot.requireData.name.runes.toList());
+                    wifiname = utf8.decode(deviceProvider.wifiName.runes.toList());
                   }
                   return IconLabelButton(
                     icon: isAp
@@ -332,7 +334,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                           deviceProvider.apName,
                           deviceProvider.wifiName.isEmpty
                               ? S.of(context).device_wifi_connected
-                              : deviceProvider.wifiName);
+                              : wifiname);
                     },
                   );
                 });
