@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:flix/domain/device/device_profile_repo.dart';
@@ -51,7 +52,17 @@ class _FileUploadServerState extends State<FileUploadServer> {
       server = await HttpServer.bind(InternetAddress.anyIPv4, port);
       server!.listen((HttpRequest request) async {
         print(request.uri.path);
-        if (request.uri.path == '/$randomNumber') {
+        if (request.uri.path == '/validate-code') {
+    String body = await utf8.decoder.bind(request).join();
+    Map<String, dynamic> data = jsonDecode(body);
+    if (data['code'] == randomNumber.toString()) {
+        request.response.statusCode = HttpStatus.ok;
+    } else {
+        request.response.statusCode = HttpStatus.unauthorized;
+    }
+    await request.response.close();
+}
+        else if (request.uri.path == '/$randomNumber') {
           request.response.headers.contentType = ContentType.html;
           request.response.write(_generateChatHtml());
           request.response.close();
@@ -251,16 +262,27 @@ class _FileUploadServerState extends State<FileUploadServer> {
     </div>
 
     <script>
-        function redirect(event) {
-            event.preventDefault();
-            const ip = document.getElementById('ipInput').value.trim();
-            if (ip == $randomNumber) {
+    async function redirect(event) {
+        event.preventDefault();
+        const ip = document.getElementById('ipInput').value.trim();
+        try {
+            const response = await fetch('/validate-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: ip })
+            });
+            if (response.ok) {
                 window.location.href = "/" + ip;
             } else {
                 alert("连接码错误，请重新输入！");
             }
+        } catch (e) {
+            console.error("请求失败：", e);
+            alert("连接码验证失败，请稍后再试！");
         }
-    </script>
+    }
+</script>
+
 </body>
 </html>
 
