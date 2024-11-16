@@ -316,11 +316,14 @@ class _DeviceScreenState extends State<DeviceScreen>
                   if (name.isEmpty) {
                     name = S.of(context).device_ap_connected;
                   }
+                  if(Platform.isWindows){
+                    name = utf8.decode(snapshot.requireData.name.runes.toList());
+                  }
                   return IconLabelButton(
                     icon: isAp
                         ? 'assets/images/ic_ap.svg'
                         : 'assets/images/ic_wifi.svg',
-                    label: utf8.decode(snapshot.requireData.name.runes.toList()),
+                    label: name,
                     iconColor: FlixColor.blue,
                     isLeft: false,
                     onTap: () {
