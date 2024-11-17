@@ -307,10 +307,10 @@ msix_config:
   store: true
   languages: zh-CN
 
-
 flutter_icons:
   android: true 
   ios: false   
   adaptive_icon_background: "#FFFFFF" 
-  adaptive_icon_foreground: "assets/images/iconforeground.webp" # 前景图
-  image_path: "assets/images/flix_logo.webp" # 备用的普通图标
+  adaptive_icon_foreground: "assets/images/iconforeground.webp" 
+  image_path: "assets/images/flix_logo.webp"
+  adaptive_icon_monochrome: "assets/images/monochrome.webp"
