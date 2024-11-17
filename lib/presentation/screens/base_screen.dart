@@ -72,7 +72,7 @@ Future<bool> checkStoragePermission(BuildContext? context,
           return true;
         }
       } else {
-        return true;
+        return await checkStoragePermissionOnOldPlatform(context);
       }
     } else {
       return await checkStoragePermissionOnOldPlatform(context);
@@ -82,11 +82,11 @@ Future<bool> checkStoragePermission(BuildContext? context,
 }
 
 Future<bool> checkStoragePermissionOnOldPlatform(BuildContext? context) async {
-  if (context == null) {
+  if (context != null) {
     return await checkPermission(
         context,
         [Permission.storage],
-        S.of(context!).base_storage_permission,
+        S.of(context).base_storage_permission,
         S.of(context).base_storage_permission_des);
   }
   //TODO: 更好的国际化
