@@ -21,6 +21,7 @@ import '../../../../l10n/l10n.dart';
 import '../../../../main.dart';
 import '../../../../network/multicast_client_provider.dart';
 import '../../intro_screen.dart';
+import 'dev_config.dart';
 
 class ClientInfoPage extends StatefulWidget {
   final void Function(BuildContext)? onClosePressed;
@@ -52,6 +53,8 @@ class ClientInfoPageState extends State<ClientInfoPage> {
   List<NetworkInterface> networkInfo = [];
 
   bool showLocalhost = false;
+
+  List<String> sharedPrefs = [];
 
   void _onDeviceListChangedD(Set<DeviceModal> devices) {
     setState(() {
@@ -113,6 +116,13 @@ class ClientInfoPageState extends State<ClientInfoPage> {
         .then((List<NetworkInterface> data) {
       setState(() {
         networkInfo = data;
+      });
+    });
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+      sharedPrefs = [];
+      prefs.getKeys().forEach((key) {
+        sharedPrefs.add(
+            "key: $key, type: ${prefs.get(key).runtimeType}, value: ${prefs.get(key)}");
       });
     });
   }
@@ -208,6 +218,24 @@ class ClientInfoPageState extends State<ClientInfoPage> {
               ],
               onItemSelected: (index) async {
                 LangConfig.set(S.delegate.supportedLocales[index]);
+              }),
+        ),
+        Item95(
+          label: "开发者",
+          menu: Menu95(
+              items: [
+                MenuItem95(
+                  value: 0,
+                  label: "关闭开发者模式",
+                )
+              ],
+              onItemSelected: (index) {
+                switch (index) {
+                  case 0:
+                    DevConfig.instance.disableDev();
+                    widget.onClosePressed?.call(context);
+                    break;
+                }
               }),
         )
       ]),
@@ -345,6 +373,9 @@ class ClientInfoPageState extends State<ClientInfoPage> {
                         "deviceModel: ${deviceInfo?.deviceModel}",
                         "androidSdkInt: ${deviceInfo?.androidSdkInt}",
                       ])),
+                  infoBox(
+                      "Shared Preferences",
+                      joinList(sharedPrefs)),
                 ],
               ),
             ),

@@ -121,6 +121,8 @@ class SettingsScreenState extends State<SettingsScreen> {
         version.value = packageInfo.version;
       });
     }
+
+    DevConfig.instance.addListener(_onDevConfigChange);
   }
 
   Future<void> _checkLoginStatus() async {
@@ -133,9 +135,14 @@ class SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  void _onDevConfigChange() {
+    setState(() {});
+  }
+
   @override
   void dispose() {
     deviceNameSubscription?.cancel();
+    DevConfig.instance.removeListener(_onDevConfigChange);
     super.dispose();
   }
 
@@ -253,8 +260,7 @@ class SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-
-             Visibility(
+            Visibility(
               visible: !showCustomSaveDir,
               child: Padding(
                 padding: const EdgeInsets.only(left: 16, right: 16),
@@ -265,37 +271,30 @@ class SettingsScreenState extends State<SettingsScreen> {
                     return ClickableItem(
                         label: S.of(context).setting_receive_folder,
                         iconPath: 'assets/images/where_save.svg',
-                      
                         topRadius: false,
                         //bottomRadius: !showAutoSaveMedia,
                         bottomRadius: false,
                         onClick: () async {
                           const String settingsUrl = 'app-settings:';
-    if (await canLaunchUrl(Uri.parse(settingsUrl))) {
-      await launchUrl(Uri.parse(settingsUrl));
-    } 
+                          if (await canLaunchUrl(Uri.parse(settingsUrl))) {
+                            await launchUrl(Uri.parse(settingsUrl));
+                          }
                         });
                   },
                 ),
               ),
             ),
 
-            
-
-           Container(
-                color: Theme.of(context).flixColors.background.primary,
-                margin: const EdgeInsets.only(left: 16, right: 16),
-                child: Container(
-                  height: 0.5,
-                  color: Theme.of(context)
-                      .flixColors
-                      .text
-                      .tertiary
-                      .withOpacity(0.1),
-                  margin: const EdgeInsets.only(left: 16),
-                ),
+            Container(
+              color: Theme.of(context).flixColors.background.primary,
+              margin: const EdgeInsets.only(left: 16, right: 16),
+              child: Container(
+                height: 0.5,
+                color:
+                    Theme.of(context).flixColors.text.tertiary.withOpacity(0.1),
+                margin: const EdgeInsets.only(left: 16),
               ),
-            
+            ),
 
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 0, right: 16),
@@ -722,8 +721,6 @@ class SettingsScreenState extends State<SettingsScreen> {
                         bottomRadius: false,
                         onClick: widget.goLoginPage),
                   ),
-                
-                
                   Container(
                     color: Theme.of(context).flixColors.background.primary,
                     margin: const EdgeInsets.only(left: 16, right: 16),
@@ -745,8 +742,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                         bottomRadius: false,
                         onClick: widget.goCloudScreenPage),
                   ),
-
- Container(
+                  Container(
                     color: Theme.of(context).flixColors.background.primary,
                     margin: const EdgeInsets.only(left: 16, right: 16),
                     child: Container(
@@ -759,13 +755,12 @@ class SettingsScreenState extends State<SettingsScreen> {
                       margin: const EdgeInsets.only(left: 16),
                     ),
                   ),
-
-                   Padding(
+                  Padding(
                     padding: const EdgeInsets.only(left: 16, right: 16),
                     child: ClickableItem(
                         label: 'Web版',
                         topRadius: false,
-                        onClick:widget.goFileUploadServer),
+                        onClick: widget.goFileUploadServer),
                   ),
                 ],
               ),

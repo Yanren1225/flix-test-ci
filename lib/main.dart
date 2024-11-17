@@ -320,6 +320,10 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   // This widget is the root of your application.
 
+  void _onLangChange() {
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
@@ -339,18 +343,13 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
         );
       });
     }
-
-    // 关联 setState 实现自动刷新, 需在每个 App 根布局添加
-    LangConfig.link(setState);
+    LangConfig.link(_onLangChange);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-
-    // 取消关联 setState, 需在每个 App 根布局添加
-    LangConfig.unlink(setState);
-
+    LangConfig.unlink(_onLangChange);
     super.dispose();
   }
 
