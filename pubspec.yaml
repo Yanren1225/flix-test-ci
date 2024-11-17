@@ -232,7 +232,7 @@ dev_dependencies:
   riverpod_generator: ^2.4.2
 
   freezed: ^2.5.7
-
+  flutter_launcher_icons: ^0.14.1
 
   #  flutter_test:
   #    sdk: flutter
@@ -306,3 +306,11 @@ msix_config:
   logo_path: D:\dev\flix.png
   store: true
   languages: zh-CN
+
+
+flutter_icons:
+  android: true 
+  ios: false   
+  adaptive_icon_background: "#FFFFFF" 
+  adaptive_icon_foreground: "assets/images/iconforeground.webp" # 前景图
+  image_path: "assets/images/flix_logo.webp" # 备用的普通图标
