@@ -79,7 +79,7 @@ class NameEditBottomSheetState extends State<DevNewLocaleBottomSheet> {
       }
     }
     if (newLangAvailable) {
-      LangConfig.instance.setLang(newLocale);
+      LangConfig.set(newLocale);
       FlixToast.instance.info("修改成功");
     } else {
       FlixToast.instance.alert("语言不可用");

@@ -207,7 +207,7 @@ class ClientInfoPageState extends State<ClientInfoPage> {
                   )
               ],
               onItemSelected: (index) async {
-                LangConfig.instance.setLang(S.delegate.supportedLocales[index]);
+                LangConfig.set(S.delegate.supportedLocales[index]);
               }),
         )
       ]),

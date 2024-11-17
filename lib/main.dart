@@ -73,7 +73,7 @@ Future<void> main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await initWindowManager(arguments.contains(kAppTrayModeArg));
-  isFirstRun =  prefs.getBool('isFirstRun') ?? true;
+  isFirstRun = prefs.getBool('isFirstRun') ?? true;
   runApp(MyApp());
 }
 
@@ -341,7 +341,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
     }
 
     // 关联 setState 实现自动刷新, 需在每个 App 根布局添加
-    LangConfig.instance.linkSetState(setState);
+    LangConfig.link(setState);
   }
 
   @override
@@ -349,7 +349,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
 
     // 取消关联 setState, 需在每个 App 根布局添加
-    LangConfig.instance.unlinkSetState(setState);
+    LangConfig.unlink(setState);
 
     super.dispose();
   }
@@ -394,7 +394,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   supportedLocales: S.delegate.supportedLocales,
                   theme:
                       (userDarkMode ? flixDark(context) : flixLight(context)),
-                  locale: LangConfig.instance.current,
+                  locale: LangConfig.lang,
                   // initialRoute: 'home',
                   routes: {"/main": (context) => const MainScreen()},
                   builder: FToastBuilder(),
