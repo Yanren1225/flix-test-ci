@@ -112,7 +112,7 @@ class PickActionAreaState extends State<PickActionsArea> {
       if (await FlixPermissionUtils.checkPhotosPermission(context)) {
         try {
           final List<XFile> pickedFileList = await _picker.pickMultiImage(
-              requestFullMetadata: true, limit: MAX_ASSETS);
+              requestFullMetadata: true, limit: MAX_ASSETS,imageQuality: 100);
           onPicked([
             for (final f in pickedFileList)
               PickableFile(
@@ -136,7 +136,7 @@ class PickActionAreaState extends State<PickActionsArea> {
       if (await FlixPermissionUtils.checkVideosPermission(context)) {
         // showMaskLoading(context);
         try {
-          var pickedFileList = await _picker.pickMultipleMedia();
+          var pickedFileList = await _picker.pickMultipleMedia(imageQuality: 100);
           List<PickableFile> pickableFileList = [];
           for (final f in pickedFileList) {
             if (f.name.isImgName()) {
