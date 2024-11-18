@@ -1,5 +1,7 @@
 /// LangConfig is a singleton class that holds the current language of the app.
 
+import 'dart:async';
+
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,10 +13,18 @@ final _supportLangNameMapping = {
   "ja": "日本語",
 };
 
+class LangData {
+  final bool ifFollowSystem;
+  final Locale? lang;
+
+  LangData(this.ifFollowSystem, this.lang);
+}
+
 /// LangConfig is a singleton class that holds the current language of the app.
 /// 管理当前语言的单例类
 class LangConfig extends ChangeNotifier {
   Locale? _lang;
+  final _langStream = StreamController<LangData>.broadcast();
   bool _followSystem = true;
 
   static LangConfig? _instance;
@@ -25,6 +35,9 @@ class LangConfig extends ChangeNotifier {
     _followSystem = false;
     _lang = newLang;
     _save();
+    _langStream.add(
+      LangData(_followSystem, _lang),
+    );
     notifyListeners();
   }
 
@@ -47,6 +60,9 @@ class LangConfig extends ChangeNotifier {
   void _setFollowSystem() {
     _followSystem = true;
     _save();
+    _langStream.add(
+      LangData(_followSystem, _lang),
+    );
     notifyListeners();
   }
 
@@ -86,6 +102,10 @@ class LangConfig extends ChangeNotifier {
     talker
         .debug("LangConfig save, lang = $_lang, followSystem = $_followSystem");
   }
+
+  static Stream<LangData> get langStream => instance._langStream.stream;
+
+  static LangData get langData => LangData(ifFollowSystem, lang);
 
   /// 获取 LangConfig 实例
   static LangConfig get instance {
