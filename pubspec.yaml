@@ -37,7 +37,7 @@ dependencies:
   flutter_svg: ^2.0.9
   provider: ^6.0.0
   lottie: ^3.0.0
-  image_picker: ^1.0.7
+  image_picker: 1.1.2
   screen_capturer: ^0.2.3
   roundcheckbox: ^2.0.5
   hotkey_manager: ^0.2.3

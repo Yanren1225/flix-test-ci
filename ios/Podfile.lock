@@ -118,6 +118,8 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 7.13)
     - nanopb (< 2.30911.0, >= 2.30908.0)
     - PromisesSwift (~> 2.1)
+  - flix_rust (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
   - flutter_foreground_task (0.0.1):
     - Flutter
@@ -242,11 +244,11 @@ PODS:
     - SDWebImage/Core (~> 5.17)
   - share (0.0.1):
     - Flutter
-  - share_handler_ios (0.0.13):
+  - share_handler_ios (0.0.14):
     - Flutter
-    - share_handler_ios/share_handler_ios_models (= 0.0.13)
+    - share_handler_ios/share_handler_ios_models (= 0.0.14)
     - share_handler_ios_models
-  - share_handler_ios/share_handler_ios_models (0.0.13):
+  - share_handler_ios/share_handler_ios_models (0.0.14):
     - Flutter
     - share_handler_ios_models
   - share_handler_ios_models (0.0.9)
@@ -295,6 +297,7 @@ DEPENDENCIES:
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_crashlytics (from `.symlinks/plugins/firebase_crashlytics/ios`)
+  - flix_rust (from `.symlinks/plugins/flix_rust/ios`)
   - Flutter (from `Flutter`)
   - flutter_foreground_task (from `.symlinks/plugins/flutter_foreground_task/ios`)
   - flutter_icmp_ping (from `.symlinks/plugins/flutter_icmp_ping/ios`)
@@ -373,6 +376,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_core/ios"
   firebase_crashlytics:
     :path: ".symlinks/plugins/firebase_crashlytics/ios"
+  flix_rust:
+    :path: ".symlinks/plugins/flix_rust/ios"
   Flutter:
     :path: Flutter
   flutter_foreground_task:
@@ -452,6 +457,7 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 913cf60d0400ebd5d6b63a28b290372ab44590dd
   FirebaseRemoteConfigInterop: 6efda51fb5e2f15b16585197e26eaa09574e8a4d
   FirebaseSessions: dbd14adac65ce996228652c1fc3a3f576bdf3ecc
+  flix_rust: b3a495517b83bcd95c80d69517cb2e915f1a01e0
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_foreground_task: 21ef182ab0a29a3005cc72cd70e5f45cb7f7f817
   flutter_icmp_ping: 2b159955eee0c487c766ad83fec224ae35e7c935
@@ -481,7 +487,7 @@ SPEC CHECKSUMS:
   SDWebImage: a79252b60f4678812d94316c91da69ec83089c9f
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   share: 0b2c3e82132f5888bccca3351c504d0003b3b410
-  share_handler_ios: 088138c17ce73333b4875a35860cd52604041521
+  share_handler_ios: 6dd3a4ac5ca0d955274aec712ba0ecdcaf583e7c
   share_handler_ios_models: fc638c9b4330dc7f082586c92aee9dfa0b87b871
   share_plus: 8875f4f2500512ea181eef553c3e27dba5135aad
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
