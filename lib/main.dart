@@ -73,6 +73,7 @@ Future<void> main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await initWindowManager(arguments.contains(kAppTrayModeArg));
+  await LangConfig.init();
   isFirstRun = prefs.getBool('isFirstRun') ?? true;
   runApp(MyApp());
 }

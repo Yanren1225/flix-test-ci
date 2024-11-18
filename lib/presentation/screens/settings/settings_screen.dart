@@ -656,7 +656,10 @@ class SettingsScreenState extends State<SettingsScreen> {
                     child: ClickableItem(
                         label: '语言',
                         tail: () {
-                          var lang = LangConfig.instance.current;
+                          if (LangConfig.ifFollowSystem) {
+                            return "跟随系统";
+                          }
+                          var lang = LangConfig.lang;
                           var sysLang =
                               Localizations.localeOf(context).toString();
                           if (lang == null) {

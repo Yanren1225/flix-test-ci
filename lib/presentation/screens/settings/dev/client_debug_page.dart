@@ -208,15 +208,26 @@ class ClientInfoPageState extends State<ClientInfoPage> {
           label: "语言",
           menu: Menu95(
               items: [
+                MenuItem95(value: -1, label: "跟随系统"),
                 for (var index = 0;
                     index < S.delegate.supportedLocales.length;
                     index++)
                   MenuItem95(
                     value: index,
-                    label: S.delegate.supportedLocales[index].toString(),
+                    label: (() {
+                      final lang = S.delegate.supportedLocales[index];
+                      if (lang.nameable) {
+                        return "${lang.name}(${lang.toString()})";
+                      }
+                      return lang.toString();
+                    }).call(),
                   )
               ],
               onItemSelected: (index) async {
+                if (index == -1) {
+                  LangConfig.followSystem();
+                  return;
+                }
                 LangConfig.set(S.delegate.supportedLocales[index]);
               }),
         ),
@@ -373,9 +384,7 @@ class ClientInfoPageState extends State<ClientInfoPage> {
                         "deviceModel: ${deviceInfo?.deviceModel}",
                         "androidSdkInt: ${deviceInfo?.androidSdkInt}",
                       ])),
-                  infoBox(
-                      "Shared Preferences",
-                      joinList(sharedPrefs)),
+                  infoBox("Shared Preferences", joinList(sharedPrefs)),
                 ],
               ),
             ),
