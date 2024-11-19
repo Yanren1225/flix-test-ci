@@ -349,7 +349,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                 AndroidUtils.openWifiSettings();
               },
             );
-          }else if (connectivityResult == ConnectivityResult.ethernet || connectivityResult == ConnectivityResult.other) {
+          }else  if ((connectivityResult == ConnectivityResult.ethernet || connectivityResult == ConnectivityResult.other) && isDesktop()) {    
             return IconLabelButton(
               icon: 'assets/images/ethernet.svg',
               label: '已连接网络',
