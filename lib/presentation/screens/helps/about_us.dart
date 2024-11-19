@@ -48,7 +48,6 @@ class AboutUSScreenState extends State<AboutUSScreen> {
   Widget build(BuildContext context) {
     return NavigationScaffold(
         showBackButton: widget.showBack,
-        toolbarCoverBody: true,
         onClearThirdWidget: clearThirdWidget,
         title: S.of(context).help_about,
         builder: (padding) {
@@ -69,6 +68,7 @@ class AboutUSScreenState extends State<AboutUSScreen> {
                   parent: BouncingScrollPhysics(
                       decelerationRate: ScrollDecelerationRate.fast)),
               padding: padding.copyWith(
+                top: 0,
                   bottom: padding.bottom +
                       MediaQuery.of(context).padding.bottom +
                       20),
