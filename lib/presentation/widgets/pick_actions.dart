@@ -111,14 +111,29 @@ class PickActionAreaState extends State<PickActionsArea> {
     if (context.mounted) {
       if (await FlixPermissionUtils.checkPhotosPermission(context)) {
         try {
-          final List<XFile> pickedFileList = await _picker.pickMultiImage(
+          if (Platform.isAndroid || Platform.isIOS) {
+            final List<AssetEntity>? result = await AssetPicker.pickAssets(
+              context,
+              pickerConfig: const AssetPickerConfig(
+                  requestType: RequestType.image, maxAssets: MAX_ASSETS),
+            );
+            _isImageLoading = true;
+            for (final f in (result ?? <AssetEntity>[])) {
+              onPicked([
+                PickableFile(
+                    type: PickedFileType.Image, content: await f.toFileMeta())
+              ]);
+            }
+
+            _isImageLoading = false;
+          } else {final List<XFile> pickedFileList = await _picker.pickMultiImage(
               requestFullMetadata: true, limit: MAX_ASSETS,imageQuality: 100);
           onPicked([
             for (final f in pickedFileList)
               PickableFile(
                   type: PickedFileType.Image,
                   content: await f.toFileMeta(isImg: true))
-          ]);
+          ]);}
         } catch (e, stack) {
           talker.error("pick images failed: $e, $stack", e, stack);
           setState(() {
@@ -136,21 +151,36 @@ class PickActionAreaState extends State<PickActionsArea> {
       if (await FlixPermissionUtils.checkVideosPermission(context)) {
         // showMaskLoading(context);
         try {
-          var pickedFileList = await _picker.pickMultipleMedia(imageQuality: 100);
-          List<PickableFile> pickableFileList = [];
-          for (final f in pickedFileList) {
-            if (f.name.isImgName()) {
-              pickableFileList.add(PickableFile(
-                  type: PickedFileType.Image,
-                  content: await f.toFileMeta(isImg: true)));
+          if (Platform.isAndroid || Platform.isIOS) {
+            final List<AssetEntity>? result = await AssetPicker.pickAssets(
+              context,
+              pickerConfig: AssetPickerConfig(
+                  requestType: RequestType.video,
+                  maxAssets: MAX_ASSETS,
+                  filterOptions: FilterOptionGroup(containsLivePhotos: false)),
+            );
+            _isVideoLoading = true;
+            for (final f in (result ?? <AssetEntity>[])) {
+              onPicked([
+                PickableFile(
+                    type: PickedFileType.Video, content: await f.toFileMeta())
+              ]);
             }
-            if (f.name.isVideoName()) {
-              pickableFileList.add(PickableFile(
-                  type: PickedFileType.Video,
-                  content: await f.toFileMeta(isVideo: true)));
+            _isVideoLoading = false;
+          } else {
+            final XFile? pickedFile =
+                await _picker.pickVideo(source: ImageSource.gallery);
+            talker.debug('video selected: ${pickedFile?.path}');
+            if (pickedFile != null) {
+              onPicked([
+                PickableFile(
+                    type: PickedFileType.Video,
+                    content: await pickedFile.toFileMeta(isVideo: true))
+              ]);
+            } else {
+              talker.error("pick video failed, return null");
             }
           }
-          onPicked(pickableFileList);
         } catch (e) {
           talker.error("pick video failed: ", e);
           setState(() {
