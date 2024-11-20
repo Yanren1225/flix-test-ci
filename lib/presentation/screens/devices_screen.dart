@@ -178,8 +178,9 @@ class _DeviceScreenState extends State<DeviceScreen>
                           fontSize: 12,
                         ),
                       ),
-                    
-                      Align(
+                    Visibility(
+                      visible: false,
+                      child: Align(
                         alignment: Alignment.centerRight, 
                         child: SizedBox(
                           width: 55, 
@@ -210,7 +211,8 @@ class _DeviceScreenState extends State<DeviceScreen>
                             ),
                           ),
                         ),
-                      ),
+                      ),)
+                      
                     ],
                   ),
                 ),
@@ -418,55 +420,52 @@ class _DeviceScreenState extends State<DeviceScreen>
     }
   }
 
-  Future<void> runFirewallScript() async {
-    String exePath = Platform.resolvedExecutable.replaceAll('/', '\\').toLowerCase();
-    try {
+ Future<void> runFirewallScript() async {
+  String exePath = Platform.resolvedExecutable.replaceAll('/', '\\').toLowerCase();
 
-      final tempDir = await getTemporaryDirectory();
-      final scriptDirPath = '${tempDir.path}\\flix\\firewall';
-      final scriptDir = Directory(scriptDirPath);
+  try {
+    // 防火墙规则的 netsh 命令
+    final removeCommand = 'netsh advfirewall firewall delete rule name="flix"';
+    final addCommand =
+        'netsh advfirewall firewall add rule name="flix" dir=in action=allow program="$exePath" enable=yes';
 
-  
-      if (!scriptDir.existsSync()) {
-        await scriptDir.create(recursive: true);
-      }
+    // 构造任务名称
+    final taskName = 'FlixFirewallTask';
 
-    
-      final filePath = '${scriptDir.path}\\run_script.ps1';
-      final ps1File = File(filePath);
+    // 创建计划任务
+    final createTaskCommand = '''
+schtasks /create /tn "$taskName" /tr "cmd.exe /c $removeCommand && $addCommand" /sc once /rl highest /f /st 00:00
+''';
 
+    // 运行任务
+    final runTaskCommand = 'schtasks /run /tn "$taskName"';
 
-      final scriptContent = '''
-  Write-Output "正在添加Flix到防火墙，请勿关闭此窗口..."\r\n
-  Function Test-Admin {\r\n
-      \$currentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())\r\n
-      return \$currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)\r\n
-  }\r\n
-  \r\n
-  if (-not (Test-Admin)) {\r\n
-      Start-Process powershell -ArgumentList "-File `"\$PSCommandPath`"" -Verb RunAs\r\n
-      exit\r\n
-  }\r\n
-  \r\n
-  Remove-NetFirewallRule -DisplayName "flix"
-  \r\n
-  \r\n
-  New-NetFirewallRule -DisplayName "flix" -Direction Inbound -Program "$exePath" -Action Allow -Enabled True\r\n
-  ''';
+    // 删除任务
+    final deleteTaskCommand = 'schtasks /delete /tn "$taskName" /f';
 
+    // 执行创建任务的命令
+    final createResult = await Process.run('cmd.exe', ['/c', createTaskCommand], runInShell: true);
 
-      final bom = [0xEF, 0xBB, 0xBF];
-      await ps1File.writeAsBytes(bom + utf8.encode(scriptContent), mode: FileMode.write);
-
-
-      await Process.run('powershell', ['-File', filePath]);
-      setState(() {
-        isFirewallAllowed = true;
-      });
-      await checkFirewall();
-    } catch (e) {
+    if (createResult.exitCode != 0) {
+      print('Failed to create scheduled task. Error: ${createResult.stderr}');
+      return;
     }
+
+    // 立即运行任务
+    final runResult = await Process.run('cmd.exe', ['/c', runTaskCommand], runInShell: true);
+
+    if (runResult.exitCode == 0) {
+      print("Firewall rule added successfully!");
+    } else {
+      print("Failed to run scheduled task. Error: ${runResult.stderr}");
+    }
+
+    // 删除任务
+    await Process.run('cmd.exe', ['/c', deleteTaskCommand], runInShell: true);
+  } catch (e) {
+    print("Exception occurred: $e");
   }
+}
 
   @override
   void initState() {
