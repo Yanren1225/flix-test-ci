@@ -75,7 +75,12 @@ Future<void> main(List<String> arguments) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await initWindowManager(arguments.contains(kAppTrayModeArg));
   await LangConfig.init();
+   // For hot reload, `unregisterAll()` needs to be called.
+    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+      await hotKeyManager.unregisterAll();
+    }
   isFirstRun = prefs.getBool('isFirstRun') ?? true;
+
   runApp(MyApp());
 }
 
@@ -97,11 +102,9 @@ Future<void> initAllConfig() async {
     _initSystemChrome();
     _initUriNavigator();
     await RustLib.init();
+
     await startWebServer();
-    // For hot reload, `unregisterAll()` needs to be called.
-    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-      await hotKeyManager.unregisterAll();
-    }
+    
   } catch (e, s) {
     talker.error('launch error', e, s);
   }
