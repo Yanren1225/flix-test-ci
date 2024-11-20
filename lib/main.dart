@@ -24,6 +24,7 @@ import 'package:flix/domain/settings/settings_repo.dart';
 import 'package:flix/domain/ship_server/ship_service_lifecycle_watcher.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/domain/uri_router.dart';
+import 'package:flix/domain/web_server.dart';
 import 'package:flix/domain/window/flix_window_manager.dart';
 import 'package:flix/l10n/l10n.dart';
 import 'package:flix/l10n/lang_config.dart';
@@ -96,7 +97,7 @@ Future<void> initAllConfig() async {
     _initSystemChrome();
     _initUriNavigator();
     await RustLib.init();
-
+    await startWebServer();
     // For hot reload, `unregisterAll()` needs to be called.
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       await hotKeyManager.unregisterAll();
