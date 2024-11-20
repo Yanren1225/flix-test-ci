@@ -155,7 +155,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                     ],
                   ),
                 ),
-                if (!isFirewallAllowed)
+                if (!isFirewallAllowed)              
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   padding: const EdgeInsets.all(10),
@@ -408,6 +408,7 @@ class _DeviceScreenState extends State<DeviceScreen>
               Get-NetFirewallRule | Where-Object { \$_.DisplayName -like "flix" -and \$_.Enabled -eq "True" -and \$_.Action -eq "Allow" } | Get-NetFirewallApplicationFilter | Where-Object { \$_.Program -eq "$exePath" };
               '''
         ]);
+        
         if (result.stdout != null &&
             result.stdout.toString().toLowerCase().contains(exePath)) {
           return true;
@@ -513,7 +514,7 @@ schtasks /create /tn "$taskName" /tr "cmd.exe /c $removeCommand && $addCommand" 
       bool isAllowed = await checkFirewall();
       if (mounted) {
         setState(() {
-          isFirewallAllowed = isAllowed;
+       //   isFirewallAllowed = isAllowed;
         });
       }
     }
