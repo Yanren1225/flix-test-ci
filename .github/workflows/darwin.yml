@@ -122,4 +122,15 @@ jobs:
           asset_path: build/macos/Build/Products/Release/flix.dmg
           asset_name: flix.dmg
           asset_content_type: application/octet-stream
+      - name: Upload R2
+        if: ${{ inputs.up_load }}
+        uses: magicwallet/r2-upload@main
+        with:
+          endpoint: ${{ secrets.R2_ENDPOINT }}
+          access_key_id: ${{ secrets.R2_KEY }}
+          secret_access_key: ${{ secrets.R2_SECRET }}
+          file: build/macos/Build/Products/Release/flix.dmg
+          bucket: flix
+          destination: /$(date +'%Y-%m-%d-%H')-${{ github.sha }}
+
 

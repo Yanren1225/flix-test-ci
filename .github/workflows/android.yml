@@ -90,3 +90,23 @@ jobs:
         with:
           name: android-appbundle
           path: build/app/outputs/bundle/release/
+      - name: Upload R2
+        if: ${{ inputs.up_load }}
+        uses: magicwallet/r2-upload@main
+        with:
+          endpoint: ${{ secrets.R2_ENDPOINT }}
+          access_key_id: ${{ secrets.R2_KEY }}
+          secret_access_key: ${{ secrets.R2_SECRET }}
+          file: build/app/outputs/bundle/release/*
+          bucket: flix
+          destination: /$(date +'%Y-%m-%d-%H')-${{ github.sha }}
+      - name: Upload R2
+        if: ${{ inputs.up_load }}
+        uses: magicwallet/r2-upload@main
+        with:
+          endpoint: ${{ secrets.R2_ENDPOINT }}
+          access_key_id: ${{ secrets.R2_KEY }}
+          secret_access_key: ${{ secrets.R2_SECRET }}
+          file: build/app/outputs/flutter-apk/*
+          bucket: flix
+          destination: /$(date +'%Y-%m-%d-%H')-${{ github.sha }}

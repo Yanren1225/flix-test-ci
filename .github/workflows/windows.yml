@@ -59,3 +59,27 @@ jobs:
         with:
           name: windows-portable
           path: ./scripts/Installer/portable
+      - name: Upload R2
+        if: ${{ inputs.up_load }}
+        uses: magicwallet/r2-upload@main
+        with:
+          endpoint: ${{ secrets.R2_ENDPOINT }}
+          access_key_id: ${{ secrets.R2_KEY }}
+          secret_access_key: ${{ secrets.R2_SECRET }}
+          file: scripts/Installer/publish/*
+          bucket: flix
+          destination: /$(date +'%Y-%m-%d-%H')-${{ github.sha }}
+      #zip ./scripts/Installer/portable/flix to win_portable.zip
+      - name: Zip Portable Package
+        if: ${{ inputs.up_load && inputs.portable }}
+        run: Compress-Archive -Path ./scripts/Installer/portable/flix -DestinationPath ./win_portable.zip
+      - name: Upload R2
+        if: ${{ inputs.up_load }}
+        uses: magicwallet/r2-upload@main
+        with:
+          endpoint: ${{ secrets.R2_ENDPOINT }}
+          access_key_id: ${{ secrets.R2_KEY }}
+          secret_access_key: ${{ secrets.R2_SECRET }}
+          file: ./win_portable.zip
+          bucket: flix
+          destination: /$(date +'%Y-%m-%d-%H')-${{ github.sha }}
