@@ -138,7 +138,7 @@ Future<void> copyDirectory(Directory source, Directory destination) async {
       await copyDirectory(
           entity, Directory('${destination.path}\\${entity.path.split('\\').last}'));
     } else if (entity is File) {
-      await entity.copy('${destination.path}\\${entity.path.split('\\').last}');
+      await entity.copy('${destination.path}\\${entity.path.split('\\').last}'.replaceAll('\\\\', '\\'));
     }
   }
 }

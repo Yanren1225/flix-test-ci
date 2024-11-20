@@ -24,7 +24,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@main
       - name: install keybinder
-        run: sudo apt-get install -y libkeybinder-3.0-dev
+        run: apt update && apt install -y libkeybinder-3.0-dev
       - name: install rust
         run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf > rustup.sh && sh rustup.sh -y && echo 'source $HOME/.cargo/env' >> /etc/bash.bashrc
       - run: flutter channel stable
@@ -42,16 +42,6 @@ jobs:
         with:
           name: linux-deb
           path: dist/
-      - name: Upload R2
-        if: ${{ inputs.up_load }}
-        uses: magicwallet/r2-upload@main
-        with:
-          endpoint: ${{ secrets.R2_ENDPOINT }}
-          access_key_id: ${{ secrets.R2_KEY }}
-          secret_access_key: ${{ secrets.R2_SECRET }}
-          file: dist/*
-          bucket: flix
-          destination: /$(date +'%Y-%m-%d-%H')-${{ github.sha }}
 
   linux-rpm:
     runs-on: ubuntu-latest
@@ -61,7 +51,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@main
       - name: install keybinder
-        run: sudo dnf install -y keybinder-3.0-devel
+        run: dnf install -y keybinder-3.0-devel
       - name: install rust
         run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf > rustup.sh && sh rustup.sh -y && echo 'source $HOME/.cargo/env' >> /etc/bash.bashrc
       - run: flutter channel stable
@@ -79,13 +69,3 @@ jobs:
         with:
           name: linux-rpm
           path: dist/
-      - name: Upload R2
-        if: ${{ inputs.up_load }}
-        uses: magicwallet/r2-upload@main
-        with:
-          endpoint: ${{ secrets.R2_ENDPOINT }}
-          access_key_id: ${{ secrets.R2_KEY }}
-          secret_access_key: ${{ secrets.R2_SECRET }}
-          file: dist/*
-          bucket: flix
-          destination: /$(date +'%Y-%m-%d-%H')-${{ github.sha }}
