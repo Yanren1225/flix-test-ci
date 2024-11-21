@@ -26,12 +26,15 @@ import 'package:flix/presentation/screens/helps/recent_screen.dart';
 import 'package:flix/presentation/screens/paircode/add_device_screen.dart';
 import 'package:flix/presentation/screens/paircode/pair_code_screen.dart';
 import 'package:flix/presentation/screens/pick_device_screen.dart';
+import 'package:flix/presentation/screens/settings/aboutapp.dart';
 import 'package:flix/presentation/screens/settings/agreement.dart';
 import 'package:flix/presentation/screens/settings/cross_device_clipboard_screen.dart';
 import 'package:flix/presentation/screens/settings/dev/client_debug_page.dart';
 import 'package:flix/presentation/screens/settings/function.dart';
 import 'package:flix/presentation/screens/settings/general.dart';
 import 'package:flix/presentation/screens/settings/hotkey.dart';
+import 'package:flix/presentation/screens/settings/open.dart';
+import 'package:flix/presentation/screens/settings/permission.dart';
 import 'package:flix/presentation/screens/settings/pravicy.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
 import 'package:flix/presentation/screens/webflix.dart';
@@ -683,7 +686,36 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 context,
                 CupertinoPageRoute(
                     builder: (context) => FileUploadServer()));
-           },
+           }, goappinfo: () { 
+
+ Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => AppInfoScreen(
+                          showBack: true, goSettingPravicyScreen: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => const SettingPravicyScreen(
+                          showBack: true,
+                        ))); }, goSettingAgreementScreen: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => const SettingAgreementScreen(
+                          showBack: true,
+                        )));}, goOpensourceScreen: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => const OpensourceScreen(
+                          showBack: true,
+                        )));}, goPermissionScreen: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => const PermissionScreen(
+                          showBack: true,
+                        ))); },
+                        )));
+
+            },
         );
 
       default:
@@ -905,14 +937,14 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           },
           goSettingPravicyScreen: () {
             setState(() {
-              thirdWidget = SettingPravicyScreen(
+              thirdWidget = const SettingPravicyScreen(
                 showBack: false,
               );
             });
           },
           goSettingAgreementScreen: () {
             setState(() {
-              thirdWidget = SettingAgreementScreen(
+              thirdWidget = const SettingAgreementScreen(
                 showBack: false,
               );
             });
@@ -964,7 +996,32 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               thirdWidget = FileUploadServer(
                
               );
+            }); }, goappinfo: () { 
+  setState(() {
+              thirdWidget =  AppInfoScreen(
+                   showBack: false, goSettingPravicyScreen: () {  setState(() {
+              thirdWidget = const SettingPravicyScreen(
+                showBack: false,
+              );
+            }); }, goSettingAgreementScreen: () { setState(() {
+              thirdWidget = const SettingAgreementScreen(
+                showBack: false,
+              );
+            }); }, goOpensourceScreen: () {  setState(() {
+              thirdWidget = const OpensourceScreen(
+                showBack: false,
+              );
+            }); }, goPermissionScreen: () { setState(() {
+              thirdWidget = const PermissionScreen(
+                showBack: false,
+              );
             }); },
+                  );
+            });
+
+
+
+             },
         );
 
       default:

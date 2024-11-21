@@ -63,6 +63,7 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback goHotkeyScreen;
   final VoidCallback goClientDebugScreen;
   final VoidCallback goFileUploadServer;
+  final VoidCallback goappinfo;
 
   const SettingsScreen({
     super.key,
@@ -83,6 +84,7 @@ class SettingsScreen extends StatefulWidget {
     required this.goHotkeyScreen,
     required this.goClientDebugScreen,
     required this.goFileUploadServer,
+    required this.goappinfo,
   });
 
   @override
@@ -554,7 +556,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-
+  
             Padding(
                 padding: const EdgeInsets.only(
                     left: 16, right: 16, bottom: 16, top: 0),
@@ -584,7 +586,32 @@ class SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
             ),
-
+              Container(
+              color: Theme.of(context).flixColors.background.primary,
+              margin: const EdgeInsets.only(left: 16, right: 16),
+              child: Container(
+                height: 0.5,
+                color:
+                    Theme.of(context).flixColors.text.tertiary.withOpacity(0.1),
+                margin: const EdgeInsets.only(left: 16),
+              ),
+            ),
+Padding(
+              padding: const EdgeInsets.only(left: 16, top: 0, right: 16),
+              child: ValueListenableBuilder<String>(
+                valueListenable: version,
+                builder: (BuildContext context, String value, Widget? child) {
+                  return ClickableItem(
+                    label: '应用声明',
+                    topRadius: false,
+                    //tail: 'v$value',
+                    onClick: widget.goappinfo,
+                    iconPath: 'assets/images/function.svg',
+                    bottomRadius: Platform.isIOS,
+                  );
+                },
+              ),
+            ),
             Container(
               color: Theme.of(context).flixColors.background.primary,
               margin: const EdgeInsets.only(left: 16, right: 16),
@@ -802,6 +829,10 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ],
               ),
             ),
+            const SizedBox(height: 36,),
+Visibility(
+  visible: false,
+  child:
 
             Padding(
               padding: const EdgeInsets.only(
@@ -853,7 +884,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ],
                 ),
               ),
-            ),
+            ), )
           ],
         ),
       ),

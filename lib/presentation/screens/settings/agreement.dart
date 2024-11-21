@@ -54,7 +54,7 @@ class SettingAgreementScreenState extends State<SettingAgreementScreen> {
          onClearThirdWidget: clearThirdWidget,
         builder: (EdgeInsets padding) {
            return Container(
-            margin: const EdgeInsets.only( top: 10,right: 16,left: 16,bottom: 30),
+            margin: const EdgeInsets.only( top: 10,right: 16,left: 16,bottom: 0),
           width: double.infinity,
             child: SingleChildScrollView(
       child: Column(
@@ -148,7 +148,7 @@ class SettingAgreementScreenState extends State<SettingAgreementScreen> {
                     '用户QQ群1：539943326\n用户QQ群2：992894289\n用户QQ群3：779244909',),
 
                     const SizedBox(height: 10),
-                    buildSectionTitle('本协议适用于所有使用 Flix 的用户。'),
+                    buildSectionTitle('本协议适用于所有使用 Flix 的用户。\n\n'),
                 
               ],
       ),

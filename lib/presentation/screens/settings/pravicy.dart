@@ -52,7 +52,7 @@ class SettingPravicyScreenState extends State<SettingPravicyScreen> {
        onClearThirdWidget: clearThirdWidget,
         builder: (EdgeInsets padding) {
            return Container(
-            margin: const EdgeInsets.only( top: 10,right: 16,left: 16,bottom: 30),
+            margin: const EdgeInsets.only( top: 10,right: 16,left: 16,bottom: 0),
           width: double.infinity,
             child: pra(),
            );
@@ -120,7 +120,7 @@ class SettingPravicyScreenState extends State<SettingPravicyScreen> {
               '如您对本隐私政策有任何疑问或疑虑，请通过以下方式联系我们：\n用户QQ群1：539943326\n用户QQ群2：992894289\n用户QQ群3：779244909',
             ),
             const SizedBox(height: 10),
-            buildSectionTitle('本协议适用于所有使用 Flix 的用户。'),
+            buildSectionTitle('本协议适用于所有使用 Flix 的用户。\n\n'),
           ],
         ),
       ),
