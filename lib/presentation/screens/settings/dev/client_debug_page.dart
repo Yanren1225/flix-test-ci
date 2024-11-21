@@ -413,13 +413,17 @@ Widget infoBox(String title, String content) {
         Padding(
           padding: const EdgeInsets.only(top: 8),
           child: Elevation95(
-              type: Elevation95Type.down,
+            type: Elevation95Type.down,
+            child: SelectionArea(
               child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: text95(content),
-                  ))),
+                padding: const EdgeInsets.all(8),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: text95(content),
+                ),
+              ),
+            ),
+          ),
         ),
       ],
     ),
