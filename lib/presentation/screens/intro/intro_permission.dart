@@ -3,7 +3,9 @@ import 'package:flix/main.dart';
 import 'package:flix/presentation/screens/main_screen.dart';
 import 'package:flix/presentation/screens/settings/agreement.dart';
 import 'package:flix/presentation/screens/settings/pravicy.dart';
+import 'package:flix/presentation/widgets/flix_bottom_sheet.dart';
 import 'package:flix/theme/theme_extensions.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -303,6 +305,91 @@ class _IntroPermissionState extends State<IntroPermission> {
                         setState(() {
                           isChecked = selected!;
                         });
+                        if(isChecked){
+                        isChecked = false;
+                         showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext context) {
+      return FlixBottomSheet(
+        title: '隐私政策',
+        subTitle: '我们致力于保护您的隐私，请确保您已仔细阅读《隐私政策》，如同意请点击“同意”。',
+        buttonText: '同意',
+        onClickFuture: () async {
+          setState(() {
+              isChecked = true;
+            
+          });
+     
+      },
+        child: Padding(
+                 padding: const EdgeInsets.all(0.0),
+                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
+    children: [Padding(
+                  
+                                 padding: const EdgeInsets.only(
+                                     left: 28, right: 28, bottom: 10,top: 20),
+                                 child: SizedBox(
+                                   width: double.infinity,
+                                   child: CupertinoButton(
+                                     onPressed: () async {
+                                       Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const SettingPravicyScreen()),
+                                  );
+                                   
+                                     },
+                                     color: Theme.of(context).flixColors.text.secondary.withOpacity(0.1),
+                                     borderRadius: BorderRadius.circular(14),
+                                     padding: const EdgeInsets.symmetric(
+                                         horizontal: 24, vertical: 16),
+                                     child: Text(
+                                       '阅读《隐私政策》',
+                                       style:  TextStyle(
+                                               fontSize: 18,
+                                               fontWeight: FontWeight.w500,
+                                               letterSpacing: 0,
+                                               color: Theme.of(context).flixColors.text.primary,
+                                               decoration: TextDecoration.none)
+                                         
+                                     ),
+                                   ),
+                                 )),
+
+                                  Padding(
+                                 padding: const EdgeInsets.only(
+                                     left: 28, right: 28, bottom: 10,top: 0),
+                                 child: SizedBox(
+                                   width: double.infinity,
+                                   child: CupertinoButton(
+                                     onPressed: () async {
+                                      
+                                       Navigator.of(context).pop();
+                                     },
+                                     color: Theme.of(context).flixColors.text.secondary.withOpacity(0.1),
+                                     borderRadius: BorderRadius.circular(14),
+                                     padding: const EdgeInsets.symmetric(
+                                         horizontal: 24, vertical: 16),
+                                     child: Text(
+                                       '返回',
+                                       style:  TextStyle(
+                                               fontSize: 18,
+                                               fontWeight: FontWeight.w500,
+                                               letterSpacing: 0,
+                                               color: Theme.of(context).flixColors.text.primary,
+                                               decoration: TextDecoration.none)
+                                         
+                                     ),
+                                   ),
+                                 )),
+                  ]))
+
+                  
+      );
+    },
+  );}
                       },
                       checkedColor: const Color.fromARGB(255, 0, 122, 255),
                       uncheckedColor: Theme.of(context).flixColors.text.tertiary.withOpacity(0.08),
@@ -399,14 +486,17 @@ class _IntroPermissionState extends State<IntroPermission> {
                         child: ElevatedButton(
                          onPressed: isChecked
               ? () async {
-               
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+SharedPreferences prefs = await SharedPreferences.getInstance();
                   await prefs.setBool('isFirstRun', false);
 
                   Navigator.pushReplacementNamed(
                     navigatorKey.currentContext!,
                     "/main",
                   );
+               
+               
+               
                 }
               : null, 
                           style: ElevatedButton.styleFrom(
