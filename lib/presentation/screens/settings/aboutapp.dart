@@ -256,12 +256,34 @@ class AppInfoScreenState extends State<AppInfoScreen> {
                         const EdgeInsets.only(left: 16, top: 0, right: 16),
                     child: ClickableItem(
                         label: '应用权限',
-                        bottomRadius: true,
+                        bottomRadius: false,
                         topRadius: false,
                          onClick: () {
                           widget.goPermissionScreen();
                         }),
                   ),
+
+                   Container(
+                      margin: const EdgeInsets.only(left: 14),
+                      height: 0.5,
+                      color: const Color.fromRGBO(0, 0, 0, 0.08),
+                    ),
+
+ Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, top: 0, right: 16),
+                    child: ClickableItem(
+                        label: 'ICP备案号',
+                       tail: '鄂ICP备20011308号-5A',
+                        bottomRadius: true,
+                        topRadius: false,
+                         onClick: () {
+                            _launchURL('https://beian.miit.gov.cn');
+                        }),
+                  ),
+
+
+
                   ],
                 ),
               ],
@@ -272,17 +294,5 @@ class AppInfoScreenState extends State<AppInfoScreen> {
     );
   }
 
-  void showConfirmDeleteCacheBottomSheet() {
-    showCupertinoModalPopup(
-        context: context,
-        builder: (context) {
-          return ConfirmCleanCacheBottomSheet(
-            onConfirm: () async {
-              // PaintingBinding.instance.imageCache?.clear();
-              // PaintingBinding.instance.imageCache?.clearLiveImages();
-              deleteCache();
-            },
-          );
-        });
-  }
+  
 }

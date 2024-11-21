@@ -606,7 +606,7 @@ Padding(
                     topRadius: false,
                     //tail: 'v$value',
                     onClick: widget.goappinfo,
-                    iconPath: 'assets/images/function.svg',
+                    iconPath: 'assets/images/privacy.svg',
                     bottomRadius: Platform.isIOS,
                   );
                 },
