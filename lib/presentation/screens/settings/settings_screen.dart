@@ -135,6 +135,14 @@ class SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  void _launchURL(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw '无法打开 $url';
+  }
+}
+
   void _onDevConfigChange() {
     setState(() {});
   }
@@ -804,7 +812,13 @@ class SettingsScreenState extends State<SettingsScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                      onTap: widget.goSettingAgreementScreen,
+                      onTap: () {
+                        if (Platform.isAndroid) {
+                          _launchURL('http://verification.ifreedomer.com/flix/flix_agreement.html');
+                        } else {                      
+                          widget.goSettingAgreementScreen();
+                        }
+                      },
                       child: Text(
                         '用户协议',
                         style: TextStyle(
@@ -821,7 +835,13 @@ class SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: widget.goSettingPravicyScreen,
+                      onTap: () {
+                        if (Platform.isAndroid) {
+                          _launchURL('http://verification.ifreedomer.com/flix/flix_privacy.html');
+                        } else {                      
+                          widget.goSettingPravicyScreen();
+                        }
+                      },
                       child: Text(
                         '隐私政策',
                         style: TextStyle(
