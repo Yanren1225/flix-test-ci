@@ -72,7 +72,7 @@ Future<bool> checkStoragePermission(BuildContext? context,
           return true;
         }
       } else {
-        return await checkStoragePermissionOnOldPlatform(context);
+        return true;
       }
     } else {
       return await checkStoragePermissionOnOldPlatform(context);
