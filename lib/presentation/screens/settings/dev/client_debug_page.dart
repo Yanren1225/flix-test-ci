@@ -84,6 +84,11 @@ class ClientInfoPageState extends State<ClientInfoPage> {
   }
 
   void initAsync() async {
+    // ignore: no_leading_underscores_for_local_identifiers
+    final _showLocalhost = await checkIfLocalhostDeviceAdded();
+    setState(() {
+      showLocalhost = _showLocalhost;
+    });
     port = await shipService.getPort();
     PackageInfo.fromPlatform().then((PackageInfo info) {
       setState(() {
@@ -447,4 +452,15 @@ Future<DeviceModal> generateLocalhostDevice() async {
     port: await shipService.getPort(),
     ip: "127.0.0.1",
   );
+}
+
+Future<bool> checkIfLocalhostDeviceAdded() async {
+  var localhost = await generateLocalhostDevice();
+  final list = DeviceManager.instance.deviceList;
+  for (var device in list) {
+    if (device.fingerprint == localhost.fingerprint) {
+      return true;
+    }
+  }
+  return false;
 }
