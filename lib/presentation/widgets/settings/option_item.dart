@@ -4,6 +4,7 @@ import 'package:flix/presentation/widgets/settings/settings_label.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flix/utils/text/text_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:modals/modals.dart';
 
 class OptionData {
@@ -84,9 +85,13 @@ class OptionItem extends StatelessWidget {
               ),
               ModalAnchor(
                 tag: tag,
-                child: Icon(Icons.arrow_forward_ios_rounded,
-                    size: 16,
-                    color: Theme.of(context).flixColors.text.secondary),
+                child: SvgPicture.asset(
+                              'assets/images/choose.svg',
+                              height: 14.5,
+                          color: Theme.of(context).flixColors.text.secondary,
+                              width: 14.5,
+                            ),
+             
               )
             ],
           ),
