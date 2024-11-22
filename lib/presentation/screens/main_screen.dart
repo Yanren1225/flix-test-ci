@@ -305,7 +305,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
 
    Future<void> setLeftWidth() async {
     Size size = await windowManager.getSize();
-    double newWidth = size.width / 3 + 30;
+    double newWidth = size.width / 3 - 10;
     setState(() {
       _leftWidth = newWidth;
     });    
