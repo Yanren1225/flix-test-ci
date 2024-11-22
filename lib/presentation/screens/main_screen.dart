@@ -303,10 +303,21 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
     });
   }
 
+   Future<void> setLeftWidth() async {
+    Size size = await windowManager.getSize();
+    double newWidth = size.width / 3 + 30;
+    setState(() {
+      _leftWidth = newWidth;
+    });    
+  }
+
+
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    setLeftWidth();
     flixToast.init(navigatorKey.currentContext!);
     initPlatformState();
     initWindowClose();
@@ -315,6 +326,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       windowManager.addListener(this);
     }
+    
   }
 
   @override
