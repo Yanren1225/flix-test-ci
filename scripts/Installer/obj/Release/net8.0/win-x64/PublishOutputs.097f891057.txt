@@ -1,2 +1,0 @@
-C:\Users\ASUS\source\repos\Installer\publish\Installer.pdb
-C:\Users\ASUS\source\repos\Installer\publish\Installer.exe
