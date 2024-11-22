@@ -110,11 +110,13 @@ class ClickableItem extends StatelessWidget {
                   ),
                 ),
               ),
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 16,
-                color: Theme.of(context).flixColors.text.secondary,
-              ),
+              SvgPicture.asset(
+                              'assets/images/forward.svg',
+                              height: 15,
+                          
+                              width: 15,
+                            ),
+             
             ],
           ),
         ),
