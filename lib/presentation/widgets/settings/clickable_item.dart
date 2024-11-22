@@ -113,7 +113,7 @@ class ClickableItem extends StatelessWidget {
               SvgPicture.asset(
                               'assets/images/forward.svg',
                               height: 15,
-                          
+                            color: Theme.of(context).flixColors.text.secondary,
                               width: 15,
                             ),
              
