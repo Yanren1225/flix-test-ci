@@ -99,21 +99,7 @@ void buildWindows(String? version) async {
   copyDirectory(Directory(flixDir), Directory(portableDir));
 
   /// 执行 dotnet publish 命令
-  final outputDir = '$basePath\\scripts\\Installer\\publish\\${version}';
-  await Directory(outputDir).create(recursive: true);
-  await runCommand('dotnet', [
-    'publish',
-    '$basePath\\scripts\\Installer',
-    '-r',
-    'win-x64',
-    '--self-contained',
-    'true',
-    '-p:PublishSingleFile=true',
-    '-p:IncludeNativeLibrariesForSelfExtract=true',
-    '-p:PublishTrimmed=true',
-    '-o',
-    outputDir
-  ]);
+  
 }
 
 Future<bool> runCommand(String command, List<String> arguments) async {
