@@ -152,10 +152,16 @@ class GeneralScreenState extends State<GeneralScreen> {
                           );
                         }),
                     Container(
-                      margin: const EdgeInsets.only(left: 14),
-                      height: 0.5,
-                      color: const Color.fromRGBO(0, 0, 0, 0.08),
-                    ),
+              color: Theme.of(context).flixColors.background.primary,
+              margin: const EdgeInsets.only(left: 16, right: 16),
+              child: Container(
+                height: 0.5,
+                color:
+                    Theme.of(context).flixColors.text.tertiary.withOpacity(0.1),
+                margin: const EdgeInsets.only(left: 0),
+              ),
+            ),
+
                     StreamBuilder<LangData>(
                         stream: LangConfig.langStream,
                         initialData: LangConfig.langData,

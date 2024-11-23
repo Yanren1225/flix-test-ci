@@ -2,17 +2,17 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 
 final List<Map<String, dynamic>> messages = [];
 Directory? uploadDirectory;
 final List<WebSocket> clients = [];
 String? localIP;
-int port = 11451;
+int port = 8892;
 int randomNumber = 0;
 var deviceName = DeviceProfileRepo.instance.deviceName;
 
-/// 启动服务器的方法
 Future<void> startWebServer() async {
   try {
     uploadDirectory = await Directory.systemTemp.createTemp('flutter_uploads');
@@ -24,7 +24,7 @@ Future<void> startWebServer() async {
       }
     }
 
-    randomNumber = 1000 + Random().nextInt(9000); // 随机连接码
+    randomNumber = 1000 + Random().nextInt(9000); 
 
     HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, port);
     server.listen((HttpRequest request) async {
@@ -41,6 +41,7 @@ Future<void> startWebServer() async {
         request.response.headers.contentType = ContentType.html;
         request.response.write(_generateChatHtml());
         request.response.close();
+        
       } else if (request.uri.path.startsWith('/download/')) {
         // 文件下载逻辑
         String fileName = request.uri.pathSegments.last;
@@ -58,18 +59,54 @@ Future<void> startWebServer() async {
           request.response.write("File not found");
         }
         request.response.close();
-      } else if (request.uri.path == '/ws') {
+      }  else if (request.uri.path == '/ws') {
         if (WebSocketTransformer.isUpgradeRequest(request)) {
           WebSocket socket = await WebSocketTransformer.upgrade(request);
           clients.add(socket);
           socket.listen((data) {
             messages.add({'type': 'text', 'content': data, 'from': 'html'});
             notifyClients();
+            
           }, onDone: () {
             clients.remove(socket);
           });
         }
-      } else {
+      }else if (request.uri.path == '/upload' && request.method == 'POST') {
+  final contentType = request.headers.contentType;
+  if (contentType?.mimeType == 'multipart/form-data') {
+    final boundary = contentType!.parameters['boundary']!;
+    final transformer = MimeMultipartTransformer(boundary);
+
+   
+    final parts = await transformer.bind(request).toList();
+    for (var part in parts) {
+      final contentDisposition = part.headers['content-disposition'];
+      final filenameMatch = RegExp(r'filename="(.+)"').firstMatch(contentDisposition ?? '');
+      if (filenameMatch != null) {
+        final fileName = filenameMatch.group(1);
+        final file = File(path.join(uploadDirectory!.path, fileName!));
+final savedFilePath = path.join(uploadDirectory!.path, fileName);
+        // 保存文件
+        final sink = file.openWrite();
+        await part.pipe(sink);
+        await sink.close();
+
+      
+       final message = {
+  'type': 'file',
+  'content': savedFilePath, 
+  'fileName': fileName,
+  'from': 'html'
+};
+ messages.add(message);
+       notifyClients();
+        
+      }
+    }
+  }
+  request.response.statusCode = HttpStatus.ok;
+  await request.response.close();
+}else {
         request.response.headers.contentType = ContentType.html;
         request.response.write(_generateMainpage());
         request.response.close();
@@ -82,7 +119,6 @@ Future<void> startWebServer() async {
   }
 }
 
-/// 通知 WebSocket 客户端刷新
 void notifyClients() {
   for (var client in clients) {
     client.add("refresh");
@@ -322,7 +358,7 @@ String _generateChatHtml() {
           width: 100%;
           overflow-y: auto;
           padding: 10px;
-          padding-bottom: 80px; /* 为底部输入框留出空间 */
+          padding-bottom: 100px; /* 为底部输入框和按钮留出空间 */
           display: flex;
           flex-direction: column;
           gap: 10px;
@@ -353,20 +389,19 @@ String _generateChatHtml() {
           left: 50%;
           transform: translateX(-50%);
           display: flex;
-          align-items: center;
+          flex-wrap: wrap; /* 支持换行 */
+          gap: 10px;
           background-color: #F2F2F2;
           padding: 10px;
-         
           box-sizing: border-box;
           z-index: 10;
         }
-        .footer input {
+        .footer input[type="text"] {
           flex: 1;
           padding: 10px;
           font-size: 16px;
           border: 1px solid #ccc;
           border-radius: 5px;
-          margin-right: 10px;
           box-sizing: border-box;
         }
         .footer button {
@@ -381,8 +416,20 @@ String _generateChatHtml() {
         .footer button:hover {
           background-color: #0056b3;
         }
+        .footer input[type="file"] {
+          display: none; /* 隐藏文件选择框 */
+        }
       </style>
       <script>
+       document.addEventListener("visibilitychange", function () {
+            if (document.visibilityState === "visible") {
+                location.reload();
+            }
+        });
+
+         window.addEventListener("focus", function () {
+            location.reload();
+        });
         const socket = new WebSocket("ws://$localIP:$port/ws");
         
         // 监听消息事件
@@ -404,10 +451,10 @@ String _generateChatHtml() {
           div.className = 'bubble left'; 
           div.textContent = message;
           container.appendChild(div); // 添加到聊天区域
-          scrollToBottom(); 
+          //scrollToBottom(); 
         }
 
-       
+        // 滚动到底部
         function scrollToBottom() {
           const container = document.querySelector('.chat-container');
           container.scrollTop = container.scrollHeight;
@@ -417,14 +464,48 @@ String _generateChatHtml() {
         document.addEventListener("DOMContentLoaded", () => {
           const sendButton = document.getElementById("sendButton");
           const messageInput = document.getElementById("messageInput");
+          const uploadButton = document.getElementById("uploadButton");
+          const fileInput = document.getElementById("fileInput");
 
           // 监听发送按钮点击事件
           sendButton.addEventListener("click", () => {
             const message = messageInput.value.trim();
             if (message) {
+               location.reload();
               socket.send(message); // 将消息发送到服务器
               appendMessage(message); // 本地追加消息到聊天列表
               messageInput.value = ""; // 清空输入框
+            }
+          });
+
+          // 文件上传按钮点击事件
+          uploadButton.addEventListener("click", () => {
+            fileInput.click(); // 打开文件选择对话框
+          });
+
+          // 文件选择事件
+          fileInput.addEventListener("change", async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+              const formData = new FormData();
+              formData.append('file', file);
+
+              try {
+                const response = await fetch('/upload', {
+                  method: 'POST',
+                  body: formData,
+                });
+
+                if (response.ok) {
+                 // alert('文件上传成功');
+                  fileInput.value = ''; // 清空文件输入框
+                } else {
+                  alert('文件上传失败');
+                }
+              } catch (error) {
+                console.error('文件上传错误:', error);
+                alert('文件上传失败，请稍后再试');
+              }
             }
           });
 
@@ -438,10 +519,16 @@ String _generateChatHtml() {
   """);
 
   for (var message in messages) {
-    if (message['type'] == 'file') {
+    if (message['type'] == 'file' && message['from'] == 'flutter') {
       html.writeln("""
         <div class="bubble ${message['from'] == 'flutter' ? 'left' : 'right'}">
           <a href="/download/${message['content']}">${message['content']}</a>
+        </div>
+      """);
+    } else if (message['type'] == 'file' && message['from'] == 'html') {
+      html.writeln("""
+        <div style="background:#ffffff" class="bubble ${message['from'] == 'flutter' ? 'left' : 'right'}">
+          <a style="color:#000000" href="/download/${message['content']}">${message['fileName']}</a>
         </div>
       """);
     } else if (message['type'] == 'text') {
@@ -458,6 +545,8 @@ String _generateChatHtml() {
       <div class="footer">
         <input id="messageInput" type="text" placeholder="消息">
         <button id="sendButton">发送</button>
+        <input id="fileInput" type="file" />
+        <button id="uploadButton">上传文件</button>
       </div>
     </body>
     </html>

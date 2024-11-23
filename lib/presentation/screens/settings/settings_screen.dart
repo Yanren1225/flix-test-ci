@@ -581,7 +581,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                     //tail: 'v$value',
                     onClick: widget.goVersionScreen,
                     iconPath: 'assets/images/about_us.svg',
-                    bottomRadius: Platform.isIOS,
+                     bottomRadius: false,
                   );
                 },
               ),

@@ -38,6 +38,7 @@ import 'package:flix/presentation/screens/settings/permission.dart';
 import 'package:flix/presentation/screens/settings/pravicy.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
 import 'package:flix/presentation/screens/webflix.dart';
+import 'package:flix/presentation/screens/webinfo.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/flixtitlebar.dart';
 import 'package:flix/presentation/widgets/hotkeyprovider.dart';
@@ -536,6 +537,10 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               context,
               CupertinoPageRoute(
                   builder: (context) => const AddDeviceScreen())),
+                  onWebInfo: () => Navigator.push(
+              context,
+              CupertinoPageRoute(
+                  builder: (context) =>  WebInfo(showBack: true,))),
         );
       case 1:
         return recentScreen(
@@ -697,7 +702,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               Navigator.push(
                 context,
                 CupertinoPageRoute(
-                    builder: (context) => FileUploadServer()));
+                    builder: (context) => FileUploadServer( showBack: true)));
            }, goappinfo: () { 
 
  Navigator.push(
@@ -865,6 +870,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               thirdWidget = const AddDeviceScreen();
             });
           },
+           onWebInfo: () {
+            setState(() {
+              thirdWidget = WebInfo(showBack: false,);
+            });
+          },
         );
       case 1:
         return recentScreen(
@@ -1006,7 +1016,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
             });
           }, goFileUploadServer: () { setState(() {
               thirdWidget = FileUploadServer(
-               
+                showBack: false,
               );
             }); }, goappinfo: () { 
   setState(() {

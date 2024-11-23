@@ -142,11 +142,17 @@ class AppInfoScreenState extends State<AppInfoScreen> {
                         }
                         }),
                   ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 14),
-                      height: 0.5,
-                      color: const Color.fromRGBO(0, 0, 0, 0.08),
-                    ),
+                      Container(
+              color: Theme.of(context).flixColors.background.primary,
+              margin: const EdgeInsets.only(left: 16, right: 16),
+              child: Container(
+                height: 0.5,
+                color:
+                    Theme.of(context).flixColors.text.tertiary.withOpacity(0.1),
+                margin: const EdgeInsets.only(left: 0),
+              ),
+            ),
+
                  
                     Padding(
                     padding:
@@ -245,12 +251,17 @@ class AppInfoScreenState extends State<AppInfoScreen> {
                           widget.goOpensourceScreen();
                         }),
                   ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 14),
-                      height: 0.5,
-                      color: const Color.fromRGBO(0, 0, 0, 0.08),
-                    ),
-                 
+                       Container(
+              color: Theme.of(context).flixColors.background.primary,
+              margin: const EdgeInsets.only(left: 16, right: 16),
+              child: Container(
+                height: 0.5,
+                color:
+                    Theme.of(context).flixColors.text.tertiary.withOpacity(0.1),
+                margin: const EdgeInsets.only(left: 0),
+              ),
+            ),
+
                    Padding(
                     padding:
                         const EdgeInsets.only(left: 16, top: 0, right: 16),
@@ -263,11 +274,17 @@ class AppInfoScreenState extends State<AppInfoScreen> {
                         }),
                   ),
 
-                   Container(
-                      margin: const EdgeInsets.only(left: 14),
-                      height: 0.5,
-                      color: const Color.fromRGBO(0, 0, 0, 0.08),
-                    ),
+                     Container(
+              color: Theme.of(context).flixColors.background.primary,
+              margin: const EdgeInsets.only(left: 16, right: 16),
+              child: Container(
+                height: 0.5,
+                color:
+                    Theme.of(context).flixColors.text.tertiary.withOpacity(0.1),
+                margin: const EdgeInsets.only(left: 0),
+              ),
+            ),
+
 
  Padding(
                     padding:

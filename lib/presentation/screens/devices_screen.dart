@@ -39,12 +39,14 @@ class DeviceScreen extends StatefulWidget {
   final void Function(DeviceInfo deviceInfo, bool isHistory) onDeviceSelected;
   final void Function()? onViewConnectInfo;
   final void Function()? onGoManualAdd;
+  final void Function()? onWebInfo;
 
   const DeviceScreen(
       {super.key,
       required this.onDeviceSelected,
       this.onViewConnectInfo,
-      this.onGoManualAdd});
+      this.onGoManualAdd,
+      this.onWebInfo});
 
   @override
   // ignore: no_logic_in_create_state
@@ -144,6 +146,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                                       'open_menu',
                                       widget.onViewConnectInfo,
                                       widget.onGoManualAdd,
+                                      widget.onWebInfo,
                                     );
                                   },
                                 ),
