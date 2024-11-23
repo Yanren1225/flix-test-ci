@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:flix/domain/dev/flag.dart';
+import 'package:flix/domain/dev/flags.dart';
 import 'package:flix/domain/device/device_discover.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -52,7 +54,7 @@ class ClientInfoPageState extends State<ClientInfoPage> {
 
   List<NetworkInterface> networkInfo = [];
 
-  bool showLocalhost = false;
+  BoolFlag showLocalhost = FlagRepo.instance.showLocalhost;
 
   List<String> sharedPrefs = [];
 
@@ -84,11 +86,6 @@ class ClientInfoPageState extends State<ClientInfoPage> {
   }
 
   void initAsync() async {
-    // ignore: no_leading_underscores_for_local_identifiers
-    final _showLocalhost = await checkIfLocalhostDeviceAdded();
-    setState(() {
-      showLocalhost = _showLocalhost;
-    });
     port = await shipService.getPort();
     PackageInfo.fromPlatform().then((PackageInfo info) {
       setState(() {
@@ -313,21 +310,10 @@ class ClientInfoPageState extends State<ClientInfoPage> {
                     child: Row(
                       children: [
                         Checkbox95(
-                          value: showLocalhost,
+                          value: showLocalhost.value,
                           onChanged: (value) {
                             setState(() {
-                              showLocalhost = value;
-                            });
-                            generateLocalhostDevice()
-                                .then((DeviceModal localhost) {
-                              if (value == true) {
-                                DeviceManager.instance.addDevice(localhost);
-                              } else {
-                                DeviceManager.instance.deleteDevice(localhost);
-                                MultiCastClientProvider.of(context,
-                                        listen: false)
-                                    .deleteHistory(localhost.fingerprint);
-                              }
+                              showLocalhost.value = value;
                             });
                           },
                         ),
@@ -337,10 +323,8 @@ class ClientInfoPageState extends State<ClientInfoPage> {
                         Button95(
                           child: const Text("显示"),
                           onTap: () async {
-                            var localhost = await generateLocalhostDevice();
-                            DeviceManager.instance.addDevice(localhost);
                             setState(() {
-                              showLocalhost = true;
+                              showLocalhost.value = true;
                             });
                           },
                         ),
@@ -348,12 +332,8 @@ class ClientInfoPageState extends State<ClientInfoPage> {
                         Button95(
                           child: const Text("删除"),
                           onTap: () async {
-                            var localhost = await generateLocalhostDevice();
-                            DeviceManager.instance.deleteDevice(localhost);
-                            MultiCastClientProvider.of(context, listen: false)
-                                .deleteHistory(localhost.fingerprint);
                             setState(() {
-                              showLocalhost = false;
+                              showLocalhost.value = false;
                             });
                           },
                         ),

@@ -30,6 +30,7 @@ import 'package:flix/presentation/screens/settings/aboutapp.dart';
 import 'package:flix/presentation/screens/settings/agreement.dart';
 import 'package:flix/presentation/screens/settings/cross_device_clipboard_screen.dart';
 import 'package:flix/presentation/screens/settings/dev/client_debug_page.dart';
+import 'package:flix/presentation/screens/settings/dev/flags_page.dart';
 import 'package:flix/presentation/screens/settings/function.dart';
 import 'package:flix/presentation/screens/settings/general.dart';
 import 'package:flix/presentation/screens/settings/hotkey.dart';
@@ -73,6 +74,7 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   HotKey? _registeredHotKey;
   bool isInitial = false;
+
   @override
   void initState() {
     super.initState();
@@ -146,15 +148,15 @@ class MainScreenState extends State<MainScreen> {
 
   Stack buildStack() {
     return Stack(
-    children: [
-      MyHomePage(
-        key: MyHomePage.homePageKey,
-        title: 'Flix',
-      ),
-      if (Platform.isMacOS || Platform.isLinux || Platform.isWindows)
-        const FlixTitleBar(),
-    ],
-  );
+      children: [
+        MyHomePage(
+          key: MyHomePage.homePageKey,
+          title: 'Flix',
+        ),
+        if (Platform.isMacOS || Platform.isLinux || Platform.isWindows)
+          const FlixTitleBar(),
+      ],
+    );
   }
 
   Future<void> startInit() async {
@@ -303,15 +305,13 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
     });
   }
 
-   Future<void> setLeftWidth() async {
+  Future<void> setLeftWidth() async {
     Size size = await windowManager.getSize();
     double newWidth = size.width / 3 - 10;
     setState(() {
       _leftWidth = newWidth;
-    });    
+    });
   }
-
-
 
   @override
   void initState() {
@@ -326,7 +326,6 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       windowManager.addListener(this);
     }
-    
   }
 
   @override
@@ -692,42 +691,59 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 context,
                 CupertinoPageRoute(
                     builder: (context) => const ClientInfoPage()));
-          }, goFileUploadServer: () { 
-
-              Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => FileUploadServer()));
-           }, goappinfo: () { 
-
- Navigator.push(
+          },
+          goFileUploadServer: () {
+            Navigator.push(context,
+                CupertinoPageRoute(builder: (context) => FileUploadServer()));
+          },
+          goappinfo: () {
+            Navigator.push(
                 context,
                 CupertinoPageRoute(
                     builder: (context) => AppInfoScreen(
-                          showBack: true, goSettingPravicyScreen: () {  Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => const SettingPravicyScreen(
                           showBack: true,
-                        ))); }, goSettingAgreementScreen: () {  Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => const SettingAgreementScreen(
-                          showBack: true,
-                        )));}, goOpensourceScreen: () {  Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => const OpensourceScreen(
-                          showBack: true,
-                        )));}, goPermissionScreen: () {  Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => const PermissionScreen(
-                          showBack: true,
-                        ))); },
+                          goSettingPravicyScreen: () {
+                            Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) =>
+                                        const SettingPravicyScreen(
+                                          showBack: true,
+                                        )));
+                          },
+                          goSettingAgreementScreen: () {
+                            Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) =>
+                                        const SettingAgreementScreen(
+                                          showBack: true,
+                                        )));
+                          },
+                          goOpensourceScreen: () {
+                            Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) =>
+                                        const OpensourceScreen(
+                                          showBack: true,
+                                        )));
+                          },
+                          goPermissionScreen: () {
+                            Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) =>
+                                        const PermissionScreen(
+                                          showBack: true,
+                                        )));
+                          },
                         )));
-
-            },
+          },
+          goFlagsScreen: () {
+            Navigator.push(context,
+                CupertinoPageRoute(builder: (context) => const FlagPage()));
+          },
         );
 
       default:
@@ -1004,36 +1020,56 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 },
               );
             });
-          }, goFileUploadServer: () { setState(() {
-              thirdWidget = FileUploadServer(
-               
+          },
+          goFlagsScreen: () {
+            setState(() {
+              thirdWidget = FlagPage(
+                onClosePressed: (context) {
+                  clearThirdWidget();
+                },
               );
-            }); }, goappinfo: () { 
-  setState(() {
-              thirdWidget =  AppInfoScreen(
-                   showBack: false, goSettingPravicyScreen: () {  setState(() {
-              thirdWidget = const SettingPravicyScreen(
-                showBack: false,
-              );
-            }); }, goSettingAgreementScreen: () { setState(() {
-              thirdWidget = const SettingAgreementScreen(
-                showBack: false,
-              );
-            }); }, goOpensourceScreen: () {  setState(() {
-              thirdWidget = const OpensourceScreen(
-                showBack: false,
-              );
-            }); }, goPermissionScreen: () { setState(() {
-              thirdWidget = const PermissionScreen(
-                showBack: false,
-              );
-            }); },
-                  );
             });
-
-
-
-             },
+          },
+          goFileUploadServer: () {
+            setState(() {
+              thirdWidget = FileUploadServer();
+            });
+          },
+          goappinfo: () {
+            setState(() {
+              thirdWidget = AppInfoScreen(
+                showBack: false,
+                goSettingPravicyScreen: () {
+                  setState(() {
+                    thirdWidget = const SettingPravicyScreen(
+                      showBack: false,
+                    );
+                  });
+                },
+                goSettingAgreementScreen: () {
+                  setState(() {
+                    thirdWidget = const SettingAgreementScreen(
+                      showBack: false,
+                    );
+                  });
+                },
+                goOpensourceScreen: () {
+                  setState(() {
+                    thirdWidget = const OpensourceScreen(
+                      showBack: false,
+                    );
+                  });
+                },
+                goPermissionScreen: () {
+                  setState(() {
+                    thirdWidget = const PermissionScreen(
+                      showBack: false,
+                    );
+                  });
+                },
+              );
+            });
+          },
         );
 
       default:

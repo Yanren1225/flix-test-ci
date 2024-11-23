@@ -62,6 +62,7 @@ class SettingsScreen extends StatefulWidget {
   final VoidCallback goPayScreen;
   final VoidCallback goHotkeyScreen;
   final VoidCallback goClientDebugScreen;
+  final VoidCallback goFlagsScreen;
   final VoidCallback goFileUploadServer;
   final VoidCallback goappinfo;
 
@@ -85,6 +86,7 @@ class SettingsScreen extends StatefulWidget {
     required this.goClientDebugScreen,
     required this.goFileUploadServer,
     required this.goappinfo,
+    required this.goFlagsScreen,
   });
 
   @override
@@ -138,12 +140,12 @@ class SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _launchURL(String url) async {
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw '无法打开 $url';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw '无法打开 $url';
+    }
   }
-}
 
   void _onDevConfigChange() {
     setState(() {});
@@ -556,7 +558,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-  
+
             Padding(
                 padding: const EdgeInsets.only(
                     left: 16, right: 16, bottom: 16, top: 0),
@@ -586,7 +588,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
             ),
-              Container(
+            Container(
               color: Theme.of(context).flixColors.background.primary,
               margin: const EdgeInsets.only(left: 16, right: 16),
               child: Container(
@@ -596,7 +598,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                 margin: const EdgeInsets.only(left: 16),
               ),
             ),
-Padding(
+            Padding(
               padding: const EdgeInsets.only(left: 16, top: 0, right: 16),
               child: ValueListenableBuilder<String>(
                 valueListenable: version,
@@ -735,6 +737,15 @@ Padding(
                         bottomRadius: false,
                         onClick: widget.goClientDebugScreen),
                   ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 0),
+                    child: ClickableItem(
+                        label: 'Flags',
+                        topRadius: false,
+                        bottomRadius: false,
+                        onClick: widget.goFlagsScreen),
+                  ),
                   Container(
                     color: Theme.of(context).flixColors.background.primary,
                     margin: const EdgeInsets.only(left: 16, right: 16),
@@ -829,62 +840,65 @@ Padding(
                 ],
               ),
             ),
-            const SizedBox(height: 36,),
-Visibility(
-  visible: false,
-  child:
-
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 10, top: 22, right: 16, bottom: 36),
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        if (Platform.isAndroid) {
-                          _launchURL('http://verification.ifreedomer.com/flix/flix_agreement.html');
-                        } else {                      
-                          widget.goSettingAgreementScreen();
-                        }
-                      },
-                      child: Text(
-                        '用户协议',
+            const SizedBox(
+              height: 36,
+            ),
+            Visibility(
+              visible: false,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 10, top: 22, right: 16, bottom: 36),
+                child: Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if (Platform.isAndroid) {
+                            _launchURL(
+                                'http://verification.ifreedomer.com/flix/flix_agreement.html');
+                          } else {
+                            widget.goSettingAgreementScreen();
+                          }
+                        },
+                        child: Text(
+                          '用户协议',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).flixColors.text.secondary,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '  |  ',
                         style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).flixColors.text.secondary,
                         ),
                       ),
-                    ),
-                    Text(
-                      '  |  ',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context).flixColors.text.secondary,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        if (Platform.isAndroid) {
-                          _launchURL('http://verification.ifreedomer.com/flix/flix_privacy.html');
-                        } else {                      
-                          widget.goSettingPravicyScreen();
-                        }
-                      },
-                      child: Text(
-                        '隐私政策',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Theme.of(context).flixColors.text.secondary,
+                      GestureDetector(
+                        onTap: () {
+                          if (Platform.isAndroid) {
+                            _launchURL(
+                                'http://verification.ifreedomer.com/flix/flix_privacy.html');
+                          } else {
+                            widget.goSettingPravicyScreen();
+                          }
+                        },
+                        child: Text(
+                          '隐私政策',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context).flixColors.text.secondary,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ), )
+            )
           ],
         ),
       ),
