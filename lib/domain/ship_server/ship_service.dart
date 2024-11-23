@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flix/domain/bubble_pool.dart';
 import 'package:flix/domain/clipboard/flix_clipboard_manager.dart';
 import 'package:flix/domain/constants.dart';
+import 'package:flix/domain/dev/flags.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/device/device_profile_repo.dart';
 import 'package:flix/domain/log/flix_log.dart';
@@ -280,6 +281,7 @@ class ShipService {
     app.post('/file', _receiveFile);
     app.post('/ping_v2', PingV2Processor.receivePingV2);
     app.post('/heartbeat', _heartbeat);
+    app.get('/speedtest', _speedtest);
 
     // 尝试三次启动
     final tmp =
@@ -863,6 +865,25 @@ class ShipService {
 
   Future<Response> _heartbeat(Request request) async {
     return Response.ok('I\'m living');
+  }
+
+  Future<Response> _speedtest(Request request) async {
+    if (FlagRepo.instance.enableSpeedTestApi.value == false) {
+      return Response.forbidden('Speed test api is disabled');
+    }
+
+    // 构造一个 100GB 的文件流
+    final stream = Stream.fromIterable(
+      List.generate(100 * 1024 * 1024, (index) => index),
+    ).map((index) => Uint8List(1024));
+
+    return Response.ok(
+      stream,
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        'Content-Disposition': 'attachment; filename="speedtest"',
+      },
+    );
   }
 
   Future<void> _addLongTask() async {

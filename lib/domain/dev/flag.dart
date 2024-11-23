@@ -10,6 +10,7 @@ abstract class Flag<T> extends ChangeNotifier {
 
   Flag(this._key, this._name, this._defaultValue) {
     _spKey = 'flag_$_key';
+    _value = _defaultValue;
     _syncFromSP();
   }
 
