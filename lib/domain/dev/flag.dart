@@ -5,13 +5,19 @@ abstract class Flag<T> extends ChangeNotifier {
   final String _key;
   late final String _spKey;
   final String _name;
+  String? _desp;
   final T _defaultValue;
   T? _value;
 
-  Flag(this._key, this._name, this._defaultValue) {
+  Flag(this._key, this._name, this._defaultValue, [this._desp]) {
     _spKey = 'flag_$_key';
     _value = _defaultValue;
     _syncFromSP();
+  }
+
+  Flag describe(String desp) {
+    _desp = desp;
+    return this;
   }
 
   void _syncFromSP() async {
@@ -32,12 +38,14 @@ abstract class Flag<T> extends ChangeNotifier {
 
   String get key => _key;
 
+  String? get desp => _desp;
+
   void _syncToSP();
 }
 
 class BoolFlag extends Flag<bool> {
-  BoolFlag(String key, String name, bool defaultValue)
-      : super(key, name, defaultValue);
+  BoolFlag(String key, String name, bool defaultValue, [String? desp])
+      : super(key, name, defaultValue, desp);
 
   void toggle() {
     _value = !_value!;
@@ -53,8 +61,8 @@ class BoolFlag extends Flag<bool> {
 }
 
 class IntFlag extends Flag<int> {
-  IntFlag(String key, String name, int defaultValue)
-      : super(key, name, defaultValue);
+  IntFlag(String key, String name, int defaultValue, [String? desp])
+      : super(key, name, defaultValue, desp);
 
   void increment() {
     _value = _value! + 1;
@@ -76,8 +84,8 @@ class IntFlag extends Flag<int> {
 }
 
 class StringFlag extends Flag<String> {
-  StringFlag(String key, String name, String defaultValue)
-      : super(key, name, defaultValue);
+  StringFlag(String key, String name, String defaultValue, [String? desp])
+      : super(key, name, defaultValue, desp);
 
   void update(String newValue) {
     _value = newValue;

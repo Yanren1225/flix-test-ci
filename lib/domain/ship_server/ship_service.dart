@@ -882,6 +882,7 @@ class ShipService {
       headers: {
         'Content-Type': 'application/octet-stream',
         'Content-Disposition': 'attachment; filename="speedtest"',
+        'Content-Length': '${100 * 1024 * 1024 * 1024}',
       },
     );
   }

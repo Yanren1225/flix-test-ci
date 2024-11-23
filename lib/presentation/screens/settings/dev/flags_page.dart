@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter95/flutter95.dart';
 
 import '../../../../domain/dev/flag.dart';
@@ -58,8 +59,10 @@ Widget _buildFlag(BuildContext context, Flag flag) {
     return _buildBoolFlag(context, flag);
   } else if (flag is IntFlag) {
     return _buildIntFlag(context, flag);
+  } else if (flag is StringFlag) {
+    return _buildStringFlag(context, flag);
   } else {
-    return const SizedBox();
+    return Container();
   }
 }
 
@@ -89,6 +92,23 @@ Widget _buildBoolFlag(BuildContext context, BoolFlag flag) {
             ),
           ],
         ),
+        flag.desp != null
+            ? SizedBox(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8, bottom: 8),
+                  child: Elevation95(
+                    type: Elevation95Type.down,
+                    child: Text(
+                      flag.desp ?? "",
+                      style: Flutter95.textStyle.copyWith(
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Container(),
         const Divider95(),
       ],
     ),
@@ -113,9 +133,21 @@ Widget _buildIntFlag(BuildContext context, IntFlag flag) {
                 alignment: Alignment.centerRight,
                 child: Row(
                   children: [
-                    Text(
-                      flag.value.toString(),
-                      style: Flutter95.textStyle,
+                    Expanded(
+                      child: TextField95(
+                        controller:
+                            TextEditingController(text: flag.value.toString()),
+                        multiline: false,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        onChanged: (newValue) {
+                          flag.value = int.tryParse(newValue) ?? 0;
+                        },
+                        onSubmitted: (newValue) {
+                          flag.value = int.tryParse(newValue) ?? 0;
+                        },
+                      ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.add),
@@ -131,6 +163,23 @@ Widget _buildIntFlag(BuildContext context, IntFlag flag) {
             ),
           ],
         ),
+        flag.desp != null
+            ? SizedBox(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8, bottom: 8),
+                  child: Elevation95(
+                    type: Elevation95Type.down,
+                    child: Text(
+                      flag.desp ?? "",
+                      style: Flutter95.textStyle.copyWith(
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Container(),
         const Divider95(),
       ],
     ),
@@ -144,16 +193,43 @@ Widget _buildStringFlag(BuildContext context, StringFlag flag) {
       children: [
         Row(
           children: [
-            Text(
-              flag.name,
-              style: Flutter95.textStyle,
+            Expanded(
+              child: Text(
+                flag.name,
+                style: Flutter95.textStyle,
+              ),
             ),
-            Text(
-              flag.value,
-              style: Flutter95.textStyle,
+            Expanded(
+              child: TextField95(
+                controller: TextEditingController(text: flag.value),
+                multiline: false,
+                onChanged: (newValue) {
+                  flag.value = newValue;
+                },
+                onSubmitted: (newValue) {
+                  flag.value = newValue;
+                },
+              ),
             ),
           ],
         ),
+        flag.desp != null
+            ? SizedBox(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8, bottom: 8),
+                  child: Elevation95(
+                    type: Elevation95Type.down,
+                    child: Text(
+                      flag.desp ?? "",
+                      style: Flutter95.textStyle.copyWith(
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Container(),
         const Divider95(),
       ],
     ),
