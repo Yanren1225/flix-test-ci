@@ -543,7 +543,12 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                   onWebInfo: () => Navigator.push(
               context,
               CupertinoPageRoute(
-                  builder: (context) =>  WebInfo(showBack: true,))),
+                  builder: (context) =>  WebInfo(showBack: true,))), goFileUploadServer: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => FileUploadServer(
+                          showBack: true,
+                        ))); },
         );
       case 1:
         return recentScreen(
@@ -879,7 +884,9 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
             setState(() {
               thirdWidget = WebInfo(showBack: false,);
             });
-          },
+          }, goFileUploadServer: () { setState(() {
+              thirdWidget = FileUploadServer(showBack: false,);
+            }); },
         );
       case 1:
         return recentScreen(

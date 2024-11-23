@@ -137,7 +137,7 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
                     },
                   )),
                 Visibility(
-                  visible: true,
+                  visible: false,
                   child: MenuItem(
                     lable: '连接网页版',
                     icon: 'assets/images/web.svg',

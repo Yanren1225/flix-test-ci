@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flix/domain/web_server.dart';
 import 'package:flix/presentation/screens/main_screen.dart';
 import 'package:flix/presentation/style/colors/flix_color.dart';
+import 'package:flix/presentation/widgets/segements/navigation_appbar_scaffold.dart';
 import 'package:flix/presentation/widgets/segements/navigation_scaffold.dart';
 import 'package:flix/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class _FileUploadServerState extends State<FileUploadServer> {
   final TextEditingController _textController = TextEditingController();
   late WebSocket _socket;
 
-Timer? _timer; 
+Timer? _timer; // 定义计时器
 
   @override
   void initState() {
@@ -47,7 +48,12 @@ Timer? _timer;
 
  @override
 Widget build(BuildContext context) {
-  return NavigationScaffold(
+  return Container(
+      color: Theme.of(context).flixColors.background.secondary,
+child: Padding( padding: (Platform.isMacOS || Platform.isWindows || Platform.isLinux)
+                            ? const EdgeInsets.only(top: 20)
+                            : EdgeInsets.zero,
+  child:  NavigationAppbarScaffold(
     title: 'Web Flix',
     onClearThirdWidget: clearThirdWidget,
     showBackButton: widget.showBack,
@@ -119,7 +125,14 @@ Widget build(BuildContext context) {
         ],
       );
     },
+  ),
+  ),
+
   );
+  
+  
+  
+  
 }
  
   

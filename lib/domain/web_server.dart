@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/webconnected.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart';
 
 final List<Map<String, dynamic>> messages = [];
 Directory? uploadDirectory;
@@ -13,7 +16,8 @@ int port = 8892;
 int randomNumber = 0;
 var deviceName = DeviceProfileRepo.instance.deviceName;
 
-/// 启动服务器的方法
+
+/// 启动服务器
 Future<void> startWebServer() async {
   try {
     uploadDirectory = await Directory.systemTemp.createTemp('flutter_uploads');
@@ -39,6 +43,8 @@ Future<void> startWebServer() async {
         }
         await request.response.close();
       } else if (request.uri.path == '/$randomNumber') {
+       
+        WebConnectionManager().setWebConnected(true);
         request.response.headers.contentType = ContentType.html;
         request.response.write(_generateChatHtml());
         request.response.close();
@@ -108,7 +114,13 @@ final savedFilePath = path.join(uploadDirectory!.path, fileName);
   }
   request.response.statusCode = HttpStatus.ok;
   await request.response.close();
-}else {
+}else if (request.uri.path == '/logout') {
+          WebConnectionManager().setWebConnected(false);
+        request.response.headers.contentType = ContentType.html;
+        request.response.write(_generateMainpage());
+        request.response.close();
+        
+      } else {
         request.response.headers.contentType = ContentType.html;
         request.response.write(_generateMainpage());
         request.response.close();

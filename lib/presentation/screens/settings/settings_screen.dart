@@ -777,29 +777,10 @@ Padding(
                     child: ClickableItem(
                         label: '云同步',
                         topRadius: false,
-                        bottomRadius: false,
+                        bottomRadius: true,
                         onClick: widget.goCloudScreenPage),
                   ),
-                  Container(
-                    color: Theme.of(context).flixColors.background.primary,
-                    margin: const EdgeInsets.only(left: 16, right: 16),
-                    child: Container(
-                      height: 0.5,
-                      color: Theme.of(context)
-                          .flixColors
-                          .text
-                          .tertiary
-                          .withOpacity(0.1),
-                      margin: const EdgeInsets.only(left: 16),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: ClickableItem(
-                        label: 'Web版',
-                        topRadius: false,
-                        onClick: widget.goFileUploadServer),
-                  ),
+                 
                 ],
               ),
             ),
