@@ -2,17 +2,22 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:flix/domain/device/device_profile_repo.dart';
+import 'package:flix/domain/webconnected.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
+import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart';
 
 final List<Map<String, dynamic>> messages = [];
 Directory? uploadDirectory;
 final List<WebSocket> clients = [];
 String? localIP;
-int port = 11451;
+int port = 8892;
 int randomNumber = 0;
 var deviceName = DeviceProfileRepo.instance.deviceName;
 
-/// 启动服务器的方法
+
+/// 启动服务器
 Future<void> startWebServer() async {
   try {
     uploadDirectory = await Directory.systemTemp.createTemp('flutter_uploads');
@@ -24,7 +29,7 @@ Future<void> startWebServer() async {
       }
     }
 
-    randomNumber = 1000 + Random().nextInt(9000); // 随机连接码
+    randomNumber = 1000 + Random().nextInt(9000); 
 
     HttpServer server = await HttpServer.bind(InternetAddress.anyIPv4, port);
     server.listen((HttpRequest request) async {
@@ -38,9 +43,12 @@ Future<void> startWebServer() async {
         }
         await request.response.close();
       } else if (request.uri.path == '/$randomNumber') {
+       
+        WebConnectionManager().setWebConnected(true);
         request.response.headers.contentType = ContentType.html;
         request.response.write(_generateChatHtml());
         request.response.close();
+        
       } else if (request.uri.path.startsWith('/download/')) {
         // 文件下载逻辑
         String fileName = request.uri.pathSegments.last;
@@ -58,17 +66,60 @@ Future<void> startWebServer() async {
           request.response.write("File not found");
         }
         request.response.close();
-      } else if (request.uri.path == '/ws') {
+      }  else if (request.uri.path == '/ws') {
         if (WebSocketTransformer.isUpgradeRequest(request)) {
           WebSocket socket = await WebSocketTransformer.upgrade(request);
           clients.add(socket);
           socket.listen((data) {
             messages.add({'type': 'text', 'content': data, 'from': 'html'});
             notifyClients();
+            
           }, onDone: () {
             clients.remove(socket);
           });
         }
+      }else if (request.uri.path == '/upload' && request.method == 'POST') {
+       
+  final contentType = request.headers.contentType;
+  if (contentType?.mimeType == 'multipart/form-data') {
+    final boundary = contentType!.parameters['boundary']!;
+    final transformer = MimeMultipartTransformer(boundary);
+
+   
+    final parts = await transformer.bind(request).toList();
+    for (var part in parts) {
+      final contentDisposition = part.headers['content-disposition'];
+      final filenameMatch = RegExp(r'filename="(.+)"').firstMatch(contentDisposition ?? '');
+      if (filenameMatch != null) {
+        final fileName = filenameMatch.group(1);
+        final file = File(path.join(uploadDirectory!.path, fileName!));
+final savedFilePath = path.join(uploadDirectory!.path, fileName);
+        // 保存文件
+        final sink = file.openWrite();
+        await part.pipe(sink);
+        await sink.close();
+
+      
+       final message = {
+  'type': 'file',
+  'content': savedFilePath, 
+  'fileName': fileName,
+  'from': 'html'
+};
+ messages.add(message);
+       notifyClients();
+        
+      }
+    }
+  }
+  request.response.statusCode = HttpStatus.ok;
+  await request.response.close();
+}else if (request.uri.path == '/logout') {
+          WebConnectionManager().setWebConnected(false);
+        request.response.headers.contentType = ContentType.html;
+        request.response.write(_generateMainpage());
+        request.response.close();
+        
       } else {
         request.response.headers.contentType = ContentType.html;
         request.response.write(_generateMainpage());
@@ -82,7 +133,6 @@ Future<void> startWebServer() async {
   }
 }
 
-/// 通知 WebSocket 客户端刷新
 void notifyClients() {
   for (var client in clients) {
     client.add("refresh");
@@ -290,30 +340,61 @@ String _generateChatHtml() {
     <head>
       <title>Flix 网页版</title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      
       <style>
-        body {
-          font-family: Arial, sans-serif;
+       
+
+
+       html, body {
+       font-family: Arial, sans-serif;
           background-color: #ffffff;
-          margin: 0;
-          padding: 0;
-          display: flex;
-          flex-direction: column;
-          height: 100vh;
-          overflow: hidden;
-        }
-        .header {
-          width: 100%;
-          max-width: 600px;
-          background-color: #F2F2F2;
-          padding: 15px;
-          text-align: center;
-          font-size: 18px;
-          font-weight: bold;
-          color: #000000;
-          flex-shrink: 0;
-          margin: auto; 
-          box-sizing: border-box;
-        }
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column; 
+}
+
+      .header {
+    position: sticky; 
+    top: 0; 
+    width: 100%;
+    max-width: 600px;
+    background-color: #F2F2F2;
+    padding: 15px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    box-sizing: border-box;
+    z-index: 10; 
+}
+        .chat-container {
+    position: relative;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 10px;
+}
+
+  .bubble {
+    padding: 10px 15px;
+    border-radius: 12.5px;
+    max-width: 80%;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .left {
+    align-self: flex-start;
+    background-color: #ffffff;
+    color: #000000;
+  }
+
+  .right {
+    align-self: flex-end;
+    background-color: #007bff;
+    color: #ffffff;
+  }
         .chat-container {
           background-color: #F2F2F2;
           margin: auto; 
@@ -322,7 +403,7 @@ String _generateChatHtml() {
           width: 100%;
           overflow-y: auto;
           padding: 10px;
-          padding-bottom: 80px; /* 为底部输入框留出空间 */
+          padding-bottom: 100px; 
           display: flex;
           flex-direction: column;
           gap: 10px;
@@ -330,7 +411,7 @@ String _generateChatHtml() {
         }
         .bubble {
           padding: 10px 15px;
-          border-radius: 15px;
+          border-radius: 12.5px;
           max-width: 80%;
           word-wrap: break-word;
           word-break: break-word;
@@ -348,25 +429,24 @@ String _generateChatHtml() {
         .footer {
           width: 100%;
           max-width: 600px;
-          position: fixed; /* 固定在屏幕底部 */
+          position: fixed; 
           bottom: 0;
           left: 50%;
           transform: translateX(-50%);
           display: flex;
-          align-items: center;
+          flex-wrap: wrap; 
+          gap: 10px;
           background-color: #F2F2F2;
           padding: 10px;
-         
           box-sizing: border-box;
           z-index: 10;
         }
-        .footer input {
+        .footer input[type="text"] {
           flex: 1;
           padding: 10px;
           font-size: 16px;
           border: 1px solid #ccc;
           border-radius: 5px;
-          margin-right: 10px;
           box-sizing: border-box;
         }
         .footer button {
@@ -381,8 +461,19 @@ String _generateChatHtml() {
         .footer button:hover {
           background-color: #0056b3;
         }
+        .footer input[type="file"] {
+          display: none; 
+        }
       </style>
       <script>
+       document.addEventListener("visibilitychange", function () {
+            if (document.visibilityState === "visible") {
+                location.reload();
+            }
+        });
+
+
+       
         const socket = new WebSocket("ws://$localIP:$port/ws");
         
         // 监听消息事件
@@ -398,33 +489,75 @@ String _generateChatHtml() {
         };
 
         // 动态追加消息到聊天列表
-        function appendMessage(message) {
-          const container = document.querySelector('.chat-container');
-          const div = document.createElement('div');
-          div.className = 'bubble left'; 
-          div.textContent = message;
-          container.appendChild(div); // 添加到聊天区域
-          scrollToBottom(); 
-        }
+       function appendMessage(message) {
+    const container = document.querySelector('.chat-container');
+    const div = document.createElement('div');
+    div.className = 'bubble left'; 
+    div.textContent = message;
+    container.appendChild(div);
+
+    
+    setTimeout(() => scrollToBottom(true), 100);
+}
 
        
-        function scrollToBottom() {
-          const container = document.querySelector('.chat-container');
-          container.scrollTop = container.scrollHeight;
-        }
+       function scrollToBottom() {
+  const container = document.querySelector('.chat-container');
+  if (container) {
+    requestAnimationFrame(() => {
+      container.scrollTop = container.scrollHeight;
+    });
+  }
+}
+
 
         // 页面加载完成时初始化事件监听
         document.addEventListener("DOMContentLoaded", () => {
           const sendButton = document.getElementById("sendButton");
           const messageInput = document.getElementById("messageInput");
+          const uploadButton = document.getElementById("uploadButton");
+          const fileInput = document.getElementById("fileInput");
 
           // 监听发送按钮点击事件
           sendButton.addEventListener("click", () => {
             const message = messageInput.value.trim();
             if (message) {
+               location.reload();
               socket.send(message); // 将消息发送到服务器
               appendMessage(message); // 本地追加消息到聊天列表
               messageInput.value = ""; // 清空输入框
+            }
+          });
+
+          // 文件上传按钮点击事件
+          uploadButton.addEventListener("click", () => {
+            fileInput.click(); // 打开文件选择对话框
+          });
+
+          // 文件选择事件
+          fileInput.addEventListener("change", async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+              const formData = new FormData();
+              formData.append('file', file);
+
+              try {
+                const response = await fetch('/upload', {
+                  method: 'POST',
+                  body: formData,
+                });
+
+                if (response.ok) {
+                // alert('文件上传成功');
+                  fileInput.value = ''; // 清空文件输入框
+                } else {
+                  alert('文件上传失败');
+                }
+              } catch (error) {
+                console.error('文件上传错误:', error);
+                
+                alert(error);
+              }
             }
           });
 
@@ -438,11 +571,17 @@ String _generateChatHtml() {
   """);
 
   for (var message in messages) {
-    if (message['type'] == 'file') {
+    if (message['type'] == 'file' && message['from'] == 'flutter') {
       html.writeln("""
-        <div class="bubble ${message['from'] == 'flutter' ? 'left' : 'right'}">
-          <a href="/download/${message['content']}">${message['content']}</a>
+        <div style="background:#ffffff; width:260px;height:70px"  class="bubble ${message['from'] == 'flutter' ? 'left' : 'right'}">
+          <a style="color:#000000; text-decoration: none;"  href="/download/${message['content']}">${message['content']}</a>
         </div>
+      """);
+    } else if (message['type'] == 'file' && message['from'] == 'html') {
+      html.writeln("""
+       <div style="background:#ffffff; width:260px;;height:70px" class="bubble ${message['from'] == 'flutter' ? 'left' : 'right'}">
+  <a style="color:#000000; text-decoration: none;" href="/download/${message['content']}">${message['fileName']}</a>
+</div>
       """);
     } else if (message['type'] == 'text') {
       html.writeln("""
@@ -457,7 +596,21 @@ String _generateChatHtml() {
       </div>
       <div class="footer">
         <input id="messageInput" type="text" placeholder="消息">
-        <button id="sendButton">发送</button>
+      
+        <input id="fileInput" type="file" />
+     
+        <svg  id="uploadButton" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="22" height="22" viewBox="0 0 22 22" fill="none">
+<path d="M2.44434 4.58279L2.44434 17.4161C2.44434 19.2724 3.94916 20.7772 5.80545 20.7772L16.1943 20.7772C18.0506 20.7772 19.5554 19.2724 19.5554 17.4161L19.5554 8.14435C19.5554 7.86077 19.5012 7.58807 19.3928 7.32625C19.2842 7.06424 19.1296 6.83284 18.9288 6.63205L14.1468 1.85001C13.9463 1.64841 13.7143 1.49314 13.451 1.3842C13.1891 1.27585 12.9164 1.22168 12.6328 1.22168L5.80545 1.22168C3.94916 1.22168 2.44434 2.7265 2.44434 4.58279ZM16.4259 6.7218L14.0554 4.35136L14.0554 6.41625C14.0554 6.585 14.1922 6.7218 14.361 6.7218L16.4259 6.7218ZM12.2221 3.05501L5.80545 3.05501C4.96167 3.05501 4.27767 3.73902 4.27767 4.58279L4.27767 17.4161C4.27767 18.2599 4.96167 18.9439 5.80545 18.9439L16.1943 18.9439C17.0382 18.9439 17.7221 18.2599 17.7221 17.4161L17.7221 8.55514L14.361 8.55514C13.1797 8.55514 12.2221 7.59752 12.2221 6.41625L12.2221 3.05501Z" fill-rule="evenodd"  fill="#000000" >
+</path>
+</svg>
+
+
+<svg id="sendButton" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="26" height="26" viewBox="0 0 26 26" fill="none">
+<path d="M2.23826 7.24025L5.35285 12.4348C5.5641 12.7815 5.55868 13.2094 5.35826 13.5561L2.23285 18.7507C0.575347 21.5132 3.50576 24.7415 6.41993 23.3602L22.0741 15.9286C24.5495 14.7532 24.5441 11.2269 22.0633 10.0515L6.41451 2.63608C3.51118 1.26025 0.586181 4.48316 2.23826 7.24025ZM7.67524 12.9889C7.67524 12.3931 8.16274 11.9056 8.75858 11.9056L15.2586 11.9056C15.8544 11.9056 16.3419 12.3931 16.3419 12.9889C16.3419 13.5847 15.8544 14.0722 15.2586 14.0722L8.75858 14.0722C8.16274 14.0722 7.67524 13.5847 7.67524 12.9889Z" fill-rule="evenodd"  fill="#007AFF" >
+</path>
+</svg>
+
+
       </div>
     </body>
     </html>

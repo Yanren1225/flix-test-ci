@@ -25,6 +25,7 @@ import 'package:flix/domain/ship_server/ship_service_lifecycle_watcher.dart';
 import 'package:flix/domain/ship_server/ship_service_proxy.dart';
 import 'package:flix/domain/uri_router.dart';
 import 'package:flix/domain/web_server.dart';
+import 'package:flix/domain/webconnected.dart';
 import 'package:flix/domain/window/flix_window_manager.dart';
 import 'package:flix/l10n/l10n.dart';
 import 'package:flix/l10n/lang_config.dart';
@@ -375,6 +376,8 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
           ChangeNotifierProvider(create: (_) => BackProvider()),
           ChangeNotifierProvider(create: (_) => HotKeyProvider()),
           ChangeNotifierProvider(create: (_) => WindowState()),
+             ChangeNotifierProvider(create: (_) => WebConnectionManager()),
+           
         ],
         child: StreamBuilder<String>(
             initialData: SettingsRepo.instance.darkModeTag,

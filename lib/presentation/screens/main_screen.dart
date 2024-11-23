@@ -39,6 +39,7 @@ import 'package:flix/presentation/screens/settings/permission.dart';
 import 'package:flix/presentation/screens/settings/pravicy.dart';
 import 'package:flix/presentation/screens/settings/settings_screen.dart';
 import 'package:flix/presentation/screens/webflix.dart';
+import 'package:flix/presentation/screens/webinfo.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/flixtitlebar.dart';
 import 'package:flix/presentation/widgets/hotkeyprovider.dart';
@@ -205,8 +206,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
   Widget? thirdWidget;
 
   void clearThirdWidget() {
+    final deviceProvider = MultiCastClientProvider.of(context, listen: false);
+     deviceProvider.setSelectedDeviceId("0");
     setState(() {
       thirdWidget = null;
+      
     });
   }
 
@@ -535,6 +539,15 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               context,
               CupertinoPageRoute(
                   builder: (context) => const AddDeviceScreen())),
+                  onWebInfo: () => Navigator.push(
+              context,
+              CupertinoPageRoute(
+                  builder: (context) =>  WebInfo(showBack: true,))), goFileUploadServer: () {  Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => FileUploadServer(
+                          showBack: true,
+                        ))); },
         );
       case 1:
         return recentScreen(
@@ -691,13 +704,15 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
                 context,
                 CupertinoPageRoute(
                     builder: (context) => const ClientInfoPage()));
-          },
-          goFileUploadServer: () {
-            Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => FileUploadServer()));
-          },
-          goappinfo: () {
-            Navigator.push(
+          }, goFileUploadServer: () { 
+
+              Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => FileUploadServer( showBack: true)));
+           }, goappinfo: () { 
+
+ Navigator.push(
                 context,
                 CupertinoPageRoute(
                     builder: (context) => AppInfoScreen(
@@ -829,6 +844,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
       child: GestureDetector(
         onTap: () {
           setSelectedIndex(index);
+          final deviceProvider = MultiCastClientProvider.of(context, listen: false);
+     deviceProvider.setSelectedDeviceId("0");
           setState(() {
             thirdWidget = null;
           });
@@ -881,6 +898,13 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
               thirdWidget = const AddDeviceScreen();
             });
           },
+           onWebInfo: () {
+            setState(() {
+              thirdWidget = WebInfo(showBack: false,);
+            });
+          }, goFileUploadServer: () { setState(() {
+              thirdWidget = FileUploadServer(showBack: false,);
+            }); },
         );
       case 1:
         return recentScreen(
@@ -1032,7 +1056,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
           },
           goFileUploadServer: () {
             setState(() {
-              thirdWidget = FileUploadServer();
+              thirdWidget = FileUploadServer(showBack: false,);
             });
           },
           goappinfo: () {

@@ -7,6 +7,8 @@ import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flix/domain/device/device_manager.dart';
 import 'package:flix/domain/log/flix_log.dart';
 import 'package:flix/domain/notification/badge_service.dart';
+import 'package:flix/domain/web_server.dart';
+import 'package:flix/domain/webconnected.dart';
 import 'package:flix/model/device_info.dart';
 import 'package:flix/model/wifi_or_ap_name.dart';
 import 'package:flix/network/multicast_client_provider.dart';
@@ -16,6 +18,7 @@ import 'package:flix/presentation/style/colors/flix_color.dart';
 import 'package:flix/presentation/widgets/basic/icon_label_button.dart';
 import 'package:flix/presentation/widgets/device_name/name_edit_bottom_sheet.dart';
 import 'package:flix/presentation/widgets/devices/device_list.dart';
+import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/presentation/widgets/menu/main_menu.dart';
 import 'package:flix/presentation/widgets/net/net_info_bottom_sheet.dart';
 import 'package:flix/resource_extension.dart';
@@ -29,6 +32,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modals/modals.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../../l10n/l10n.dart';
@@ -39,12 +43,16 @@ class DeviceScreen extends StatefulWidget {
   final void Function(DeviceInfo deviceInfo, bool isHistory) onDeviceSelected;
   final void Function()? onViewConnectInfo;
   final void Function()? onGoManualAdd;
+  final void Function()? onWebInfo;
+  final VoidCallback goFileUploadServer;
 
   const DeviceScreen(
       {super.key,
       required this.onDeviceSelected,
       this.onViewConnectInfo,
-      this.onGoManualAdd});
+      this.onGoManualAdd,
+      required this.goFileUploadServer,
+      this.onWebInfo});
 
   @override
   // ignore: no_logic_in_create_state
@@ -62,6 +70,7 @@ class _DeviceScreenState extends State<DeviceScreen>
   Widget build(BuildContext context) {
     final deviceProvider = MultiCastClientProvider.of(context, listen: true);
     devices = deviceProvider.deviceList.map((d) => d.toDeviceInfo()).toList();
+    final bool topItemSelected = deviceProvider.selectedDeviceId == "top_item"; 
     return Scaffold(
       body: Container(
         decoration: FlixDecoration(
@@ -144,6 +153,7 @@ class _DeviceScreenState extends State<DeviceScreen>
                                       'open_menu',
                                       widget.onViewConnectInfo,
                                       widget.onGoManualAdd,
+                                      widget.onWebInfo,
                                     );
                                   },
                                 ),
@@ -251,6 +261,94 @@ class _DeviceScreenState extends State<DeviceScreen>
                     ),
                   ),
                 ),
+
+
+                Visibility(
+                  visible:Provider.of<WebConnectionManager>(context).webConnected,
+                  
+                  child:  Padding(
+      padding: const EdgeInsets.only(top:5,bottom: 5, left: 16,right: 16),
+      child: InkWell(
+        onTap: () {
+         
+          deviceProvider.setSelectedDeviceId("top_item");
+         widget.goFileUploadServer();
+          
+        },
+        child: DecoratedBox(
+          decoration: ShapeDecoration(
+            shadows: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                offset: const Offset(0, 4),
+                blurRadius: 6,
+              ),
+            ],
+            color: Theme.of(context).brightness == Brightness.dark
+                ? (topItemSelected
+                    ? const Color.fromRGBO(28, 28, 30, 1)
+                    : Theme.of(context).flixColors.background.primary)
+                : (topItemSelected
+                    ? const Color.fromRGBO(232, 243, 255, 1)
+                    : Theme.of(context).flixColors.background.primary),
+            shape: SmoothRectangleBorder(
+              borderRadius: SmoothBorderRadius(
+                cornerRadius: 15,
+                cornerSmoothing: 0.6,
+              ),
+              side: topItemSelected
+                  ? const BorderSide(
+                      color: Color.fromRGBO(0, 122, 255, 1),
+                      width: 1.4,
+                    )
+                  : BorderSide.none,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(13),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/pc.webp', 
+                        width: Platform.isAndroid || Platform.isIOS ? 41 : 34,
+                        height: Platform.isAndroid || Platform.isIOS ? 41 : 34,
+                        fit: BoxFit.fill,
+                      ),
+                      SizedBox(width: Platform.isAndroid || Platform.isIOS ? 12 : 10),
+                      Flexible(
+                        child: Text(
+                          "网页版", 
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Theme.of(context).flixColors.text.primary,
+                            fontSize: Platform.isAndroid || Platform.isIOS ? 16 : 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SvgPicture.asset(
+                  'assets/images/arrow_right.svg', 
+                  width: 24,
+                  height: 24,
+                  colorFilter: ColorFilter.mode(
+                    Theme.of(context).flixColors.text.secondary,
+                    BlendMode.srcIn,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),),
+                
                 Expanded(
                   child: EasyRefresh(
                     controller: _refreshController,
@@ -382,7 +480,9 @@ class _DeviceScreenState extends State<DeviceScreen>
                   AndroidUtils.openWifiSettings();
                 });
           }
+          
         });
+        
   }
 
 

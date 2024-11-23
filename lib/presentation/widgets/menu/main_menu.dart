@@ -16,7 +16,7 @@ import '../../../utils/platform_utils.dart';
 import '../../screens/paircode/add_device_screen.dart';
 
 void showMainMenu(BuildContext context, String tag,
-    void Function()? onViewConnectInfo, void Function()? onGoManualAdd) {
+    void Function()? onViewConnectInfo, void Function()? onGoManualAdd, void Function()? onWebInfo) {
   showModal(ModalEntry.anchored(
     context,
     tag: 'device_pair_menu',
@@ -30,7 +30,8 @@ void showMainMenu(BuildContext context, String tag,
     child: MainMenu(
         navigator: Navigator.of(context),
         onViewConnectInfo: onViewConnectInfo ?? () {},
-        onGoManualAdd: onGoManualAdd ?? () {}),
+        onGoManualAdd: onGoManualAdd ?? () {}, 
+        onWebInfo: onWebInfo ?? () {}, ),
   ));
 }
 
@@ -38,12 +39,14 @@ class MainMenu extends StatefulWidget {
   final NavigatorState navigator;
   final void Function() onViewConnectInfo;
   final void Function() onGoManualAdd;
+  final void Function() onWebInfo;
 
   const MainMenu(
       {required this.navigator,
       super.key,
       required this.onViewConnectInfo,
-      required this.onGoManualAdd});
+      required this.onGoManualAdd,
+      required this.onWebInfo});
 
   @override
   State<StatefulWidget> createState() => MainMenuState();
@@ -131,6 +134,20 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
                    */
                       removeAllModals();
                       widget.onGoManualAdd();
+                    },
+                  )),
+                Visibility(
+                  visible: false,
+                  child: MenuItem(
+                    lable: '连接网页版',
+                    icon: 'assets/images/web.svg',
+                    onTap: () {
+                      /*
+                  widget.navigator.push(CupertinoPageRoute(
+                      builder: (context) => const AddDeviceScreen()));
+                   */
+                      removeAllModals();
+                      widget.onWebInfo();
                     },
                   ))
             ],
