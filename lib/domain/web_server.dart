@@ -328,30 +328,61 @@ String _generateChatHtml() {
     <head>
       <title>Flix 网页版</title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      
       <style>
-        body {
-          font-family: Arial, sans-serif;
+       
+
+
+       html, body {
+       font-family: Arial, sans-serif;
           background-color: #ffffff;
-          margin: 0;
-          padding: 0;
-          display: flex;
-          flex-direction: column;
-          height: 100vh;
-          overflow: hidden;
-        }
-        .header {
-          width: 100%;
-          max-width: 600px;
-          background-color: #F2F2F2;
-          padding: 15px;
-          text-align: center;
-          font-size: 18px;
-          font-weight: bold;
-          color: #000000;
-          flex-shrink: 0;
-          margin: auto; 
-          box-sizing: border-box;
-        }
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column; 
+}
+
+      .header {
+    position: sticky; 
+    top: 0; 
+    width: 100%;
+    max-width: 600px;
+    background-color: #F2F2F2;
+    padding: 15px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    box-sizing: border-box;
+    z-index: 10; 
+}
+        .chat-container {
+    position: relative;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 10px;
+}
+
+  .bubble {
+    padding: 10px 15px;
+    border-radius: 12.5px;
+    max-width: 80%;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .left {
+    align-self: flex-start;
+    background-color: #ffffff;
+    color: #000000;
+  }
+
+  .right {
+    align-self: flex-end;
+    background-color: #007bff;
+    color: #ffffff;
+  }
         .chat-container {
           background-color: #F2F2F2;
           margin: auto; 
@@ -360,7 +391,7 @@ String _generateChatHtml() {
           width: 100%;
           overflow-y: auto;
           padding: 10px;
-          padding-bottom: 100px; /* 为底部输入框和按钮留出空间 */
+          padding-bottom: 100px; 
           display: flex;
           flex-direction: column;
           gap: 10px;
@@ -368,7 +399,7 @@ String _generateChatHtml() {
         }
         .bubble {
           padding: 10px 15px;
-          border-radius: 15px;
+          border-radius: 12.5px;
           max-width: 80%;
           word-wrap: break-word;
           word-break: break-word;
@@ -386,12 +417,12 @@ String _generateChatHtml() {
         .footer {
           width: 100%;
           max-width: 600px;
-          position: fixed; /* 固定在屏幕底部 */
+          position: fixed; 
           bottom: 0;
           left: 50%;
           transform: translateX(-50%);
           display: flex;
-          flex-wrap: wrap; /* 支持换行 */
+          flex-wrap: wrap; 
           gap: 10px;
           background-color: #F2F2F2;
           padding: 10px;
@@ -419,7 +450,7 @@ String _generateChatHtml() {
           background-color: #0056b3;
         }
         .footer input[type="file"] {
-          display: none; /* 隐藏文件选择框 */
+          display: none; 
         }
       </style>
       <script>
@@ -428,6 +459,7 @@ String _generateChatHtml() {
                 location.reload();
             }
         });
+
 
        
         const socket = new WebSocket("ws://$localIP:$port/ws");
@@ -445,20 +477,27 @@ String _generateChatHtml() {
         };
 
         // 动态追加消息到聊天列表
-        function appendMessage(message) {
-          const container = document.querySelector('.chat-container');
-          const div = document.createElement('div');
-          div.className = 'bubble left'; 
-          div.textContent = message;
-          container.appendChild(div); // 添加到聊天区域
-          //scrollToBottom(); 
-        }
+       function appendMessage(message) {
+    const container = document.querySelector('.chat-container');
+    const div = document.createElement('div');
+    div.className = 'bubble left'; 
+    div.textContent = message;
+    container.appendChild(div);
 
-        // 滚动到底部
-        function scrollToBottom() {
-          const container = document.querySelector('.chat-container');
-          container.scrollTop = container.scrollHeight;
-        }
+    
+    setTimeout(() => scrollToBottom(true), 100);
+}
+
+       
+       function scrollToBottom() {
+  const container = document.querySelector('.chat-container');
+  if (container) {
+    requestAnimationFrame(() => {
+      container.scrollTop = container.scrollHeight;
+    });
+  }
+}
+
 
         // 页面加载完成时初始化事件监听
         document.addEventListener("DOMContentLoaded", () => {
@@ -522,15 +561,15 @@ String _generateChatHtml() {
   for (var message in messages) {
     if (message['type'] == 'file' && message['from'] == 'flutter') {
       html.writeln("""
-        <div class="bubble ${message['from'] == 'flutter' ? 'left' : 'right'}">
-          <a href="/download/${message['content']}">${message['content']}</a>
+        <div style="background:#ffffff; width:260px;height:70px"  class="bubble ${message['from'] == 'flutter' ? 'left' : 'right'}">
+          <a style="color:#000000; text-decoration: none;"  href="/download/${message['content']}">${message['content']}</a>
         </div>
       """);
     } else if (message['type'] == 'file' && message['from'] == 'html') {
       html.writeln("""
-        <div style="background:#ffffff" class="bubble ${message['from'] == 'flutter' ? 'left' : 'right'}">
-          <a style="color:#000000" href="/download/${message['content']}">${message['fileName']}</a>
-        </div>
+       <div style="background:#ffffff; width:260px;;height:70px" class="bubble ${message['from'] == 'flutter' ? 'left' : 'right'}">
+  <a style="color:#000000; text-decoration: none;" href="/download/${message['content']}">${message['fileName']}</a>
+</div>
       """);
     } else if (message['type'] == 'text') {
       html.writeln("""
@@ -545,9 +584,21 @@ String _generateChatHtml() {
       </div>
       <div class="footer">
         <input id="messageInput" type="text" placeholder="消息">
-        <button id="sendButton">发送</button>
+      
         <input id="fileInput" type="file" />
-        <button id="uploadButton">上传文件</button>
+     
+        <svg  id="uploadButton" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="22" height="22" viewBox="0 0 22 22" fill="none">
+<path d="M2.44434 4.58279L2.44434 17.4161C2.44434 19.2724 3.94916 20.7772 5.80545 20.7772L16.1943 20.7772C18.0506 20.7772 19.5554 19.2724 19.5554 17.4161L19.5554 8.14435C19.5554 7.86077 19.5012 7.58807 19.3928 7.32625C19.2842 7.06424 19.1296 6.83284 18.9288 6.63205L14.1468 1.85001C13.9463 1.64841 13.7143 1.49314 13.451 1.3842C13.1891 1.27585 12.9164 1.22168 12.6328 1.22168L5.80545 1.22168C3.94916 1.22168 2.44434 2.7265 2.44434 4.58279ZM16.4259 6.7218L14.0554 4.35136L14.0554 6.41625C14.0554 6.585 14.1922 6.7218 14.361 6.7218L16.4259 6.7218ZM12.2221 3.05501L5.80545 3.05501C4.96167 3.05501 4.27767 3.73902 4.27767 4.58279L4.27767 17.4161C4.27767 18.2599 4.96167 18.9439 5.80545 18.9439L16.1943 18.9439C17.0382 18.9439 17.7221 18.2599 17.7221 17.4161L17.7221 8.55514L14.361 8.55514C13.1797 8.55514 12.2221 7.59752 12.2221 6.41625L12.2221 3.05501Z" fill-rule="evenodd"  fill="#000000" >
+</path>
+</svg>
+
+
+<svg id="sendButton" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="26" height="26" viewBox="0 0 26 26" fill="none">
+<path d="M2.23826 7.24025L5.35285 12.4348C5.5641 12.7815 5.55868 13.2094 5.35826 13.5561L2.23285 18.7507C0.575347 21.5132 3.50576 24.7415 6.41993 23.3602L22.0741 15.9286C24.5495 14.7532 24.5441 11.2269 22.0633 10.0515L6.41451 2.63608C3.51118 1.26025 0.586181 4.48316 2.23826 7.24025ZM7.67524 12.9889C7.67524 12.3931 8.16274 11.9056 8.75858 11.9056L15.2586 11.9056C15.8544 11.9056 16.3419 12.3931 16.3419 12.9889C16.3419 13.5847 15.8544 14.0722 15.2586 14.0722L8.75858 14.0722C8.16274 14.0722 7.67524 13.5847 7.67524 12.9889Z" fill-rule="evenodd"  fill="#007AFF" >
+</path>
+</svg>
+
+
       </div>
     </body>
     </html>
