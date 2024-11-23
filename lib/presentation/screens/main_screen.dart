@@ -204,8 +204,11 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
   Widget? thirdWidget;
 
   void clearThirdWidget() {
+    final deviceProvider = MultiCastClientProvider.of(context, listen: false);
+     deviceProvider.setSelectedDeviceId("0");
     setState(() {
       thirdWidget = null;
+      
     });
   }
 
@@ -818,6 +821,8 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
       child: GestureDetector(
         onTap: () {
           setSelectedIndex(index);
+          final deviceProvider = MultiCastClientProvider.of(context, listen: false);
+     deviceProvider.setSelectedDeviceId("0");
           setState(() {
             thirdWidget = null;
           });
