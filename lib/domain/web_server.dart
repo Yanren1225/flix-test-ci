@@ -13,6 +13,7 @@ int port = 8892;
 int randomNumber = 0;
 var deviceName = DeviceProfileRepo.instance.deviceName;
 
+/// 启动服务器的方法
 Future<void> startWebServer() async {
   try {
     uploadDirectory = await Directory.systemTemp.createTemp('flutter_uploads');
@@ -72,6 +73,7 @@ Future<void> startWebServer() async {
           });
         }
       }else if (request.uri.path == '/upload' && request.method == 'POST') {
+       
   final contentType = request.headers.contentType;
   if (contentType?.mimeType == 'multipart/form-data') {
     final boundary = contentType!.parameters['boundary']!;
@@ -427,9 +429,7 @@ String _generateChatHtml() {
             }
         });
 
-         window.addEventListener("focus", function () {
-            location.reload();
-        });
+       
         const socket = new WebSocket("ws://$localIP:$port/ws");
         
         // 监听消息事件
@@ -497,14 +497,15 @@ String _generateChatHtml() {
                 });
 
                 if (response.ok) {
-                 // alert('文件上传成功');
+                // alert('文件上传成功');
                   fileInput.value = ''; // 清空文件输入框
                 } else {
                   alert('文件上传失败');
                 }
               } catch (error) {
                 console.error('文件上传错误:', error);
-                alert('文件上传失败，请稍后再试');
+                
+                alert(error);
               }
             }
           });
