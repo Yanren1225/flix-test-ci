@@ -142,10 +142,12 @@ Widget _buildIntFlag(BuildContext context, IntFlag flag) {
                           FilteringTextInputFormatter.digitsOnly,
                         ],
                         onChanged: (newValue) {
-                          flag.value = int.tryParse(newValue) ?? 0;
+                          flag.value =
+                              int.tryParse(newValue) ?? flag.defaultValue;
                         },
                         onSubmitted: (newValue) {
-                          flag.value = int.tryParse(newValue) ?? 0;
+                          flag.value =
+                              int.tryParse(newValue) ?? flag.defaultValue;
                         },
                       ),
                     ),

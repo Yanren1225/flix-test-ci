@@ -40,6 +40,8 @@ abstract class Flag<T> extends ChangeNotifier {
 
   String? get desp => _desp;
 
+  T get defaultValue => _defaultValue;
+
   void _syncToSP();
 }
 
