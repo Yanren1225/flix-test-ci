@@ -6,13 +6,15 @@ abstract class Flag<T> extends ChangeNotifier {
   late final String _spKey;
   final String _name;
   String? _desp;
+  final bool _saveToSp;
   final T _defaultValue;
   T? _value;
 
-  Flag(this._key, this._name, this._defaultValue, [this._desp]) {
+  Flag(this._key, this._name, this._defaultValue, this._saveToSp,
+      [this._desp]) {
     _spKey = 'flag_$_key';
     _value = _defaultValue;
-    _syncFromSP();
+    if (_saveToSp) _syncFromSP();
   }
 
   Flag describe(String desp) {
@@ -31,23 +33,32 @@ abstract class Flag<T> extends ChangeNotifier {
   set value(T newValue) {
     _value = newValue;
     notifyListeners();
-    _syncToSP();
+    if (_saveToSp) _syncToSP();
   }
 
   String get name => _name;
 
   String get key => _key;
 
-  String? get desp => _desp;
+  String? get description => _desp;
 
   T get defaultValue => _defaultValue;
+
+  bool get saveToSp => _saveToSp;
+
+  bool get isDefault => _value == _defaultValue;
 
   void _syncToSP();
 }
 
 class BoolFlag extends Flag<bool> {
-  BoolFlag(String key, String name, bool defaultValue, [String? desp])
-      : super(key, name, defaultValue, desp);
+  BoolFlag({
+    required String key,
+    required String name,
+    required bool defaultValue,
+    bool saveToSp = true,
+    String? description,
+  }) : super(key, name, defaultValue, saveToSp, description);
 
   void toggle() {
     _value = !_value!;
@@ -63,8 +74,12 @@ class BoolFlag extends Flag<bool> {
 }
 
 class IntFlag extends Flag<int> {
-  IntFlag(String key, String name, int defaultValue, [String? desp])
-      : super(key, name, defaultValue, desp);
+  IntFlag({
+    required String key,
+    required String name,
+    required int defaultValue,
+    String? description,
+  }) : super(key, name, defaultValue, true, description);
 
   void increment() {
     _value = _value! + 1;
@@ -86,8 +101,12 @@ class IntFlag extends Flag<int> {
 }
 
 class StringFlag extends Flag<String> {
-  StringFlag(String key, String name, String defaultValue, [String? desp])
-      : super(key, name, defaultValue, desp);
+  StringFlag({
+    required String key,
+    required String name,
+    required String defaultValue,
+    String? description,
+  }) : super(key, name, defaultValue, true, description);
 
   void update(String newValue) {
     _value = newValue;

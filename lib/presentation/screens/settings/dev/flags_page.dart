@@ -45,7 +45,37 @@ class FlagPageState extends State<FlagPage> {
           child: ListView(
             children: [
               for (var flag in FlagRepo.instance.flags)
-                _buildFlag(context, flag)
+                _buildFlag(context, flag),
+              Container(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Button95(
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: const Text("重置所有 Flags"),
+                            ),
+                            onTap: () {
+                              for (var flag in FlagRepo.instance.flags) {
+                                flag.value = flag.defaultValue;
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Text(
+                      "下划线表示未保存到 SharedPreferences, 斜体表示未使用默认值",
+                      style: TextStyle(
+                        fontSize: 12,
+                      ),
+                    )
+                  ],
+                ),
+              )
             ],
           ),
         ),
@@ -73,10 +103,22 @@ Widget _buildBoolFlag(BuildContext context, BoolFlag flag) {
       children: [
         Row(
           children: [
+            IconButton(
+              onPressed: () {
+                flag.value = flag.defaultValue;
+              },
+              icon: const Icon(Icons.refresh),
+            ),
             Expanded(
               child: Text(
                 flag.name,
-                style: Flutter95.textStyle,
+                style: Flutter95.textStyle.apply(
+                  fontStyle:
+                      flag.isDefault ? FontStyle.normal : FontStyle.italic,
+                  decoration: flag.saveToSp
+                      ? TextDecoration.none
+                      : TextDecoration.underline,
+                ),
               ),
             ),
             Expanded(
@@ -92,7 +134,7 @@ Widget _buildBoolFlag(BuildContext context, BoolFlag flag) {
             ),
           ],
         ),
-        flag.desp != null
+        flag.description != null
             ? SizedBox(
                 width: double.infinity,
                 child: Padding(
@@ -100,7 +142,7 @@ Widget _buildBoolFlag(BuildContext context, BoolFlag flag) {
                   child: Elevation95(
                     type: Elevation95Type.down,
                     child: Text(
-                      flag.desp ?? "",
+                      flag.description ?? "",
                       style: Flutter95.textStyle.copyWith(
                         fontSize: 12,
                       ),
@@ -122,10 +164,22 @@ Widget _buildIntFlag(BuildContext context, IntFlag flag) {
       children: [
         Row(
           children: [
+            IconButton(
+              onPressed: () {
+                flag.value = flag.defaultValue;
+              },
+              icon: const Icon(Icons.refresh),
+            ),
             Expanded(
               child: Text(
                 flag.name,
-                style: Flutter95.textStyle,
+                style: Flutter95.textStyle.apply(
+                  fontStyle:
+                      flag.isDefault ? FontStyle.normal : FontStyle.italic,
+                  decoration: flag.saveToSp
+                      ? TextDecoration.none
+                      : TextDecoration.underline,
+                ),
               ),
             ),
             Expanded(
@@ -165,7 +219,7 @@ Widget _buildIntFlag(BuildContext context, IntFlag flag) {
             ),
           ],
         ),
-        flag.desp != null
+        flag.description != null
             ? SizedBox(
                 width: double.infinity,
                 child: Padding(
@@ -173,7 +227,7 @@ Widget _buildIntFlag(BuildContext context, IntFlag flag) {
                   child: Elevation95(
                     type: Elevation95Type.down,
                     child: Text(
-                      flag.desp ?? "",
+                      flag.description ?? "",
                       style: Flutter95.textStyle.copyWith(
                         fontSize: 12,
                       ),
@@ -195,10 +249,22 @@ Widget _buildStringFlag(BuildContext context, StringFlag flag) {
       children: [
         Row(
           children: [
+            IconButton(
+              onPressed: () {
+                flag.value = flag.defaultValue;
+              },
+              icon: const Icon(Icons.refresh),
+            ),
             Expanded(
               child: Text(
                 flag.name,
-                style: Flutter95.textStyle,
+                style: Flutter95.textStyle.apply(
+                  fontStyle:
+                      flag.isDefault ? FontStyle.normal : FontStyle.italic,
+                  decoration: flag.saveToSp
+                      ? TextDecoration.none
+                      : TextDecoration.underline,
+                ),
               ),
             ),
             Expanded(
@@ -215,7 +281,7 @@ Widget _buildStringFlag(BuildContext context, StringFlag flag) {
             ),
           ],
         ),
-        flag.desp != null
+        flag.description != null
             ? SizedBox(
                 width: double.infinity,
                 child: Padding(
@@ -223,7 +289,7 @@ Widget _buildStringFlag(BuildContext context, StringFlag flag) {
                   child: Elevation95(
                     type: Elevation95Type.down,
                     child: Text(
-                      flag.desp ?? "",
+                      flag.description ?? "",
                       style: Flutter95.textStyle.copyWith(
                         fontSize: 12,
                       ),
