@@ -466,12 +466,7 @@ String _generateChatHtml() {
         }
       </style>
       <script>
-       document.addEventListener("visibilitychange", function () {
-            if (document.visibilityState === "visible") {
-                location.reload();
-            }
-        });
-
+     
 
        
         const socket = new WebSocket("ws://$localIP:$port/ws");
