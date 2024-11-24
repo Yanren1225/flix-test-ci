@@ -153,6 +153,15 @@ class DeviceManager {
     return null;
   }
 
+  String? getNetAdressByDeviceIdWithoutPort(String id) {
+    for (var device in DeviceManager.instance.deviceList) {
+      if (device.fingerprint == id) {
+        return device.ip;
+      }
+    }
+    return null;
+  }
+
   DeviceInfo? getDeviceInfoById(String id) {
     return deviceList
         .find((element) => element.fingerprint == id)

@@ -11,6 +11,7 @@ import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
 import 'package:flix/network/discover/network_connect_manager.dart';
+import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/bubble_convert.dart';
@@ -36,6 +37,10 @@ class ShipServiceProxy {
     return '${DeviceManager.instance.getNetAdressByDeviceId(deviceId)}';
   }
 
+  String getAddressWithoutPort(String deviceId){
+    return '${DeviceManager.instance.getNetAdressByDeviceIdWithoutPort(deviceId)}';
+  }
+
   Future<bool> startShipServer() async {
     talker.debug("startScan startShipServer");
     var isComplete = await _shipService.startShipService();
@@ -48,7 +53,7 @@ class ShipServiceProxy {
     final primitiveBubble = fromUIBubble(uiBubble);
     showBigFileToast(primitiveBubble);
     var isAlive =
-        await checkAlive("sendBubble", getAddressByDeviceId(uiBubble.to));
+        await checkAlive("sendBubble", getAddressWithoutPort(uiBubble.to));
     talker.debug("sendBubble", "${uiBubble.from} is Alive = $isAlive");
     if (!isAlive) {
       showNotAliveToast();
@@ -164,7 +169,7 @@ class ShipServiceProxy {
   }
 
   Future<bool> checkAlive(String from, String ip) async {
-    return await NetworkConnectManager.instance.connect("checkAlive_$from", ip);
+    return await NetworkConnectManager.instance.pingApi.pingWithTime(ip,_shipService.port,"checkAlive_$from",2000) != null;
   }
 }
 
