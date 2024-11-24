@@ -344,7 +344,7 @@ class _MyHomePageState extends BaseScreenState<MyHomePage>
   void onWindowEvent(String eventName) async {
     if (eventName == 'focus' || eventName == 'blur') {
       // If the title bar should be hidden but might be visible, re-hide it
-      await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
+      // await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
     }
   }
 
