@@ -597,43 +597,16 @@ class InputAreaState extends State<InputArea> {
                         )),
                   ),
                   const SizedBox(
-                    width: 10,
-                  ),
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: IconButton(
-                        onPressed: () {
-                          FocusScope.of(context).unfocus();
-                          trySubmitText();
-                        },
-                        // padding: const EdgeInsets.all(9.0),
-                        iconSize: 22,
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateColor.resolveWith(
-                                (states) =>
-                                    const Color.fromRGBO(0, 122, 255, 1)),
-                            shape: MaterialStatePropertyAll<
-                                RoundedRectangleBorder>(RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ))),
-                        icon: const Icon(
-                          Icons.arrow_upward_sharp,
-                          color: Colors.white,
-                          size: 22,
-                        )),
-                  ),
-                  const SizedBox(
                     width: 16,
                   ),
+                 
+                  
                 ],
               ),
               Row(
                 children: [
-                  Expanded(child: PickActionsArea(onPicked: onPicked)),
-                  if (Platform.isWindows ||
-                      Platform.isMacOS ||
-                      Platform.isLinux) ...[
+                  PickActionsArea(onPicked: onPicked),
+                  if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) ...[
                     IconButton(
                       icon: SvgPicture.asset(
                         'assets/images/screenshot.svg',
@@ -648,6 +621,21 @@ class InputAreaState extends State<InputArea> {
                     ),
                     const SizedBox(width: 16),
                   ],
+                  const Spacer(), 
+                  IconButton(
+                    icon: SvgPicture.asset(
+                      'assets/images/send.svg',
+                      width: 22,
+                      height: 22,                     
+                    ),
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      trySubmitText();
+                    },
+                  ),                 
+                  const SizedBox(
+                    width: 16,
+                  ),
                 ],
               )
             ]),
