@@ -51,7 +51,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@main
       - name: install keybinder
-        run: dnf update && dnf install -y keybinder-3.0-devel
+        run: dnf makecache --refresh && dnf install -y keybinder-3.0-devel
       - name: install rust
         run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf > rustup.sh && sh rustup.sh -y && echo 'source $HOME/.cargo/env' >> /etc/bash.bashrc
       - run: flutter channel stable
