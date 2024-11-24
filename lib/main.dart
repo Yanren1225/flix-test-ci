@@ -30,6 +30,7 @@ import 'package:flix/domain/window/flix_window_manager.dart';
 import 'package:flix/l10n/l10n.dart';
 import 'package:flix/l10n/lang_config.dart';
 import 'package:flix/network/discover/discover_manager.dart';
+import 'package:flix/network/discover/network_connect_manager.dart';
 import 'package:flix/network/multicast_client_provider.dart';
 import 'package:flix/presentation/screens/intro_screen.dart';
 import 'package:flix/presentation/screens/main_screen.dart';
@@ -50,6 +51,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:modals/modals.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -105,7 +107,7 @@ Future<void> initAllConfig() async {
     await RustLib.init();
 
     await startWebServer();
-    
+
   } catch (e, s) {
     talker.error('launch error', e, s);
   }
@@ -298,17 +300,26 @@ Future<void> initBootStartUp() async {
 }
 
 Future<void> _logAppContext(DeviceInfoResult deviceInfo) async {
-  String operatingSystem = '';
-  String operatingSystemVersion = '';
-  final info = await PackageInfo.fromPlatform();
   try {
-    operatingSystem = Platform.operatingSystem;
-    operatingSystemVersion = Platform.operatingSystemVersion;
-  } catch (e, s) {
-    talker.error('get platform info error', e, s);
+    String operatingSystem = '';
+    String operatingSystemVersion = '';
+    final info = await PackageInfo.fromPlatform();
+    try {
+      operatingSystem = Platform.operatingSystem;
+      operatingSystemVersion = Platform.operatingSystemVersion;
+    } catch (e, s) {
+      talker.error('get platform info error', e, s);
+    }
+    talker.info(
+        'DeviceInfo:name: ${deviceInfo.alias}, Model: ${deviceInfo.deviceModel}, Platform: $operatingSystem, Version: $operatingSystemVersion, AppVersion: ${info.version}');
+    var selfIP = NetworkConnectManager.instance.selfIP;
+    var wifiName = await NetworkInfo().getWifiName();
+    var wifiIP = await NetworkInfo().getWifiIP();
+    talker.info(
+        "NetworkInfo: $selfIP WIFIInfo WifiName = $wifiName  WifiIp = $wifiIP");
+  } catch (e) {
+    talker.error("_logAppContext error stack is ${e.toString()}");
   }
-  talker.info(
-      'name: ${deviceInfo.alias}, Model: ${deviceInfo.deviceModel}, Platform: $operatingSystem, Version: $operatingSystemVersion, AppVersion: ${info.version}');
 }
 
 Future<void> _initNotification() async {

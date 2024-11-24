@@ -39,15 +39,14 @@ class NetworkConnectManager {
       talker.debug('connect failed:$ip is myself,return from = $from');
       return false;
     }
-    var deviceModal = await pingApi.pingWithTime(ip, await shipService.getPort(),from,2000);
+    var deviceModal =
+        await pingApi.pingWithTime(ip, await shipService.getPort(), from, 2000);
     deviceModal?.from = from;
-    talker.debug('connect from = $from ip = $ip deviceModal = $deviceModal');
+    bool isAddSuccess = false;
     if (deviceModal != null) {
-      bool isAddSuccess = DeviceManager.instance.addDevice(deviceModal);
-      talker.debug("network_connect $isAddSuccess  device = $deviceModal");
-      return true;
+      isAddSuccess = DeviceManager.instance.addDevice(deviceModal);
     }
-    return false;
+    talker.debug('connect from = $from ip = $ip deviceModal = $deviceModal  isAddSuccess = $isAddSuccess');
+    return isAddSuccess;
   }
-
 }

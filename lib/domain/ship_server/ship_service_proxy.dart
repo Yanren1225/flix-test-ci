@@ -10,6 +10,7 @@ import 'package:flix/domain/ship_server/ship_service.dart';
 import 'package:flix/model/ship/primitive_bubble.dart';
 import 'package:flix/model/ui_bubble/shared_file.dart';
 import 'package:flix/model/ui_bubble/ui_bubble.dart';
+import 'package:flix/network/discover/network_connect_manager.dart';
 import 'package:flix/network/protocol/device_modal.dart';
 import 'package:flix/presentation/widgets/flix_toast.dart';
 import 'package:flix/utils/bubble_convert.dart';
@@ -19,7 +20,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../utils/compat/compat_util.dart';
 
-class ShipServiceProxy{
+class ShipServiceProxy {
   final syncTasks = <String, Completer>{};
   final _serverReadyTask = Completer<bool>();
   final ShipService _shipService =
@@ -46,16 +47,27 @@ class ShipServiceProxy{
     await _awaitServerReady();
     final primitiveBubble = fromUIBubble(uiBubble);
     showBigFileToast(primitiveBubble);
+    var isAlive =
+        await checkAlive("sendBubble", getAddressByDeviceId(uiBubble.from));
+    talker.debug("sendBubble", "${uiBubble.from} is Alive = $isAlive");
+    if (!isAlive) {
+      showNotAliveToast();
+      return;
+    }
     _shipService.send(primitiveBubble);
   }
 
   void showBigFileToast(PrimitiveBubble<dynamic> primitiveBubble) {
-    if(primitiveBubble is PrimitiveFileBubble){
+    if (primitiveBubble is PrimitiveFileBubble) {
       var meta = primitiveBubble.content.meta;
-      if(meta != null && meta.size > 1024*1024*1024*2 && isMobile()){
+      if (meta != null && meta.size > 1024 * 1024 * 1024 * 2 && isMobile()) {
         FlixToast.instance.info("文件较大，传输时请不要关闭软件");
       }
     }
+  }
+
+  void showNotAliveToast() {
+    FlixToast.instance.info("接收设备不活跃，刷新一下它～");
   }
 
   Future<void> confirmReceive(String from, String bubbleId) async {
@@ -142,14 +154,17 @@ class ShipServiceProxy{
 
     for (var element in deviceList) {
       if (pairDeviceIds.contains(element.fingerprint)) {
-        _shipService.sendClipboard(element.fingerprint,lastText);
+        _shipService.sendClipboard(element.fingerprint, lastText);
       }
     }
   }
 
-
   String getDid() {
     return _shipService.did;
+  }
+
+  Future<bool> checkAlive(String from, String ip) async {
+    return await NetworkConnectManager.instance.connect("checkAlive_$from", ip);
   }
 }
 
