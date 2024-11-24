@@ -48,7 +48,7 @@ class ShipServiceProxy {
     final primitiveBubble = fromUIBubble(uiBubble);
     showBigFileToast(primitiveBubble);
     var isAlive =
-        await checkAlive("sendBubble", getAddressByDeviceId(uiBubble.from));
+        await checkAlive("sendBubble", getAddressByDeviceId(uiBubble.to));
     talker.debug("sendBubble", "${uiBubble.from} is Alive = $isAlive");
     if (!isAlive) {
       showNotAliveToast();
