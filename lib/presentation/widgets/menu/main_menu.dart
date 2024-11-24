@@ -4,6 +4,7 @@ import 'package:flix/presentation/basic/corner/flix_decoration.dart';
 import 'package:flix/presentation/screens/qrcode_scan_screen.dart';
 import 'package:flix/presentation/screens/hotpots/hotspot_screen.dart';
 import 'package:flix/presentation/screens/paircode/pair_code_screen.dart';
+import 'package:flix/presentation/screens/settings/dev/dev_config.dart';
 import 'package:flix/presentation/widgets/basic/animatable_pop_menu.dart';
 import 'package:flix/presentation/widgets/menu/menu_item.dart';
 import 'package:flix/theme/theme_extensions.dart';
@@ -137,7 +138,7 @@ class MainMenuState extends AnimatablePopMenuState<MainMenu> {
                     },
                   )),
                 Visibility(
-                  visible: false,
+                  visible: DevConfig.instance.current,
                   child: MenuItem(
                     lable: '连接网页版',
                     icon: 'assets/images/web.svg',
