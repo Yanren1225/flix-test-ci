@@ -16,64 +16,64 @@ on:
         default: true
 
 jobs:
-  linux-deb:
-    runs-on: ubuntu-latest
-    container:
-      image: registry.cn-hangzhou.aliyuncs.com/tekton/linux-flutter-build:ubuntu-20.04-amd64
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@main
-      - name: install keybinder
-        run: apt update && apt install -y libkeybinder-3.0-dev
-      - name: install rust
-        run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf > rustup.sh && sh rustup.sh -y && echo 'source $HOME/.cargo/env' >> /etc/bash.bashrc
-      - run: flutter channel stable
-      - run: flutter upgrade
-      - run: flutter pub get
-      - run: dart run build_runner build --delete-conflicting-outputs
-      - run: flutter build linux -vv
-        name: flutter debug compile
-      - name: install flutter_distributor
-        run: dart pub global activate flutter_distributor
-      - run: flutter_distributor package --platform linux --targets deb
-      - name: Upload artifact
-        if: ${{ inputs.up_load }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-deb
-          path: dist/
+  # linux-deb:
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: registry.cn-hangzhou.aliyuncs.com/tekton/linux-flutter-build:ubuntu-20.04-amd64
+  #   steps:
+  #     - name: Clone repository
+  #       uses: actions/checkout@main
+  #     - name: install keybinder
+  #       run: apt update && apt install -y libkeybinder-3.0-dev
+  #     - name: install rust
+  #       run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf > rustup.sh && sh rustup.sh -y && echo 'source $HOME/.cargo/env' >> /etc/bash.bashrc
+  #     - run: flutter channel stable
+  #     - run: flutter upgrade
+  #     - run: flutter pub get
+  #     - run: dart run build_runner build --delete-conflicting-outputs
+  #     - run: flutter build linux -vv
+  #       name: flutter debug compile
+  #     - name: install flutter_distributor
+  #       run: dart pub global activate flutter_distributor
+  #     - run: flutter_distributor package --platform linux --targets deb
+  #     - name: Upload artifact
+  #       if: ${{ inputs.up_load }}
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: linux-deb
+  #         path: dist/
 
-  linux-rpm:
-    runs-on: ubuntu-latest
-    container:
-      image: registry.cn-hangzhou.aliyuncs.com/tekton/linux-flutter-build:fedora-38-amd64
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@main
-      - name: install keybinder
-        run: dnf makecache --refresh && dnf install -y keybinder-3.0-devel
-      - name: install rust
-        run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf > rustup.sh && sh rustup.sh -y && echo 'source $HOME/.cargo/env' >> /etc/bash.bashrc
-      - run: flutter channel stable
-      - run: flutter upgrade
-      - run: flutter pub get
-      - run: dart run build_runner build --delete-conflicting-outputs
-      - run: flutter build linux -vv
-        name: flutter debug compile
-      - name: install flutter_distributor
-        run: dart pub global activate flutter_distributor
-      - run: flutter_distributor package --platform linux --targets rpm
-      - name: Upload artifact
-        if: ${{ inputs.up_load }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-rpm
-          path: dist/
+  # linux-rpm:
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: registry.cn-hangzhou.aliyuncs.com/tekton/linux-flutter-build:fedora-38-amd64
+  #   steps:
+  #     - name: Clone repository
+  #       uses: actions/checkout@main
+  #     - name: install keybinder
+  #       run: dnf makecache --refresh && dnf install -y keybinder-3.0-devel
+  #     - name: install rust
+  #       run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf > rustup.sh && sh rustup.sh -y && echo 'source $HOME/.cargo/env' >> /etc/bash.bashrc
+  #     - run: flutter channel stable
+  #     - run: flutter upgrade
+  #     - run: flutter pub get
+  #     - run: dart run build_runner build --delete-conflicting-outputs
+  #     - run: flutter build linux -vv
+  #       name: flutter debug compile
+  #     - name: install flutter_distributor
+  #       run: dart pub global activate flutter_distributor
+  #     - run: flutter_distributor package --platform linux --targets rpm
+  #     - name: Upload artifact
+  #       if: ${{ inputs.up_load }}
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: linux-rpm
+  #         path: dist/
 
   linux-appimage:
     runs-on: ubuntu-latest
     container:
-      image: registry.cn-hangzhou.aliyuncs.com/tekton/linux-flutter-build:ubuntu-20.04-amd64
+      image: registry.cn-hangzhou.aliyuncs.com/tekton/linux-flutter-build:ubuntu-24.04-amd64
     steps:
       - name: Clone repository
         uses: actions/checkout@main
@@ -92,7 +92,7 @@ jobs:
       - name: Install AppImage dependencies
         run: |
           apt-get update
-          apt-get install -y libfuse2 locate
+          apt-get install -y libfuse2t64 locate
       - name: Instrall AppimageKit
         run: |
           wget -O appimagetool "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
