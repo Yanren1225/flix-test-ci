@@ -76,7 +76,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@main
       - name: install keybinder
-        run: apt update && apt install -y libkeybinder-3.0-dev
+        run: sudo apt update && sudo apt install -y libkeybinder-3.0-dev
       - name: install rust
         run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf > rustup.sh && sh rustup.sh -y && echo 'source $HOME/.cargo/env' >> /etc/bash.bashrc
       - run: flutter channel stable
@@ -89,14 +89,14 @@ jobs:
         run: dart pub global activate flutter_distributor
       - name: Install AppImage dependencies
         run: |
-          apt-get update
+          sudo apt-get update
           sudo add-apt-repository universe
-          sudo  apt-get install -y libfuse2t64 locate
+          sudo apt-get install -y libfuse2t64 locate
       - name: Instrall AppimageKit
         run: |
           wget -O appimagetool "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
           chmod +x appimagetool
-          mv appimagetool /usr/local/bin/
+          sudo mv appimagetool /usr/local/bin/
       - run: flutter_distributor package --platform linux --targets appimage
       - name: Upload artifact
         if: ${{ inputs.up_load }}
