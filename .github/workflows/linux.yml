@@ -90,7 +90,8 @@ jobs:
       - name: Install AppImage dependencies
         run: |
           apt-get update
-          apt-get install -y libfuse2t64 locate
+          sudo add-apt-repository universe
+          sudo  apt-get install -y libfuse2t64 locate
       - name: Instrall AppimageKit
         run: |
           wget -O appimagetool "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
