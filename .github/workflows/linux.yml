@@ -71,9 +71,7 @@ jobs:
   #         path: dist/
 
   linux-appimage:
-    runs-on: ubuntu-latest
-    container:
-      image: registry.cn-hangzhou.aliyuncs.com/tekton/linux-flutter-build:ubuntu-24.04-amd64
+    runs-on: ubuntu-24.04
     steps:
       - name: Clone repository
         uses: actions/checkout@main
