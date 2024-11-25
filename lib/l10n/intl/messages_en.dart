@@ -130,8 +130,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "help_a_4": MessageLookupByLibrary.simpleMessage(
             "Please ensure that the PC and other devices are under the same subnet, meaning that their direct upper layer devices are on the same router. If the PC is connected to the optical modem, other devices connected to the router via WiFi will not be able to receive files properly."),
         "help_about": MessageLookupByLibrary.simpleMessage("About US"),
-        "help_check_update":
-            MessageLookupByLibrary.simpleMessage("Check for updates"),
+        "help_check_update": MessageLookupByLibrary.simpleMessage("Upgrade"),
         "help_description": MessageLookupByLibrary.simpleMessage(
             "This is Flix, a fast and simple multi terminal transmission software. Hope you like it 😆"),
         "help_dev_team": MessageLookupByLibrary.simpleMessage(
