@@ -93,10 +93,10 @@ jobs:
         run: |
           apt-get update
           apt-get install -y libfuse2 locate
-          sudo modprobe fuse
-          sudo groupadd fuse
+          modprobe fuse
+          groupadd fuse
           user="$(whoami)"
-          sudo usermod -a -G fuse $user
+          usermod -a -G fuse $user
       - name: Instrall AppimageKit
         run: |
           wget -O appimagetool "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
