@@ -92,8 +92,11 @@ jobs:
       - name: Install AppImage dependencies
         run: |
           apt-get update
-          add-apt-repository universe
-          apt-get install -y libfuse2t64 locate
+          apt-get install -y libfuse2 locate
+          sudo modprobe fuse
+          sudo groupadd fuse
+          user="$(whoami)"
+          sudo usermod -a -G fuse $user
       - name: Instrall AppimageKit
         run: |
           wget -O appimagetool "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
